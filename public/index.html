@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#4285f4">
   <link rel="apple-touch-icon" href="icons/apple-icon.png">
   <link rel="manifest" href="manifest.json">
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <title>Star Wars Run</title>
 </head>
 
@@ -22,14 +23,37 @@
   </nav>
   <main role="main">
     <h1>Main</h1>
-    <input type="text" placeholder="Enter a search term" name="searchTerm" />
+    <input type="text" placeholder="Enter a search term" id="search-term" />
   </main>
-  <section id="search-results">
+  <section id="search">
+    <sw-search-header page="1" search-term="a" entity-type="people" id="search-header"></sw-search-header>
+    <sw-search-results id="search-results"></sw-search-results>
+    <!-- <sw-card card-id="1"></sw-card> -->
   </section>
   <footer role="contentinfo">
     Footer
   </footer>
-  <script defer src="scripts/sw-startup.js"></script>
+  <!-- <script defer src="scripts/sw-startup.js"></script> -->
+  <script type="module">
+    const searchInput = document.querySelector("#search-term");
+    const searchResults = document.querySelector("#search-results");
+    const searchHeader = document.querySelector("#search-header");
+
+    searchInput.addEventListener('keyup', (e) => {
+      searchInput.setAttribute("search-term", e.target.value);
+    });
+
+    searchHeader.addEventListener('searchResultFound', function (e) {
+      searchResults.results = e.detail;
+    });
+
+    searchResults.addEventListener('selectedCard', function (e) {
+      console.log("need to show card for id ", e)
+    });
+  </script>
+  <script defer src="components/sw-search-header.js"></script>
+  <script defer src="components/sw-search-results.js"></script>
+  <script defer src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 </body>
 
 </html>
