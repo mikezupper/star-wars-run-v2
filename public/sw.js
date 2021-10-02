@@ -22,7 +22,7 @@ registerRoute(
 registerRoute(
   ({ url }) => url.pathname.endsWith(".js") || url.pathname.endsWith(".css"),
   new CacheFirst({
-    cacheName: "static-cache-v1.0.1",
+    cacheName: "static-cache-v1.0.2",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
