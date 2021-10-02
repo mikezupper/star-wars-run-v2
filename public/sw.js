@@ -15,14 +15,14 @@ const matchFunction = ({ url, request, event }) => {
 registerRoute(
   matchFunction,
   new CacheFirst({
-    cacheName: "search-results-cache-v1.0.1",
+    cacheName: "search-results-cache-v1.0.3",
     plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
   })
 );
 registerRoute(
   ({ url }) => url.pathname.endsWith(".js") || url.pathname.endsWith(".css"),
   new CacheFirst({
-    cacheName: "static-cache-v1.0.2",
+    cacheName: "static-cache-v1.0.3",
     plugins: [
       new CacheableResponsePlugin({
         statuses: [0, 200],
