@@ -7,39 +7,20 @@
   <meta name="theme-color" content="#4285f4">
   <link rel="apple-touch-icon" href="icons/apple-icon.png">
   <link rel="manifest" href="manifest.json">
-  <!-- <link rel="preload" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css" as="style"> -->
   <link rel="preload stylesheet" href="/css/bulma.css" as="style" type="text/css" crossorigin="anonymous">
 
   <title>Star Wars Run</title>
 </head>
 
 <body>
-  <div class="container">
-    <article class="panel is-primary">
-      <h1 class="panel-heading has-text-centered">
-        Star Wars Run - Explore the Lore!
-      </h1>
-      <p class="panel-tabs">
-        <nav-links></nav-links>
-      </p>
-      <div class="panel-block">
-        <p class="control has-icons-left">
-          <search-input search-term="" page="1" entity-type="people"></search-input>
-          <span class="icon is-left">
-            <i class="fas fa-search" aria-hidden="true"></i>
-          </span>
-        </p>
-      </div>
-    </article>
-    <div class="panel-block">
-      <card-detail></card-detail>
-    </div>
-    <!-- <div class="panel-block">
-      <footer-links></footer-links>
-    </div> -->
-  </div>
-  <script type="module" src="scripts/index.js"></script>
-  <script type="module" src="scripts/sw-startup.js"></script>
+  <div id="main"></div>
+  <script src="https://unpkg.com/xstream@10.8.0/dist/xstream.js"></script>
+  <script src="https://unpkg.com/@cycle/run@3.1.0/dist/cycle-run.js"></script>
+  <script src="https://unpkg.com/@cycle/dom@17.4.0/dist/cycle-dom.js"></script>
+  <script src="https://unpkg.com/@cycle/http@13.3.0/dist/cycle-http-driver.min.js"></script>
+  <!-- <script src="https://unpkg.com/@cycle/isolate@3.3.0/dist/cycle-isolate.js"></script> -->
+  <script type="module" src="/scripts/index.js"></script>
+  <script type="module" src="sw.js"></script>
 </body>
 
 </html>
