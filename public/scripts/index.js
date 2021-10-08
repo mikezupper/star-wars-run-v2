@@ -1,75 +1,172 @@
-//import { curry } from "https://cdn.skypack.dev/ramda";
+import { fromEvent } from "/scripts/fromEvent.js";
+window.xs = xstream.default;
 
-/// custom imports
-import EventBus from "/scripts/EventBus.js";
-import CommandBus from "/scripts/CommandBus.js";
-import { useEventBusMixin } from "/scripts/EventBusMixin.js";
+const { makeDOMDriver } = CycleDOM;
+const { h1, h2, h3, h4, label, hr } = CycleDOM;
+const { div, nav, ul, li, i } = CycleDOM;
+const { a, span, input, button } = CycleDOM;
+const { makeHTTPDriver } = CycleHTTPDriver;
 
-import "/components/index.js";
-import "/components/nav-links.js";
-import "/components/LazyLoadComponent.js";
-import "/components/footer-links.js";
-import { SearchInput } from "/components/search-input.js";
-import { CardDetail } from "/components/card-detail.js";
+/*
+ * MAIN = sources -> sinks
+ */
+const main = (sources) => {
+  //sources as input
+  const actions = intent(sources);
+  const state$ = model(actions);
+  const vdom$ = view(state$);
 
-const eventBus = new EventBus();
-const commandBus = CommandBus();
-customElements.define("search-input", useEventBusMixin(SearchInput, eventBus));
-customElements.define("card-detail", useEventBusMixin(CardDetail, eventBus));
-
-const FETCH = "*.fetch";
-const RESET = "reset.search";
-
-//HANDLERS
-const fetchCommandHandler = {
-  handle: (command) => {
-    const { page, searchTerm, entityType } = command?.payload;
-    console.log("[fetchCommandHandler] - handling: ", command);
-    return fetchHandler(page, searchTerm, entityType);
-  },
+  //sinks for ouput
+  return {
+    DOM: vdom$,
+    HTTP: actions.request$,
+  };
 };
 
-const fetchHandler = (page, searchTerm, entityType) => {
-  const fetchedEntityEventName = entityType + ".fetched";
-  let url = `https://api.starwars.run/api/${entityType}/?search=${searchTerm}&page=${page}`;
-  return fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      eventBus.emit({ type: fetchedEntityEventName, payload: json });
-    });
+/*
+ *   INTENT = sources -> actions
+ */
+const intent = (sources) => {
+  const searchTermChanges$ = sources.DOM.select(".search-term")
+    .events("input")
+    .map((ev) => ev.target.value)
+    .startWith(undefined);
+  const entityTypeChanges$ = sources.DOM.select(".entity-type")
+    .events("click")
+    .map((ev) => ev.target.textContent)
+    .startWith("people");
+
+  const searchInput$ = xs.combine(entityTypeChanges$, searchTermChanges$);
+
+  const searchResponse$ = sources.HTTP.select("search-data")
+    .flatten()
+    .map((res) => res.body);
+
+  const request$ = searchInput$
+    .map(([entityType, searchTerm]) => ({
+      searchTerm,
+      entityType,
+    }))
+    .filter((searchInputData) => {
+      return (
+        searchInputData.searchTerm && searchInputData.searchTerm.length > 1
+      );
+    })
+    .filter((searchInputData) => {
+      return searchInputData.entityType;
+    })
+    .map(
+      (searchInputData) =>
+        `https://api.starwars.run/api/${searchInputData.entityType}/?search=${searchInputData.searchTerm}`
+    )
+    .map((url) => ({
+      url,
+      method: "GET",
+      category: "search-data",
+    }));
+
+  return { request$, searchResponse$ };
 };
 
-//Register Handlers for Commands of interest
-commandBus.registerHandler(FETCH, fetchCommandHandler);
-commandBus.registerHandler(RESET, {
-  handle: (command) => {
-    console.log("[RESET] - handling: ", command);
-    document.querySelector("input").value = "";
-    searchInput.setAttribute("search-term", "");
-    searchInput.setAttribute("entity-type", command?.payload?.entityType);
-  },
-});
+/*
+ *   MODEL = actions -> state
+ */
+const model = (actions) => {
+  const state$ = actions.searchResponse$.startWith({}).map((response) => {
+    return {
+      ...response,
+    };
+  });
 
-//Assign command to the search input - this will trigger the bus to invoke a fetch
-const searchInput = document.querySelector("search-input");
+  return state$;
+};
 
-searchInput.addEventListener("FetchEntityCmd", (e) => {
-  console.log("[SearchInput - Listener] on event: ", e);
-  const command = {
-    type: "*.fetch",
-    payload: e.detail,
-  };
+/*
+ *   VIEW = state => vdom
+ */
+const view = (state$) => {
+  return state$.map((response) => {
+    const { next, previous, results, count } = response;
+    return div(".container ", [
+      nav(".nav-wrapper .blue .darken-2 ", [
+        a(
+          ".sidenav-trigger",
+          {
+            attrs: { "data-target": "sw-nav" },
+          },
+          [i(".material-icons", "menu")]
+        ),
+        ul(".left .hide-on-med-and-down", [
+          li(".entity-type ", [a("people")]),
+          li(".entity-type ", [a("starships")]),
+          li(".entity-type ", [a("species")]),
+          li(".entity-type", [a("vehicles")]),
+          li(".entity-type", [a("films")]),
+          li(".entity-type", [a("planets")]),
+        ]),
+        ul(
+          ".sidenav",
+          {
+            attrs: { id: "sw-nav" },
+          },
+          [
+            li(".entity-type  ", [a("people")]),
+            li(".entity-type ", [a("starships")]),
+            li(".entity-type  ", [a("species")]),
+            li(".entity-type ", [a("vehicles")]),
+            li(".entity-type  ", [a("films")]),
+            li(".entity-type", [a("planets")]),
+          ]
+        ),
+      ]),
+      div(".row .center", [
+        div(".input-field .m6", [
+          i(".material-icons prefix", "search_term"),
+          label(".label-icon", { atrrs: { for: "search" } }),
+          input(".search-term .validate", {
+            attrs: {
+              type: "text",
+              id: "search",
+            },
+          }),
+        ]),
+      ]),
+      div(".row .center", [
+        ul(".col .s12 ", [
+          previous &&
+            li([
+              a(".search-previous", { attrs: { "data-previous": previous } }, [
+                i(".material-icons", "chevron_left"),
+              ]),
+            ]),
+          count && li([span(".center .search-count", `Count: ${count}`)]),
+          next &&
+            li([
+              a(".search-next", { attrs: { "data-next": next } }, [
+                i(".material-icons", "chevron_right"),
+              ]),
+            ]),
+        ]),
+        div(
+          ".row .center",
+          results?.map((e) =>
+            div(".card .grey .lighten-1 .col .s12 .m6", [
+              div(
+                span(
+                  ".search-result-entry .card-content .white-text",
+                  e.name || e.title
+                )
+              ),
+            ])
+          )
+        ),
+      ]),
+    ]);
+  });
+};
+const drivers = {
+  DOM: makeDOMDriver("#main"),
+  HTTP: makeHTTPDriver(),
+};
 
-  commandBus.handle(command);
-});
-
-const selectedNavLink = document.querySelector("nav-links");
-selectedNavLink.addEventListener("NavLinkClicked", (e) => {
-  console.log("[selectedNavLink - Listener] on event: ", e);
-  const command = {
-    type: RESET,
-    payload: e.detail,
-  };
-
-  commandBus.handle(command);
-});
+Cycle.run(main, drivers);
