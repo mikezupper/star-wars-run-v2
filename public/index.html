@@ -2,17 +2,23 @@
 <html lang="en">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <meta name="description" content="Star Wars Run website">
   <meta name="theme-color" content="#4285f4">
   <link rel="apple-touch-icon" href="icons/apple-icon.png">
   <link rel="manifest" href="manifest.json">
-  <link rel="preload stylesheet" href="/css/bulma.css" as="style" type="text/css" crossorigin="anonymous">
+  <link rel="preload stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    as="style" type="text/css" crossorigin="anonymous">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="preload stylesheet" as="style"
+    type="text/css" crossorigin="anonymous">
 
   <title>Star Wars Run</title>
 </head>
 
 <body>
+
   <div id="main"></div>
   <script src="https://unpkg.com/xstream@10.8.0/dist/xstream.js"></script>
   <script src="https://unpkg.com/@cycle/run@3.1.0/dist/cycle-run.js"></script>
@@ -20,6 +26,24 @@
   <script src="https://unpkg.com/@cycle/http@13.3.0/dist/cycle-http-driver.min.js"></script>
   <!-- <script src="https://unpkg.com/@cycle/isolate@3.3.0/dist/cycle-isolate.js"></script> -->
   <script type="module" src="/scripts/index.js"></script>
+  <script>
+    const targetNode = document.querySelector("#main");
+    const observerOptions = {
+      childList: true,
+      attributes: false,
+      subtree: true
+    }
+    var init = true;
+    const observer = new MutationObserver(e => {
+      if (init) {
+        const ele  = M.Sidenav.init(document.querySelectorAll('.sidenav'), {});
+        init = false;
+      }
+    }
+    );
+    observer.observe(targetNode, observerOptions);
+
+  </script>
 </body>
 
 </html>
