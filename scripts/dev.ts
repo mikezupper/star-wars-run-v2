@@ -3,6 +3,7 @@
 // same code the build prerenders, reloaded per request so edits show up.
 import http from 'node:http';
 import { createServer as createViteServer } from 'vite';
+import type * as LoadModule from '../src/data/load.js';
 import type * as SiteModule from '../src/render/site.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
@@ -16,8 +17,9 @@ const DEV_ASSETS = { stylesheet: '/src/styles/site.css' };
 async function render(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   try {
     const mod = (await vite.ssrLoadModule('/src/render/site.ts')) as typeof SiteModule;
+    const load = (await vite.ssrLoadModule('/src/data/load.ts')) as typeof LoadModule;
     const response = await mod
-      .createSite(DEV_ASSETS)
+      .createSite(DEV_ASSETS, await load.loadDataset())
       .fetch(new Request(new URL(req.url ?? '/', `http://localhost:${String(port)}`)));
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(await response.text());

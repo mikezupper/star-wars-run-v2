@@ -32,23 +32,24 @@ Coming with their beads: `pnpm smoke` (`swr-3mo.11`), `pnpm ci:local` (`swr-3mo.
 
 ## Where things are
 
-| Path                                                      | Contents                                                    |
-| --------------------------------------------------------- | ----------------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md)                        | Layers, what each may import, data flow, output             |
-| [docs/design-docs/](docs/design-docs/index.md)            | Decisions (ADRs) and why they were made                     |
-| [docs/product-specs/](docs/product-specs/index.md)        | What each feature must do, with acceptance criteria         |
-| [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code** |
-| [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                       |
-| `src/site.ts`                                             | Site-wide constants: origin, name, description              |
-| `src/domain/`                                             | Record types (`records.ts`), slugs, snapshot layout         |
-| `src/ingest/`                                             | swapi.info parser (`swapi.ts`), value parsers, fetch, write |
-| `src/data/`                                               | Loads the snapshot for the build                            |
-| `data/`                                                   | The committed snapshot. Written only by `pnpm ingest`       |
-| `src/render/`                                             | Route table (`site.ts`), layout, page templates             |
-| `src/styles/site.css`                                     | The one stylesheet                                          |
-| `scripts/`                                                | Dev server, build, preview. Thin: logic goes in `src/`      |
-| `test/`                                                   | Vitest tests                                                |
-| `public/`                                                 | Copied into `dist/` as is (icons)                           |
+| Path                                                      | Contents                                                     |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                        | Layers, what each may import, data flow, output              |
+| [docs/design-docs/](docs/design-docs/index.md)            | Decisions (ADRs) and why they were made                      |
+| [docs/product-specs/](docs/product-specs/index.md)        | What each feature must do, with acceptance criteria          |
+| [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code**  |
+| [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                        |
+| `src/site.ts`                                             | Site-wide constants: origin, name, description               |
+| `src/domain/`                                             | Record types, slugs, URL paths, catalog (lookup, relations)  |
+| `src/ingest/`                                             | swapi.info parser (`swapi.ts`), value parsers, fetch, write  |
+| `src/data/`                                               | Loads the snapshot for the build                             |
+| `data/`                                                   | The committed snapshot. Written only by `pnpm ingest`        |
+| `src/render/`                                             | Route table (`site.ts`), layout, home/list/record templates  |
+| `src/render/labels.ts`                                    | **Every user-facing string.** Change copy here, nowhere else |
+| `src/styles/site.css`                                     | The one stylesheet                                           |
+| `scripts/`                                                | Dev server, build, preview. Thin: logic goes in `src/`       |
+| `test/`                                                   | Vitest tests                                                 |
+| `public/`                                                 | Copied into `dist/` as is (icons)                            |
 
 ## Read before changing…
 

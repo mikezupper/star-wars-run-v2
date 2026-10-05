@@ -19,7 +19,9 @@ Types, with their URL segments: `films`, `people`, `planets`, `species`, `vehicl
 Every relationship in the data is a link, **in both directions**:
 
 - A person links to their homeworld, species, films, vehicles and starships.
-- A planet lists the people from it (residents) and its films.
+- A planet lists the people from it (residents), the species native to it, and its films.
+  swapi.info gives only a species' homeworld, so the planet side is built from that
+  (`src/domain/catalog.ts`).
 - A film lists its characters, planets, species, vehicles and starships, in the order the
   data gives them.
 - Vehicles and starships list their pilots and films. Species list their members and their

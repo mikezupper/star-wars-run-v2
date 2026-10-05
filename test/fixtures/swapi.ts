@@ -99,7 +99,7 @@ export function world() {
         hair_colors: 'none',
         eye_colors: 'brown, blue',
         language: 'Galactic Basic',
-        homeworld: null,
+        homeworld: null as string | null,
         people: [api('people/1')],
         films: [api('films/1')],
         url: api('species/1'),

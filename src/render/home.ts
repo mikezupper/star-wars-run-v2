@@ -1,7 +1,9 @@
-// The home page. A placeholder until the data and page beads land (swr-3mo.4, swr-3mo.5);
-// its copy is rewritten in the site voice by swr-3mo.8.
+// The home page: what the site is, and a way into each section.
 import { serverHtml } from '@gyral/ssr';
+import { kindPath } from '../domain/paths.js';
+import { KINDS, type Dataset } from '../domain/records.js';
 import { DESCRIPTION, SITE_NAME } from '../site.js';
+import { KIND_LABELS, TEXT } from './labels.js';
 import type { PageMeta } from './layout.js';
 
 export const homeMeta: PageMeta = {
@@ -10,7 +12,15 @@ export const homeMeta: PageMeta = {
   description: DESCRIPTION,
 };
 
-export const homeBody = () => serverHtml`
+export const homeBody = (data: Dataset) => serverHtml`
   <h1>${SITE_NAME}</h1>
-  <p>${DESCRIPTION}</p>
+  <p>${TEXT.homeIntro}</p>
+  <ul>
+    ${KINDS.map(
+      (kind) => serverHtml`<li>
+        <a href=${kindPath(kind)}>${KIND_LABELS[kind].plural}</a>
+        <data value=${String(data[kind].length)}>${String(data[kind].length)}</data>
+      </li>`,
+    )}
+  </ul>
 `;

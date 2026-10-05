@@ -1,9 +1,14 @@
 // The route table and the request handler: one function renders every page, and it serves
 // both the dev server (per request) and the build (prerendered to files).
 import { renderToStream, renderToString, serverHtml } from '@gyral/ssr';
+import { createCatalog } from '../domain/catalog.js';
+import { KINDS, type Dataset } from '../domain/records.js';
 import { absolute } from '../site.js';
 import { homeBody, homeMeta } from './home.js';
+import { TEXT } from './labels.js';
 import { layout, type Assets, type PageMeta } from './layout.js';
+import { listBody, listMeta } from './list.js';
+import { recordBody, recordMeta } from './record.js';
 
 interface Route {
   readonly meta: PageMeta;
@@ -23,14 +28,14 @@ export interface Site {
 
 const notFoundMeta: PageMeta = {
   path: '/404.html',
-  title: 'Page not found',
-  description: 'There is no page at this address.',
+  title: TEXT.notFoundTitle,
+  description: TEXT.notFoundBody,
   noindex: true,
 };
 
 const notFoundBody = () => serverHtml`
-  <h1>Page not found</h1>
-  <p>There's no page at this address. <a href="/">Go to the home page</a>.</p>
+  <h1>${TEXT.notFoundTitle}</h1>
+  <p>${TEXT.notFoundBody} <a href="/">${TEXT.notFoundHome}</a>.</p>
 `;
 
 const HTML = { 'content-type': 'text/html; charset=utf-8' };
@@ -39,8 +44,17 @@ const HTML = { 'content-type': 'text/html; charset=utf-8' };
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-export function createSite(assets: Assets): Site {
-  const table = new Map<string, Route>([['/', { meta: homeMeta, body: homeBody }]]);
+export function createSite(assets: Assets, data: Dataset): Site {
+  const catalog = createCatalog(data);
+  const table = new Map<string, Route>([['/', { meta: homeMeta, body: () => homeBody(data) }]]);
+  for (const kind of KINDS) {
+    const list = listMeta(kind, data);
+    table.set(list.path, { meta: list, body: () => listBody(kind, data) });
+    for (const record of data[kind]) {
+      const meta = recordMeta(record);
+      table.set(meta.path, { meta, body: () => recordBody(record, catalog) });
+    }
+  }
 
   const notFound = async () => renderToString(layout(notFoundMeta, notFoundBody(), assets));
 

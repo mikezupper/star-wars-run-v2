@@ -1,37 +1,148 @@
 import { describe, expect, it } from 'vitest';
-import { createSite, normalise, sitemap } from '../src/render/site.js';
+import { loadDataset } from '../src/data/load.js';
+import { KINDS } from '../src/domain/records.js';
 import { fullTitle } from '../src/render/layout.js';
+import { createSite, normalise, sitemap } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 
-const site = createSite({ stylesheet: '/assets/site.css' });
+const STYLESHEET = '/assets/site.css';
+const data = await loadDataset();
+const site = createSite({ stylesheet: STYLESHEET }, data);
 const get = (path: string) => site.fetch(new Request(new URL(path, ORIGIN)));
+const html = async (path: string) => (await get(path)).text();
+
+// Every page, rendered once and shared by the checks below.
+const pages = new Map(
+  await Promise.all(site.paths.map(async (path) => [path, await html(path)] as const)),
+);
 
 describe('route table', () => {
-  it('lists the home page for prerendering and the sitemap', () => {
+  it('has home, a list page per kind and a page per record', () => {
+    const records = KINDS.reduce((n, kind) => n + data[kind].length, 0);
+    expect(site.paths).toHaveLength(1 + KINDS.length + records);
     expect(site.paths).toContain('/');
-    expect(site.sitemapPaths).toContain('/');
+    expect(site.paths).toContain('/people/');
+    expect(site.paths).toContain('/people/luke-skywalker/');
+    expect(site.sitemapPaths).toEqual(site.paths);
   });
 
-  it('renders the home page with its title, canonical link and stylesheet', async () => {
-    const response = await get('/');
+  it('serves every path with status 200 as HTML', async () => {
+    const response = await get('/planets/tatooine/');
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
-    const html = await response.text();
-    expect(html).toContain(`<title>${SITE_NAME}</title>`);
-    expect(html).toContain(`<link rel="canonical" href="${ORIGIN}/">`);
-    expect(html).toContain('href="/assets/site.css"');
+  });
+
+  it('treats a path without its trailing slash as the same page', async () => {
+    expect(await html('/people/luke-skywalker')).toBe(pages.get('/people/luke-skywalker/'));
   });
 
   it('answers unknown paths with a noindex 404 page', async () => {
-    const response = await get('/no-such-page/');
+    const response = await get('/people/jar-jar-abrams/');
     expect(response.status).toBe(404);
-    const html = await response.text();
-    expect(html).toContain('<meta name="robots" content="noindex">');
-    expect(html).toContain(`Page not found · ${SITE_NAME}`);
+    const body = await response.text();
+    expect(body).toContain('<meta name="robots" content="noindex">');
+    expect(body).toContain(`Page not found · ${SITE_NAME}`);
+    expect(await site.notFound()).toContain('Page not found');
+  });
+});
+
+describe('every page', () => {
+  it('links only to pages that exist, or to built assets', () => {
+    const paths = new Set(site.paths);
+    const broken: string[] = [];
+    for (const [page, body] of pages) {
+      for (const [, href] of body.matchAll(/href="(\/[^"]*)"/g)) {
+        if (href === undefined || href === STYLESHEET || href.startsWith('/icons/')) continue;
+        if (!paths.has(href)) broken.push(`${page} → ${href}`);
+      }
+    }
+    expect(broken).toEqual([]);
   });
 
-  it('writes the same 404 document for the static build', async () => {
-    expect(await site.notFound()).toContain('Page not found');
+  it('ships no JavaScript', () => {
+    for (const [page, body] of pages)
+      expect(body, page).not.toMatch(/<script(?![^>]*application\/ld\+json)/);
+  });
+
+  it('has a unique title and description, and a canonical URL with a trailing slash', () => {
+    const titles = new Set<string>();
+    const descriptions = new Set<string>();
+    for (const [page, body] of pages) {
+      const title = /<title>([^<]*)<\/title>/.exec(body)?.[1];
+      const description = /<meta name="description" content="([^"]*)">/.exec(body)?.[1];
+      expect(title, page).toBeDefined();
+      expect(description, page).toBeDefined();
+      titles.add(title ?? '');
+      descriptions.add(description ?? '');
+      expect(body, page).toContain(`<link rel="canonical" href="${absolute(page)}">`);
+    }
+    expect(titles.size).toBe(pages.size);
+    expect(descriptions.size).toBe(pages.size);
+  });
+
+  it('has exactly one h1 and one main', () => {
+    for (const [page, body] of pages) {
+      expect(body.match(/<h1[ >]/g), page).toHaveLength(1);
+      expect(body.match(/<main[ >]/g), page).toHaveLength(1);
+    }
+  });
+});
+
+describe('record pages', () => {
+  it('link Luke to Tatooine, and Tatooine back to Luke', () => {
+    expect(pages.get('/people/luke-skywalker/')).toContain(
+      '<a href="/planets/tatooine/">Tatooine</a>',
+    );
+    expect(pages.get('/planets/tatooine/')).toContain(
+      '<a href="/people/luke-skywalker/">Luke Skywalker</a>',
+    );
+  });
+
+  it("show a planet's native species, which the source only gives from the species side", () => {
+    const wookiee = data.species.find((s) => s.homeworld === 'kashyyyk');
+    expect(wookiee).toBeDefined();
+    const kashyyyk = pages.get('/planets/kashyyyk/') ?? '';
+    expect(kashyyyk).toContain('<h2 id="nativeSpecies">Native species</h2>');
+    expect(kashyyyk).toContain(`<a href="/species/${wookiee?.slug ?? ''}/">`);
+  });
+
+  it('show known facts with units, and leave unknown ones out', () => {
+    const luke = pages.get('/people/luke-skywalker/') ?? '';
+    expect(luke).toContain('<dt>Height</dt><dd><data value="172">172 cm</data></dd>');
+    const yoda = pages.get('/people/yoda/') ?? '';
+    expect(yoda).not.toContain('<dt>Homeworld</dt>');
+  });
+
+  it('show a film with its episode, release date, crawl and cited title', () => {
+    const film = pages.get('/films/a-new-hope/') ?? '';
+    expect(film).toContain('<dt>Episode</dt><dd>IV</dd>');
+    expect(film).toContain('<time datetime="1977-05-25">May 25, 1977</time>');
+    expect(film).toContain('<h2 id="crawl">Opening crawl</h2>');
+    expect(pages.get('/films/')).toContain('<cite>A New Hope</cite>');
+  });
+
+  it('show crew ranges and starship-only facts', () => {
+    const corvette = pages.get('/starships/cr90-corvette/') ?? '';
+    expect(corvette).toContain('<data value="30-165">30–165</data>');
+    expect(corvette).toContain('<dt>Hyperdrive rating</dt>');
+    expect(pages.get('/vehicles/snowspeeder/')).not.toContain('<dt>Hyperdrive rating</dt>');
+  });
+
+  it('mark their section current in the nav and carry a breadcrumb', () => {
+    const luke = pages.get('/people/luke-skywalker/') ?? '';
+    expect(luke).toContain('<a href="/people/" aria-current="true">People</a>');
+    expect(luke).toContain('<li aria-current="page">Luke Skywalker</li>');
+    expect(pages.get('/people/')).toContain('<a href="/people/" aria-current="page">People</a>');
+  });
+});
+
+describe('list pages', () => {
+  it('list films in release order and everything else alphabetically', () => {
+    const films = pages.get('/films/') ?? '';
+    expect(films).toContain('<ol>');
+    expect(films.indexOf('A New Hope')).toBeLessThan(films.indexOf('The Phantom Menace'));
+    const people = pages.get('/people/') ?? '';
+    expect(people.indexOf('Ackbar')).toBeLessThan(people.indexOf('Yoda'));
   });
 });
 
