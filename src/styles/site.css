@@ -1,20 +1,516 @@
-/* The one site stylesheet. A minimal base until the design bead (swr-3mo.7) replaces it. */
-@layer base;
+/*
+ * The one site stylesheet (docs/design-docs/0004-design.md). The markup has no classes: rules
+ * target semantic elements inside landmarks. A "galactic archive": deep space with a faint
+ * starfield in dark mode, warm paper in light mode, and one amber accent borrowed from the
+ * opening crawl. No trademarked type, logos or artwork; no web fonts.
+ */
+@layer reset, tokens, base, layout, components;
 
-@layer base {
-  :root {
-    color-scheme: light dark;
-    font-family: system-ui, sans-serif;
-    line-height: 1.5;
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
-  body {
+  * {
     margin: 0;
   }
 
+  input,
+  button,
+  select {
+    font: inherit;
+  }
+
+  h1,
+  h2,
+  p,
+  li,
+  dd {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* One accent hue (crawl amber); every neutral is tinted toward space blue. */
+    --accent-hue: 85;
+    --space-hue: 265;
+    --accent: light-dark(oklch(48% 0.11 var(--accent-hue)), oklch(86% 0.16 var(--accent-hue)));
+    --accent-strong: light-dark(
+      oklch(40% 0.1 var(--accent-hue)),
+      oklch(92% 0.17 var(--accent-hue))
+    );
+    --surface: light-dark(oklch(97.5% 0.012 85), oklch(15% 0.025 var(--space-hue)));
+    --surface-raised: light-dark(oklch(100% 0 0), oklch(20% 0.03 var(--space-hue)));
+    --text: light-dark(oklch(22% 0.03 var(--space-hue)), oklch(93% 0.012 var(--space-hue)));
+    --text-muted: light-dark(oklch(42% 0.03 var(--space-hue)), oklch(76% 0.02 var(--space-hue)));
+    --border: color-mix(in oklch, var(--text) 16%, var(--surface));
+    --link: var(--accent);
+    --focus: var(--accent-strong);
+
+    --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --font-display: ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+    --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    --step-1: clamp(1.25rem, 1.12rem + 0.6vw, 1.5rem);
+    --step-2: clamp(1.6rem, 1.3rem + 1.4vw, 2.4rem);
+    --step-3: clamp(2rem, 1.5rem + 2.4vw, 3.4rem);
+
+    --gap: clamp(1rem, 0.6rem + 1.5vw, 1.75rem);
+    --radius: 0.875rem;
+    --measure: 68ch;
+    --page: 72rem;
+    --shadow:
+      0 1px 2px oklch(10% 0.03 var(--space-hue) / 0.12),
+      0 10px 30px oklch(10% 0.03 var(--space-hue) / 0.12);
+  }
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  @supports (accent-color: red) {
+    html {
+      accent-color: var(--accent);
+    }
+  }
+
+  body {
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A faint starfield behind dark mode: fixed, decorative, CSS only. */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background:
+        radial-gradient(1px 1px at 12% 18%, oklch(95% 0 0 / 0.55), transparent),
+        radial-gradient(1px 1px at 68% 9%, oklch(95% 0 0 / 0.45), transparent),
+        radial-gradient(1.5px 1.5px at 84% 42%, oklch(95% 0 0 / 0.5), transparent),
+        radial-gradient(1px 1px at 33% 61%, oklch(95% 0 0 / 0.35), transparent),
+        radial-gradient(1px 1px at 52% 83%, oklch(95% 0 0 / 0.4), transparent),
+        radial-gradient(1.5px 1.5px at 7% 88%, oklch(95% 0 0 / 0.35), transparent),
+        radial-gradient(120% 80% at 50% -10%, oklch(24% 0.05 var(--space-hue)), var(--surface) 60%)
+          fixed,
+        var(--surface);
+      background-size:
+        320px 320px,
+        410px 410px,
+        530px 530px,
+        290px 290px,
+        460px 460px,
+        380px 380px,
+        auto,
+        auto;
+    }
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  @supports (text-wrap: pretty) {
+    p,
+    li,
+    dd {
+      text-wrap: pretty;
+    }
+  }
+
+  a {
+    color: var(--link);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      color: var(--accent-strong);
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 0.25rem;
+  }
+
+  @supports selector(::selection) {
+    ::selection {
+      background: color-mix(in oklch, var(--accent) 45%, transparent);
+    }
+  }
+
+  cite {
+    font-style: italic;
+  }
+
+  data,
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    font-size: var(--step--1);
+  }
+}
+
+@layer layout {
+  body {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(1rem, 1fr)
+      [content-start] min(100% - 2rem, var(--page))
+      [content-end] minmax(1rem, 1fr) [full-end];
+    /* header, main (takes the slack), footer. The skip link is absolutely positioned. */
+    grid-template-rows: auto 1fr auto;
+    align-content: start;
+    min-block-size: 100dvh;
+    row-gap: var(--gap);
+
+    & > * {
+      grid-column: content;
+    }
+  }
+
   main {
-    max-inline-size: 70ch;
+    display: grid;
+    /* minmax(0, …): a wide child (the search island) must not stretch the page sideways. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap);
+    align-content: start;
+    padding-block-end: calc(var(--gap) * 2);
+  }
+}
+
+@layer components {
+  /* Skip link: hidden until focused. */
+  body > a[href='#main'] {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.5rem;
+    z-index: 1;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    background: var(--surface-raised);
+    translate: 0 -200%;
+
+    &:focus-visible {
+      translate: 0 0;
+    }
+  }
+
+  /* Banner: site name, section nav, search. Wraps on narrow screens. */
+  body > header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding-block: 1rem;
+    border-block-end: 1px solid var(--border);
+
+    & > p a {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    & nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    & nav a {
+      display: inline-block;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--text);
+        background: color-mix(in oklch, var(--text) 8%, transparent);
+      }
+
+      &[aria-current] {
+        color: var(--text);
+        background: color-mix(in oklch, var(--accent) 22%, transparent);
+      }
+    }
+
+    & search {
+      margin-inline-start: auto;
+    }
+
+    & form {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      /* The visible button names the action; the label is for assistive tech only. */
+      & label {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
+  }
+
+  input[type='search'],
+  select {
+    min-block-size: 2.75rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-raised);
+    color: var(--text);
+  }
+
+  input[type='search'] {
+    inline-size: min(16rem, 100%);
+    min-inline-size: 0;
+  }
+
+  button {
+    min-block-size: 2.75rem;
+    padding: 0.4rem 1rem;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--surface);
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent-strong);
+    }
+  }
+
+  /* Breadcrumb: Home / People / Luke Skywalker */
+  nav[aria-label='Breadcrumb'] ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+
+    & li + li::before {
+      content: '/';
+      margin-inline-end: 0.5rem;
+      color: var(--border);
+    }
+  }
+
+  /* Record page: facts card, opening crawl, a grid of relationship cards. */
+  article {
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+    align-items: start;
+    container-type: inline-size;
+
+    & > h1 {
+      grid-column: 1 / -1;
+    }
+
+    & > section {
+      padding: var(--gap);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: color-mix(in oklch, var(--surface-raised) 88%, transparent);
+      box-shadow: var(--shadow);
+
+      & h2 {
+        margin-block-end: 0.75rem;
+      }
+    }
+
+    /* Facts and the crawl span the full width; relationship cards share rows. */
+    & > section:has(dl),
+    & > section:has(blockquote) {
+      grid-column: 1 / -1;
+    }
+
+    & section ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    & section li a {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--accent);
+      }
+    }
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: minmax(8rem, max-content) 1fr;
+    gap: 0.5rem 1.5rem;
+
+    & dt {
+      color: var(--text-muted);
+    }
+
+    & dd {
+      font-weight: 600;
+    }
+
+    @container (inline-size > 44rem) {
+      grid-template-columns: repeat(2, minmax(8rem, max-content) 1fr);
+    }
+  }
+
+  /* The opening crawl: amber, centred, set like the films (without the 3D tilt). */
+  blockquote {
+    display: grid;
+    gap: 1em;
+    max-inline-size: var(--measure);
     margin-inline: auto;
-    padding: 1rem;
+    color: var(--accent);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  /* List pages: a multi-column index of names. */
+  main > ul,
+  main > ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
+    gap: 0.25rem 1.5rem;
+    padding: 0;
+    list-style: none;
+
+    & a {
+      display: block;
+      padding-block: 0.4rem;
+      border-block-end: 1px solid var(--border);
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--accent);
+      }
+    }
+  }
+
+  /* Home: the sections as cards, with their record counts. */
+  main:has(> h1 + p + ul) > ul {
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+    gap: var(--gap);
+
+    & li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: var(--gap);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      box-shadow: var(--shadow);
+    }
+
+    & a {
+      border: 0;
+      padding: 0;
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 700;
+    }
+
+    & data {
+      color: var(--text-muted);
+    }
+  }
+
+  main > p {
+    max-inline-size: var(--measure);
+    font-size: var(--step-1);
+    color: var(--text-muted);
+  }
+
+  body > footer {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 1.5rem 2rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--step--1);
+  }
+
+  /* The search island's light DOM host. */
+  swr-site-search {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @layer components {
+    a,
+    button,
+    body > a[href='#main'] {
+      transition:
+        color 150ms ease-out,
+        background-color 150ms ease-out,
+        border-color 150ms ease-out,
+        translate 150ms ease-out;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    body > header nav a[aria-current] {
+      outline: 2px solid CanvasText;
+    }
   }
 }

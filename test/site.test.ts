@@ -142,22 +142,22 @@ describe('record pages', () => {
     const wookiee = data.species.find((s) => s.homeworld === 'kashyyyk');
     expect(wookiee).toBeDefined();
     const kashyyyk = pages.get('/planets/kashyyyk/') ?? '';
-    expect(kashyyyk).toContain('<h2 id="nativeSpecies">Native species</h2>');
+    expect(kashyyyk).toContain('<h2 id="nativeSpecies" data-pagefind-ignore>Native species</h2>');
     expect(kashyyyk).toContain(`<a href="/species/${wookiee?.slug ?? ''}/">`);
   });
 
   it('show known facts with units, and leave unknown ones out', () => {
     const luke = pages.get('/people/luke-skywalker/') ?? '';
-    expect(luke).toContain('<dt>Height</dt><dd><data value="172">172 cm</data></dd>');
+    expect(luke).toContain('<dt>Height</dt> <dd><data value="172">172 cm</data></dd>');
     const yoda = pages.get('/people/yoda/') ?? '';
     expect(yoda).not.toContain('<dt>Homeworld</dt>');
   });
 
   it('show a film with its episode, release date, crawl and cited title', () => {
     const film = pages.get('/films/a-new-hope/') ?? '';
-    expect(film).toContain('<dt>Episode</dt><dd>IV</dd>');
+    expect(film).toContain('<dt>Episode</dt> <dd>IV</dd>');
     expect(film).toContain('<time datetime="1977-05-25">May 25, 1977</time>');
-    expect(film).toContain('<h2 id="crawl">Opening crawl</h2>');
+    expect(film).toContain('<h2 id="crawl" data-pagefind-ignore>Opening crawl</h2>');
     expect(pages.get('/films/')).toContain('<cite>A New Hope</cite>');
   });
 

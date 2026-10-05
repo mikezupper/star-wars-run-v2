@@ -130,7 +130,7 @@ const crawl = (r: AnyRecord) =>
   r.kind !== 'films'
     ? nothing
     : serverHtml`<section aria-labelledby="crawl">
-        <h2 id="crawl">${TEXT.openingCrawl}</h2>
+        <h2 id="crawl" data-pagefind-ignore>${TEXT.openingCrawl}</h2>
         <blockquote>
           ${r.openingCrawl.split(/\n\s*\n/).map((p) => serverHtml`<p>${p.replace(/\s*\n\s*/g, ' ')}</p>`)}
         </blockquote>
@@ -161,8 +161,15 @@ export function recordBody(r: AnyRecord, c: Catalog) {
         facts.length === 0
           ? nothing
           : serverHtml`<section aria-labelledby="facts">
-              <h2 id="facts">${TEXT.facts}</h2>
-              <dl>${facts.map(([label, value]) => serverHtml`<dt>${label}</dt><dd>${value}</dd>`)}</dl>
+              <h2 id="facts" data-pagefind-ignore>${TEXT.facts}</h2>
+              <dl>
+                ${facts.map(
+                  // The spaces and line breaks matter: Pagefind reads text, and without them
+                  // excerpts run together ("HomeworldTatooineBorn19BBY").
+                  ([label, value]) => serverHtml`<dt>${label}</dt> <dd>${value}</dd>
+                  `,
+                )}
+              </dl>
             </section>`
       }
       ${crawl(r)}
@@ -170,7 +177,7 @@ export function recordBody(r: AnyRecord, c: Catalog) {
         // Down-weighted for search: a page that only links to "Luke Skywalker" must rank below
         // Luke's own page (data-pagefind-weight, docs/product-specs/search.md).
         (rel) => serverHtml`<section aria-labelledby=${rel.name} data-pagefind-weight="0.1">
-          <h2 id=${rel.name}>${RELATION_LABELS[rel.name] ?? rel.name}</h2>
+          <h2 id=${rel.name} data-pagefind-ignore>${RELATION_LABELS[rel.name] ?? rel.name}</h2>
           <ul>${rel.slugs.map((slug) => serverHtml`<li>${link(c, rel.kind, slug)}</li>`)}</ul>
         </section>`,
       )}

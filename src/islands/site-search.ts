@@ -112,68 +112,145 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
       : html`
           <search data-intent=${i.Key} data-intent-on="keydown">
             <form data-intent=${i.Submitted}>
-              <label for="q">${TEXT.searchLabel}</label>
-              <input
-                id="q"
-                name="q"
-                type="search"
-                autocomplete="off"
-                spellcheck="false"
-                aria-describedby="search-status"
-                .value=${s.query.text}
-                data-intent=${i.Typed}
-              />
-              <label for="kind">${TEXT.searchKindLabel}</label>
-              <select id="kind" name="kind" data-intent=${i.Filtered}>
-                <option value="" ?selected=${s.query.kind === undefined}>
-                  ${TEXT.searchAllKinds}
-                </option>
-                ${KINDS.map(
-                  (k) =>
-                    html`<option value=${k} ?selected=${s.query.kind === k}>
-                      ${KIND_LABELS[k].plural}
-                    </option>`,
-                )}
-              </select>
+              <label class="field">
+                ${TEXT.searchLabel}
+                <input
+                  id="q"
+                  name="q"
+                  type="search"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="search-status"
+                  .value=${s.query.text}
+                  data-intent=${i.Typed}
+                />
+              </label>
+              <label>
+                ${TEXT.searchKindLabel}
+                <select id="kind" name="kind" data-intent=${i.Filtered}>
+                  <option value="" ?selected=${s.query.kind === undefined}>
+                    ${TEXT.searchAllKinds}
+                  </option>
+                  ${KINDS.map(
+                    (k) =>
+                      html`<option value=${k} ?selected=${s.query.kind === k}>
+                        ${KIND_LABELS[k].plural}
+                      </option>`,
+                  )}
+                </select>
+              </label>
             </form>
             <p id="search-status" role="status">${statusText(s)}</p>
             ${results(hitsOf(s))}
           </search>
         `,
+  // The page's design tokens (src/styles/site.css) inherit into the shadow root.
   styles: css`
     @layer component {
       :host {
         display: block;
       }
+      search {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+      }
       form {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem 1rem;
-        align-items: center;
+        align-items: end;
       }
-      input {
-        flex: 1 1 16rem;
-        font: inherit;
-        padding: 0.5rem 0.75rem;
+      label {
+        display: grid;
+        gap: 0.35rem;
+        font-size: var(--step--1, 0.9rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted, inherit);
       }
+      input,
       select {
         font: inherit;
-        padding: 0.5rem;
+        min-block-size: 2.75rem;
+        padding: 0.5rem 0.9rem;
+        border: 1px solid var(--border, currentColor);
+        border-radius: var(--radius, 0.75rem);
+        background: var(--surface-raised, transparent);
+        color: var(--text, inherit);
+      }
+      input,
+      select {
+        font-weight: 400;
+        letter-spacing: normal;
+        text-transform: none;
+      }
+      input {
+        inline-size: 100%;
+        font-size: var(--step-1, 1.25rem);
+      }
+      label {
+        min-inline-size: 0;
+      }
+      .field {
+        flex: 1 1 16rem;
+      }
+      select {
+        max-inline-size: 100%;
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus, Highlight);
+        outline-offset: 3px;
+      }
+      [role='status'],
+      p {
+        color: var(--text-muted, inherit);
+        margin: 0;
+      }
+      a {
+        color: var(--link, LinkText);
       }
       ol {
-        padding-inline-start: 0;
-        list-style: none;
         display: grid;
         gap: 0.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
       }
       li a {
         display: grid;
-        gap: 0.125rem;
-        color: inherit;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.2rem;
+        padding: 0.9rem 1.1rem;
+        border: 1px solid var(--border, currentColor);
+        border-radius: var(--radius, 0.75rem);
+        background: var(--surface-raised, transparent);
+        color: var(--text, inherit);
+        text-decoration: none;
+      }
+      li a:hover {
+        border-color: var(--accent, currentColor);
       }
       small {
+        font-size: var(--step--1, 0.85rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        color: var(--text-muted, inherit);
+      }
+      strong {
+        font-size: var(--step-1, 1.2rem);
+        color: var(--link, LinkText);
+      }
+      span {
+        color: var(--text-muted, inherit);
+        overflow-wrap: anywhere;
+      }
+      mark {
+        background: color-mix(in oklch, var(--accent, yellow) 35%, transparent);
+        color: var(--text, inherit);
+        border-radius: 0.2em;
       }
     }
   `,
