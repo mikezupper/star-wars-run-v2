@@ -81,6 +81,12 @@ export const FIELD_LABELS = {
   mglt: 'Speed in space (MGLT)',
 } as const;
 
+/** In-universe eras, spelled out where a year uses one (`19BBY`). */
+export const ERAS = {
+  BBY: 'Before the Battle of Yavin',
+  ABY: 'After the Battle of Yavin',
+} as const;
+
 export const UNITS = {
   cm: 'cm',
   kg: 'kg',
@@ -125,6 +131,8 @@ export const TEXT = {
     `Nothing in the archive matches “${query}”. Check the spelling, or try fewer letters.`,
   resultCount: (n: number, query: string): string =>
     `${String(n)} ${n === 1 ? 'match' : 'matches'} for “${query}”.`,
+  eraNote:
+    'Birth years count from the Battle of Yavin, when the first Death Star was destroyed: 19BBY means 19 years before it.',
   offlineTitle: 'You’re offline',
   offlineBody:
     'This page hasn’t been saved for the journey yet, and there’s no signal out here. Pages you’ve already visited still work, and so does search.',

@@ -15,7 +15,7 @@ import type {
   Starship,
   Vehicle,
 } from '../domain/records.js';
-import { count, date, list, quantity, roman, text } from './format.js';
+import { count, date, list, quantity, roman, text, year } from './format.js';
 import {
   FIELD_LABELS,
   KIND_LABELS,
@@ -54,7 +54,7 @@ const filmRows = (r: Film): readonly Row[] => [
 
 const personRows = (r: Person, c: Catalog): readonly Row[] => [
   row(FIELD_LABELS.homeworld, r.homeworld, (s) => link(c, 'planets', s)),
-  row(FIELD_LABELS.birthYear, r.birthYear),
+  row(FIELD_LABELS.birthYear, r.birthYear, year),
   row(FIELD_LABELS.gender, r.gender, text),
   row(FIELD_LABELS.height, r.height, (v) => quantity(v, UNITS.cm)),
   row(FIELD_LABELS.mass, r.mass, (v) => quantity(v, UNITS.kg)),

@@ -1,6 +1,6 @@
 import { renderToString } from '@gyral/ssr';
 import { describe, expect, it } from 'vitest';
-import { count, date, list, quantity, roman, text } from '../../src/render/format.js';
+import { count, date, list, quantity, roman, text, year } from '../../src/render/format.js';
 
 const render = async (value: unknown) =>
   (await renderToString(value)).replace(/<!--[^>]*-->|<\?>/g, '');
@@ -30,5 +30,15 @@ describe('format', () => {
 
   it('writes episode numbers as Roman numerals', () => {
     expect([1, 2, 3, 4, 5, 6, 9].map(roman)).toEqual(['I', 'II', 'III', 'IV', 'V', 'VI', 'IX']);
+  });
+
+  it('spells out in-universe eras, and leaves other years alone', async () => {
+    expect(await render(year('19BBY'))).toBe(
+      '19<abbr title="Before the Battle of Yavin">BBY</abbr>',
+    );
+    expect(await render(year('4.5ABY'))).toBe(
+      '4.5<abbr title="After the Battle of Yavin">ABY</abbr>',
+    );
+    expect(year('896 years ago')).toBe('896 years ago');
   });
 });

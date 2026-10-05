@@ -1,5 +1,6 @@
 // A section's list page, `/people/`: every record of one kind, each linking to its page.
 // Films keep release order (an ordered list); everything else is alphabetical.
+import { nothing } from 'lit';
 import { serverHtml } from '@gyral/ssr';
 import { kindPath, recordPath } from '../domain/paths.js';
 import type { AnyRecord, Dataset, Kind } from '../domain/records.js';
@@ -25,6 +26,7 @@ export function listBody(kind: Kind, data: Dataset) {
     ${breadcrumb([{ href: '/', label: TEXT.home }], listTitle(kind))}
     <h1>${listTitle(kind)}</h1>
     <p>${KIND_BLURBS[kind]}</p>
+    ${kind === 'people' ? serverHtml`<p><small>${TEXT.eraNote}</small></p>` : nothing}
     ${kind === 'films' ? serverHtml`<ol>${items}</ol>` : serverHtml`<ul>${items}</ul>`}
   `;
 }
