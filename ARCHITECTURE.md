@@ -22,17 +22,18 @@ nothing else, so a build is reproducible and works offline.
 
 Code may import only from the layers listed for it. A wrong import is a bug even when it
 happens to work: it pulls Node code into the browser, or the network into the build.
-`swr-3mo.3` turns this table into lint errors.
+`eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
+saying what to do instead. Change the table and the lint rules together.
 
-| Layer          | Runs                 | Contains                                                     | May import                                                              |
-| -------------- | -------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| `src/site.ts`  | server and browser   | Site-wide constants: origin, name, description               | nothing                                                                 |
-| `src/domain/`  | server and browser   | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                           |
-| `src/ingest/`  | Node, `pnpm ingest`  | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                           |
-| `src/data/`    | Node, build time     | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                           |
-| `src/render/`  | Node, build time     | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/domain/`, `src/data/`, `src/islands/`, `@gyral/ssr` |
-| `src/islands/` | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/domain/`, `@gyral/core`                             |
-| `scripts/`     | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                                |
+| Layer          | Runs                 | Contains                                                     | May import                                                        |
+| -------------- | -------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- |
+| `src/site.ts`  | server and browser   | Site-wide constants: origin, name, description               | nothing                                                           |
+| `src/domain/`  | server and browser   | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                     |
+| `src/ingest/`  | Node, `pnpm ingest`  | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                     |
+| `src/data/`    | Node, build time     | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                     |
+| `src/render/`  | Node, build time     | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
+| `src/islands/` | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/domain/`, `@gyral/core`                       |
+| `scripts/`     | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                          |
 
 **Status today:** every layer exists except `src/islands/`, which arrives with `swr-3mo.6`.
 

@@ -34,4 +34,5 @@ which the owner doesn't want to pay GitHub Actions minutes for.
 - `bd ready` decides what to do next. Run `bd prime` at the start of every session.
 - Without CI on push, `pnpm check` before every commit is the only gate. Agents must run it.
 - A rule that keeps getting broken should become a lint rule or a check script, not more
-  prose (`swr-3mo.3`).
+  prose. Lint rules live in `eslint.config.js`; repo checks in `scripts/check-*.mjs`, run by
+  `pnpm invariants`.

@@ -14,12 +14,13 @@
     "build": "vite build && tsx scripts/build.ts",
     "preview": "tsx scripts/preview.ts",
     "ingest": "tsx scripts/ingest.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "invariants": "node scripts/check-docs.mjs"
   },
   "dependencies": {
     "@gyral/core": "^0.1.0",

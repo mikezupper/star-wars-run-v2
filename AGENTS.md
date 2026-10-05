@@ -17,16 +17,17 @@ disagree, the doc wins; fix this file.
 
 ## Commands
 
-| Command        | What it does                                                                |
-| -------------- | --------------------------------------------------------------------------- |
-| `pnpm install` | Install. `@gyral/*` comes from npm                                          |
-| `pnpm check`   | **The gate.** typecheck · lint · format · tests with coverage (80%) · build |
-| `pnpm dev`     | Dev server on http://localhost:5500, rendering each request                 |
-| `pnpm build`   | `vite build`, then prerender every page to `dist/`                          |
-| `pnpm preview` | Serve `dist/` with production URL rules on http://localhost:5501            |
-| `pnpm test`    | Vitest with coverage; fails below 80% on any metric                         |
-| `pnpm format`  | Prettier, in place                                                          |
-| `pnpm ingest`  | Fetch swapi.info, parse, check, rewrite `data/`. The only network step      |
+| Command           | What it does                                                               |
+| ----------------- | -------------------------------------------------------------------------- |
+| `pnpm install`    | Install. `@gyral/*` comes from npm                                         |
+| `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build |
+| `pnpm invariants` | Docs links resolve, indexes list every doc, AGENTS.md stays short          |
+| `pnpm dev`        | Dev server on http://localhost:5500, rendering each request                |
+| `pnpm build`      | `vite build`, then prerender every page to `dist/`                         |
+| `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501           |
+| `pnpm test`       | Vitest with coverage; fails below 80% on any metric                        |
+| `pnpm format`     | Prettier, in place                                                         |
+| `pnpm ingest`     | Fetch swapi.info, parse, check, rewrite `data/`. The only network step     |
 
 Coming with their beads: `pnpm smoke` (`swr-3mo.11`), `pnpm ci:local` (`swr-3mo.12`). Don't call them before they exist.
 
