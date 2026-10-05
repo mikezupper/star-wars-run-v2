@@ -21,7 +21,7 @@ disagree, the doc wins; fix this file.
 | ----------------- | ---------------------------------------------------------------------------------- |
 | `pnpm install`    | Install. `@gyral/*` comes from npm                                                 |
 | `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build · smoke |
-| `pnpm invariants` | Docs links resolve, indexes list every doc, AGENTS.md stays short                  |
+| `pnpm invariants` | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)        |
 | `pnpm dev`        | Dev server on http://localhost:5500, rendering each request                        |
 | `pnpm build`      | `vite build`, then prerender every page to `dist/`                                 |
 | `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501                   |
@@ -33,9 +33,9 @@ disagree, the doc wins; fix this file.
 | `pnpm icons` | Render `public/icons/icon.svg` to the PNG sizes; commit the result |
 | `pnpm caddyfile` | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it) |
 | `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080 |
+| `pnpm ci:local` | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks** |
 
-First run needs `pnpm exec playwright install chromium`. Coming with its bead: `pnpm ci:local`
-(`swr-3mo.12`). Don't call it before it exists.
+First run needs `pnpm exec playwright install chromium`.
 
 ## Where things are
 

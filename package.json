@@ -20,12 +20,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run --coverage",
-    "invariants": "node scripts/check-docs.mjs",
+    "invariants": "node scripts/check-docs.mjs && node scripts/check-workflows.mjs",
     "smoke": "node scripts/smoke.mjs",
     "icons": "node scripts/render-icons.mjs",
     "caddyfile": "tsx scripts/caddyfile.ts",
     "docker:build": "docker build -t starwars-run .",
-    "docker:run": "docker run --rm -p 8080:8080 starwars-run"
+    "docker:run": "docker run --rm -p 8080:8080 starwars-run",
+    "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml"
   },
   "dependencies": {
     "@gyral/core": "^0.1.0",
