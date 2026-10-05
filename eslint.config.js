@@ -88,6 +88,11 @@ export default tseslint.config(
     ]),
   },
   {
+    // Every user-facing string; read by pages and islands alike, so it depends on types only.
+    files: ['src/labels.ts'],
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+  },
+  {
     files: ['src/domain/**/*.ts'],
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
   },

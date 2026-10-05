@@ -6,11 +6,15 @@ import { page, serverHtml } from '@gyral/ssr';
 import { kindPath } from '../domain/paths.js';
 import { KINDS, type Kind } from '../domain/records.js';
 import { absolute, SITE_NAME } from '../site.js';
-import { KIND_LABELS, TEXT } from './labels.js';
+import { KIND_LABELS, TEXT } from '../labels.js';
 
-/** Where the built CSS lives; dev and production differ (scripts/dev.ts, scripts/build.ts). */
+/** Where the built CSS and JS live; dev and production differ (scripts/dev.ts, scripts/build.ts). */
 export interface Assets {
   readonly stylesheet: string;
+  /** The client entry that hydrates islands; only pages with islands load it. */
+  readonly clientEntry: string;
+  /** The `/` search shortcut: a few hundred bytes, no framework, on every page. */
+  readonly shortcuts: string;
 }
 
 export interface PageMeta {
@@ -21,6 +25,10 @@ export interface PageMeta {
   readonly description: string;
   /** The section this page belongs to, marked current in the nav. */
   readonly section?: Kind;
+  /** Index this page for site search, filterable under this kind (record pages). */
+  readonly searchKind?: Kind;
+  /** True when the body contains islands that need the client entry. */
+  readonly islands?: boolean;
   /** Not indexed by search engines and left out of the sitemap (404). */
   readonly noindex?: boolean;
 }
@@ -60,6 +68,18 @@ const banner = (meta: PageMeta) => serverHtml`
         )}
       </ul>
     </nav>
+    ${
+      meta.path === '/search/'
+        ? nothing
+        : serverHtml`<search>
+            <form action="/search/" method="get">
+              <label for="site-search-q">${TEXT.searchLabel}</label>
+              <input id="site-search-q" name="q" type="search" autocomplete="off"
+                aria-keyshortcuts="/ Control+K Meta+K">
+              <button type="submit">${TEXT.searchLabel}</button>
+            </form>
+          </search>`
+    }
   </header>
 `;
 
@@ -76,7 +96,12 @@ export function layout(meta: PageMeta, body: unknown, assets: Assets): unknown {
     title: fullTitle(meta),
     description: meta.description,
     head: head(meta, assets),
-    body: serverHtml`${banner(meta)}<main id="main">${body}</main>${footer()}`,
+    scripts: meta.islands === true ? [assets.shortcuts, assets.clientEntry] : [assets.shortcuts],
+    body: serverHtml`${banner(meta)}<main
+        id="main"
+        data-pagefind-body=${meta.searchKind === undefined ? nothing : ''}
+        data-pagefind-filter=${meta.searchKind === undefined ? nothing : `kind:${meta.searchKind}`}
+      >${body}</main>${footer()}`,
   });
 }
 

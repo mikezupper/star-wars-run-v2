@@ -7,7 +7,10 @@ import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 
 const STYLESHEET = '/assets/site.css';
 const data = await loadDataset();
-const site = createSite({ stylesheet: STYLESHEET }, data);
+const site = createSite(
+  { stylesheet: STYLESHEET, clientEntry: '/assets/entry.js', shortcuts: '/assets/shortcuts.js' },
+  data,
+);
 const get = (path: string) => site.fetch(new Request(new URL(path, ORIGIN)));
 const html = async (path: string) => (await get(path)).text();
 
@@ -19,11 +22,13 @@ const pages = new Map(
 describe('route table', () => {
   it('has home, a list page per kind and a page per record', () => {
     const records = KINDS.reduce((n, kind) => n + data[kind].length, 0);
-    expect(site.paths).toHaveLength(1 + KINDS.length + records);
+    // Home, search, a list per kind, a page per record.
+    expect(site.paths).toHaveLength(2 + KINDS.length + records);
     expect(site.paths).toContain('/');
     expect(site.paths).toContain('/people/');
     expect(site.paths).toContain('/people/luke-skywalker/');
-    expect(site.sitemapPaths).toEqual(site.paths);
+    // The search page has no content of its own: it's noindex and left out of the sitemap.
+    expect(site.sitemapPaths).toEqual(site.paths.filter((p) => p !== '/search/'));
   });
 
   it('serves every path with status 200 as HTML', async () => {
@@ -52,22 +57,38 @@ describe('every page', () => {
     const broken: string[] = [];
     for (const [page, body] of pages) {
       for (const [, href] of body.matchAll(/href="(\/[^"]*)"/g)) {
-        if (href === undefined || href === STYLESHEET || href.startsWith('/icons/')) continue;
+        if (href === undefined || href.startsWith('/assets/') || href.startsWith('/icons/'))
+          continue;
         if (!paths.has(href)) broken.push(`${page} → ${href}`);
       }
     }
     expect(broken).toEqual([]);
   });
 
-  it('ships no JavaScript', () => {
-    for (const [page, body] of pages)
-      expect(body, page).not.toMatch(/<script(?![^>]*application\/ld\+json)/);
+  it('ships only the search shortcut, plus the island entry where there are islands', () => {
+    for (const [page, body] of pages) {
+      const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
+      expect(scripts, page).toEqual(
+        page === '/search/'
+          ? ['/assets/shortcuts.js', '/assets/entry.js']
+          : ['/assets/shortcuts.js'],
+      );
+      expect(body.match(/<script/g), page).toHaveLength(scripts.length);
+    }
+  });
+
+  it('has a search form in the header that works without JavaScript, except on /search/', () => {
+    for (const [page, body] of pages) {
+      if (page === '/search/') expect(body).not.toContain('id="site-search-q"');
+      else expect(body, page).toContain('<form action="/search/" method="get">');
+    }
   });
 
   it('has a unique title and description, and a canonical URL with a trailing slash', () => {
+    const indexed = [...pages].filter(([page]) => page !== '/search/');
     const titles = new Set<string>();
     const descriptions = new Set<string>();
-    for (const [page, body] of pages) {
+    for (const [page, body] of indexed) {
       const title = /<title>([^<]*)<\/title>/.exec(body)?.[1];
       const description = /<meta name="description" content="([^"]*)">/.exec(body)?.[1];
       expect(title, page).toBeDefined();
@@ -76,15 +97,34 @@ describe('every page', () => {
       descriptions.add(description ?? '');
       expect(body, page).toContain(`<link rel="canonical" href="${absolute(page)}">`);
     }
-    expect(titles.size).toBe(pages.size);
-    expect(descriptions.size).toBe(pages.size);
+    expect(titles.size).toBe(indexed.length);
+    expect(descriptions.size).toBe(indexed.length);
   });
 
   it('has exactly one h1 and one main', () => {
     for (const [page, body] of pages) {
-      expect(body.match(/<h1[ >]/g), page).toHaveLength(1);
-      expect(body.match(/<main[ >]/g), page).toHaveLength(1);
+      expect(body.match(/<h1[\s>]/g), page).toHaveLength(1);
+      expect(body.match(/<main[\s>]/g), page).toHaveLength(1);
     }
+  });
+});
+
+describe('search indexing', () => {
+  it('indexes record pages only, each filterable by its kind', () => {
+    for (const [page, body] of pages) {
+      const kind = /^\/(\w+)\/[^/]+\/$/.exec(page)?.[1];
+      if (kind !== undefined) {
+        expect(body, page).toContain(`data-pagefind-filter="kind:${kind}"`);
+      } else {
+        expect(body, page).not.toContain('data-pagefind-body');
+      }
+    }
+  });
+
+  it('ranks a record by its own name above pages that only link to it', () => {
+    const luke = pages.get('/people/luke-skywalker/') ?? '';
+    expect(luke).toContain('<h1 data-pagefind-weight="10">Luke Skywalker</h1>');
+    expect(luke).toContain('data-pagefind-weight="0.1"');
   });
 });
 

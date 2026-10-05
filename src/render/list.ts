@@ -3,7 +3,7 @@
 import { serverHtml } from '@gyral/ssr';
 import { kindPath, recordPath } from '../domain/paths.js';
 import type { AnyRecord, Dataset, Kind } from '../domain/records.js';
-import { listDescription, listTitle, TEXT } from './labels.js';
+import { listDescription, listTitle, TEXT } from '../labels.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 import { recordName } from './record.js';
 

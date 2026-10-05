@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// `pnpm dev`: Vite serves the stylesheet and public/; every other request is rendered by the
+// `pnpm dev`: Vite serves the client modules, the stylesheet and public/; every other request is rendered by the
 // same code the build prerenders, reloaded per request so edits show up.
 import http from 'node:http';
 import { createServer as createViteServer } from 'vite';
@@ -12,7 +12,11 @@ const vite = await createViteServer({
   appType: 'custom',
 });
 
-const DEV_ASSETS = { stylesheet: '/src/styles/site.css' };
+const DEV_ASSETS = {
+  stylesheet: '/src/styles/site.css',
+  clientEntry: '/src/entry-client.ts',
+  shortcuts: '/src/shortcuts.ts',
+};
 
 async function render(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   try {

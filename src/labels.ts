@@ -1,7 +1,7 @@
 // Every user-facing string on the site, in one place. Plain wording for now: swr-3mo.8
 // rewrites it in the site's voice (docs/design-docs/0005-writing.md). Keep record facts out
 // of here; they come from the data.
-import type { AnyRecord, Kind } from '../domain/records.js';
+import type { AnyRecord, Kind } from './domain/records.js';
 
 export const KIND_LABELS: Readonly<
   Record<Kind, { readonly plural: string; readonly one: string }>
@@ -94,6 +94,19 @@ export const TEXT = {
   notFoundTitle: 'Page not found',
   notFoundBody: "There's no page at this address.",
   notFoundHome: 'Go to the home page',
+  searchTitle: 'Search',
+  searchDescription: 'Search every film, character, planet, species, vehicle and starship.',
+  searchLabel: 'Search',
+  searchKindLabel: 'Show',
+  searchAllKinds: 'Everything',
+  searchHint: 'Type a name. Arrow keys move through the results; Escape clears.',
+  searching: 'Searching…',
+  searchNoScript: 'Search runs in your browser and needs JavaScript. Without it, browse a section:',
+  searchFailed: 'The search index could not be loaded.',
+  searchResults: 'Search results',
+  noResults: (query: string): string => `No results for “${query}”.`,
+  resultCount: (n: number, query: string): string =>
+    `${String(n)} ${n === 1 ? 'result' : 'results'} for “${query}”.`,
   dataCredit: 'Data from',
   fanProject:
     'An unofficial fan project. Star Wars and its characters are trademarks of Lucasfilm Ltd.',

@@ -23,7 +23,7 @@ import {
   recordDescription,
   TEXT,
   UNITS,
-} from './labels.js';
+} from '../labels.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 
 /** One fact row; `undefined` when the value isn't known, so the row is left out. */
@@ -141,6 +141,7 @@ export const recordMeta = (r: AnyRecord): PageMeta => ({
   title: r.name,
   description: recordDescription(r),
   section: r.kind,
+  searchKind: r.kind,
 });
 
 export function recordBody(r: AnyRecord, c: Catalog) {
@@ -155,7 +156,7 @@ export function recordBody(r: AnyRecord, c: Catalog) {
       r.name,
     )}
     <article>
-      <h1>${r.name}</h1>
+      <h1 data-pagefind-weight="10">${r.name}</h1>
       ${
         facts.length === 0
           ? nothing
@@ -166,7 +167,9 @@ export function recordBody(r: AnyRecord, c: Catalog) {
       }
       ${crawl(r)}
       ${relations.map(
-        (rel) => serverHtml`<section aria-labelledby=${rel.name}>
+        // Down-weighted for search: a page that only links to "Luke Skywalker" must rank below
+        // Luke's own page (data-pagefind-weight, docs/product-specs/search.md).
+        (rel) => serverHtml`<section aria-labelledby=${rel.name} data-pagefind-weight="0.1">
           <h2 id=${rel.name}>${RELATION_LABELS[rel.name] ?? rel.name}</h2>
           <ul>${rel.slugs.map((slug) => serverHtml`<li>${link(c, rel.kind, slug)}</li>`)}</ul>
         </section>`,

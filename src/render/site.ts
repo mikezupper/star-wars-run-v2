@@ -5,10 +5,11 @@ import { createCatalog } from '../domain/catalog.js';
 import { KINDS, type Dataset } from '../domain/records.js';
 import { absolute } from '../site.js';
 import { homeBody, homeMeta } from './home.js';
-import { TEXT } from './labels.js';
+import { TEXT } from '../labels.js';
 import { layout, type Assets, type PageMeta } from './layout.js';
 import { listBody, listMeta } from './list.js';
 import { recordBody, recordMeta } from './record.js';
+import { searchBody, searchMeta } from './search.js';
 
 interface Route {
   readonly meta: PageMeta;
@@ -46,7 +47,10 @@ export const normalise = (pathname: string): string =>
 
 export function createSite(assets: Assets, data: Dataset): Site {
   const catalog = createCatalog(data);
-  const table = new Map<string, Route>([['/', { meta: homeMeta, body: () => homeBody(data) }]]);
+  const table = new Map<string, Route>([
+    ['/', { meta: homeMeta, body: () => homeBody(data) }],
+    [searchMeta.path, { meta: searchMeta, body: searchBody }],
+  ]);
   for (const kind of KINDS) {
     const list = listMeta(kind, data);
     table.set(list.path, { meta: list, body: () => listBody(kind, data) });

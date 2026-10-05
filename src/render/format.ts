@@ -2,7 +2,7 @@
 // dates, lists. Machine-readable values go in <data value> and <time datetime>.
 import { serverHtml } from '@gyral/ssr';
 import type { Count } from '../domain/records.js';
-import { UNITS } from './labels.js';
+import { UNITS } from '../labels.js';
 
 const numbers = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
 

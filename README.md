@@ -13,7 +13,8 @@ search and offline support are in progress.
 - **Data** comes from [swapi.info](https://swapi.info). An ingest step fetches it once,
   checks its shape, and saves a snapshot in the repo, so builds never need the network.
 - **Pages** are rendered at build time with [Gyral](https://gyral.dev), a Model-View-Intent
-  framework for web components. Most pages ship no JavaScript.
+  framework for web components. Only the search page loads the framework; other pages ship a few hundred bytes of script for
+  the search shortcut.
 - **Hosting** is a Docker image serving static files, behind Cloudflare.
 
 The details are in [ARCHITECTURE.md](ARCHITECTURE.md) and the

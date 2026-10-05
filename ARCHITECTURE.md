@@ -25,17 +25,18 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer          | Runs                 | Contains                                                     | May import                                                        |
-| -------------- | -------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------- |
-| `src/site.ts`  | server and browser   | Site-wide constants: origin, name, description               | nothing                                                           |
-| `src/domain/`  | server and browser   | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                     |
-| `src/ingest/`  | Node, `pnpm ingest`  | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                     |
-| `src/data/`    | Node, build time     | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                     |
-| `src/render/`  | Node, build time     | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
-| `src/islands/` | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/domain/`, `@gyral/core`                       |
-| `scripts/`     | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                          |
+| Layer           | Runs                 | Contains                                                     | May import                                                                         |
+| --------------- | -------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `src/site.ts`   | server and browser   | Site-wide constants: origin, name, description               | nothing                                                                            |
+| `src/labels.ts` | server and browser   | Every user-facing string (copy lives here only)              | `src/domain/` (types)                                                              |
+| `src/domain/`   | server and browser   | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                                      |
+| `src/ingest/`   | Node, `pnpm ingest`  | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                                      |
+| `src/data/`     | Node, build time     | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                                      |
+| `src/render/`   | Node, build time     | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
+| `src/islands/`  | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                       |
+| `scripts/`      | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                                           |
 
-**Status today:** every layer exists except `src/islands/`, which arrives with `swr-3mo.6`.
+**Status today:** every layer exists.
 
 Logic belongs in `src/`, not `scripts/`, because coverage only measures `src/`. A script
 should parse its arguments and call into `src/`.
@@ -55,9 +56,16 @@ that serves every page. The dev server calls it once per request; the build call
 `prerender()` with every path and writes `dist/<path>/index.html`.
 
 Page templates use `serverHtml` and are never hydrated, so a page without islands ships
-**no JavaScript**. Interactive parts are islands: `define()` components rendered with
-Declarative Shadow DOM and hydrated in place. See
+**no framework JavaScript**: only `src/shortcuts.ts`, a few hundred bytes for the `/` search
+key. Interactive parts are islands: `define()` components rendered with Declarative Shadow DOM
+and hydrated in place by `src/entry-client.ts`, which loads only on pages that set
+`islands: true` (today, `/search/`). See
 [docs/references/gyral/server-rendering.md](docs/references/gyral/server-rendering.md).
+
+Search: after prerendering, `scripts/build.ts` runs Pagefind over the record pages (the ones
+whose `<main>` has `data-pagefind-body`) and writes a static index to `dist/pagefind/`. The
+search island loads it in the browser. A record's `<h1>` is weighted up and its relationship
+lists down, so a record's own page outranks pages that merely link to it.
 
 URLs always end with a slash (`/people/luke-skywalker/`). `normalise()` in
 `src/render/site.ts` makes `/people` and `/people/` the same route. Preview answers `/people`
