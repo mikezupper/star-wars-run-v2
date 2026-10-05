@@ -22,8 +22,8 @@ Each entry has four parts:
   `/pagefind/pagefind.js` fell through to the 404 page.
 - **Fix:** `scripts/dev.ts` serves `/pagefind/*` from the last build's `dist/pagefind/`. With
   no build, it answers a plain-text 404 that says to run `pnpm build`.
-- **Guard:** none automated yet: `pnpm check` never starts the dev server. Filed as
-  `swr-etv`.
+- **Guard:** `pnpm smoke` starts the dev server and searches on it (`checkDevServer` in
+  `scripts/smoke.mjs`, from `swr-etv`). Breaking the `/pagefind/` route again fails it.
 
 ## Search failed offline: Pagefind's `?ts=` missed the precache (2026-10-05)
 

@@ -29,7 +29,7 @@ disagree, the doc wins; fix this file.
 | `pnpm format`     | Prettier, in place                                                                 |
 | `pnpm ingest`     | Fetch swapi.info, parse, check, rewrite `data/`. The only network step             |
 
-| `pnpm smoke` | Built site in Chromium: status, console, axe, 360px overflow, links, search, offline |
+| `pnpm smoke` | Built site in Chromium: status, console, axe, 360px, links, search, offline, dev server |
 | `pnpm icons` | Render `public/icons/icon.svg` to the PNG sizes; commit the result |
 | `pnpm caddyfile` | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it) |
 | `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080 |

@@ -12,9 +12,14 @@
 //   offers the section links instead;
 // - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
 //   once the service worker controls the page, a visited record page, search, and the offline
-//   page for an unvisited record all work with the network off.
+//   page for an unvisited record all work with the network off;
+// - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
+//   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
+//   SMOKE_BASE_URL points at another server.
 // Report: .smoke/report.md. Exit 1 on any failure. Adapted from gyral.dev's scripts/smoke.mjs.
+import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { AxeBuilder } from '@axe-core/playwright';
 import { chromium } from 'playwright';
 import { tsImport } from 'tsx/esm/api';
@@ -68,6 +73,7 @@ try {
   await checkSearch();
   await checkWithoutJavaScript();
   await checkOffline();
+  if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
   server?.close();
@@ -285,12 +291,73 @@ async function checkOffline() {
   }
 }
 
+/** A port nothing is listening on right now. */
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const probe = createServer();
+    probe.once('error', reject);
+    probe.listen(0, () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
+async function checkDevServer() {
+  const where = 'dev server';
+  const [port, hmr] = [await freePort(), await freePort()];
+  const dev = spawn(
+    new URL('../node_modules/.bin/tsx', import.meta.url).pathname,
+    ['scripts/dev.ts'],
+    { env: { ...process.env, PORT: String(port), HMR_PORT: String(hmr) }, stdio: 'pipe' },
+  );
+  let log = '';
+  try {
+    await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error(`didn't start in 30s: ${log}`)), 30_000);
+      const read = (chunk) => {
+        log += String(chunk);
+        if (log.includes(`localhost:${String(port)}`)) {
+          clearTimeout(timer);
+          resolve();
+        }
+      };
+      dev.stdout.on('data', read);
+      dev.stderr.on('data', read);
+      dev.once('exit', (code) => reject(new Error(`exited with ${String(code)}: ${log}`)));
+    });
+    const devBase = `http://localhost:${String(port)}`;
+    const context = await browser.newContext();
+    try {
+      const page = await context.newPage();
+      watch(page, where);
+      for (const path of ['/', '/people/luke-skywalker/']) {
+        const response = await page.goto(devBase + path, { waitUntil: 'networkidle' });
+        if (response?.status() !== 200)
+          fail(where, `${path}: status ${String(response?.status())}`);
+      }
+      await page.goto(`${devBase}/search/?q=sky`, { waitUntil: 'networkidle' });
+      try {
+        await island(page).locator('ol a').first().waitFor({ timeout: 15_000 });
+      } catch {
+        fail(where, '"sky" found nothing on the dev server');
+      }
+    } finally {
+      await context.close();
+    }
+  } catch (error) {
+    fail(where, error instanceof Error ? error.message : String(error));
+  } finally {
+    dev.kill();
+  }
+}
+
 mkdirSync('.smoke', { recursive: true });
 const seconds = ((Date.now() - started) / 1000).toFixed(0);
 const report = [
   '# Smoke report',
   '',
-  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search and offline (${seconds}s).`,
+  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline and the dev server (${seconds}s).`,
   '',
   failures.length === 0 ? 'All checks passed.' : failures.map((f) => `- ${f}`).join('\n'),
   '',
@@ -301,5 +368,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search and offline: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline and dev server: all checks passed (${seconds}s)`,
 );
