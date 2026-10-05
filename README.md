@@ -1,36 +1,58 @@
-# HTML PWA Template
+# starwars.run
 
-This is a vanilla HTML template that does not use any build tools. It simply provides a starting point for HTML and vanilla JavaScript
+A Star Wars reference site: films, characters, planets, species, vehicles and starships, each
+on its own page and linked to everything it relates to. Luke's page links to Tatooine, and
+Tatooine's page links back to everyone from there. You can search everything, and
+the pages you've visited still work offline.
 
-## Description
+**Status:** being rebuilt (October 2026). The project scaffold is in place; data, pages,
+search and offline support are in progress.
 
-Here are a few features:
+## How it works
 
-- Passes all Lighthouse tests
-- Includes support for Web Workers and Service Workers
-- Includes Predefined PWA Manifest
+- **Data** comes from [swapi.info](https://swapi.info). An ingest step fetches it once,
+  checks its shape, and saves a snapshot in the repo, so builds never need the network.
+- **Pages** are rendered at build time with [Gyral](https://gyral.dev), a Model-View-Intent
+  framework for web components. Most pages ship no JavaScript.
+- **Hosting** is a Docker image serving static files, behind Cloudflare.
 
-## Getting Started
+The details are in [ARCHITECTURE.md](ARCHITECTURE.md) and the
+[design docs](docs/design-docs/index.md).
 
-### Executing program
+## Run it
 
-- Open your favorite "live server"
-- point your browser to /index.html
+You need Node 24 or later and pnpm 10.
 
-## Authors
+```sh
+pnpm install
+pnpm dev        # http://localhost:5500
+```
 
-Contributors names and contact info
+To build the static site and serve it the way production does:
 
-ex. Mike Zupper
-ex. [@MikeZupper](https://twitter.com/mikezupper)
+```sh
+pnpm build
+pnpm preview    # http://localhost:5501
+```
 
-## Version History
+Before committing, run the full check: typecheck, lint, formatting, tests (80% coverage
+minimum) and build.
 
-- 0.1
-  - Initial Release
+```sh
+pnpm check
+```
+
+## Contributing
+
+Work is tracked with [beads](https://github.com/gastownhall/beads) (`bd ready` lists
+what's next). Coding agents start at [AGENTS.md](AGENTS.md).
+
+## Credits
+
+Star Wars data from [swapi.info](https://swapi.info), which builds on the original SWAPI by
+Paul Hallett and Juriy Bura. Star Wars and its characters are trademarks of Lucasfilm Ltd. This is an
+unofficial fan project, not affiliated with or endorsed by Lucasfilm.
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
-
-## Acknowledgments
+MIT, for the code. © 2026 Mike Zupper.

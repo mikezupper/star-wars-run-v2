@@ -1,0 +1,1 @@
+{"id":"int-0b570a291baeef06990d42193ddfaeae","kind":"field_change","created_at":"2026-10-05T15:48:20.054539015Z","actor":"Mike Zupper","issue_id":"swr-3mo.1","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Committed 2add5ce: pnpm check passes; coverage gate verified failing at 70% functions; dev and preview serve the prerendered page."}}
