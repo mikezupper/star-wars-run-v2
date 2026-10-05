@@ -3,7 +3,7 @@ import { serverHtml } from '@gyral/ssr';
 import { kindPath } from '../domain/paths.js';
 import { KINDS, type Dataset } from '../domain/records.js';
 import { DESCRIPTION, SITE_NAME } from '../site.js';
-import { KIND_LABELS, TEXT } from '../labels.js';
+import { KIND_BLURBS, KIND_LABELS, TEXT } from '../labels.js';
 import type { PageMeta } from './layout.js';
 
 export const homeMeta: PageMeta = {
@@ -20,6 +20,7 @@ export const homeBody = (data: Dataset) => serverHtml`
       (kind) => serverHtml`<li>
         <a href=${kindPath(kind)}>${KIND_LABELS[kind].plural}</a>
         <data value=${String(data[kind].length)}>${String(data[kind].length)}</data>
+        <p>${KIND_BLURBS[kind]}</p>
       </li>`,
     )}
   </ul>

@@ -36,7 +36,8 @@ const notFoundMeta: PageMeta = {
 
 const notFoundBody = () => serverHtml`
   <h1>${TEXT.notFoundTitle}</h1>
-  <p>${TEXT.notFoundBody} <a href="/">${TEXT.notFoundHome}</a>.</p>
+  <p>${TEXT.notFoundBody}</p>
+  <p><a href="/">${TEXT.notFoundHome}</a>, or <a href="/search/">${TEXT.notFoundSearch}</a>.</p>
 `;
 
 const HTML = { 'content-type': 'text/html; charset=utf-8' };

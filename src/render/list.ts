@@ -3,7 +3,7 @@
 import { serverHtml } from '@gyral/ssr';
 import { kindPath, recordPath } from '../domain/paths.js';
 import type { AnyRecord, Dataset, Kind } from '../domain/records.js';
-import { listDescription, listTitle, TEXT } from '../labels.js';
+import { KIND_BLURBS, listDescription, listTitle, TEXT } from '../labels.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 import { recordName } from './record.js';
 
@@ -24,6 +24,7 @@ export function listBody(kind: Kind, data: Dataset) {
   return serverHtml`
     ${breadcrumb([{ href: '/', label: TEXT.home }], listTitle(kind))}
     <h1>${listTitle(kind)}</h1>
+    <p>${KIND_BLURBS[kind]}</p>
     ${kind === 'films' ? serverHtml`<ol>${items}</ol>` : serverHtml`<ul>${items}</ul>`}
   `;
 }

@@ -444,14 +444,15 @@
 
   /* Home: the sections as cards, with their record counts. */
   main:has(> h1 + p + ul) > ul {
-    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
     gap: var(--gap);
 
     & li {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-content: start;
       align-items: baseline;
-      justify-content: space-between;
-      gap: 1rem;
+      gap: 0.5rem 1rem;
       padding: var(--gap);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -469,6 +470,12 @@
 
     & data {
       color: var(--text-muted);
+    }
+
+    & p {
+      grid-column: 1 / -1;
+      color: var(--text-muted);
+      font-size: var(--step--1);
     }
   }
 

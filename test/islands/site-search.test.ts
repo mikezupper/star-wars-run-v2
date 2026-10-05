@@ -3,6 +3,7 @@ import { html } from 'lit';
 import { inputsFor, resolve, run, step } from '@gyral/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { drivers, type Hit } from '../../src/islands/pagefind.js';
+import { TEXT } from '../../src/labels.js';
 import { SiteSearch, type Msg, type State } from '../../src/islands/site-search.js';
 
 const spec = SiteSearch.spec;
@@ -105,7 +106,7 @@ describe('site search', () => {
 
   it('renders the no-JavaScript fallback on the server', async () => {
     const out = await renderToString(html`<swr-site-search></swr-site-search>`);
-    expect(out).toContain('needs JavaScript');
+    expect(out).toContain(TEXT.searchNoScript);
     expect(out).toContain('href="/people/"');
   });
 
@@ -150,10 +151,10 @@ describe('site search view', () => {
     );
 
   it('shows the hint, then progress, then a count of results with marked excerpts', async () => {
-    expect(await view(live(''))).toContain('Type a name.');
-    expect(await view({ ...live('sky'), result: { _tag: 'Searching' } })).toContain('Searching');
+    expect(await view(live(''))).toContain(TEXT.searchHint);
+    expect(await view({ ...live('sky'), result: { _tag: 'Searching' } })).toContain(TEXT.searching);
     const found = await view({ ...live('luke'), result: { _tag: 'Found', hits: [luke] } });
-    expect(found).toContain('1 result for “luke”.');
+    expect(found).toContain(TEXT.resultCount(1, 'luke'));
     expect(found).toContain('<a id="hit-0" href="/people/luke-skywalker/">');
     expect(found).toContain('<small>character</small>');
     expect(found).toContain('<mark>Luke</mark>');
@@ -164,16 +165,14 @@ describe('site search view', () => {
         hits: [luke, { ...luke, kind: undefined, excerpt: [{ text: 'x', mark: false }] }],
       },
     });
-    expect(two).toContain('2 results for “luke”.');
+    expect(two).toContain(TEXT.resultCount(2, 'luke'));
   });
 
   it('says when nothing matched or the index failed to load', async () => {
     expect(await view({ ...live('zzz'), result: { _tag: 'Found', hits: [] } })).toContain(
-      'No results for “zzz”.',
+      TEXT.noResults('zzz'),
     );
-    expect(await view({ ...live('sky'), result: { _tag: 'Failed' } })).toContain(
-      'could not be loaded',
-    );
+    expect(await view({ ...live('sky'), result: { _tag: 'Failed' } })).toContain(TEXT.searchFailed);
   });
 
   it('marks the chosen kind in the filter', async () => {
