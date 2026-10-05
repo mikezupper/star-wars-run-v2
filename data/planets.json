@@ -1,0 +1,1684 @@
+[
+  {
+    "kind": "planets",
+    "slug": "tatooine",
+    "name": "Tatooine",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 1,
+        "url": "https://swapi.info/api/planets/1"
+      }
+    ],
+    "rotationPeriod": 23,
+    "orbitalPeriod": 304,
+    "diameter": 10465,
+    "climates": [
+      "arid"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "desert"
+    ],
+    "surfaceWater": 1,
+    "population": 200000,
+    "residents": [
+      "luke-skywalker",
+      "c-3po",
+      "darth-vader",
+      "owen-lars",
+      "beru-whitesun-lars",
+      "r5-d4",
+      "biggs-darklighter",
+      "anakin-skywalker",
+      "shmi-skywalker",
+      "cliegg-lars"
+    ],
+    "films": [
+      "a-new-hope",
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "alderaan",
+    "name": "Alderaan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 2,
+        "url": "https://swapi.info/api/planets/2"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 364,
+    "diameter": 12500,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "grasslands",
+      "mountains"
+    ],
+    "surfaceWater": 40,
+    "population": 2000000000,
+    "residents": [
+      "leia-organa",
+      "bail-prestor-organa",
+      "raymus-antilles"
+    ],
+    "films": [
+      "a-new-hope",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "yavin-iv",
+    "name": "Yavin IV",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 3,
+        "url": "https://swapi.info/api/planets/3"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 4818,
+    "diameter": 10200,
+    "climates": [
+      "temperate",
+      "tropical"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "jungle",
+      "rainforests"
+    ],
+    "surfaceWater": 8,
+    "population": 1000,
+    "residents": [],
+    "films": [
+      "a-new-hope"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "hoth",
+    "name": "Hoth",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 4,
+        "url": "https://swapi.info/api/planets/4"
+      }
+    ],
+    "rotationPeriod": 23,
+    "orbitalPeriod": 549,
+    "diameter": 7200,
+    "climates": [
+      "frozen"
+    ],
+    "gravity": "1.1 standard",
+    "terrains": [
+      "tundra",
+      "ice caves",
+      "mountain ranges"
+    ],
+    "surfaceWater": 100,
+    "residents": [],
+    "films": [
+      "the-empire-strikes-back"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "dagobah",
+    "name": "Dagobah",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 5,
+        "url": "https://swapi.info/api/planets/5"
+      }
+    ],
+    "rotationPeriod": 23,
+    "orbitalPeriod": 341,
+    "diameter": 8900,
+    "climates": [
+      "murky"
+    ],
+    "terrains": [
+      "swamp",
+      "jungles"
+    ],
+    "surfaceWater": 8,
+    "residents": [],
+    "films": [
+      "the-empire-strikes-back",
+      "return-of-the-jedi",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "bespin",
+    "name": "Bespin",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 6,
+        "url": "https://swapi.info/api/planets/6"
+      }
+    ],
+    "rotationPeriod": 12,
+    "orbitalPeriod": 5110,
+    "diameter": 118000,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1.5 (surface), 1 standard (Cloud City)",
+    "terrains": [
+      "gas giant"
+    ],
+    "surfaceWater": 0,
+    "population": 6000000,
+    "residents": [
+      "lobot"
+    ],
+    "films": [
+      "the-empire-strikes-back"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "endor",
+    "name": "Endor",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 7,
+        "url": "https://swapi.info/api/planets/7"
+      }
+    ],
+    "rotationPeriod": 18,
+    "orbitalPeriod": 402,
+    "diameter": 4900,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "0.85 standard",
+    "terrains": [
+      "forests",
+      "mountains",
+      "lakes"
+    ],
+    "surfaceWater": 8,
+    "population": 30000000,
+    "residents": [
+      "wicket-systri-warrick"
+    ],
+    "films": [
+      "return-of-the-jedi"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "naboo",
+    "name": "Naboo",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 8,
+        "url": "https://swapi.info/api/planets/8"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 312,
+    "diameter": 12120,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "grassy hills",
+      "swamps",
+      "forests",
+      "mountains"
+    ],
+    "surfaceWater": 12,
+    "population": 4500000000,
+    "residents": [
+      "r2-d2",
+      "palpatine",
+      "padme-amidala",
+      "jar-jar-binks",
+      "roos-tarpals",
+      "rugor-nass",
+      "ric-olie",
+      "quarsh-panaka",
+      "gregar-typho",
+      "corde",
+      "dorme"
+    ],
+    "films": [
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "coruscant",
+    "name": "Coruscant",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 9,
+        "url": "https://swapi.info/api/planets/9"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 368,
+    "diameter": 12240,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "cityscape",
+      "mountains"
+    ],
+    "population": 1000000000000,
+    "residents": [
+      "finis-valorum",
+      "adi-gallia",
+      "jocasta-nu"
+    ],
+    "films": [
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "kamino",
+    "name": "Kamino",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 10,
+        "url": "https://swapi.info/api/planets/10"
+      }
+    ],
+    "rotationPeriod": 27,
+    "orbitalPeriod": 463,
+    "diameter": 19720,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "ocean"
+    ],
+    "surfaceWater": 100,
+    "population": 1000000000,
+    "residents": [
+      "boba-fett",
+      "lama-su",
+      "taun-we"
+    ],
+    "films": [
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "geonosis",
+    "name": "Geonosis",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 11,
+        "url": "https://swapi.info/api/planets/11"
+      }
+    ],
+    "rotationPeriod": 30,
+    "orbitalPeriod": 256,
+    "diameter": 11370,
+    "climates": [
+      "temperate",
+      "arid"
+    ],
+    "gravity": "0.9 standard",
+    "terrains": [
+      "rock",
+      "desert",
+      "mountain",
+      "barren"
+    ],
+    "surfaceWater": 5,
+    "population": 100000000000,
+    "residents": [
+      "poggle-the-lesser"
+    ],
+    "films": [
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "utapau",
+    "name": "Utapau",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 12,
+        "url": "https://swapi.info/api/planets/12"
+      }
+    ],
+    "rotationPeriod": 27,
+    "orbitalPeriod": 351,
+    "diameter": 12900,
+    "climates": [
+      "temperate",
+      "arid",
+      "windy"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "scrublands",
+      "savanna",
+      "canyons",
+      "sinkholes"
+    ],
+    "surfaceWater": 0.9,
+    "population": 95000000,
+    "residents": [
+      "tion-medon"
+    ],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "mustafar",
+    "name": "Mustafar",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 13,
+        "url": "https://swapi.info/api/planets/13"
+      }
+    ],
+    "rotationPeriod": 36,
+    "orbitalPeriod": 412,
+    "diameter": 4200,
+    "climates": [
+      "hot"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "volcanoes",
+      "lava rivers",
+      "mountains",
+      "caves"
+    ],
+    "surfaceWater": 0,
+    "population": 20000,
+    "residents": [],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "kashyyyk",
+    "name": "Kashyyyk",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 14,
+        "url": "https://swapi.info/api/planets/14"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 381,
+    "diameter": 12765,
+    "climates": [
+      "tropical"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "jungle",
+      "forests",
+      "lakes",
+      "rivers"
+    ],
+    "surfaceWater": 60,
+    "population": 45000000,
+    "residents": [
+      "chewbacca",
+      "tarfful"
+    ],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "polis-massa",
+    "name": "Polis Massa",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 15,
+        "url": "https://swapi.info/api/planets/15"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 590,
+    "diameter": 0,
+    "climates": [
+      "artificial temperate"
+    ],
+    "gravity": "0.56 standard",
+    "terrains": [
+      "airless asteroid"
+    ],
+    "surfaceWater": 0,
+    "population": 1000000,
+    "residents": [],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "mygeeto",
+    "name": "Mygeeto",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 16,
+        "url": "https://swapi.info/api/planets/16"
+      }
+    ],
+    "rotationPeriod": 12,
+    "orbitalPeriod": 167,
+    "diameter": 10088,
+    "climates": [
+      "frigid"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "glaciers",
+      "mountains",
+      "ice canyons"
+    ],
+    "population": 19000000,
+    "residents": [],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "felucia",
+    "name": "Felucia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 17,
+        "url": "https://swapi.info/api/planets/17"
+      }
+    ],
+    "rotationPeriod": 34,
+    "orbitalPeriod": 231,
+    "diameter": 9100,
+    "climates": [
+      "hot",
+      "humid"
+    ],
+    "gravity": "0.75 standard",
+    "terrains": [
+      "fungus forests"
+    ],
+    "population": 8500000,
+    "residents": [],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "cato-neimoidia",
+    "name": "Cato Neimoidia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 18,
+        "url": "https://swapi.info/api/planets/18"
+      }
+    ],
+    "rotationPeriod": 25,
+    "orbitalPeriod": 278,
+    "diameter": 0,
+    "climates": [
+      "temperate",
+      "moist"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "mountains",
+      "fields",
+      "forests",
+      "rock arches"
+    ],
+    "population": 10000000,
+    "residents": [
+      "nute-gunray"
+    ],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "saleucami",
+    "name": "Saleucami",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 19,
+        "url": "https://swapi.info/api/planets/19"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 392,
+    "diameter": 14920,
+    "climates": [
+      "hot"
+    ],
+    "terrains": [
+      "caves",
+      "desert",
+      "mountains",
+      "volcanoes"
+    ],
+    "population": 1400000000,
+    "residents": [],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "stewjon",
+    "name": "Stewjon",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 20,
+        "url": "https://swapi.info/api/planets/20"
+      }
+    ],
+    "diameter": 0,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "grass"
+    ],
+    "residents": [
+      "obi-wan-kenobi"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "eriadu",
+    "name": "Eriadu",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 21,
+        "url": "https://swapi.info/api/planets/21"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 360,
+    "diameter": 13490,
+    "climates": [
+      "polluted"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "cityscape"
+    ],
+    "population": 22000000000,
+    "residents": [
+      "wilhuff-tarkin"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "corellia",
+    "name": "Corellia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 22,
+        "url": "https://swapi.info/api/planets/22"
+      }
+    ],
+    "rotationPeriod": 25,
+    "orbitalPeriod": 329,
+    "diameter": 11000,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "plains",
+      "urban",
+      "hills",
+      "forests"
+    ],
+    "surfaceWater": 70,
+    "population": 3000000000,
+    "residents": [
+      "han-solo",
+      "wedge-antilles"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "rodia",
+    "name": "Rodia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 23,
+        "url": "https://swapi.info/api/planets/23"
+      }
+    ],
+    "rotationPeriod": 29,
+    "orbitalPeriod": 305,
+    "diameter": 7549,
+    "climates": [
+      "hot"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "jungles",
+      "oceans",
+      "urban",
+      "swamps"
+    ],
+    "surfaceWater": 60,
+    "population": 1300000000,
+    "residents": [
+      "greedo"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "nal-hutta",
+    "name": "Nal Hutta",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 24,
+        "url": "https://swapi.info/api/planets/24"
+      }
+    ],
+    "rotationPeriod": 87,
+    "orbitalPeriod": 413,
+    "diameter": 12150,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "urban",
+      "oceans",
+      "swamps",
+      "bogs"
+    ],
+    "population": 7000000000,
+    "residents": [
+      "jabba-desilijic-tiure"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "dantooine",
+    "name": "Dantooine",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 25,
+        "url": "https://swapi.info/api/planets/25"
+      }
+    ],
+    "rotationPeriod": 25,
+    "orbitalPeriod": 378,
+    "diameter": 9830,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "oceans",
+      "savannas",
+      "mountains",
+      "grasslands"
+    ],
+    "population": 1000,
+    "residents": [],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "bestine-iv",
+    "name": "Bestine IV",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 26,
+        "url": "https://swapi.info/api/planets/26"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 680,
+    "diameter": 6400,
+    "climates": [
+      "temperate"
+    ],
+    "terrains": [
+      "rocky islands",
+      "oceans"
+    ],
+    "surfaceWater": 98,
+    "population": 62000000,
+    "residents": [
+      "jek-tono-porkins"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "ord-mantell",
+    "name": "Ord Mantell",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 27,
+        "url": "https://swapi.info/api/planets/27"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 334,
+    "diameter": 14050,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "plains",
+      "seas",
+      "mesas"
+    ],
+    "surfaceWater": 10,
+    "population": 4000000000,
+    "residents": [],
+    "films": [
+      "the-empire-strikes-back"
+    ]
+  },
+  {
+    "kind": "planets",
+    "slug": "trandosha",
+    "name": "Trandosha",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 29,
+        "url": "https://swapi.info/api/planets/29"
+      }
+    ],
+    "rotationPeriod": 25,
+    "orbitalPeriod": 371,
+    "diameter": 0,
+    "climates": [
+      "arid"
+    ],
+    "gravity": "0.62 standard",
+    "terrains": [
+      "mountains",
+      "seas",
+      "grasslands",
+      "deserts"
+    ],
+    "population": 42000000,
+    "residents": [
+      "bossk"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "socorro",
+    "name": "Socorro",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 30,
+        "url": "https://swapi.info/api/planets/30"
+      }
+    ],
+    "rotationPeriod": 20,
+    "orbitalPeriod": 326,
+    "diameter": 0,
+    "climates": [
+      "arid"
+    ],
+    "gravity": "1 standard",
+    "terrains": [
+      "deserts",
+      "mountains"
+    ],
+    "population": 300000000,
+    "residents": [
+      "lando-calrissian"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "mon-cala",
+    "name": "Mon Cala",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 31,
+        "url": "https://swapi.info/api/planets/31"
+      }
+    ],
+    "rotationPeriod": 21,
+    "orbitalPeriod": 398,
+    "diameter": 11030,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "oceans",
+      "reefs",
+      "islands"
+    ],
+    "surfaceWater": 100,
+    "population": 27000000000,
+    "residents": [
+      "ackbar"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "chandrila",
+    "name": "Chandrila",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 32,
+        "url": "https://swapi.info/api/planets/32"
+      }
+    ],
+    "rotationPeriod": 20,
+    "orbitalPeriod": 368,
+    "diameter": 13500,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "plains",
+      "forests"
+    ],
+    "surfaceWater": 40,
+    "population": 1200000000,
+    "residents": [
+      "mon-mothma"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "sullust",
+    "name": "Sullust",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 33,
+        "url": "https://swapi.info/api/planets/33"
+      }
+    ],
+    "rotationPeriod": 20,
+    "orbitalPeriod": 263,
+    "diameter": 12780,
+    "climates": [
+      "superheated"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "mountains",
+      "volcanoes",
+      "rocky deserts"
+    ],
+    "surfaceWater": 5,
+    "population": 18500000000,
+    "residents": [
+      "nien-nunb"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "toydaria",
+    "name": "Toydaria",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 34,
+        "url": "https://swapi.info/api/planets/34"
+      }
+    ],
+    "rotationPeriod": 21,
+    "orbitalPeriod": 184,
+    "diameter": 7900,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "swamps",
+      "lakes"
+    ],
+    "population": 11000000,
+    "residents": [
+      "watto"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "malastare",
+    "name": "Malastare",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 35,
+        "url": "https://swapi.info/api/planets/35"
+      }
+    ],
+    "rotationPeriod": 26,
+    "orbitalPeriod": 201,
+    "diameter": 18880,
+    "climates": [
+      "arid",
+      "temperate",
+      "tropical"
+    ],
+    "gravity": "1.56",
+    "terrains": [
+      "swamps",
+      "deserts",
+      "jungles",
+      "mountains"
+    ],
+    "population": 2000000000,
+    "residents": [
+      "sebulba"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "dathomir",
+    "name": "Dathomir",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 36,
+        "url": "https://swapi.info/api/planets/36"
+      }
+    ],
+    "rotationPeriod": 24,
+    "orbitalPeriod": 491,
+    "diameter": 10480,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "0.9",
+    "terrains": [
+      "forests",
+      "deserts",
+      "savannas"
+    ],
+    "population": 5200,
+    "residents": [
+      "darth-maul"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "ryloth",
+    "name": "Ryloth",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 37,
+        "url": "https://swapi.info/api/planets/37"
+      }
+    ],
+    "rotationPeriod": 30,
+    "orbitalPeriod": 305,
+    "diameter": 10600,
+    "climates": [
+      "temperate",
+      "arid",
+      "subartic"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "mountains",
+      "valleys",
+      "deserts",
+      "tundra"
+    ],
+    "surfaceWater": 5,
+    "population": 1500000000,
+    "residents": [
+      "bib-fortuna",
+      "ayla-secura"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "aleen-minor",
+    "name": "Aleen Minor",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 38,
+        "url": "https://swapi.info/api/planets/38"
+      }
+    ],
+    "climates": [],
+    "terrains": [],
+    "residents": [
+      "ratts-tyerel"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "vulpter",
+    "name": "Vulpter",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 39,
+        "url": "https://swapi.info/api/planets/39"
+      }
+    ],
+    "rotationPeriod": 22,
+    "orbitalPeriod": 391,
+    "diameter": 14900,
+    "climates": [
+      "temperate",
+      "artic"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "urban",
+      "barren"
+    ],
+    "population": 421000000,
+    "residents": [
+      "dud-bolt"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "troiken",
+    "name": "Troiken",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 40,
+        "url": "https://swapi.info/api/planets/40"
+      }
+    ],
+    "climates": [],
+    "terrains": [
+      "desert",
+      "tundra",
+      "rainforests",
+      "mountains"
+    ],
+    "residents": [
+      "gasgano"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "tund",
+    "name": "Tund",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 41,
+        "url": "https://swapi.info/api/planets/41"
+      }
+    ],
+    "rotationPeriod": 48,
+    "orbitalPeriod": 1770,
+    "diameter": 12190,
+    "climates": [],
+    "terrains": [
+      "barren",
+      "ash"
+    ],
+    "population": 0,
+    "residents": [
+      "ben-quadinaros"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "haruun-kal",
+    "name": "Haruun Kal",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 42,
+        "url": "https://swapi.info/api/planets/42"
+      }
+    ],
+    "rotationPeriod": 25,
+    "orbitalPeriod": 383,
+    "diameter": 10120,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "0.98",
+    "terrains": [
+      "toxic cloudsea",
+      "plateaus",
+      "volcanoes"
+    ],
+    "population": 705300,
+    "residents": [
+      "mace-windu"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "cerea",
+    "name": "Cerea",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 43,
+        "url": "https://swapi.info/api/planets/43"
+      }
+    ],
+    "rotationPeriod": 27,
+    "orbitalPeriod": 386,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "verdant"
+    ],
+    "surfaceWater": 20,
+    "population": 450000000,
+    "residents": [
+      "ki-adi-mundi"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "glee-anselm",
+    "name": "Glee Anselm",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 44,
+        "url": "https://swapi.info/api/planets/44"
+      }
+    ],
+    "rotationPeriod": 33,
+    "orbitalPeriod": 206,
+    "diameter": 15600,
+    "climates": [
+      "tropical",
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "lakes",
+      "islands",
+      "swamps",
+      "seas"
+    ],
+    "surfaceWater": 80,
+    "population": 500000000,
+    "residents": [
+      "kit-fisto"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "iridonia",
+    "name": "Iridonia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 45,
+        "url": "https://swapi.info/api/planets/45"
+      }
+    ],
+    "rotationPeriod": 29,
+    "orbitalPeriod": 413,
+    "climates": [],
+    "terrains": [
+      "rocky canyons",
+      "acid pools"
+    ],
+    "residents": [
+      "eeth-koth"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "tholoth",
+    "name": "Tholoth",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 46,
+        "url": "https://swapi.info/api/planets/46"
+      }
+    ],
+    "climates": [],
+    "terrains": [],
+    "residents": [],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "iktotch",
+    "name": "Iktotch",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 47,
+        "url": "https://swapi.info/api/planets/47"
+      }
+    ],
+    "rotationPeriod": 22,
+    "orbitalPeriod": 481,
+    "climates": [
+      "arid",
+      "rocky",
+      "windy"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "rocky"
+    ],
+    "residents": [
+      "saesee-tiin"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "quermia",
+    "name": "Quermia",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 48,
+        "url": "https://swapi.info/api/planets/48"
+      }
+    ],
+    "climates": [],
+    "terrains": [],
+    "residents": [
+      "yarael-poof"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "dorin",
+    "name": "Dorin",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 49,
+        "url": "https://swapi.info/api/planets/49"
+      }
+    ],
+    "rotationPeriod": 22,
+    "orbitalPeriod": 409,
+    "diameter": 13400,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [],
+    "residents": [
+      "plo-koon"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "champala",
+    "name": "Champala",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 50,
+        "url": "https://swapi.info/api/planets/50"
+      }
+    ],
+    "rotationPeriod": 27,
+    "orbitalPeriod": 318,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "oceans",
+      "rainforests",
+      "plateaus"
+    ],
+    "population": 3500000000,
+    "residents": [
+      "mas-amedda"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "mirial",
+    "name": "Mirial",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 51,
+        "url": "https://swapi.info/api/planets/51"
+      }
+    ],
+    "climates": [],
+    "terrains": [
+      "deserts"
+    ],
+    "residents": [
+      "luminara-unduli",
+      "barriss-offee"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "serenno",
+    "name": "Serenno",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 52,
+        "url": "https://swapi.info/api/planets/52"
+      }
+    ],
+    "climates": [],
+    "terrains": [
+      "rainforests",
+      "rivers",
+      "mountains"
+    ],
+    "residents": [
+      "dooku"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "concord-dawn",
+    "name": "Concord Dawn",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 53,
+        "url": "https://swapi.info/api/planets/53"
+      }
+    ],
+    "climates": [],
+    "terrains": [
+      "jungles",
+      "forests",
+      "deserts"
+    ],
+    "residents": [
+      "jango-fett"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "zolan",
+    "name": "Zolan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 54,
+        "url": "https://swapi.info/api/planets/54"
+      }
+    ],
+    "climates": [],
+    "terrains": [],
+    "residents": [
+      "zam-wesell"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "ojom",
+    "name": "Ojom",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 55,
+        "url": "https://swapi.info/api/planets/55"
+      }
+    ],
+    "climates": [
+      "frigid"
+    ],
+    "terrains": [
+      "oceans",
+      "glaciers"
+    ],
+    "surfaceWater": 100,
+    "population": 500000000,
+    "residents": [
+      "dexter-jettster"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "skako",
+    "name": "Skako",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 56,
+        "url": "https://swapi.info/api/planets/56"
+      }
+    ],
+    "rotationPeriod": 27,
+    "orbitalPeriod": 384,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "urban",
+      "vines"
+    ],
+    "population": 500000000000,
+    "residents": [
+      "wat-tambor"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "muunilinst",
+    "name": "Muunilinst",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 57,
+        "url": "https://swapi.info/api/planets/57"
+      }
+    ],
+    "rotationPeriod": 28,
+    "orbitalPeriod": 412,
+    "diameter": 13800,
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "plains",
+      "forests",
+      "hills",
+      "mountains"
+    ],
+    "surfaceWater": 25,
+    "population": 5000000000,
+    "residents": [
+      "san-hill"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "shili",
+    "name": "Shili",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 58,
+        "url": "https://swapi.info/api/planets/58"
+      }
+    ],
+    "climates": [
+      "temperate"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "cities",
+      "savannahs",
+      "seas",
+      "plains"
+    ],
+    "residents": [
+      "shaak-ti"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "kalee",
+    "name": "Kalee",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 59,
+        "url": "https://swapi.info/api/planets/59"
+      }
+    ],
+    "rotationPeriod": 23,
+    "orbitalPeriod": 378,
+    "diameter": 13850,
+    "climates": [
+      "arid",
+      "temperate",
+      "tropical"
+    ],
+    "gravity": "1",
+    "terrains": [
+      "rainforests",
+      "cliffs",
+      "canyons",
+      "seas"
+    ],
+    "population": 4000000000,
+    "residents": [
+      "grievous"
+    ],
+    "films": []
+  },
+  {
+    "kind": "planets",
+    "slug": "umbara",
+    "name": "Umbara",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 60,
+        "url": "https://swapi.info/api/planets/60"
+      }
+    ],
+    "climates": [],
+    "terrains": [],
+    "residents": [
+      "sly-moore"
+    ],
+    "films": []
+  }
+]

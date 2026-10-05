@@ -26,9 +26,9 @@ disagree, the doc wins; fix this file.
 | `pnpm preview` | Serve `dist/` with production URL rules on http://localhost:5501            |
 | `pnpm test`    | Vitest with coverage; fails below 80% on any metric                         |
 | `pnpm format`  | Prettier, in place                                                          |
+| `pnpm ingest`  | Fetch swapi.info, parse, check, rewrite `data/`. The only network step      |
 
-Coming with their beads: `pnpm ingest` (`swr-3mo.4`), `pnpm smoke` (`swr-3mo.11`),
-`pnpm ci:local` (`swr-3mo.12`). Don't call them before they exist.
+Coming with their beads: `pnpm smoke` (`swr-3mo.11`), `pnpm ci:local` (`swr-3mo.12`). Don't call them before they exist.
 
 ## Where things are
 
@@ -40,6 +40,10 @@ Coming with their beads: `pnpm ingest` (`swr-3mo.4`), `pnpm smoke` (`swr-3mo.11`
 | [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code** |
 | [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                       |
 | `src/site.ts`                                             | Site-wide constants: origin, name, description              |
+| `src/domain/`                                             | Record types (`records.ts`), slugs, snapshot layout         |
+| `src/ingest/`                                             | swapi.info parser (`swapi.ts`), value parsers, fetch, write |
+| `src/data/`                                               | Loads the snapshot for the build                            |
+| `data/`                                                   | The committed snapshot. Written only by `pnpm ingest`       |
 | `src/render/`                                             | Route table (`site.ts`), layout, page templates             |
 | `src/styles/site.css`                                     | The one stylesheet                                          |
 | `scripts/`                                                | Dev server, build, preview. Thin: logic goes in `src/`      |

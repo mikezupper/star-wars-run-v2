@@ -34,9 +34,7 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 | `src/islands/` | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/domain/`, `@gyral/core`                             |
 | `scripts/`     | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                                |
 
-**Status today:** `src/site.ts` and `src/render/` exist. The other layers arrive with
-their beads: `src/domain/`, `src/ingest/` and `src/data/` with `swr-3mo.4`, and
-`src/islands/` with `swr-3mo.6`.
+**Status today:** every layer exists except `src/islands/`, which arrives with `swr-3mo.6`.
 
 Logic belongs in `src/`, not `scripts/`, because coverage only measures `src/`. A script
 should parse its arguments and call into `src/`.
