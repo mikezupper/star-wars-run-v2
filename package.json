@@ -1,0 +1,38 @@
+{
+  "name": "starwars.run-site-v2",
+  "version": "1.0.0",
+  "description": "This is a vanilla HTML template that does not use any build tools. It simply provides a starting point for HTML and vanilla JavaScript",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "node ./node_modules/bin/esbuild esbuild.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikezupper/star-wars-run-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mikezupper/star-wars-run-v2/issues"
+  },
+  "homepage": "https://github.com/mikezupper/star-wars-run-v2#readme",
+  "dependencies": {
+    "@cycle/dom": "^23.0.0",
+    "@cycle/http": "^15.4.0",
+    "@cycle/isolate": "^5.2.0",
+    "@cycle/run": "^5.5.0",
+    "esbuild": "^0.14.54",
+    "xstream": "^11.14.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.1.1",
+    "esbuild-plugin-resolve": "^1.0.3",
+    "rollup": "^2.61.1",
+    "rollup-plugin-commonjs": "^10.1.0"
+  }
+}
