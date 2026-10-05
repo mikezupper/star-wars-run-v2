@@ -17,19 +17,22 @@ disagree, the doc wins; fix this file.
 
 ## Commands
 
-| Command           | What it does                                                               |
-| ----------------- | -------------------------------------------------------------------------- |
-| `pnpm install`    | Install. `@gyral/*` comes from npm                                         |
-| `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build |
-| `pnpm invariants` | Docs links resolve, indexes list every doc, AGENTS.md stays short          |
-| `pnpm dev`        | Dev server on http://localhost:5500, rendering each request                |
-| `pnpm build`      | `vite build`, then prerender every page to `dist/`                         |
-| `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501           |
-| `pnpm test`       | Vitest with coverage; fails below 80% on any metric                        |
-| `pnpm format`     | Prettier, in place                                                         |
-| `pnpm ingest`     | Fetch swapi.info, parse, check, rewrite `data/`. The only network step     |
+| Command           | What it does                                                                       |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `pnpm install`    | Install. `@gyral/*` comes from npm                                                 |
+| `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build · smoke |
+| `pnpm invariants` | Docs links resolve, indexes list every doc, AGENTS.md stays short                  |
+| `pnpm dev`        | Dev server on http://localhost:5500, rendering each request                        |
+| `pnpm build`      | `vite build`, then prerender every page to `dist/`                                 |
+| `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501                   |
+| `pnpm test`       | Vitest with coverage; fails below 80% on any metric                                |
+| `pnpm format`     | Prettier, in place                                                                 |
+| `pnpm ingest`     | Fetch swapi.info, parse, check, rewrite `data/`. The only network step             |
 
-Coming with their beads: `pnpm smoke` (`swr-3mo.11`), `pnpm ci:local` (`swr-3mo.12`). Don't call them before they exist.
+| `pnpm smoke` | Built site in Chromium: status, console, axe, 360px overflow, links, search (~90s) |
+
+First run needs `pnpm exec playwright install chromium`. Coming with its bead: `pnpm ci:local`
+(`swr-3mo.12`). Don't call it before it exists.
 
 ## Where things are
 

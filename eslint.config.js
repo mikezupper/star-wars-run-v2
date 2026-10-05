@@ -50,7 +50,15 @@ const GYRAL_SSR = [
 
 export default tseslint.config(
   {
-    ignores: ['dist/', 'coverage/', '.claude/', '.beads/', '.pnpm-store/', 'node_modules/'],
+    ignores: [
+      'dist/',
+      'coverage/',
+      '.smoke/',
+      '.claude/',
+      '.beads/',
+      '.pnpm-store/',
+      'node_modules/',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
@@ -69,6 +77,11 @@ export default tseslint.config(
       ...tseslint.configs.disableTypeChecked.languageOptions,
       globals: globals.node,
     },
+  },
+  {
+    // Playwright: page.evaluate() callbacks run in the browser.
+    files: ['scripts/smoke.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
     // Taste invariants for application code. no-console: src/ returns values or throws; only

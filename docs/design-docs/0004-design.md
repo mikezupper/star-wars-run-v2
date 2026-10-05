@@ -17,7 +17,8 @@ just to start its side navigation. The rebuild has no CSS framework.
   ([0001-stack.md](0001-stack.md)).
 - **Mood:** Star Wars in feel, but **no trademarked logos, fonts or artwork**.
 - **Accessibility is a gate, not a goal:** axe passes in light and dark on every page type,
-  and nothing scrolls horizontally at 360 px wide. `pnpm smoke` (`swr-3mo.11`) checks both.
+  and nothing scrolls horizontally at 360 px wide. `pnpm smoke` checks both on every page in
+  light mode and on a sample of each template in dark mode, as part of `pnpm check`.
 
 ## Consequences
 

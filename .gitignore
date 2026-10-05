@@ -10,3 +10,4 @@ coverage/
 .beads/proxieddb/
 
 .DS_Store
+.smoke/

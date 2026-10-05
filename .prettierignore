@@ -7,3 +7,4 @@ data/
 .pnpm-store/
 docs/references/gyral/*.md
 !docs/references/gyral/README.md
+.smoke/
