@@ -1,1 +1,13 @@
-target/
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+
+# Beads / Dolt files (the database lives in .beads/embeddeddolt, ignored by .beads/.gitignore)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+.DS_Store
+.smoke/

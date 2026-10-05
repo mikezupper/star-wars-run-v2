@@ -1,0 +1,1267 @@
+[
+  {
+    "kind": "species",
+    "slug": "human",
+    "name": "Human",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 1,
+        "url": "https://swapi.info/api/species/1"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "averageLifespan": 120,
+    "skinColors": [
+      "caucasian",
+      "black",
+      "asian",
+      "hispanic"
+    ],
+    "hairColors": [
+      "blonde",
+      "brown",
+      "black",
+      "red"
+    ],
+    "eyeColors": [
+      "brown",
+      "blue",
+      "green",
+      "hazel",
+      "grey",
+      "amber"
+    ],
+    "language": "Galactic Basic",
+    "homeworld": "coruscant",
+    "people": [
+      "dorme",
+      "dooku",
+      "bail-prestor-organa",
+      "jocasta-nu"
+    ],
+    "films": [
+      "a-new-hope",
+      "the-empire-strikes-back",
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "droid",
+    "name": "Droid",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 2,
+        "url": "https://swapi.info/api/species/2"
+      }
+    ],
+    "classification": "artificial",
+    "designation": "sentient",
+    "averageLifespan": "indefinite",
+    "skinColors": [],
+    "hairColors": [],
+    "eyeColors": [],
+    "people": [
+      "c-3po",
+      "r2-d2",
+      "r5-d4",
+      "ig-88"
+    ],
+    "films": [
+      "a-new-hope",
+      "the-empire-strikes-back",
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "wookie",
+    "name": "Wookie",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 3,
+        "url": "https://swapi.info/api/species/3"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 210,
+    "averageLifespan": 400,
+    "skinColors": [
+      "gray"
+    ],
+    "hairColors": [
+      "black",
+      "brown"
+    ],
+    "eyeColors": [
+      "blue",
+      "green",
+      "yellow",
+      "brown",
+      "golden",
+      "red"
+    ],
+    "language": "Shyriiwook",
+    "homeworld": "kashyyyk",
+    "people": [
+      "chewbacca",
+      "tarfful"
+    ],
+    "films": [
+      "a-new-hope",
+      "the-empire-strikes-back",
+      "return-of-the-jedi",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "rodian",
+    "name": "Rodian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 4,
+        "url": "https://swapi.info/api/species/4"
+      }
+    ],
+    "classification": "sentient",
+    "designation": "reptilian",
+    "averageHeight": 170,
+    "skinColors": [
+      "green",
+      "blue"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Galatic Basic",
+    "homeworld": "rodia",
+    "people": [
+      "greedo"
+    ],
+    "films": [
+      "a-new-hope"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "hutt",
+    "name": "Hutt",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 5,
+        "url": "https://swapi.info/api/species/5"
+      }
+    ],
+    "classification": "gastropod",
+    "designation": "sentient",
+    "averageHeight": 300,
+    "averageLifespan": 1000,
+    "skinColors": [
+      "green",
+      "brown",
+      "tan"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow",
+      "red"
+    ],
+    "language": "Huttese",
+    "homeworld": "nal-hutta",
+    "people": [
+      "jabba-desilijic-tiure"
+    ],
+    "films": [
+      "a-new-hope",
+      "return-of-the-jedi"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "yoda-s-species",
+    "name": "Yoda's species",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 6,
+        "url": "https://swapi.info/api/species/6"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 66,
+    "averageLifespan": 900,
+    "skinColors": [
+      "green",
+      "yellow"
+    ],
+    "hairColors": [
+      "brown",
+      "white"
+    ],
+    "eyeColors": [
+      "brown",
+      "green",
+      "yellow"
+    ],
+    "language": "Galactic basic",
+    "people": [
+      "yoda"
+    ],
+    "films": [
+      "the-empire-strikes-back",
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "trandoshan",
+    "name": "Trandoshan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 7,
+        "url": "https://swapi.info/api/species/7"
+      }
+    ],
+    "classification": "reptile",
+    "designation": "sentient",
+    "averageHeight": 200,
+    "skinColors": [
+      "brown",
+      "green"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow",
+      "orange"
+    ],
+    "language": "Dosh",
+    "homeworld": "trandosha",
+    "people": [
+      "bossk"
+    ],
+    "films": [
+      "the-empire-strikes-back"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "mon-calamari",
+    "name": "Mon Calamari",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 8,
+        "url": "https://swapi.info/api/species/8"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 160,
+    "skinColors": [
+      "red",
+      "blue",
+      "brown",
+      "magenta"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "Mon Calamarian",
+    "homeworld": "mon-cala",
+    "people": [
+      "ackbar"
+    ],
+    "films": [
+      "return-of-the-jedi"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "ewok",
+    "name": "Ewok",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 9,
+        "url": "https://swapi.info/api/species/9"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 100,
+    "skinColors": [
+      "brown"
+    ],
+    "hairColors": [
+      "white",
+      "brown",
+      "black"
+    ],
+    "eyeColors": [
+      "orange",
+      "brown"
+    ],
+    "language": "Ewokese",
+    "homeworld": "endor",
+    "people": [
+      "wicket-systri-warrick"
+    ],
+    "films": [
+      "return-of-the-jedi"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "sullustan",
+    "name": "Sullustan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 10,
+        "url": "https://swapi.info/api/species/10"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "skinColors": [
+      "pale"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Sullutese",
+    "homeworld": "sullust",
+    "people": [
+      "nien-nunb"
+    ],
+    "films": [
+      "return-of-the-jedi"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "neimodian",
+    "name": "Neimodian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 11,
+        "url": "https://swapi.info/api/species/11"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 180,
+    "skinColors": [
+      "grey",
+      "green"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "red",
+      "pink"
+    ],
+    "language": "Neimoidia",
+    "homeworld": "cato-neimoidia",
+    "people": [
+      "nute-gunray"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "gungan",
+    "name": "Gungan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 12,
+        "url": "https://swapi.info/api/species/12"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 190,
+    "skinColors": [
+      "brown",
+      "green"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "orange"
+    ],
+    "language": "Gungan basic",
+    "homeworld": "naboo",
+    "people": [
+      "jar-jar-binks",
+      "roos-tarpals",
+      "rugor-nass"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "toydarian",
+    "name": "Toydarian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 13,
+        "url": "https://swapi.info/api/species/13"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 120,
+    "averageLifespan": 91,
+    "skinColors": [
+      "blue",
+      "green",
+      "grey"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "Toydarian",
+    "homeworld": "toydaria",
+    "people": [
+      "watto"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "dug",
+    "name": "Dug",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 14,
+        "url": "https://swapi.info/api/species/14"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 100,
+    "skinColors": [
+      "brown",
+      "purple",
+      "grey",
+      "red"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow",
+      "blue"
+    ],
+    "language": "Dugese",
+    "homeworld": "malastare",
+    "people": [
+      "sebulba"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "twi-lek",
+    "name": "Twi'lek",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 15,
+        "url": "https://swapi.info/api/species/15"
+      }
+    ],
+    "classification": "mammals",
+    "designation": "sentient",
+    "averageHeight": 200,
+    "skinColors": [
+      "orange",
+      "yellow",
+      "blue",
+      "green",
+      "pink",
+      "purple",
+      "tan"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "blue",
+      "brown",
+      "orange",
+      "pink"
+    ],
+    "language": "Twi'leki",
+    "homeworld": "ryloth",
+    "people": [
+      "bib-fortuna",
+      "ayla-secura"
+    ],
+    "films": [
+      "return-of-the-jedi",
+      "the-phantom-menace",
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "aleena",
+    "name": "Aleena",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 16,
+        "url": "https://swapi.info/api/species/16"
+      }
+    ],
+    "classification": "reptile",
+    "designation": "sentient",
+    "averageHeight": 80,
+    "averageLifespan": 79,
+    "skinColors": [
+      "blue",
+      "gray"
+    ],
+    "hairColors": [],
+    "eyeColors": [],
+    "language": "Aleena",
+    "homeworld": "aleen-minor",
+    "people": [
+      "ratts-tyerel"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "vulptereen",
+    "name": "Vulptereen",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 17,
+        "url": "https://swapi.info/api/species/17"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 100,
+    "skinColors": [
+      "grey"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "vulpterish",
+    "homeworld": "vulpter",
+    "people": [
+      "dud-bolt"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "xexto",
+    "name": "Xexto",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 18,
+        "url": "https://swapi.info/api/species/18"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 125,
+    "skinColors": [
+      "grey",
+      "yellow",
+      "purple"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Xextese",
+    "homeworld": "troiken",
+    "people": [
+      "gasgano"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "toong",
+    "name": "Toong",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 19,
+        "url": "https://swapi.info/api/species/19"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 200,
+    "skinColors": [
+      "grey",
+      "green",
+      "yellow"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "orange"
+    ],
+    "language": "Tundan",
+    "homeworld": "tund",
+    "people": [
+      "ben-quadinaros"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "cerean",
+    "name": "Cerean",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 20,
+        "url": "https://swapi.info/api/species/20"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 200,
+    "skinColors": [
+      "pale pink"
+    ],
+    "hairColors": [
+      "red",
+      "blond",
+      "black",
+      "white"
+    ],
+    "eyeColors": [
+      "hazel"
+    ],
+    "language": "Cerean",
+    "homeworld": "cerea",
+    "people": [
+      "ki-adi-mundi"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "nautolan",
+    "name": "Nautolan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 21,
+        "url": "https://swapi.info/api/species/21"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "averageLifespan": 70,
+    "skinColors": [
+      "green",
+      "blue",
+      "brown",
+      "red"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Nautila",
+    "homeworld": "glee-anselm",
+    "people": [
+      "kit-fisto"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "zabrak",
+    "name": "Zabrak",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 22,
+        "url": "https://swapi.info/api/species/22"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "skinColors": [
+      "pale",
+      "brown",
+      "red",
+      "orange",
+      "yellow"
+    ],
+    "hairColors": [
+      "black"
+    ],
+    "eyeColors": [
+      "brown",
+      "orange"
+    ],
+    "language": "Zabraki",
+    "homeworld": "iridonia",
+    "people": [
+      "darth-maul",
+      "eeth-koth"
+    ],
+    "films": [
+      "the-phantom-menace"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "tholothian",
+    "name": "Tholothian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 23,
+        "url": "https://swapi.info/api/species/23"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "skinColors": [
+      "dark"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "blue",
+      "indigo"
+    ],
+    "homeworld": "tholoth",
+    "people": [
+      "adi-gallia"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "iktotchi",
+    "name": "Iktotchi",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 24,
+        "url": "https://swapi.info/api/species/24"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 180,
+    "skinColors": [
+      "pink"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "orange"
+    ],
+    "language": "Iktotchese",
+    "homeworld": "iktotch",
+    "people": [
+      "saesee-tiin"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "quermian",
+    "name": "Quermian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 25,
+        "url": "https://swapi.info/api/species/25"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 240,
+    "averageLifespan": 86,
+    "skinColors": [
+      "white"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "Quermian",
+    "homeworld": "quermia",
+    "people": [
+      "yarael-poof"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "kel-dor",
+    "name": "Kel Dor",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 26,
+        "url": "https://swapi.info/api/species/26"
+      }
+    ],
+    "designation": "sentient",
+    "averageHeight": 180,
+    "averageLifespan": 70,
+    "skinColors": [
+      "peach",
+      "orange",
+      "red"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black",
+      "silver"
+    ],
+    "language": "Kel Dor",
+    "homeworld": "dorin",
+    "people": [
+      "plo-koon"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "chagrian",
+    "name": "Chagrian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 27,
+        "url": "https://swapi.info/api/species/27"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 190,
+    "skinColors": [
+      "blue"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "blue"
+    ],
+    "language": "Chagria",
+    "homeworld": "champala",
+    "people": [
+      "mas-amedda"
+    ],
+    "films": [
+      "the-phantom-menace",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "geonosian",
+    "name": "Geonosian",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 28,
+        "url": "https://swapi.info/api/species/28"
+      }
+    ],
+    "classification": "insectoid",
+    "designation": "sentient",
+    "averageHeight": 178,
+    "skinColors": [
+      "green",
+      "brown"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "green",
+      "hazel"
+    ],
+    "language": "Geonosian",
+    "homeworld": "geonosis",
+    "people": [
+      "poggle-the-lesser"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "mirialan",
+    "name": "Mirialan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 29,
+        "url": "https://swapi.info/api/species/29"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "skinColors": [
+      "yellow",
+      "green"
+    ],
+    "hairColors": [
+      "black",
+      "brown"
+    ],
+    "eyeColors": [
+      "blue",
+      "green",
+      "red",
+      "yellow",
+      "brown",
+      "orange"
+    ],
+    "language": "Mirialan",
+    "homeworld": "mirial",
+    "people": [
+      "luminara-unduli",
+      "barriss-offee"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "clawdite",
+    "name": "Clawdite",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 30,
+        "url": "https://swapi.info/api/species/30"
+      }
+    ],
+    "classification": "reptilian",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "averageLifespan": 70,
+    "skinColors": [
+      "green",
+      "yellow"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "Clawdite",
+    "homeworld": "zolan",
+    "people": [
+      "zam-wesell"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "besalisk",
+    "name": "Besalisk",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 31,
+        "url": "https://swapi.info/api/species/31"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 178,
+    "averageLifespan": 75,
+    "skinColors": [
+      "brown"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "besalisk",
+    "homeworld": "ojom",
+    "people": [
+      "dexter-jettster"
+    ],
+    "films": [
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "kaminoan",
+    "name": "Kaminoan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 32,
+        "url": "https://swapi.info/api/species/32"
+      }
+    ],
+    "classification": "amphibian",
+    "designation": "sentient",
+    "averageHeight": 220,
+    "averageLifespan": 80,
+    "skinColors": [
+      "grey",
+      "blue"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Kaminoan",
+    "homeworld": "kamino",
+    "people": [
+      "lama-su",
+      "taun-we"
+    ],
+    "films": [
+      "attack-of-the-clones"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "skakoan",
+    "name": "Skakoan",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 33,
+        "url": "https://swapi.info/api/species/33"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "skinColors": [
+      "grey",
+      "green"
+    ],
+    "hairColors": [],
+    "eyeColors": [],
+    "language": "Skakoan",
+    "homeworld": "skako",
+    "people": [
+      "wat-tambor"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "muun",
+    "name": "Muun",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 34,
+        "url": "https://swapi.info/api/species/34"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 190,
+    "averageLifespan": 100,
+    "skinColors": [
+      "grey",
+      "white"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Muun",
+    "homeworld": "muunilinst",
+    "people": [
+      "san-hill"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "togruta",
+    "name": "Togruta",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 35,
+        "url": "https://swapi.info/api/species/35"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 180,
+    "averageLifespan": 94,
+    "skinColors": [
+      "red",
+      "white",
+      "orange",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "black"
+    ],
+    "language": "Togruti",
+    "homeworld": "shili",
+    "people": [
+      "shaak-ti"
+    ],
+    "films": [
+      "attack-of-the-clones",
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "kaleesh",
+    "name": "Kaleesh",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 36,
+        "url": "https://swapi.info/api/species/36"
+      }
+    ],
+    "classification": "reptile",
+    "designation": "sentient",
+    "averageHeight": 170,
+    "averageLifespan": 80,
+    "skinColors": [
+      "brown",
+      "orange",
+      "tan"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "yellow"
+    ],
+    "language": "Kaleesh",
+    "homeworld": "kalee",
+    "people": [
+      "grievous"
+    ],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  },
+  {
+    "kind": "species",
+    "slug": "pau-an",
+    "name": "Pau'an",
+    "sources": [
+      {
+        "source": "swapi",
+        "id": 37,
+        "url": "https://swapi.info/api/species/37"
+      }
+    ],
+    "classification": "mammal",
+    "designation": "sentient",
+    "averageHeight": 190,
+    "averageLifespan": 700,
+    "skinColors": [
+      "grey"
+    ],
+    "hairColors": [],
+    "eyeColors": [
+      "black"
+    ],
+    "language": "Utapese",
+    "homeworld": "utapau",
+    "people": [
+      "tion-medon"
+    ],
+    "films": [
+      "revenge-of-the-sith"
+    ]
+  }
+]
