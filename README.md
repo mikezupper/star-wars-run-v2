@@ -5,8 +5,8 @@ on its own page and linked to everything it relates to. Luke's page links to Tat
 Tatooine's page links back to everyone from there. You can search everything, and
 the pages you've visited still work offline.
 
-**Status:** being rebuilt (October 2026). The project scaffold is in place; data, pages,
-search and offline support are in progress.
+**Status:** rebuilt in October 2026: data, pages, search, offline support and the Docker
+image are done. Local CI and a larger dataset (Wookieepedia) are next.
 
 ## How it works
 
@@ -36,8 +36,16 @@ pnpm build
 pnpm preview    # http://localhost:5501
 ```
 
-Before committing, run the full check: typecheck, lint, formatting, tests (80% coverage
-minimum) and build.
+To build and run the production image (Caddy serving the static site):
+
+```sh
+pnpm docker:build
+pnpm docker:run   # http://localhost:8080
+```
+
+Before committing, run the full check: typecheck, lint, formatting, docs checks, tests (80%
+coverage minimum), build, and browser smoke tests. The first run needs
+`pnpm exec playwright install chromium`.
 
 ```sh
 pnpm check

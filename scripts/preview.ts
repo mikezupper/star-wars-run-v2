@@ -1,11 +1,12 @@
 /// <reference types="node" />
-// `pnpm preview`: serves dist/ the way the production server will: `/x/` → `x/index.html`,
-// `/x` → 308 to `/x/`, unknown paths → 404.html with status 404. Cache and security headers
-// arrive with the Docker bead (swr-3mo.10).
+// `pnpm preview`: serves dist/ the way the production server (Caddy, see Caddyfile) does:
+// `/x/` → `x/index.html`, `/x` → 308 to `/x/`, unknown paths → 404.html with status 404, and
+// the headers from src/hosting/headers.ts. The smoke test runs against this server.
 import { readFile, stat } from 'node:fs/promises';
 import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { headersFor } from '../src/hosting/headers.js';
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -36,6 +37,7 @@ export function createPreview(dist: string): http.Server {
       const send = async (file: string, status: number) => {
         res.writeHead(status, {
           'content-type': TYPES[extname(file)] ?? 'application/octet-stream',
+          ...headersFor(path, status),
         });
         res.end(await readFile(file));
       };

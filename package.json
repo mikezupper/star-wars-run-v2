@@ -22,7 +22,10 @@
     "test": "vitest run --coverage",
     "invariants": "node scripts/check-docs.mjs",
     "smoke": "node scripts/smoke.mjs",
-    "icons": "node scripts/render-icons.mjs"
+    "icons": "node scripts/render-icons.mjs",
+    "caddyfile": "tsx scripts/caddyfile.ts",
+    "docker:build": "docker build -t starwars-run .",
+    "docker:run": "docker run --rm -p 8080:8080 starwars-run"
   },
   "dependencies": {
     "@gyral/core": "^0.1.0",

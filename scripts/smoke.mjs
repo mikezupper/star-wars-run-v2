@@ -19,11 +19,18 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { chromium } from 'playwright';
 import { tsImport } from 'tsx/esm/api';
 
-const { createPreview } = await tsImport('./preview.ts', import.meta.url);
+// SMOKE_BASE_URL=http://localhost:8080 runs every check against another server instead, such
+// as the Docker image (`pnpm docker:run`). The page list still comes from the local dist/.
 const dist = new URL('../dist/', import.meta.url).pathname;
-const server = createPreview(dist.replace(/\/$/, ''));
-await new Promise((resolve) => server.listen(0, resolve));
-const base = `http://localhost:${String(server.address().port)}`;
+const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
+const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
+
+async function startPreview() {
+  const { createPreview } = await tsImport('./preview.ts', import.meta.url);
+  const preview = createPreview(dist.replace(/\/$/, ''));
+  await new Promise((resolve) => preview.listen(0, resolve));
+  return preview;
+}
 
 const paths = [
   ...readFileSync(`${dist}sitemap.xml`, 'utf8').matchAll(
@@ -63,7 +70,7 @@ try {
   await checkOffline();
 } finally {
   await browser.close();
-  server.close();
+  server?.close();
 }
 
 /** Home, list pages, search, 404, and the first two records of each kind. */

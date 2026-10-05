@@ -106,6 +106,11 @@ export default tseslint.config(
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
   },
   {
+    // The header policy is plain data; preview and the Caddyfile generator read it.
+    files: ['src/hosting/**/*.ts'],
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+  },
+  {
     // The precache list is pure; the worker imports only Workbox.
     files: ['src/offline/**/*.ts'],
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),

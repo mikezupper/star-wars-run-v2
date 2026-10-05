@@ -31,6 +31,8 @@ disagree, the doc wins; fix this file.
 
 | `pnpm smoke` | Built site in Chromium: status, console, axe, 360px overflow, links, search, offline |
 | `pnpm icons` | Render `public/icons/icon.svg` to the PNG sizes; commit the result |
+| `pnpm caddyfile` | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it) |
+| `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080 |
 
 First run needs `pnpm exec playwright install chromium`. Coming with its bead: `pnpm ci:local`
 (`swr-3mo.12`). Don't call it before it exists.

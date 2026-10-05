@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+.smoke
+.git
+.beads
+.claude
+.vscode
+*.md
+!README.md

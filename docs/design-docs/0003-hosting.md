@@ -1,6 +1,6 @@
 # ADR 0003 — Hosting: a Docker image on a VPS, behind Cloudflare
 
-Status: **accepted** (2026-10-05). Implementation: `swr-3mo.10`; offline support: `swr-3mo.9`.
+Status: **accepted** (2026-10-05). Implemented in `swr-3mo.10` (image, headers) and `swr-3mo.9` (offline).
 
 ## Context
 
@@ -10,22 +10,33 @@ Cloudflare's edge or the browser cache without reaching the VPS.
 
 ## Decision
 
-- The site ships as a **Docker image**. A multi-stage build runs `pnpm build`, and the final
-  stage serves `dist/` with a static file server (Caddy or nginx; the bead decides). No Node
-  process runs in production.
-- **Cache headers do the scaling.** The planned policy:
+- The site ships as a **Docker image** (`Dockerfile`): `node:24-slim` runs `pnpm build`, then
+  `caddy:2-alpine` serves `dist/` on port 8080. No Node process runs in production; the image
+  is about 70 MB. `pnpm docker:build` and `pnpm docker:run` build and run it locally.
+- **Headers have one source:** `src/hosting/headers.ts`. The preview server applies it, so
+  `pnpm smoke` runs under the production CSP, and `pnpm caddyfile` renders it to the committed
+  `Caddyfile`. A test fails if the two drift.
+- **Cache headers do the scaling:**
 
-  | Path                 | `Cache-Control`                                              | Why                                         |
-  | -------------------- | ------------------------------------------------------------ | ------------------------------------------- |
-  | `/assets/*` (hashed) | `public, max-age=31536000, immutable`                        | The file name changes when the content does |
-  | HTML pages           | short `max-age`, longer `s-maxage`, `stale-while-revalidate` | Cloudflare holds pages; browsers recheck    |
-  | `/sw.js`             | `no-cache`                                                   | A stale worker would pin old pages          |
+  | Path                                                    | `Cache-Control`                                                    | Why                                                        |
+  | ------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------- |
+  | `/assets/*` (hashed)                                    | `public, max-age=31536000, immutable`                              | The file name changes when the content does                |
+  | `/icons/*`                                              | `public, max-age=86400`                                            | Rarely change, not hashed                                  |
+  | `/sw.js`                                                | `no-cache`                                                         | A stale worker would pin old pages                         |
+  | Everything else (HTML, search index, manifest, sitemap) | `public, max-age=300, s-maxage=3600, stale-while-revalidate=86400` | Browsers recheck after 5 minutes; Cloudflare holds an hour |
+  | 404 responses                                           | `public, max-age=60`                                               | A page added by a deploy shows up quickly                  |
 
-  The bead sets the exact numbers and records them here.
+  **Cloudflare doesn't cache HTML by default.** For `s-maxage` to take effect, add a Cache
+  Rule for the site that makes responses eligible for cache and respects origin headers.
 
-- Security headers, including a Content Security Policy, are set by the file server.
-- `pnpm preview` serves `dist/` with the same URL rules as production: a slash added with a
-  308 redirect, and `404.html` with status 404 for unknown paths.
+- **Security headers on every response, the 404 included:** a Content Security Policy (`'self'`
+  only; `'unsafe-inline'` styles for Declarative Shadow DOM; `'wasm-unsafe-eval'` for Pagefind's
+  WebAssembly, which does not allow `eval()`), HSTS without `includeSubDomains`, `nosniff`, a
+  referrer policy, a permissions policy, and `Cross-Origin-Opener-Policy`. Caddy's `Server`
+  header is removed.
+- `pnpm preview` and Caddy share the URL rules: a slash added with a 308 redirect, and
+  `404.html` with status 404 for unknown paths. `SMOKE_BASE_URL=http://localhost:8080 pnpm
+smoke` runs the whole smoke suite against the running image.
 - The site works offline as a PWA. The service worker (`src/offline/sw.ts`, Workbox) is
   bundled after prerendering by `scripts/build-sw.ts`, the way
   `mikezupper-blog-astro/scripts/build-service-worker.mjs` does it:
