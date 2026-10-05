@@ -1,0 +1,6 @@
+.beads/
+pnpm-lock.yaml
+dist/
+coverage/
+.claude/
+.pnpm-store/

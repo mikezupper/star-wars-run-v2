@@ -1,38 +1,47 @@
 {
-  "name": "starwars.run-site-v2",
-  "version": "1.0.0",
-  "description": "This is a vanilla HTML template that does not use any build tools. It simply provides a starting point for HTML and vanilla JavaScript",
-  "main": "src/index.js",
+  "name": "starwars.run",
+  "private": true,
   "type": "module",
+  "license": "MIT",
+  "author": "Mike Zupper",
+  "description": "starwars.run: a Star Wars content site with search, detail pages and cross-links, built with Gyral.",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "build": "node ./node_modules/bin/esbuild esbuild.config.js"
+    "dev": "tsx scripts/dev.ts",
+    "build": "vite build && tsx scripts/build.ts",
+    "preview": "tsx scripts/preview.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mikezupper/star-wars-run-v2.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mikezupper/star-wars-run-v2/issues"
-  },
-  "homepage": "https://github.com/mikezupper/star-wars-run-v2#readme",
   "dependencies": {
-    "@cycle/dom": "^23.0.0",
-    "@cycle/http": "^15.4.0",
-    "@cycle/isolate": "^5.2.0",
-    "@cycle/run": "^5.5.0",
-    "esbuild": "^0.14.54",
-    "xstream": "^11.14.0"
+    "@gyral/core": "^0.1.0",
+    "@gyral/ssr": "^0.1.0",
+    "@lit-labs/ssr": "4.1.0",
+    "@lit-labs/ssr-client": "1.1.8",
+    "lit": "3.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.1.1",
-    "esbuild-plugin-resolve": "^1.0.3",
-    "rollup": "^2.61.1",
-    "rollup-plugin-commonjs": "^10.1.0"
+    "@eslint/js": "10.0.1",
+    "@gyral/testing": "^0.1.0",
+    "@types/node": "24.19.1",
+    "@vitest/coverage-v8": "5.0.3",
+    "eslint": "10.12.0",
+    "eslint-plugin-compat": "7.0.2",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "stylelint": "17.16.0",
+    "stylelint-plugin-use-baseline": "1.4.6",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.0",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
   }
 }
