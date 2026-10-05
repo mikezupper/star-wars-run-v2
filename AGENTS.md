@@ -22,7 +22,7 @@ disagree, the doc wins; fix this file.
 | `pnpm install`    | Install. `@gyral/*` comes from npm                                                 |
 | `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build · smoke |
 | `pnpm invariants` | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)        |
-| `pnpm dev`        | Dev server on http://localhost:5500, rendering each request                        |
+| `pnpm dev`        | Dev server on http://localhost:5500. Search uses the last `pnpm build`'s index     |
 | `pnpm build`      | `vite build`, then prerender every page to `dist/`                                 |
 | `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501                   |
 | `pnpm test`       | Vitest with coverage; fails below 80% on any metric                                |

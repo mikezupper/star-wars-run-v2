@@ -13,6 +13,18 @@ Each entry has four parts:
 
 ---
 
+## Search failed on the dev server: no index at /pagefind/ (2026-10-05)
+
+- **Symptom:** On `pnpm dev` (http://localhost:5500), search said "The search index didn't
+  load". It worked on `pnpm preview` and in the Docker image.
+- **Cause:** Pagefind builds the index from the finished pages at the end of `pnpm build`, into
+  `dist/pagefind/`. The dev server renders pages per request and never serves `dist/`, so
+  `/pagefind/pagefind.js` fell through to the 404 page.
+- **Fix:** `scripts/dev.ts` serves `/pagefind/*` from the last build's `dist/pagefind/`. With
+  no build, it answers a plain-text 404 that says to run `pnpm build`.
+- **Guard:** none automated yet: `pnpm check` never starts the dev server. Filed as
+  `swr-etv`.
+
 ## Search failed offline: Pagefind's `?ts=` missed the precache (2026-10-05)
 
 - **Symptom:** With the network off, /search/ showed nothing and logged "Failed to load
