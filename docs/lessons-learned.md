@@ -13,6 +13,17 @@ Each entry has four parts:
 
 ---
 
+## Search failed offline: Pagefind's `?ts=` missed the precache (2026-10-05)
+
+- **Symptom:** With the network off, /search/ showed nothing and logged "Failed to load
+  Pagefind metadata", although every Pagefind file was precached.
+- **Cause:** pagefind.js requests `pagefind-entry.json?ts=<timestamp>` to bust caches. Workbox
+  matches precache URLs including their query, so the request missed and went to the network.
+- **Fix:** `src/offline/sw.ts` passes `/^ts$/` in `ignoreURLParametersMatching`, alongside the
+  search page's own `q` and `kind`.
+- **Guard:** `pnpm smoke` searches with the network off (`checkOffline` in
+  `scripts/smoke.mjs`).
+
 ## `pnpm format` rewrote the generated snapshot (2026-10-05)
 
 - **Symptom:** Running `pnpm ingest` twice changed every file in `data/`, even

@@ -15,7 +15,7 @@ const vite = await createViteServer({
 const DEV_ASSETS = {
   stylesheet: '/src/styles/site.css',
   clientEntry: '/src/entry-client.ts',
-  shortcuts: '/src/shortcuts.ts',
+  page: '/src/page.ts',
 };
 
 async function render(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {

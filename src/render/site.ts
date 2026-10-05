@@ -9,6 +9,7 @@ import { TEXT } from '../labels.js';
 import { layout, type Assets, type PageMeta } from './layout.js';
 import { listBody, listMeta } from './list.js';
 import { recordBody, recordMeta } from './record.js';
+import { offlineBody, offlineMeta } from './offline.js';
 import { searchBody, searchMeta } from './search.js';
 
 interface Route {
@@ -51,6 +52,7 @@ export function createSite(assets: Assets, data: Dataset): Site {
   const table = new Map<string, Route>([
     ['/', { meta: homeMeta, body: () => homeBody(data) }],
     [searchMeta.path, { meta: searchMeta, body: searchBody }],
+    [offlineMeta.path, { meta: offlineMeta, body: offlineBody }],
   ]);
   for (const kind of KINDS) {
     const list = listMeta(kind, data);

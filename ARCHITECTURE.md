@@ -25,16 +25,17 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer           | Runs                 | Contains                                                     | May import                                                                         |
-| --------------- | -------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| `src/site.ts`   | server and browser   | Site-wide constants: origin, name, description               | nothing                                                                            |
-| `src/labels.ts` | server and browser   | Every user-facing string (copy lives here only)              | `src/domain/` (types)                                                              |
-| `src/domain/`   | server and browser   | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                                      |
-| `src/ingest/`   | Node, `pnpm ingest`  | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                                      |
-| `src/data/`     | Node, build time     | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                                      |
-| `src/render/`   | Node, build time     | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
-| `src/islands/`  | browser (and server) | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                       |
-| `scripts/`      | Node                 | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                                           |
+| Layer           | Runs                                  | Contains                                                     | May import                                                                         |
+| --------------- | ------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description               | nothing                                                                            |
+| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)              | `src/domain/` (types)                                                              |
+| `src/domain/`   | server and browser                    | Record types, slugs, link resolution. Pure functions only    | `src/site.ts`                                                                      |
+| `src/ingest/`   | Node, `pnpm ingest`                   | Fetch each source, parse at the boundary, write the snapshot | `src/domain/`, Node built-ins                                                      |
+| `src/data/`     | Node, build time                      | Read the snapshot in `data/` into domain records             | `src/domain/`, Node built-ins                                                      |
+| `src/render/`   | Node, build time                      | Route table, page templates (`serverHtml`), layout, sitemap  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
+| `src/islands/`  | browser (and server)                  | Interactive Gyral components hydrated on a page (search)     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                       |
+| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)         | Workbox                                                                            |
+| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks        | anything                                                                           |
 
 **Status today:** every layer exists.
 
@@ -56,7 +57,7 @@ that serves every page. The dev server calls it once per request; the build call
 `prerender()` with every path and writes `dist/<path>/index.html`.
 
 Page templates use `serverHtml` and are never hydrated, so a page without islands ships
-**no framework JavaScript**: only `src/shortcuts.ts`, a few hundred bytes for the `/` search
+**no framework JavaScript**: only `src/page.ts`, a few hundred bytes for the `/` search
 key. Interactive parts are islands: `define()` components rendered with Declarative Shadow DOM
 and hydrated in place by `src/entry-client.ts`, which loads only on pages that set
 `islands: true` (today, `/search/`). See

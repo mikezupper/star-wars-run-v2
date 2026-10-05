@@ -11,6 +11,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
+      // Runs only inside a service worker; `pnpm smoke` checks it offline in Chromium.
+      exclude: ['src/offline/sw.ts'],
       reporter: ['text-summary', 'text'],
       thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
     },

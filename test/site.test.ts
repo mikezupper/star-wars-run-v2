@@ -6,9 +6,10 @@ import { createSite, normalise, sitemap } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 
 const STYLESHEET = '/assets/site.css';
+const UNLISTED = ['/search/', '/offline/'];
 const data = await loadDataset();
 const site = createSite(
-  { stylesheet: STYLESHEET, clientEntry: '/assets/entry.js', shortcuts: '/assets/shortcuts.js' },
+  { stylesheet: STYLESHEET, clientEntry: '/assets/entry.js', page: '/assets/page.js' },
   data,
 );
 const get = (path: string) => site.fetch(new Request(new URL(path, ORIGIN)));
@@ -22,13 +23,13 @@ const pages = new Map(
 describe('route table', () => {
   it('has home, a list page per kind and a page per record', () => {
     const records = KINDS.reduce((n, kind) => n + data[kind].length, 0);
-    // Home, search, a list per kind, a page per record.
-    expect(site.paths).toHaveLength(2 + KINDS.length + records);
+    // Home, search, offline, a list per kind, a page per record.
+    expect(site.paths).toHaveLength(3 + KINDS.length + records);
     expect(site.paths).toContain('/');
     expect(site.paths).toContain('/people/');
     expect(site.paths).toContain('/people/luke-skywalker/');
-    // The search page has no content of its own: it's noindex and left out of the sitemap.
-    expect(site.sitemapPaths).toEqual(site.paths.filter((p) => p !== '/search/'));
+    // Search and offline have no content of their own: noindex, and not in the sitemap.
+    expect(site.sitemapPaths).toEqual(site.paths.filter((p) => !UNLISTED.includes(p)));
   });
 
   it('serves every path with status 200 as HTML', async () => {
@@ -57,7 +58,12 @@ describe('every page', () => {
     const broken: string[] = [];
     for (const [page, body] of pages) {
       for (const [, href] of body.matchAll(/href="(\/[^"]*)"/g)) {
-        if (href === undefined || href.startsWith('/assets/') || href.startsWith('/icons/'))
+        if (
+          href === undefined ||
+          href === '/manifest.webmanifest' ||
+          href.startsWith('/assets/') ||
+          href.startsWith('/icons/')
+        )
           continue;
         if (!paths.has(href)) broken.push(`${page} → ${href}`);
       }
@@ -69,9 +75,7 @@ describe('every page', () => {
     for (const [page, body] of pages) {
       const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
       expect(scripts, page).toEqual(
-        page === '/search/'
-          ? ['/assets/shortcuts.js', '/assets/entry.js']
-          : ['/assets/shortcuts.js'],
+        page === '/search/' ? ['/assets/page.js', '/assets/entry.js'] : ['/assets/page.js'],
       );
       expect(body.match(/<script/g), page).toHaveLength(scripts.length);
     }
@@ -85,7 +89,7 @@ describe('every page', () => {
   });
 
   it('has a unique title and description, and a canonical URL with a trailing slash', () => {
-    const indexed = [...pages].filter(([page]) => page !== '/search/');
+    const indexed = [...pages].filter(([page]) => !UNLISTED.includes(page));
     const titles = new Set<string>();
     const descriptions = new Set<string>();
     for (const [page, body] of indexed) {
@@ -205,5 +209,20 @@ describe('sitemap', () => {
     const xml = sitemap(['/', '/films/']);
     expect(xml).toContain(`<loc>${absolute('/')}</loc>`);
     expect(xml).toContain('<loc>https://starwars.run/films/</loc>');
+  });
+});
+
+describe('offline page', () => {
+  it('says the reader is offline and links to what still works', () => {
+    const offline = pages.get('/offline/') ?? '';
+    expect(offline).toContain('<meta name="robots" content="noindex">');
+    expect(offline).toContain('href="/search/"');
+    expect(offline).toContain('href="/people/"');
+  });
+
+  it('is linked from every page head through the web manifest', () => {
+    for (const [page, body] of pages) {
+      expect(body, page).toContain('<link rel="manifest" href="/manifest.webmanifest">');
+    }
   });
 });

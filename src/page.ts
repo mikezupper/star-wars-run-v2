@@ -1,6 +1,9 @@
-// Loaded on every page (a few hundred bytes, no framework): `/` or Ctrl/⌘+K focuses search.
-// On /search/ that's the island's box; everywhere else it's the header form, which submits to
-// /search/?q=… and works without this script. Adapted from gyral.dev's src/shortcuts.ts.
+// Loaded on every page (a few hundred bytes, no framework):
+// - `/` or Ctrl/⌘+K focuses search. On /search/ that's the island's box; everywhere else it's
+//   the header form, which submits to /search/?q=… and works without this script. Adapted from
+//   gyral.dev's src/shortcuts.ts.
+// - In production builds, registers the service worker (/sw.js, built by scripts/build.ts) that
+//   makes the site work offline (docs/product-specs/offline.md).
 
 const typing = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
@@ -20,6 +23,10 @@ document.addEventListener('keydown', (event) => {
   box.focus();
   box.select();
 });
+
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  void navigator.serviceWorker.register('/sw.js');
+}
 
 // A module, so tests can import it and the build treats it as one entry.
 export {};

@@ -84,6 +84,21 @@ importers:
       vitest:
         specifier: 5.0.3
         version: 5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+      workbox-core:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-expiration:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-precaching:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-routing:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-strategies:
+        specifier: 7.4.1
+        version: 7.4.1
 
 packages:
 
@@ -1083,6 +1098,9 @@ packages:
     resolution: {integrity: sha512-n6l5uca7/y5joxZ3LUePhzmBFUJ+U2YWzhMa8XUTecSeSlQiZdF5XAd/Q3/WUl0VsXgUwWi8I7CNIwdI5WN1SQ==}
     engines: {node: '>=20.10'}
 
+  idb@7.1.1:
+    resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
+
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
@@ -1703,6 +1721,21 @@ packages:
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
+
+  workbox-core@7.4.1:
+    resolution: {integrity: sha512-DT+vu46eh/2vRsSHTY4Xmc32Z1rr9PRlQUXr1Dx30ZuXRWwOsvZgGgcwxcasubQLQmbTNYZjv44LkBAQ4tT5tQ==}
+
+  workbox-expiration@7.4.1:
+    resolution: {integrity: sha512-lRKUF7b+OGbeXkQk1s6MHXOa3d7Xxf7Of31W6c6hCfipfIyrtdWZ89stq21AHZMaoG7VNFoHply4Ox+rU31TWg==}
+
+  workbox-precaching@7.4.1:
+    resolution: {integrity: sha512-cdr/9qByww7yzEp7zg/qI4ukUrrNjQLgN+ONQRpjy/VqGQXwkgHwr00KksGJK8v0VifwDXBb8a4cWNZH71jn3Q==}
+
+  workbox-routing@7.4.1:
+    resolution: {integrity: sha512-yubJGErZOusuidAenaL5ypfhQOa7urxP/f8E0ws7FPb4039RiWXUWBAyUkmUoOL/BcQGen3h0J8872d51IYxtA==}
+
+  workbox-strategies@7.4.1:
+    resolution: {integrity: sha512-GZxpaw9NbmOelj7667uZ2kpk5BFpOGbO4X0qjwh5ls8XQ8C+Lha5LQchTiUzsTFSS+NlUpftYAyOVXvQUrcqOQ==}
 
   write-file-atomic@7.0.1:
     resolution: {integrity: sha512-OTIk8iR8/aCRWBqvxrzxR0hgxWpnYBblY1S5hDWBQfk/VFmJwzmJgQFN3WsoUKHISv2eAwe+PpbUzyL1CKTLXg==}
@@ -2594,6 +2627,8 @@ snapshots:
 
   html-tags@5.1.0: {}
 
+  idb@7.1.1: {}
+
   ignore@5.3.2: {}
 
   ignore@7.0.12: {}
@@ -3119,6 +3154,27 @@ snapshots:
   why-is-node-running@3.2.1: {}
 
   word-wrap@1.2.5: {}
+
+  workbox-core@7.4.1: {}
+
+  workbox-expiration@7.4.1:
+    dependencies:
+      idb: 7.1.1
+      workbox-core: 7.4.1
+
+  workbox-precaching@7.4.1:
+    dependencies:
+      workbox-core: 7.4.1
+      workbox-routing: 7.4.1
+      workbox-strategies: 7.4.1
+
+  workbox-routing@7.4.1:
+    dependencies:
+      workbox-core: 7.4.1
+
+  workbox-strategies@7.4.1:
+    dependencies:
+      workbox-core: 7.4.1
 
   write-file-atomic@7.0.1:
     dependencies:

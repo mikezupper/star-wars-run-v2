@@ -1,4 +1,4 @@
-// src/shortcuts.ts in Node, with just enough of a DOM stubbed to drive its one listener.
+// src/page.ts in Node, with just enough of a DOM stubbed to drive it.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 class FakeElement {
@@ -20,7 +20,7 @@ async function setup(box: { focus: () => void; select: () => void } | null) {
     addEventListener: (_type: string, fn: (event: unknown) => void) => (listener = fn),
     querySelector: (selector: string) => (selector === '#site-search-q' ? box : null),
   });
-  await import('../../src/shortcuts.js');
+  await import('../../src/page.js');
   return (key: string, init: object = {}) => {
     const event = { key, target: new FakeElement('BODY'), preventDefault: vi.fn(), ...init };
     listener?.(event);
@@ -53,5 +53,19 @@ describe('search shortcut', () => {
   it('does nothing when the page has no search box', async () => {
     const press = await setup(null);
     expect(press('/')).not.toHaveBeenCalled();
+  });
+});
+
+describe('service worker registration', () => {
+  it('registers /sw.js in production builds only', async () => {
+    const register = vi.fn(() => Promise.resolve());
+    vi.stubGlobal('navigator', { serviceWorker: { register } });
+    await setup(null);
+    expect(register).not.toHaveBeenCalled();
+    vi.resetModules();
+    vi.stubEnv('PROD', true);
+    await setup(null);
+    expect(register).toHaveBeenCalledWith('/sw.js');
+    vi.unstubAllEnvs();
   });
 });

@@ -9,7 +9,10 @@
 // - search (docs/product-specs/search.md): the header form and the `/` key reach /search/,
 //   each query finds its expected pages in the top five, the kind filter filters, arrows and
 //   Escape work, the island hydrates in place (one copy), and without JavaScript the page
-//   offers the section links instead.
+//   offers the section links instead;
+// - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
+//   once the service worker controls the page, a visited record page, search, and the offline
+//   page for an unvisited record all work with the network off.
 // Report: .smoke/report.md. Exit 1 on any failure. Adapted from gyral.dev's scripts/smoke.mjs.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
@@ -28,7 +31,7 @@ const paths = [
   ),
 ].map((m) => m[1]);
 // Pages deliberately left out of the sitemap (noindex) that still ship.
-const unlisted = ['/search/'];
+const unlisted = ['/search/', '/offline/'];
 /** Each query must list every expected page in its first five results. */
 const SEARCHES = [
   ['sky', ['/people/luke-skywalker/', '/people/anakin-skywalker/', '/people/shmi-skywalker/']],
@@ -57,6 +60,7 @@ try {
   await checkLinks(links);
   await checkSearch();
   await checkWithoutJavaScript();
+  await checkOffline();
 } finally {
   await browser.close();
   server.close();
@@ -224,12 +228,62 @@ async function checkWithoutJavaScript() {
   }
 }
 
+async function checkOffline() {
+  const where = 'offline';
+  const manifest = await (await fetch(`${base}/manifest.webmanifest`)).json();
+  for (const size of ['192x192', '512x512']) {
+    const icon = manifest.icons?.find((i) => i.sizes === size && i.purpose === 'any');
+    if (icon === undefined) fail(where, `manifest has no ${size} icon`);
+    else if ((await fetch(base + icon.src)).status !== 200) fail(where, `${icon.src} is missing`);
+  }
+  if (manifest.display !== 'standalone' || manifest.start_url !== '/')
+    fail(where, 'manifest must set display: standalone and start_url: /');
+
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    page.on('pageerror', (e) => fail(where, `page error: ${e.message}`));
+    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    // Wait for install (the precache) and for the worker to take control of this page.
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+      if (navigator.serviceWorker.controller === null) {
+        await new Promise((resolve) =>
+          navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }),
+        );
+      }
+    });
+    // A visit through the worker saves the page.
+    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await context.setOffline(true);
+
+    await page.goto(`${base}/people/luke-skywalker/`);
+    const h1 = await page.locator('h1').textContent();
+    if (h1 !== 'Luke Skywalker') fail(where, `visited page shows "${String(h1)}" offline`);
+
+    await page.goto(`${base}/search/?q=sky`);
+    try {
+      await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
+    } catch {
+      fail(where, 'search found nothing offline');
+    }
+
+    await page.goto(`${base}/people/yoda/`);
+    const offline = await page.locator('h1').textContent();
+    if (!/offline/i.test(offline ?? '')) {
+      fail(where, `unvisited page shows "${String(offline)}" offline, not the offline page`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
 mkdirSync('.smoke', { recursive: true });
 const seconds = ((Date.now() - started) / 1000).toFixed(0);
 const report = [
   '# Smoke report',
   '',
-  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search (${seconds}s).`,
+  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search and offline (${seconds}s).`,
   '',
   failures.length === 0 ? 'All checks passed.' : failures.map((f) => `- ${f}`).join('\n'),
   '',
@@ -240,5 +294,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, and search: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search and offline: all checks passed (${seconds}s)`,
 );

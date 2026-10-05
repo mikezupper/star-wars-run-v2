@@ -41,7 +41,7 @@ Show a field only when its value is known. Units are written out (`172 cm`, `77 
   type.
 - Every internal link on every page resolves to a built page (checked by script).
 - Record and list pages ship no framework JavaScript. The only script is the search
-  shortcut (`src/shortcuts.ts`, a few hundred bytes), and the page works without it.
+  shortcut and service worker registration (`src/page.ts`, a few hundred bytes), and the page works without it.
 - Each page has a unique `<title>` and description, and a canonical URL with a trailing
   slash. All indexable pages are in `sitemap.xml`.
 - `/people/luke-skywalker/` links to `/planets/tatooine/`, and `/planets/tatooine/` links

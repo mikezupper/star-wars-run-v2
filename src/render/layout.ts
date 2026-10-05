@@ -13,8 +13,8 @@ export interface Assets {
   readonly stylesheet: string;
   /** The client entry that hydrates islands; only pages with islands load it. */
   readonly clientEntry: string;
-  /** The `/` search shortcut: a few hundred bytes, no framework, on every page. */
-  readonly shortcuts: string;
+  /** The every-page script: the `/` search key and service worker registration (src/page.ts). */
+  readonly page: string;
 }
 
 export interface PageMeta {
@@ -48,8 +48,11 @@ const head = (meta: PageMeta, assets: Assets) => serverHtml`
   <meta property="og:title" content=${fullTitle(meta)}>
   <meta property="og:description" content=${meta.description}>
   <meta property="og:url" content=${absolute(meta.path)}>
+  <meta name="theme-color" content="#212731">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/favicon.ico" sizes="32x32">
-  <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.png">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="stylesheet" href=${assets.stylesheet}>
 `;
 
@@ -96,7 +99,7 @@ export function layout(meta: PageMeta, body: unknown, assets: Assets): unknown {
     title: fullTitle(meta),
     description: meta.description,
     head: head(meta, assets),
-    scripts: meta.islands === true ? [assets.shortcuts, assets.clientEntry] : [assets.shortcuts],
+    scripts: meta.islands === true ? [assets.page, assets.clientEntry] : [assets.page],
     body: serverHtml`${banner(meta)}<main
         id="main"
         data-pagefind-body=${meta.searchKind === undefined ? nothing : ''}

@@ -8,6 +8,7 @@ import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
 import * as pagefind from 'pagefind';
 import { loadDataset } from '../src/data/load.js';
 import { createSite, sitemap } from '../src/render/site.js';
+import { buildServiceWorker } from './build-sw.js';
 import { ORIGIN } from '../src/site.js';
 
 export async function buildSite(dist: string): Promise<readonly string[]> {
@@ -16,7 +17,7 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
     {
       stylesheet: await clientEntryFromManifest(manifest, 'src/styles/site.css'),
       clientEntry: await clientEntryFromManifest(manifest, 'src/entry-client.ts'),
-      shortcuts: await clientEntryFromManifest(manifest, 'src/shortcuts.ts'),
+      page: await clientEntryFromManifest(manifest, 'src/page.ts'),
     },
     await loadDataset(),
   );
@@ -26,6 +27,9 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
   // The manifest is build metadata, not a page asset: don't publish it.
   await rm(join(dist, '.vite'), { recursive: true, force: true });
   await indexForSearch(dist);
+  // Last: the service worker's precache list covers everything written above.
+  const sw = await buildServiceWorker(dist);
+  console.log(`service worker: ${String(sw.entries)} precached files, sw.js ${sw.kb} KB`);
   return pages.map((p) => p.path);
 }
 
