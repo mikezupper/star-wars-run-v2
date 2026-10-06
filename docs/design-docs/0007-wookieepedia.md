@@ -1,7 +1,7 @@
 # ADR 0007 — Wookieepedia as a second data source
 
-Status: **proposed** (2026-10-05). Spike: `swr-4g6`. Needs the owner's decision on the open
-questions at the end before any implementation bead starts.
+Status: **accepted** (2026-10-06), with the owner's decisions below. Spike: `swr-4g6`.
+Implementation: epic `swr-7f1`.
 
 ## Recommendation
 
@@ -17,8 +17,8 @@ The conditions:
    they answer, download the dump by hand.
 2. Credit every page to its Wookieepedia article and license the derived data CC BY-SA 3.0.
    The code stays MIT.
-3. Start with canon, in-universe articles of the six kinds the site already has. Legends and
-   other kinds come later, if at all.
+3. ~~Start with canon in the six existing kinds.~~ Superseded: the owner chose all of it
+   (Decisions, below).
 4. No images: Wookieepedia's images are fair-use material, not CC BY-SA (`swr-8to`: close as
    won't do, unless a licensed image source turns up).
 
@@ -106,24 +106,41 @@ numbers. That's a change from swapi.info's typed fields.
 | Offline search        | Whole index precached              | Can't precache tens of MB of fragments. Instead, precache a compact title index (slug, name and kind for every record, about 1.5 MB raw, a few hundred KB gzipped) and search titles offline. Full-text search needs the network.                   |
 | Attribution           | Footer credit to swapi.info        | A credit line on every Wookieepedia-derived page, linking the source article and CC BY-SA 3.0, and saying it was modified. A license note for `data/`.                                                                                              |
 
-## Open questions for the owner
+## Decisions (owner, 2026-10-06)
 
-1. **Ask Fandom first?** Recommended: email Fandom about dump-based reuse before building.
-   Until they answer, the ingest reads a dump you download by hand.
-2. **Scope:** canon only, in the six existing kinds (about 29,000 pages)? Or Legends too
-   (roughly another 43,000 in the same kinds)?
-3. **Prose:** facts and links only, or also each article's opening paragraph? Prose makes
-   pages far richer, and the whole site's content then becomes CC BY-SA text.
-4. **Images:** close `swr-8to` as won't do?
+1. **Source:** the dump, read from a local file. The owner keeps it at
+   `~/Downloads/starwars_pages_current.xml.7z`; the ingest takes the path as an argument and
+   never downloads it. Whether to ask Fandom about automated dump downloads stays open; until
+   then, downloads are by hand.
+2. **Scope: all of it.** Every article, canon and Legends, every infobox kind (about 60), not
+   just the six kinds the site has today: about 227,000 pages. Legends pages are labelled as
+   such.
+3. **Prose: yes.** Pages show article text as well as facts, so the site's text is CC BY-SA 3.0
+   with a credit line on every derived page. Code stays MIT.
+4. **Images: on hold** until this epic is done (`swr-8to`).
+5. **Querying: DuckDB-WASM** on an Explore page, over a Parquet snapshot fetched with HTTP range
+   requests. No server. It complements, not replaces, prerendered pages (SEO, no-JS, links)
+   and Pagefind (typing a name). Its engine is about 8 MB gzipped (`duckdb-eh.wasm`, 36 MB
+   raw, measured on 1.33), so only the Explore page loads it.
+6. **Rendering: Gyral 0.2.0.** Shared page chrome (head, header, nav, footer) stays one set of
+   server-only components in `src/render/layout.ts`: written once, rendered into every page.
+   Hydrated `define()` components are only for interactive parts; making the header one would
+   add framework JavaScript to every page without removing any markup. Measured on Luke's page
+   (0.1.0): the chrome is about 2.5 KB raw, 1.1 KB gzipped, against 2.1 KB of content. If
+   on-disk duplication matters at full size, Caddy can stitch shared chrome in at serve time
+   (`templates`); `swr-7f1.6` decides that with real numbers.
 
-## Implementation beads (to file once the questions are answered)
+## Implementation (epic `swr-7f1`)
 
-1. Wikitext parsing: a cleaning rule per infobox field, a link resolver that follows
-   redirects, and property tests against sample pages.
-2. Dump ingest: stream the dump, filter canon in-universe articles, write gzipped shards,
-   record the dump's date and hash.
-3. Merge with swapi.info by name; record both sources.
-4. Scale the build: measure prerender time and `dist/` size. One sitemap holds up to 50,000
-   URLs, which is enough for canon; adding Legends would need a sitemap index.
-5. Offline title index and the service worker change.
-6. Attribution on every page and a license note for `data/`.
+| Bead         | Work                                                              | Needs      |
+| ------------ | ----------------------------------------------------------------- | ---------- |
+| `swr-7f1.1`  | Upgrade to Gyral 0.2.0; pin lit-html 3.3.0                        | —          |
+| `swr-7f1.2`  | Wikitext parsing: clean infobox fields and lead prose             | `.1`       |
+| `swr-7f1.3`  | Dump ingest: stream the 7z into a snapshot; choose the format     | `.2`       |
+| `swr-7f1.4`  | Generalize kinds to every infobox type                            | `.3`       |
+| `swr-7f1.5`  | Merge swapi.info records into Wookieepedia ones                   | `.3`       |
+| `swr-7f1.6`  | Build at full size: measure, set budgets, decide chrome stitching | `.4`       |
+| `swr-7f1.7`  | Explore page: DuckDB-WASM over Parquet                            | `.3`       |
+| `swr-7f1.8`  | Offline at scale: title index                                     | `.6`       |
+| `swr-7f1.9`  | Attribution and CC BY-SA on every page                            | `.3`       |
+| `swr-7f1.10` | Render article prose                                              | `.3`, `.9` |
