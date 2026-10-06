@@ -182,3 +182,36 @@ describe('helpers', () => {
     expect(sitemap(['/', '/media/'])).toContain(`<loc>${absolute('/media/')}</loc>`);
   });
 });
+
+describe('appearances', () => {
+  const luke = () => pages.get(pathOf('Luke Skywalker')) ?? '';
+  const newHope = () => pages.get(pathOf('Star Wars: Episode IV A New Hope')) ?? '';
+
+  it('lists the works an article appears in, linking those the archive has, with markers', () => {
+    expect(luke()).toContain('<h2 id="appearances">Appearances</h2>');
+    expect(luke()).toMatch(
+      /<cite><a href="\/media\/star-wars-episode-iv-a-new-hope\/">Star Wars: Episode IV A New Hope<\/a><\/cite>\s*<small>\(first appearance\)<\/small>/,
+    );
+    expect(luke()).toContain('<cite>Kanan 2</cite>');
+    expect(luke()).toContain('Non-canon appearances');
+  });
+
+  it('starts a long list closed', () => {
+    expect(luke()).toMatch(/<details>\s*<summary>\d{3} works, in story order<\/summary>/);
+  });
+
+  it('lists who and what turns up in a work, by section, instead of works', () => {
+    expect(newHope()).toContain('<h2 id="cast">Who turns up here</h2>');
+    expect(newHope()).not.toContain('id="appearances"');
+    expect(newHope()).toMatch(/<summary>Characters: \d+<\/summary>/);
+    expect(newHope()).toMatch(
+      /<a href="\/characters\/luke-skywalker\/">Luke Skywalker<\/a>\s*<small>\(first appearance\)<\/small>/,
+    );
+    expect(newHope()).toContain('<a href="/planets/tatooine/">Tatooine</a>');
+    expect(newHope()).toMatch(/<summary>Not in the archive: [\d,]+<\/summary>/);
+  });
+
+  it('leaves pages without appearances alone', () => {
+    expect(pages.get(pathOf('Revan'))).not.toContain('id="appearances"');
+  });
+});

@@ -72,8 +72,11 @@ describe('parseQuantity', () => {
 });
 
 describe('quantities', () => {
+  // Built while collecting, not under a test's time limit: parsing the fixtures takes a while.
+  const { articles } = fixtureSiteData();
+
   it("reads Luke's height and mass from his real infobox", () => {
-    const luke = fixtureSiteData().articles.get('Luke Skywalker');
+    const luke = articles.get('Luke Skywalker');
     expect(luke && quantities(luke)).toMatchObject({
       height_m: { value: 1.72 },
       mass_kg: { value: 73 },

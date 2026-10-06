@@ -22,6 +22,7 @@ export const exploreBody = () => serverHtml`
     <ul>
       <li><code>${EXPLORE_TEXT.archiveTable}</code></li>
       <li><code>${EXPLORE_TEXT.factsTable}</code></li>
+      <li><code>${EXPLORE_TEXT.appearancesTable}</code></li>
     </ul>
   </section>
 `;

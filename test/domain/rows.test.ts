@@ -42,10 +42,24 @@ describe('Explore rows', () => {
     const hair = rows.facts.filter((f) => f.title === 'Luke Skywalker' && f.field === 'hair');
     expect(hair.map((f) => f.item)).toEqual([0, 1, 2]);
   });
+
+  it('have one appearance row per entry, in the article\u2019s order, with its markers', () => {
+    const luke = rows.appearances.filter((r) => r.title === 'Luke Skywalker');
+    expect(luke.map((r) => r.item)).toEqual(luke.map((_, i) => i));
+    expect(luke).toContainEqual(
+      expect.objectContaining({
+        text: 'Star Wars: Episode IV A New Hope',
+        link: 'Star Wars: Episode IV A New Hope',
+        markers: '1st',
+        noncanon: false,
+      }),
+    );
+    expect(luke.some((r) => r.noncanon)).toBe(true);
+  });
 });
 
 describe('the Explore database', () => {
-  it('holds both tables, queryable the way the page queries them', async () => {
+  it('holds the tables, queryable the way the page queries them', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'swr-db-'));
     dirs.push(dir);
     await buildDatabase(dir, rows);
@@ -61,6 +75,10 @@ describe('the Explore database', () => {
       'SELECT name, height_m FROM archive ORDER BY height_m DESC NULLS LAST LIMIT 1',
     );
     expect(tallest.getRows()[0]?.[1]).toBeGreaterThan(1);
+    const cast = await c.runAndReadAll(
+      "SELECT a.name FROM appearances p JOIN archive a USING (title) WHERE p.link = 'Star Wars: Episode IV A New Hope' AND NOT p.noncanon ORDER BY 1",
+    );
+    expect(cast.getRows().flat()).toEqual(expect.arrayContaining(['C-3PO', 'Luke Skywalker']));
     c.closeSync();
     db.closeSync();
   });

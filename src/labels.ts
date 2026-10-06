@@ -291,7 +291,7 @@ export const EXPLORE_TEXT = {
   description:
     'Ask the Star Wars archive questions with SQL, right in your browser: the tallest characters, the most crowded planets, the fastest starships, and anything else you can write.',
   intro:
-    'Every article, as two tables you can query with SQL. It all runs in your browser: pick a question below, or write your own.',
+    'Every article, as three tables you can query with SQL. It all runs in your browser: pick a question below, or write your own.',
   noScript:
     'Exploring runs a database in your browser, and it needs JavaScript. Without it, browse the sections instead:',
   questions: 'Try a question',
@@ -309,6 +309,8 @@ export const EXPLORE_TEXT = {
     'archive: one row per article. title, name, path, section, kind, era, and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
   factsTable:
     'facts: one row per infobox value. title, field, item (0 for the first), text, and link: the article it points to (homeworld → Tatooine).',
+  appearancesTable:
+    'appearances: one row per entry of an article’s Appearances section. For a film, show or book, who and what turns up in it; for anything else, the works it turns up in. title, item (its place in the list, from 0), text, link: the entry’s article, markers (1st, mo for mentioned only, flash…), and noncanon.',
   presets: [
     {
       label: 'Tallest characters',
@@ -331,6 +333,14 @@ export const EXPLORE_TEXT = {
       sql: "SELECT name, path, length_m\nFROM archive\nWHERE section = 'starships' AND length_m IS NOT NULL\nORDER BY length_m DESC\nLIMIT 25",
     },
     {
+      label: 'Who’s in A New Hope?',
+      sql: "SELECT a.name, a.path, p.markers\nFROM appearances p JOIN archive a USING (title)\nWHERE p.link = 'Star Wars: Episode IV A New Hope'\n  AND a.section = 'characters' AND NOT p.noncanon\nORDER BY a.name",
+    },
+    {
+      label: 'Most-seen characters',
+      sql: "SELECT a.name, a.path, count(*) AS works\nFROM appearances p JOIN archive a USING (title)\nWHERE a.section = 'characters' AND a.era = 'canon'\n  AND NOT p.noncanon\n  AND NOT list_has_any(string_split(p.markers, ','), ['mo', 'imo', '1stm'])\nGROUP BY ALL\nORDER BY works DESC\nLIMIT 25",
+    },
+    {
       label: 'Articles per section',
       sql: 'SELECT section, era, count(*) AS articles\nFROM archive\nGROUP BY ALL\nORDER BY section, era',
     },
@@ -349,6 +359,34 @@ export const UNITS = {
   credits: 'credits',
   indefinite: 'indefinite',
 } as const;
+
+/**
+ * Wookieepedia's appearance markers (src/ingest/wookieepedia/appearances.ts), as short notes
+ * after a work: "A New Hope (first appearance)".
+ */
+export const MARKER_LABELS: Readonly<Record<string, string>> = {
+  '1st': 'first appearance',
+  '1stm': 'first mentioned',
+  '1stp': 'first pictured',
+  '1stid': 'first identified',
+  mo: 'mentioned only',
+  imo: 'indirect mention',
+  mentioned: 'mentioned',
+  flash: 'in a flashback',
+  hologram: 'as a hologram',
+  po: 'pictured only',
+  voice: 'voice only',
+  vision: 'in a vision',
+  ghost: 'as a Force spirit',
+  ret: 'retconned',
+  un: 'unidentified',
+  nc: 'non-canon',
+  co: 'cameo',
+  cutscene: 'in a cutscene',
+  unborn: 'not yet born',
+  del: 'deleted scene',
+  codex: 'in a codex entry',
+};
 
 export const TEXT = {
   skipLink: 'Skip to content',
@@ -387,6 +425,13 @@ export const TEXT = {
   legendsNote:
     'This article is part of Legends: the expanded-universe stories that Lucasfilm set apart from canon in 2014.',
   letters: 'Browse by letter',
+  appearances: 'Appearances',
+  appearanceCount: (n: number): string =>
+    `${n.toLocaleString('en-US')} ${n === 1 ? 'work' : 'works'}, in story order`,
+  noncanonAppearances: 'Non-canon appearances',
+  cast: 'Who turns up here',
+  castCount: (n: number, label: string): string => `${label}: ${n.toLocaleString('en-US')}`,
+  notInArchive: 'Not in the archive',
   inSection: (n: number): string => `${n.toLocaleString('en-US')} articles`,
   offlineTitle: 'You’re offline',
   offlineBody:

@@ -79,10 +79,10 @@ decimal comma ("1,83 meters"): read as a thousands separator, they came out 100 
 
 `/explore/` runs DuckDB-WASM in the visitor's browser. No server is involved.
 
-- **Data:** the build writes `dist/data/archive.duckdb` with two tables: `archive` (one row per
-  article: title, name, path, section, kind, era, and the number columns above) and `facts` (one
-  row per infobox value: title, field, item, text, link). The full archive is 37 MB (18 MB
-  gzipped). DuckDB attaches it read-only and fetches only the blocks a query needs, through
+- **Data:** the build writes `dist/data/archive.duckdb` with three tables: `archive` (one row per
+  article: title, name, path, section, kind, era, and the number columns above), `facts` (one
+  row per infobox value: title, field, item, text, link) and `appearances` (below). The full
+  archive is 90 MB (41 MB gzipped); it was 37 MB before `appearances`. DuckDB attaches it read-only and fetches only the blocks a query needs, through
   HTTP range requests.
 - **Why a DuckDB file, not Parquet:** reading Parquet makes DuckDB-WASM download its parquet
   extension from `extensions.duckdb.org`. The CSP allows only this origin, and should keep doing
@@ -98,6 +98,32 @@ decimal comma ("1,83 meters"): read as a thousands separator, they came out 100 
 - **Serving:** Caddy answers range requests. The preview and dev servers do too
   (`scripts/lib/range.ts`), and the dev server serves `/data/` and `/duckdb/` from the last
   build.
+
+## Appearances (`swr-7f1.13`)
+
+An article's Appearances section is a list, one work per line, in the order Wookieepedia gives
+it. The ingest reads the section line by line (`src/ingest/wookieepedia/appearances.ts`) rather
+than as one parse, since a 700-line `{{ScrollBox}}` or `{{App}}` is mostly lists.
+
+- **What a line names:** its first link; failing that, a citation template's title. Named
+  parameters come first (`int`, the article a citation links to; then `story`, `title`,
+  `episode`, `book`…), then positional ones that aren't issue numbers, URL paths or video IDs.
+  `{{Film|IV}}` and `{{VaderImmortal|II}}` map the numeral to the work's title.
+- **How:** marker templates after the work become codes: `1st`, `mo` (mentioned only), `flash`,
+  `hologram`… Notes such as `{{C|…}}` and `{{Ab|…}}` are dropped. A `===` subheading containing
+  "non-canon" marks the lines under it.
+- **Resolution:** each line keeps its candidate titles in order; the first that lands on an
+  article (following redirects) becomes the link. A work listed twice becomes one entry with
+  both lines' markers.
+- **Two meanings:** for a work (the `media` section) the list is its cast — who and what turns
+  up in it, grouped on the page by section. For everything else it's the works the subject
+  turns up in, numbered, since Wookieepedia orders them in-universe. The site doesn't build a
+  reverse index: a work's own list is the authoritative cast.
+- **Coverage (2026-08-01 dump):** 146,229 of 227,272 articles have the section, with 2,111,141
+  entries; 98.7% link to an article. Most of the rest are HoloNet news items and other
+  citations with no article of their own, which stay as text.
+- **Explore:** the `appearances` table has one row per entry: title, item, text, link, markers
+  (comma-separated codes), noncanon.
 
 ## Consequences
 

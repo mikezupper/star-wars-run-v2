@@ -1,7 +1,9 @@
-// The Explore page's tables (swr-7f1.7): the archive as rows, written to Parquet at build time
+// The Explore page's tables (swr-7f1.7): the archive as rows, written to a DuckDB file at build time
 // and queried in the browser with DuckDB-WASM.
 // - `archive`: one row per article: what it is, where its page is, and its numbers.
 // - `facts`: one row per infobox value: the field, its text, and the article it links to.
+// - `appearances`: one row per entry of an article's Appearances section: for a work, who
+//   appears in it; for anything else, the works it appears in.
 import type { ArticleRecord } from './article.js';
 import { displayTitle, type Archive } from './archive.js';
 import { QUANTITY_FIELDS, quantities } from './quantities.js';
@@ -28,13 +30,30 @@ export interface FactRow {
   readonly link: string | null;
 }
 
+export interface AppearanceRow {
+  readonly title: string;
+  /** The entry's place in the article's list, from 0. */
+  readonly item: number;
+  readonly text: string;
+  /** Its article, if the archive has it. */
+  readonly link: string | null;
+  /** Marker codes, comma-separated: `1st`, `mo`, `flash`… Empty for an ordinary appearance. */
+  readonly markers: string;
+  readonly noncanon: boolean;
+}
+
 /** Rows for every article the archive has a page for, in title order. */
 export function exploreRows(
   archive: Archive,
   articles: ReadonlyMap<string, ArticleRecord>,
-): { readonly archive: ArchiveRow[]; readonly facts: FactRow[] } {
+): {
+  readonly archive: ArchiveRow[];
+  readonly facts: FactRow[];
+  readonly appearances: AppearanceRow[];
+} {
   const archiveRows: ArchiveRow[] = [];
   const facts: FactRow[] = [];
+  const appearances: AppearanceRow[] = [];
   const titles = [...archive.byTitle.keys()].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
   for (const title of titles) {
     const entry = archive.byTitle.get(title);
@@ -62,6 +81,16 @@ export function exploreRows(
         });
       });
     }
+    (record.appearances ?? []).forEach((a, item) => {
+      appearances.push({
+        title,
+        item,
+        text: a.text,
+        link: a.link ?? null,
+        markers: a.markers.join(','),
+        noncanon: a.noncanon === true,
+      });
+    });
   }
-  return { archive: archiveRows, facts };
+  return { archive: archiveRows, facts, appearances };
 }

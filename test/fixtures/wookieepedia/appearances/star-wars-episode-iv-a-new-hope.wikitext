@@ -1,0 +1,1735 @@
+==Appearances==
+{{App
+|c-characters=
+*"[[53]]" {{1stm}}
+*"[[316]]" {{1stm}}
+*"[[517]]" {{1stm}}
+*[[2X-3KPR]] {{1st}}
+*[[2X-7KPR/Canon|2X-7KPR]] {{1st}}
+*[[3B6-RA-7/Canon|3B6-RA-7]] {{1st}}
+*[[5D6-RA-7]] {{1st}}
+*[[A'Koba]] {{1st}}
+*[[A'Vor]] {{1st}}
+*[[A'Vor's twin]] {{1st}}
+*[[A'Yark]] {{1st}}
+*[[Cassian Jeron Andor]] {{1stm}} {{Imo}}
+*[[Raymus Antilles]] {{1st}}
+*[[Wedge Antilles]] {{1st}}
+*[[Ponda Baba]] {{1st}}
+*"[["Backstabber"|Backstabber]]" {{1st}}
+*[[Braconnor Bakiska]] {{1st}}
+*[[Moradmin Bast]] {{1st}}
+*[[Beedo]] {{1st}}
+*[[Mosep Binneed]] {{1st}}
+*[[Bolvan]] {{1st}}
+*[[Danz Borin]] {{1st}}
+*[[BoShek]] {{1st}}
+*[[John D. Branon]] {{1st}}
+*[[Ront Byrnloo]] {{1st}}
+*[[C-3PO]] {{1st}}
+*[[Lirin Car'n]] {{1st}}
+*[[Siward Cass]] {{1st}}
+*[[Nalan Cheel]] {{1st}}
+*[[Chewbacca]] {{1st}}
+*[[Shann Childsen]] {{1st}}
+*[[Crag]] {{1st}}
+*[[CZ-1]] {{1st}}
+*[[CZ-3]] {{1st}}
+*[[Figrin D'an]] {{1st}}
+*[[Tedn Dahai]] {{1st}}
+*[[Biggs Darklighter]] {{1st}}
+*[[Dathcha]] {{1st}}
+*[[Hem Dazon]] {{1st}}
+*[[Chachi De Maal]] {{1st}}
+*[[Ohwun De Maal]] {{1st}}
+*[[Deak]] {{Del}}
+*[[Damono Deomaley]] {{1st}}
+*[[Jabba Desilijic Tiure]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Zal Dinnes]] {{1st}} {{Ret}} {{C|Fighter only}}
+*[[Jan Dodonna]] {{1st}}
+*[[Garven Dreis]] {{1st}}
+*[[Trinto Duaba]] {{1st}}
+*[[Jude Edivon]] {{1stm}} {{Imo}}
+*[[Sun'il Ei'de]] {{1st}}
+*[[Jyn Erso]] {{1stm}} {{Imo}}
+*[[Cornelius Evazan]] {{1st}}
+*[[Davin Felth]] {{1st}}
+*[[Boba Fett]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Ickabel G'ont]] {{1st}}
+*[[Del Goren]] {{1st}}
+*[[Feyn Gospic]] {{1st}}
+*[[Greedo]] {{1st}}
+*[[Elis Helrot]] {{1st}}
+*[[Arhul Hextrophon]] {{1st}}
+*[[Hija]] {{1st}}
+*[[Bob Hudsol]] {{1st}}
+*[[Dice Ibegon]] {{1st}}
+*[[Jenny]] {{1st}}
+*[[Jerriko]] {{1st}}
+*[[Daine Jir]] {{1st}}
+*[[Kabe]] {{1st}}
+{{!}}
+*[[Hrchek Kal Fas]] {{1st}}
+*[[Sai'torr Kal Fas]] {{1st}}
+*[[Hennet Kayn]] {{1st}}
+*[[Kardue'sai'Malloc]] {{1st}}
+*[[Obi-Wan Kenobi]] {{1st}}
+*[[Ketwol]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Tawss Khaa]] {{1st}}
+*[[Edmos Khurgee]] {{1st}}
+*[[Davish Krail]] {{1st}}
+*[[Garouf Lafoe]] {{1st}}
+*[[Lajaie]] {{1st}}
+*[[Tarvyn Lareka]] {{1st}}
+*[[Beru Whitesun Lars]] {{1st}}
+*[[Owen Lars]] {{1st}}
+*[[Nabrun Leids]] {{1st}}
+*[[Lepira]] {{1st}}
+*[[Pons Limbic]] {{1st}}
+*[[LIN-V8K]] {{1st}}
+*[[Laze Loneozner]] {{Del}}
+*[[Camie Marstrap]] {{Del}}
+*[[Melas]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Mithel]] {{1st}}
+*[[Tech Mo'r]] {{1st}}
+*[[Trech Molock]] {{1st}}
+*[[Conan Antonio Motti]] {{1st}}
+*[[MSE-6-G735Y]] {{1st}}
+*[[Muftak]] {{1st}}
+*[[Myo]] {{1st}}
+*[[Momaw Nadon]] {{1st}}
+*[[Puck Naeco]] {{1st}}
+*[[Nozzo Naytaan]] {{1st}} {{Voice}}
+*[[Voren Na'al]] {{1st}}
+*[[Doikk Na'ts]] {{1st}}
+*[[Neesh]] {{1st}}
+*[[Theron Nett]] {{1st}}
+*[[Het Nkik]] {{1st}}
+*[[Hol Okand]] {{1st}}
+*[[Omi]] {{1st}}
+*[[M'iiyoom Onith]] {{1st}}
+*[[Bail Prestor Organa|Bail Organa]] {{1stm}}
+*[[Leia Skywalker Organa Solo|Leia Organa]] {{1st}}
+*[[Ownellco]] {{1st}}
+*[[Oxixo]] {{1st}}
+*[[P2 (prototype astromech droid)]] {{Del}}
+*[[Darth Sidious|Sheev Palpatine]] {{1stm}}
+*[[Jek Tono Porkins]] {{1st}}
+*[[Praji]] {{1st}}
+*[[Djas Puhr]] {{1st}}
+*[[R1-G4]] {{1st}}
+*[[R2-A3]] {{1st}}
+*[[R2-A5]] {{1st}}
+*[[R2-BHD]] {{1st}} {{C|Starfighter only}} {{Ret}} 
+*[[R2-D2]] {{1st}}
+*[[R2-F2]] {{1st}}
+*[[R2-Q2]] {{1st}}
+*[[R2-X2]] {{1st}}
+*[[R3-M3]] {{1st}}
+*[[R3-T2]] {{1st}}
+*[[R3-T6]] {{1st}}
+*[[R4-D6]] {{1st}}
+*[[R4-E1]] {{1st}}
+*[[R4-I9]] {{1st}}
+*[[R4-M9]] {{1st}}
+*[[R5-A2]] {{1st}}
+{{!}}
+*[[R5-D4]] {{1st}}
+*[[R5-D8]] {{1st}}
+*[[R5-K6]] {{1st}}
+*[[Sardis Ramsin]] {{1st}}
+*[[Reegesk]] {{1st}}
+*[[Rycar Ryjerd]] {{1st}}
+*[[Hurst Romodi]] {{1st}}
+*[[Elyhek Rue]] {{1st}}
+*[[Arleil Schous]] {{1st}}
+*[[Sheard]] {{1st}} {{Voice}}
+*[[Leesub Sirln]] {{1st}}
+*[[Lak Sivrak]] {{1st}} {{C|Pre-[[1997]] releases}}
+*[[Luke Skywalker]] {{1st}}
+*[[Cariso Smadis]] {{1st}}
+*[[Han Solo]] {{1st}}
+*[[Cobb Sonbepol]] {{1st}}
+*[[Ralo Surrel]] {{1st}} {{Ret}} {{Voice}}
+*[[Cassio Tagge]] {{1st}}
+*[[Col Takbright]] {{1st}}
+*[[Takeel]] {{1st}}
+*[[Tanbris]] {{1st}}
+*[[Tank (individual)|Tank]] {{1stm}}
+*[[Wilhuff Tarkin]] {{1st}}
+*[[Tintop]] {{1st}}
+*[[Dex Tiree]] {{1st}}
+*[[TD-787]] {{1st}}
+*[[TK-421]] {{1st}}
+*[[TK-710]] {{1st}}
+*[[TK-3338]] {{1st}}
+*[[TK-4247]] {{1st}}
+*[[TK-7624]] {{1st}}
+*[[TK-8332]] {{1st}}
+*[[TK-9091]] {{1st}}
+*[[Brea Tonnika]] {{1st}}
+*[[Senni Tonnika]] {{1st}}
+*[[Toos]] {{1st}} {{Voice}}
+*[[Gale Torg]] {{1st}}
+*[[Ryle Torsyn]] {{1st}}
+*[[Pol Treidum]] {{1st}}
+*[[Pol Treidum's aide]] {{1st}}
+*[[Feltipern Trevagg]] {{1st}}
+*[[U-3PO]] {{1st}}
+*[[Anakin Skywalker|Darth Vader]] {{1st}}
+*[[Jon Vander|Dutch Vander]] {{1st}}
+*[[Veertag]] {{1st}}
+*[[Evaan Verlaine]] {{1st}} {{Ret}} {{C|Starfighter only}}
+*[[Iden Versio]] {{1st}} {{C|Starfighter only}}
+*[[Bom Vimdin]] {{1st}}
+*[[Wanten]] {{1st}}
+*[[WED-15-77]] {{Del}}
+*[[WED-15-ST68]] {{1st}}
+*[[WED-9-M1]] {{1st}}
+*[[Vanden Huyck Willard]] {{1st}}
+*[[Windy]] {{Del}}
+*[[Wioslea]] {{1st}}
+*[[Wuher]] {{1st}}
+*[[Nevar Yalnal]] {{1st}}
+*[[Wullf Yularen]] {{1st}}
+*[[Anj Zavor]] {{1st}}
+*[[Garindan ezz Zavor]] {{1st}}
+*[[Zutton]] {{1st}}
+'''Unidentified characters'''
+*[[Unidentified Death Star gunner]] {{1st}}
+*[[Unidentified Imperial Navy Trooper (Leia Organa)|Unidentified Imperial Navy Trooper]] {{1st}}
+*[[Unidentified sandtrooper captain]] {{1st}}
+*[[Unidentified stormtrooper (Tractor Beam 12)|Unidentified stormtrooper]] {{1st}}
+*[[Unidentified stormtrooper (BT-16)|Unidentified stormtrooper 2]] {{1st}}
+|l-characters=
+<div style="-webkit-column-count:3">
+*[[1047]]
+*[[2X-3KPR/Legends|2X-3KPR]]
+*[[2X-7KPR]]
+*[[3B6-RA-7]]
+*[[5D6-RA-7/Legends|5D6-RA-7]]
+*[[6Y-2KPR]]
+*[[ASP-704]]
+*[[Raymus Antilles/Legends|Raymus Antilles]]
+*[[Wedge Antilles/Legends|Wedge Antilles]]
+*[[Atheloe]]
+*[[Ponda Baba/Legends|Ponda Baba]]
+*[[Braconnor Bakiska/Legends|Braconnor Bakiska]]
+*[[Moradmin Bast/Legends|Moradmin Bast]]
+*[[Mosep Binneed/Legends|Mosep Binneed]]
+*[[Boelo]]
+*[[Bolvan/Legends|Bolvan]]
+*[[Danz Borin/Legends|Danz Borin]]
+*[[BoShek/Legends|BoShek]]
+*[[John D. Branon/Legends|John D. Branon]]
+*[[C-3PO/Legends|C-3PO]]
+*[[Devin Cant]]
+*[[Lirin Car'n/Legends|Lirin Car'n]]
+*[[Siward Cass/Legends|Siward Cass]]
+*[[Kal'Falnl C'ndros]]
+*[[Wenton Chan/Legends|Wenton Chan]]
+*[[Nalan Cheel/Legends|Nalan Cheel]]
+*[[Chewbacca/Legends|Chewbacca]]
+*[[Shann Childsen/Legends|Shann Childsen]]
+*[[Swilla Corey]]
+*[[CZ-1/Legends|CZ-1]]
+*[[CZ-3/Legends|CZ-3]]
+*[[Tedn Dahai/Legends|Tedn Dahai]]
+*[[Figrin D'an/Legends|Figrin D'an]]
+*[[DS-61-3]]
+*[[DS-61-4]]
+*[[Biggs Darklighter/Legends|Biggs Darklighter]]
+*[[Dathcha/Legends|Dathcha]]
+*[[Hem Dazon/Legends|Hem Dazon]]
+*[[Chachi De Maal/Legends|Chachi De Maal]]
+*[[Ohwun De Maal/Legends|Ohwun De Maal]]
+*[[Deacon|Deak]] {{Del}}
+*[[Debnoli]]
+*[[Jan Dodonna/Legends|Jan Dodonna]]
+*[[Garven Dreis/Legends|Garven Dreis]]
+*[[Shada D'ukal]]
+*[[Karoly D'ulin]]
+*[[Trinto Duaba/Legends|Trinto Duaba]]
+*[[Tajis Durmin]]
+*[[DV-523]]
+*[[DV-692]]
+*[[Enfield]]
+*[[Enjikket]]
+*[[Deacon Eso]]
+*[[Cornelius Evazan/Legends|Cornelius Evazan]]
+*[[Ezjenk]]
+*[[Keyan Farlander/Legends|Keyan Farlander]]
+*[[Davin Felth/Legends|Davin Felth]]
+*[[Boba Fett/Legends|Boba Fett]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Garindan/Legends|Garindan]]
+*[[Ickabel G'ont/Legends|Ickabel G'ont]]
+*[[Del Goren/Legends|Del Goren]]
+*[[Feyn Gospic/Legends|Feyn Gospic]]
+*[[Tenn Graneet]]
+*[[Greedo/Legends|Greedo]]
+*[[Grenwick]]
+*[[Elis Helrot/Legends|Elis Helrot]]
+*[[Arhul Hextrophon/Legends|Arhul Hextrophon]]
+*[[Hija/Legends|Hija]]
+*[[Chad Hilse]]
+*[[Bob Hudsol/Legends|Bob Hudsol]]
+*[[Iasa]]
+*[[Dice Ibegon/Legends|Dice Ibegon]]
+*[[IM4-099]]
+*[[IT-O (Death Star)]]
+*[[Jenny/Legends|Jenny]]
+*[[Dannik Jerriko]]
+*[[Daine Jir/Legends|Daine Jir]]
+*[[Kabe/Legends|Kabe]]
+*[[Hrchek Kal Fas/Legends|Hrchek Kal Fas]]
+*[[Sai'torr Kal Fas/Legends|Sai'torr Kal Fas]]
+*[[Kardue'sai'Malloc/Legends|Kardue'sai'Malloc]]
+*[[KE-829]]
+*[[Kitik Keed'kak]]
+*[[Obi-Wan Kenobi/Legends|Obi-Wan Kenobi]]
+*[[Ketwol/Legends|Ketwol]]
+*[[Tawss Khaa/Legends|Tawss Khaa]]
+*[[Khurgee/Legends|Khurgee]]
+*[[Davish Krail/Legends|Davish Krail]]
+*[[Garouf Lafoe/Legends|Garouf Lafoe]]
+*[[Evram Lajaie]]
+*[[Beru Whitesun Lars/Legends|Beru Whitesun Lars]]
+*[[Owen Lars/Legends|Owen Lars]]
+*[[Lepira/Legends|Lepira]]
+*[[Pons Limbic/Legends|Pons Limbic]]
+*[[LIN-V8K/Legends|LIN-V8K]]
+*[[LIN-V8M]]
+*[[Camie Loneozner]] {{Del}}
+*[[Laze Loneozner/Legends|Laze Loneozner]] {{Del}}
+*[[Galen Marek]] {{Imo}} {{Ret}}
+*[[Melas/Legends|Melas]]
+*[[M-HYD 6804]]
+*[[Yerka Mig]]
+*[[Mithel/Legends|Mithel]]
+*[[Trech Molock/Legends|Trech Molock]]
+*[[Tech Mo'r/Legends|Tech Mo'r]]
+*[[Firin Morett]]
+*[[Conan Antonio Motti/Legends|Conan Antonio Motti]]
+*[[Muftak/Legends|Muftak]]
+*[[Grondorn Muse]]
+*[[Myo/Legends|Myo]]
+*[[Nabrun Leids/Legends|Nabrun Leids]]
+*[[Voren Na'al/Legends|Voren Na'al]]
+*[[Puck Naeco/Legends|Puck Naeco]] {{Ret}}
+*[[Momaw Nadon/Legends|Momaw Nadon]]
+*[[Doikk Na'ts/Legends|Doikk Na'ts]]
+*[[Nozzo Naytaan/Legends|Nozzo Naytaan]] {{Voice}}
+*[[Nebit/Legends|Nebit]]
+*[[Neesh/Legends|Neesh]] {{1st}} {{Ret}}
+*[[Theron Nett/Legends|Theron Nett]]
+*[[Nevar Yalnal/Legends|Nevar Yalnal]]
+*[[Het Nkik/Legends|Het Nkik]]
+*[[Jek Nkik]]
+*[[Hol Okand/Legends|Hol Okand]]
+*[[M'iiyoom Onith/Legends|M'iiyoom Onith]]
+*[[Bail Prestor Organa/Legends|Bail Prestor Organa]] {{Mo}}
+*[[Leia Organa Solo/Legends|Leia Organa]]
+*[[Ownellco/Legends|Ownellco]]
+*[[Pachwenko]]
+*[[Palpatine/Legends|Palpatine]] {{Mo}}
+*[[Jek Tono Porkins/Legends|Jek Tono Porkins]]
+*[[Nahdonnis Praji]]
+*[[Osleo Prennert]]
+*[[Prescott]]
+*[[Djas Puhr/Legends|Djas Puhr]]
+*[[QT-3PO]]
+*[[Bren Quersey/Legends|Bren Quersey]]
+*[[R1-G4/Legends|R1-G4]]
+*[[R2-A5/Legends|R2-A5]]
+*[[R2-D2/Legends|R2-D2]]
+*[[R2-F2/Legends|R2-F2]]
+*[[R2-Q2/Legends|R2-Q2]]
+*[[R2-X2/Legends|R2-X2]]
+*[[R3-M3/Legends|R3-M3]]
+*[[R3-T2/Legends|R3-T2]]
+*[[R3-T6/Legends|R3-T6]]
+*[[R4-D6/Legends|R4-D6]]
+*[[R4-E1/Legends|R4-E1]]
+*[[R4-I9/Legends|R4-I9]]
+*[[R4-M9/Legends|R4-M9]]
+*[[R5-A2/Legends|R5-A2]]
+*[[R5-D4/Legends|R5-D4]]
+*[[R5-D8/Legends|R5-D8]]
+*[[R5-F7]]
+*[[R5-K6/Legends|R5-K6]]
+*[[Reegesk/Legends|Reegesk]]
+*[[Hurst Romodi/Legends|Hurst Romodi]] {{Ret}}
+*[[Rrr'ur'R]]
+*[[RR'uruurrr]]
+*[[Elyhek Rue/Legends|Elyhek Rue]]
+*[[Rycar Ryjerd/Legends|Rycar Ryjerd]]
+*[[Sariss]] {{Ret}}
+*[[Scanning crew BT-445/Legends|Scanning crew BT-445]]
+*[[Arleil Schous/Legends|Arleil Schous]]
+*[[Pello Scrambas]]
+*[[Leesub Sirln/Legends|Leesub Sirln]]
+*[[Lak Sivrak/Legends|Lak Sivrak]]
+*[[Luke Skywalker/Legends|Luke Skywalker]]
+*[[Cariso Smadis/Legends|Cariso Smadis]]
+*[[Han Solo/Legends|Han Solo]]
+*[[Pashna Starkiller]]
+*[[Windy Starkiller]] {{Del}}
+*[[Nova Stihl]]
+*[[Janek Sunber/Legends|Tank]] {{Mo}}
+*[[Merc Sunlet]]
+*[[Sun'il Ei'de/Legends|Sun'il Ei'de]] {{1st}}
+*[[Cassio Tagge/Legends|Cassio Tagge]]
+*[[Takeel/Legends|Takeel]]
+*[[Tanbris/Legends|Tanbris]]
+*[[Wilhuff Tarkin/Legends|Wilhuff Tarkin]]
+*[[Tyr Taskeen]]
+*[[Mod Terrik]]
+*[[Thuku]]
+*[[Tiree/Legends|Tiree]]
+*[[Jabba Desilijic Tiure/Legends|Jabba Desilijic Tiure]]
+*[[TK-119]]
+*[[TK-421/Legends|TK-421]]
+*[[TK-422]]
+*[[TK-875]]
+*[[Derek Torent]]
+*[[Galen Torg]]
+*[[Ryle Torsyn/Legends|Ryle Torsyn]]
+*[[Caf Treblanc]]
+*[[Pol Treidum/Legends|Pol Treidum]]
+*[[Feltipern Trevagg/Legends|Feltipern Trevagg]]
+*[[Brindy Truchong]]
+*[[Tzizvvt]]
+*[[U-3PO/Legends|U-3PO]]
+*[[Ukchet]]
+*[[URoRRuR'R'R]]
+*[[Ur'Ru'r]]
+*[[Uutkik]]
+*[[Anakin Skywalker/Legends|Darth Vader]]
+*[[Jon Vander/Legends|Jon Vander]]
+*[[Duron Veertag]]
+*[[Bom Vimdin/Legends|Bom Vimdin]]
+*[[WED-15-77/Legends|WED-15-77]]
+*[[WED-15-I662]]
+*[[WED-15-I7]]
+*[[WED 15 Septoid 2]]
+*[[WED-15-ST68/Legends|WED-15-ST68]]
+*[[WED-9-M1/Legends|WED-9-M1]]
+*[[Morts Werl]]
+*[[Vanden Willard/Legends|Vanden Willard]]
+*[[Wioslea/Legends|Wioslea]]
+*[[Wuher/Legends|Wuher]]
+*[[Yeelhoy]]
+*[[Gela Yeens]]
+*[[Wullf Yularen/Legends|Wullf Yularen]]
+*[[Anj Zavor/Legends|Anj Zavor]]
+*[[Zubwen]]
+*[[Zutton/Legends|Zutton]]
+'''Unidentified characters'''
+*[[Unidentified 501st stormtrooper|501st stormtrooper]]
+*[[Unidentified 501st stormtrooper (first casualty)|501st stormtrooper (first casualty)]]
+*[[Unidentified EG-6 power droid (Lars homestead)|Unidentified EG-6 power droid]]
+*[[Unidentified EG-6 power droid (Tatooine)]]
+*[[Unidentified female (Anchorhead)|Unidentified female]]
+*[[Unidentified gantry officer]]
+*[[Unidentified head-bumping stormtrooper]]
+*[[Unidentified henchman (Tatooine)|Unidentified henchman]]
+*[[Unidentified Imperial (Death Star)|Unidentified Imperial]] {{Voice}}
+*[[Unidentified moisture farmer (Mos Eisley)|Moisture farmer]]
+*[[Unidentified Mos Eisley beggar|Mos Eisley beggar]]
+*[[Unidentified Mos Eisley droid merchant|Mos Eisley droid merchant]]
+*[[Unidentified Ralltiir freighter captain|Ralltiir freighter captain]]
+*[[Unidentified Rebel crew chief]]
+*[[Unidentified Rebel Honor Guard]]
+*[[Unidentified stormtrooper officer (Death Star)|Unidentified Stormtrooper Officer]] {{1st}}
+*[[Unidentified stormtrooper 2 (Death Star)|Unidentified Stormtrooper 2]] {{1st}}
+*[[Unidentified stormtrooper 3 (Death Star)|Unidentified Stormtrooper 3]] {{1st}}
+*[[Unidentified stormtrooper 4 (Death Star)|Unidentified Stormtrooper 4]] {{1st}}
+*[[Unidentified stormtrooper 5 (Death Star)|Unidentified Stormtrooper 5]] {{1st}}
+*[[Unidentified stormtrooper (BT-16)/Legends|Stormtrooper (KE-829's partner)]]
+*[[Unidentified stormtrooper commander (Tantive IV)|Stormtrooper commander]]
+*[[Unidentified stormtrooper (Millennium Falcon capture)|Stormtrooper (''Millennium Falcon'' capture)]]
+*[[Unidentified Dianoga]] {{1st}}
+*[[Unidentified swoop biker|Swoop biker]] {{C|Special Edition}}
+*[[Unidentified WED-15 Treadwell (Lars homestead)|WED-15 Treadwell (Lars homestead)]]
+</div><br clear="all">
+|c-organisms=
+*[[Crocodina]] {{1st}} {{C|head only}}
+*[[Ghhhk]] {{1st}} {{C|as dejarik piece}}
+*[[Grimtaash]] {{1st}} {{C|as dejarik piece}}
+*[[Houjix]] {{1st}} {{C|as dejarik piece}}
+*[[Kintan strider]] {{1st}} {{C|as dejarik piece}}
+*[[K'lor'slug]] {{1st}} {{C|as dejarik piece}}
+*[[Mammal]] {{1st}}
+**[[Bantha]] {{1st}}
+**[[Jerba]] {{1st}}
+**[[Rodent]] {{1st}}
+***[[Scurrier]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[Womp rat]] {{1stm}}
+*[[Ng'ok]] {{1st}} {{C|as dejarik piece}}
+*[[Reptile]] {{1st}}
+**[[Dewback]] {{1st}}
+**[[Dragon (creature)|Dragon]] {{1st}} {{C|Skeleton only}}
+***[[Krayt dragon]] {{1st}} {{C|Skeleton only}}
+****[[Greater krayt dragon]] {{1st}} {{C|Skeleton only}}
+**[[Ronto]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Slug (creature)|Slug]] {{1stm}}
+|l-organisms=
+*[[Bantha/Legends|Common desert bantha]]
+*[[Womp rat/Legends|Common womp rat]] {{Mo}}
+*[[Dewback/Legends|Dewback]]
+*[[Dianoga/Legends|Dianoga]]
+*[[Ghhhk/Legends|Ghhhk]] {{Hologram}}
+*[[Greater krayt dragon/Legends|Greater krayt dragon]] {{C|Appears as a skeleton}}
+*[[Houjix/Legends|Houjix]] {{Hologram}}
+*[[Jerba/Legends|Jerba]]
+*[[M'onnok]] {{Hologram}}
+*[[Ng'ok/Legends|Ng'ok]] {{Hologram}}
+*[[Ronto/Legends|Ronto]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Scurrier/Legends|Scurrier]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[K'lor'slug/Legends|K'lor'slug]] {{Hologram}}
+*[[Kintan strider/Legends|Kintan strider]] {{Hologram}}
+|c-droids=
+*[[Astromech droid]] {{1st}}
+**[[R-series]] {{1st}}
+***[[R1-series astromech droid]] {{1st}}
+***[[R2-series astromech droid]] {{1st}}
+***[[R3-series astromech droid]] {{1st}}
+***[[R4 astromech droid]] {{1st}}
+***[[R5 series astromech droid]] {{1st}}
+*[[Hydroponics droid]] {{1st}}
+*[[Interrogation droid]] {{1st}}
+**[[IT-O interrogation droid]] {{1st}}
+*[[Labor droid]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[ASP-series labor droid]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[ASP-7 labor droid|ASP-7 labour droid]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Loader droid]] {{1st}}
+***[[Binary loadlifter]] {{1stm}}
+*[[Maintenance droid|Repair droid]] {{1st}}
+**[[MSE series]] {{1st}}
+***[[MSE-6 series repair droid]] {{1st}}
+**[[WED Treadwell repair droid]] {{1st}}
+***[[WED-15 Septoid Treadwell]] {{1st}}
+***[[WED 15 "Septoid 2" Treadwell toolkit droid|WED 15 Septoid 2 Treadwell]] {{1st}}
+***[[WED-15 Treadwell droid]] {{1st}}
+****[[WED-15-XT Treadwell droid]] {{Del}}
+*[[Mining droid]] {{1st}}
+**[[LIN demolitionmech autonomous minelayer]] {{1st}}
+*[[Patch-in droid]] {{1st}}
+{{!}}
+*[[Power droid]] {{1st}}
+**[[EG-series power droid]] {{1st}}
+***[[EG-6 power droid]] {{1st}}
+**[[GNK-series power droid]] {{1st}}
+*[[Protocol droid]] {{1st}}
+**[[3PO-series protocol droid]] {{1st}}
+**[[RA-7 protocol droid]] {{1st}}
+*[[Secretary droid]] {{1st}}
+**[[CZ-series secretary/business communications droid]] {{1st}}
+*[[Security droid]] {{1st}}
+**[[KPR security droid]] {{1st}}
+*[[Sentry droid]] {{1st}} {{C|[[The Star Wars Trilogy Special Edition|Special Edition]]}}
+**[[IMG-099 Imperial Mark IV patrol droid]] {{1st}} {{C|[[The Star Wars Trilogy Special Edition|Special Edition]]}}
+*[[Training droid]] {{1st}}
+**[[Marksman-H training remote]] {{1st}}
+|l-droids=
+*[[ASP-series labor droid/Legends|ASP-7 labor droid]] {{C|Introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Astromech droid/Legends|Astromech droid]]
+**[[R-series/Legends|R-series]]
+***[[R1-series astromech droid/Legends|R1-series astromech droid]]
+***[[R2-series astromech droid/Legends|R2-series astromech droid]]
+***[[R3-series astromech droid/Legends|R3-series astromech droid]]
+***[[R4 astromech droid/Legends|R4 astromech droid]]
+***[[R5-series astromech droid]]
+*[[BT-16 perimeter droid]] {{1stm}} {{ID|VT-16}}
+*[[CZ-series secretary/comm droid|CZ-series communications/business droid]]
+*[[EG-6 power droid/Legends|EG-6 power droid]]
+*[[GNK power droid/Legends|GNK power droid]]
+*[[IT-O interrogation droid/Legends|IT-O interrogation droid]]
+*[[KPR security droid/Legends|KPR security droid]]
+*[[LIN demolitionmech autonomous minelayer/Legends|LIN demolitionmech autonomous minelayer]]
+*[[Loader droid/Legends|Loader droid]] {{Mo}}
+**[[CLL-8 binary load lifter]] {{Mo}}
+*[[Mark II reactor drone/Legends|Mark II reactor drone]]
+*[[Marksman-H combat remote]]
+{{!}}
+*[[Mini-Huvicko/Yuzabi Dowser binary hydromech droid]]
+*[[MSE-6 series repair droid/Legends|MSE-6 series repair droid]]
+*[[Patch-in droid/Legends|Patch-in droid]]
+*[[Protocol droid/Legends|Protocol droid]]
+**[[3PO-series protocol droid/Legends|3PO-series protocol droid]]
+**[[RA-7 protocol droid/Legends|RA-7 protocol droid]]
+*[[Sentry droid/Legends|Sentry droid]] {{C|[[The Star Wars Trilogy Special Edition|Special Edition]]}}
+**[[Mark IV sentry droid/Legends|Mark IV sentry droid]] {{1st}} {{C|[[The Star Wars Trilogy Special Edition|Special Edition]]}}
+*[[WED-15 Treadwell droid/Legends|WED-15 Treadwell droid]]
+*[[WED-15 Septoid Treadwell/Legends|WED-15 Septoid Treadwell]]
+|c-events=
+*[[Clone Wars]] {{1stm}}
+*[[Imperial Era]] {{1st}}
+**[[Dissolution of the Imperial Senate]] {{1stm}}
+**[[Galactic Civil War]] {{1st}}
+***[[Battle of Scarif]] {{1stm}} {{Imo}}
+***[[Battle of Yavin]] {{1st}}
+***[[Destruction of Alderaan]] {{1st}}
+***[[Rescue of Princess Leia]] {{1st}}
+***[[Royal Award Ceremony]] {{1st}}
+***[[Secret mission to Tatooine]] {{1st}}
+**[[Great Jedi Purge]] {{1stm}} {{Imo}}
+***[[Duel on Mustafar]] {{1stm}} {{Imo}}
+*[[Raid on Kessel]] {{1stm}} {{Imo}}
+|l-events=
+*[[Clone Wars/Legends|Clone Wars]] {{Mo}}
+*[[Galactic Civil War/Legends|Galactic Civil War]]
+**[[Battle on Death Star I]] {{1stm}} {{Imo}}
+**[[Operation Skyhook]]
+***[[Battle of Toprawa]] {{Imo}}
+***[[Battle of Tatooine (Galactic Civil War)|Battle of Tatooine]]
+***[[Destruction of Alderaan/Legends|Destruction of Alderaan]]
+***[[Rescue of Princess Leia/Legends|Rescue of Princess Leia]]
+***[[Battle of Yavin/Legends|Battle of Yavin]]
+**[[Dissolution of the Imperial Senate/Legends|Dissolution of the Imperial Senate]] {{Mo}}
+*[[Great Jedi Purge/Legends|Great Jedi Purge]] {{Imo}}
+**[[Duel on Mustafar/Legends|Duel on Mustafar]] {{Imo}}
+|c-locations=
+*[[The galaxy]] {{1st}}
+**[[Bestine IV]] {{Mo}} {{Del}}
+**[[Core Worlds]] {{1st}}
+***[[Alderaan sector]] {{1st}}
+****[[Alderaan system]] {{1st}}
+*****[[Alderaan]] {{1st}}
+*****[[Alderaanian Graveyard]] {{1st}}
+{{!}}
+**[[Outer Rim Territories]] {{1st}}
+***[[Arkanis sector]] {{1st}}
+****[[Tatoo system]] {{1st}}
+*****[[Ghomrassen]] {{1st}}
+*****[[Guermessa]] {{1st}}
+*****[[Tatoo I]] {{1st}}
+*****[[Tatoo II]] {{1st}}
+*****[[Tatooine]] {{1st}}
+******[[Anchorhead]] {{1stm}}
+******[[Beggar's Canyon]] {{1stm}}
+******[[Dune Sea]] {{1st}}
+*******[[Western Dune Sea]] {{1st}}
+******[[Jundland Wastes]] {{1st}}
+*******[[Ben Kenobi's home]] {{1st}}
+*******[[Great Chott salt flat]] {{1st}}
+********[[Lars homestead|Lars Homestead]] {{1st}}
+******[[Great Mesra Plateau]] {{1st}}
+*******[[Mos Eisley]] {{1st}}
+********[["Community" junk yard]] {{1st}}
+********[[Chalmun's Spaceport Cantina]] {{1st}}
+********[[Corporations Road]] {{1st}}
+*********[[Customs House]] {{1st}}
+********[[Docking Bay 94]] {{1st}}
+********[[Dune Street]] {{1st}}
+********[[Inner Curved Street]] {{1st}}
+********[[Methane Fix Cantina]] {{1st}}
+********[[Spaceport prefect's office|Mos Eisley prefect's office]] {{1st}}
+********[[Old Quarter]]
+********[[Outer Curved Street]] {{1st}}
+********[[Spacers Row]] {{1st}}
+*********[[Ubrikkian Trade Tower]] {{1st}}
+******[[Tosche Station]] {{1stm}}
+{{!}}
+***[[Dantooine]] {{1stm}}
+****[[Dantooine base]] {{1stm}}
+***[[Gordian Reach]] {{1st}}
+****[[Yavin system]] {{1st}}
+*****[[Yavin]] {{1st}}
+*****[[Yavin Prime]] {{1st}}
+*****[[Yavin 4]] {{1st}}
+******[[Wetyin]] {{1st}}
+*******[[Massassi Site]] {{1st}}
+********[[Great Temple]] {{1st}}
+*********[[Grand Temple's throne room]] {{1st}}
+*********[[Yavin base briefing room]] {{1st}}
+*********[[Yavin rebel base war room]] {{1st}}
+***[[Kessel]] {{1stm}}
+****[[Spice mines of Kessel]] {{1stm}}
+***[[Spice Triangle]] {{1st}}
+|l-locations=
+*[[Core Worlds/Legends|Core Worlds]]
+**[[Alderaan system/Legends|Alderaan system]]
+***[[Alderaan/Legends|Alderaan]]
+**[[Corellia/Legends|Corellia]] {{Mo}}
+**[[Coruscant/Legends|Coruscant]] {{Imo}}
+*[[DS-1 Orbital Battle Station/Legends|Death Star I]] {{1st}}
+**[[Deck 5]] {{C|aka [[Detention Level]]}}
+***[[Corridor Six]]
+***[[Detention Block AA-23/Legends|Detention Block AA-23]]
+****[[Cell 2187/Legends|Cell 2187]]
+***[[Garbage Compactor 3263827]]
+**[[Cell Block 1138/Legends|Cell Block 1138]] {{Mo}}
+**[[Docking Bay 327/Legends|Docking Bay 327]]
+**[[Docking Control Room 327]]
+**[[Section N-Six]]
+***[[Tractor beam power-generator trench]]
+***[[Level 6 Core Shaft Corridor]]
+****[[Tractor Beam 12/Legends|Tractor Beam 12]]
+**[[Level 4 Military Corridor]]
+**[[Maintenance]] {{Mo}}
+**[[Meridian trench/Legends|Meridian trench]]
+***[[D-Quadrant]]
+**[[Overbridge (Death Star I)/Legends|Overbridge]]
+***[[Death Star conference room/Legends|Death Star conference room]]
+**[[Theta Sector]]
+***[[Superlaser Fire Control]]
+*[[Outer Rim Territories/Legends|Outer Rim Territories]]
+**[[Dantooine/Legends|Dantooine]] {{Mo}}
+***[[Dantooine base/Legends|Dantooine base]] {{1stm}}
+***[[Dantooine decoy base]] {{1stm}}
+**[[Hindasar system/Legends|Hindasar system]] {{Imo}}
+**[[Horuz system/Legends|Horuz system]]
+**[[Kessel/Legends|Kessel]] {{Mo}}
+***[[Spice mines of Kessel/Legends|Spice mines of Kessel]] {{Mo}}
+**[[Tatoo system/Legends|Tatoo system]]
+***[[Ghomrassen/Legends|Ghomrassen]]
+***[[Guermessa/Legends|Guermessa]]
+{{!}}
+*Tatoo system, continued
+**[[Tatooine/Legends|Tatooine]]
+***[[Audessian Expanse]]
+***[[Dune Sea/Legends|Dune Sea]]
+****[[Ben Kenobi's home/Legends|Ben Kenobi's home]]
+****[[Western Dune Sea/Legends|Western Dune Sea]]
+****[[Great Chott salt flat/Legends|Great Chott salt flat]]
+*****[[Anchorhead/Legends|Anchorhead]] {{Mo}}
+*****[[Lars homestead/Legends|Lars homestead]]
+*****[[Tosche Station/Legends|Tosche Station]] {{Mo}}
+****[[Great Mesra Plateau/Legends|Great Mesra Plateau]]
+*****[[Mos Eisley/Legends|Mos Eisley]]
+******[[Chalmun's Spaceport Cantina/Legends|Chalmun's Spaceport Cantina]]
+******[[Corporations Road/Legends|Corporations Road]]
+******[[Crash site memorial]]
+******[[Customs House/Legends|Customs House]]
+******[[Dim-U monastery/Legends|Dim-U monastery]]
+******[[Docking Bay 94/Legends|Docking Bay 94]]
+******[[Dune Street/Legends|Dune Street]]
+******[[Inner Curved Street/Legends|Inner Curved Street]]
+******[[Lup's Wares and Supplies]]
+******[[Methane Fix Cantina/Legends|Methane Fix Cantina]]
+******[[New Quarter/Legends|New Quarter]]
+******[[Old Quarter/Legends|Old Quarter]]
+******[[Outer Curved Street/Legends|Outer Curved Street]]
+******[[Outer Kerner Way]]
+******[[Quebe-Luxfause Systems headquarters/Legends|Quebe-Luxfause Systems headquarters]]
+******[[Spaceport Speeders/Legends|Spaceport Speeders]]
+******[[Straight Street/Legends|Straight Street]]
+******[[Ubrikkian Trade Tower/Legends|Ubrikkian Trade Tower]]
+****[[Hubba Heights/Legends|Hubba Heights]]
+****[[Jawa Heights/Legends|Jawa Heights]]
+****[[Jundland Wastes/Legends|Jundland Wastes]]
+****[[Xulropic Badlands]]
+{{!}}
+*Outer Rim Territories, continued
+**[[Yavin system/Legends|Yavin system]]
+***[[Yavin Prime/Legends|Yavin Prime]]
+***[[Yavin 4/Legends|Yavin 4]]
+****[[Great Temple/Legends|Great Temple]]
+****[[Grand Audience Chamber]]
+****[[Strategy Center|War Room]]
+***[[Yavin 7]]
+***[[Yavin 8/Legends|Yavin 8]]
+***[[Yavin 13/Legends|Yavin 13]]
+|c-organizations=
+*[[Alliance to Restore the Republic]] {{1st}}
+**[[Alliance Military]] {{1st}}
+***[[Alliance Army]] {{1st}}
+****[[Rebel Honor Guard]] {{1st}}
+****[[Rebel trooper]] {{1st}}
+****[[Rebel Vanguard]] {{1st}}
+***[[Rebel Alliance Navy]] {{1st}}
+****[[Rebel Alliance Starfighter Corps]] {{1st}}
+*****[[Gold Squadron (Rebel Alliance)|Gold Squadron]] {{1st}}
+******[[Gold Leader]] {{1st}}
+******[[Gold Two]] {{1st}}
+******[[Gold Five]] {{1st}}
+******[[Gold Three]] {{1st}} {{Ret}} {{C|Fighter only}}
+*****[[Green Squadron (Rebel Alliance)|Green Squadron]] {{1st}} {{Ret}}
+*****[[Phoenix Squad]] {{1stm}} {{C|Post-[[2011]] release only}}
+*****[[Red Squadron (Rebel Alliance)|Red Squadron]] {{1st}}
+******[[Red Eleven]] {{1st}}
+******[[Red Five]] {{1st}}
+******[[Red Four]] {{1st}}
+******[[Red Leader]] {{1st}}
+******[[Red Nine]] {{1st}}
+******[[Red Seven]] {{1st}}
+******[[Red Six]] {{1st}}
+******[[Red Ten]] {{1st}}
+******[[Red Three]] {{1st}}
+******[[Red Two]] {{1st}}
+*****[[Tierfon Yellow Aces]] {{1st}} {{C|Emblem only}}
+****[[Rebel pilot]] {{1st}}
+***[[Alliance officer]] {{1st}}
+***[[Massassi Group]] {{1st}}
+***[[Rebel sentry]] {{1st}}
+***[[Rebel technician]] {{1st}}
+***[[Rogue One]] {{1stm}} {{Imo}}
+*[[Ambassador]] {{1stm}}
+*[[A'Yark's tribe]] {{1st}}
+*[[Bartender]] {{1st}}
+*[[Beru Whitesun's family]] {{1st}}
+*[[Bounty hunter]] {{1st}}
+*[[Chief]] {{1st}}
+*[[Corellian Engineering Corporation]] {{1stm}}
+*[[Crime lord]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Darklighter family]] {{1st}}
+*[[Emperor]] {{1stm}}
+*[[Farmer]] {{1st}}
+**[[Moisture farmer]] {{1st}}
+*[[Figrin D'an and the Modal Nodes]] {{1st}}
+*[[First Mate]] {{1st}}
+*[[Galactic Empire]] {{1st}}
+**[[Galactic Emperor]] {{1stm}}
+**[[Grand Moff]] {{1st}}
+**[[Imperial Academy]] {{1stm}}
+**[[Imperial Military]] {{1st}}
+***[[Imperial Army]] {{1st}}
+****[[Chief of the Imperial Army]] {{1st}}
+****[[Death Star's Imperial Army garrison]] {{1st}}
+****[[Stormtrooper Corps]] {{1st}}
+*****[[501st Legion]] {{1st}} {{Ret}}
+*****[[Desert stormtrooper]] {{1st}}
+******[[Dewback trooper]] {{1st}}
+*****[[Spacetrooper]] {{1st}}
+*****[[Stormtrooper]] {{1st}}
+******[[Stormtrooper Commander]] {{1st}}
+*****[[Tatooine garrison]] {{1st}}
+******[[Unidentified sandtrooper regiment]] {{1st}}
+*******[[Foot Patrol 7]] {{1st}}
+***[[Imperial Navy]] {{1st}}
+****[[Chief of the Imperial Navy]] {{1st}}
+****[[Death Star's Imperial Navy garrison]] {{1st}}
+****[[Gunnery captain]] {{1st}}
+****[[Gunnery officer]] {{1st}}
+*****[[Chief gunnery officer]] {{1st}}
+****[[Imperial Navy Trooper]] {{1st}}
+*****[[Death Star Trooper]] {{1st}}
+****[[Imperial Starfighter Corps]] {{1st}}
+*****[[Black Squadron (Galactic Empire)|Black Squadron]] {{1st}}
+*****[[Imperial Starfighter Pilot|TIE fighter pilot]] {{1st}}
+*****[[Unidentified TIE flight]] {{1st}}
+****[[Imperial weapons technician]] {{1st}}
+****[[Naval chief]] {{1st}} {{C|As part of the Joint Chiefs}}
+****[[Tagge's starfleet]] {{1stm}}
+***[[Joint Chiefs of the Imperial Military|Joint Chiefs]] {{1st}}
+**[[Imperial Officer Corps]] {{1st}}
+***[[Imperial officer]] {{1st}}
+****[[Imperial Navy's officer corps]] {{1st}}
+**[[Imperial Security Bureau]] {{1st}}
+**[[Imperial Senate]] {{1stm}}
+***[[Senator]] {{1st}}
+**[[Scanning crew BT-445]] {{1st}}
+{{!}}
+*[[Galactic Republic]] {{1stm}}
+*[[Gangster]] {{1st}}
+*[[Garindan ezz Zavor's clan]] {{1st}}
+*[[Governor]] {{1st}}
+*[[Gunner]] {{1st}}
+*[[House of Organa]] {{1st}}
+**[[Alderaanian consular security]] {{1st}}
+**[[Princess]] {{1st}}
+*[[House of Tagge]] {{1st}}
+*[[Hutt Clan]] {{1st}}
+*[[Information broker]] {{1st}}
+*[[Jabba's criminal empire|Jabba Desilijic Tiure's criminal empire]] {{1st}}
+*[[Jedi]] {{1st}}
+**[[Jedi Order]] {{1stm}} {{Imo}}
+***[[Jedi Knight]] {{1stm}}
+***[[Jedi Master]] {{1st}}
+*[[Kajidic]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Desilijic]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Lars family]] {{1st}}
+*[[Mercenary]] {{1st}}
+*[[Merchant]] {{1st}}
+*[[Musician]] {{1st}}
+*[[Navigator]] {{1stm}}
+*[[Nebit's tribe]] {{1st}}
+*[[Officer]] {{1st}}
+**[[Admiral]] {{1st}}
+**[[Captain]] {{1st}}
+**[[Colonel]] {{1st}}
+**[[Commander]] {{1st}}
+**[[Gantry officer]] {{1st}}
+**[[General]] {{1st}}
+**[[Lieutenant]] {{1st}}
+*[[Philosopher]] {{1stm}}
+*[[Pilot]] {{1st}}
+*[[Scanning crew]] {{1st}}
+*[[Scavenger]] {{1st}}
+*[[Sith]] {{1st}}
+**[[Dark Lord of the Sith]] {{1st}}
+**[[Darth]] {{1st}}
+**[[Sith apprentice]] {{1st}}
+**[[Sith Lord]] {{1st}}
+*[[Smuggler]] {{1st}}
+*[[Squad leader]] {{1st}}
+*[[Soldier]] {{1st}}
+*[[Spy]] {{1stm}}
+*[[Tarkin family]] {{1st}}
+*[[Technician]] {{1st}}
+*[[Tonnika sisters]] {{1st}}
+|l-organizations=
+*[[Admiral/Legends|Admiral]]
+*[[Alliance to Restore the Republic/Legends|Alliance to Restore the Republic]]
+**[[Alliance High Command/Legends|Alliance High Command]]
+***[[Alliance Military/Legends|Alliance Military]]
+****[[Alliance Army/Legends|Alliance Army]]
+****[[Alliance Starfighter Corps/Legends|Alliance Starfighter Corps]]
+*****[[Gold Squadron (Rebel Alliance)/Legends|Gold Squadron]]
+*****[[Red Squadron (Rebel Alliance)/Legends|Red Squadron]]
+****[[Rebel Honor Guard/Legends|Rebel Honor Guard]]
+****[[Traffic controller/Legends|Traffic controller]]
+**[[Rebel sentry/Legends|Rebel sentry]] {{1st}}
+*[[Captain#Surface forces|Captain]]
+*[[Colonel/Legends|Colonel]]
+*[[Congressman]]
+*[[Corporal/Legends|Corporal]]
+{{!}}
+*[[Galactic Empire/Legends|Galactic Empire]]
+**[[Galactic Emperor/Legends|Galactic Emperor]] {{Mo}}
+**[[Moff/Legends|Moff]]
+***[[Grand Moff/Legends|Grand Moff]]
+**[[Imperial Academy/Legends|Imperial Academy]] {{Mo}}
+**[[Imperial Military/Legends|Imperial Military]]
+***[[Imperial Navy/Legends|Imperial Navy]]
+****[[Imperial Fleet Regiment]]
+*****[[Imperial Navy Trooper/Legends|Imperial Navy Trooper]]
+******[[Death Star Trooper/Legends|Death Star Trooper]]
+****[[Black Squadron (Galactic Empire)/Legends|Black Squadron]]
+****[[Imperial gunner/Legends|Imperial gunner]]
+****[[TIE pilot]]
+***[[Stormtrooper Corps/Legends|Stormtrooper Corps]]
+****[[37th Detachment]]
+****[[501st Legion/Legends|501st Legion]]
+****[[Desert Sands]]
+*****[[Alvien Squadron]]
+*****[[Drax Squadron]]
+*****[[Zeta Squadron (Desert Sands)|Zeta Squadron]]
+****[[Desert stormtrooper/Legends|Sandtrooper]]
+****[[Stormtrooper/Legends|Stormtrooper]]
+****[[Zero-G assault stormtrooper]] {{1st}}
+***[[Supreme Commander (Galactic Empire)/Legends|Supreme Commander]]
+**[[Imperial Security Bureau/Legends|Imperial Security Bureau]]
+**[[Imperial Senate/Legends|Imperial Senate]]
+{{!}}
+*[[Galactic Republic/Legends|Galactic Republic]] {{Mo}}
+**[[Jedi General/Legends|Jedi General]] {{Mo}}
+*[[Governor/Legends|Governor]]
+*[[House of Tagge/Legends|House of Tagge]]
+*[[High General]]
+*[[Jedi/Legends|Jedi]]
+**[[Jedi Order/Legends|Jedi Order]] {{Imo}}
+***[[Jedi Knight/Legends|Jedi Knight]] {{Mo}}
+***[[Jedi Master/Legends|Jedi Master]]
+***[[Jedi Initiate/Legends|Jedi Initiate]]
+*[[Jedi hunter/Legends|Jedi hunter]]
+*[[Kajidic/Legends|Kajidic]]
+**[[Desilijic/Legends|Desilijic]]
+***[[Jabba's criminal empire/Legends|Jabba's criminal empire]]
+*[[Lars family/Legends|Lars family]]
+*[[Figrin D'an and the Modal Nodes/Legends|Figrin D'an and the Modal Nodes]]
+*[[Pirate/Legends|Pirate]]
+*[[Princess/Legends|Princess]]
+*[[Senator/Legends|Senator]]
+*[[Order of the Sith Lords]]
+**[[Sith/Legends|Sith]]
+***[[Dark Lord of the Sith/Legends|Dark Lord of the Sith]]
+***[[Darth/Legends|Darth]]
+***[[Sith Lord/Legends|Sith Lord]]
+***[[Sith Master/Legends|Sith Master]] {{Mo}}
+***[[Sith apprentice/Legends|Sith apprentice]]
+|c-species=
+*[[Abyssin]] {{1st}}
+*[[Advozse]] {{1st}}
+*[[Aqualish]] {{1st}}
+**[[Quara]] {{1st}}
+*[[Arcona]] {{1st}}
+*[[Bimm]] {{1st}}
+*[[Bith]] {{1st}}
+*[[Chadra-Fan]] {{1st}}
+*[[Defel]] {{1st}}
+*[[Devaronian]] {{1st}}
+*[[Dianoga]] {{1st}}
+*[[Duros]] {{1st}}
+*[[Givin]] {{1st}}
+*[[Gotal]] {{1st}}
+*[[H'nemthe (species)|H'nemthe]] {{1st}}
+*[[Human]] {{1st}}
+**[[Alderaanian]] {{1st}}
+**[[Cloning|Clone]] {{1st}}
+**[[Corellian]] {{1st}}
+**[[Onderonian]] {{1st}}
+*[[Hutt]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Ithorian]] {{1st}}
+*[[Jawa]] {{1st}}
+*[[Kubaz]] {{1st}}
+{{!}}
+*[[Lamproid]] {{1st}}
+*[[Lutrillian]] {{1st}}
+*[[Mantellian Savrip]] {{1st}} {{C|as dejarik piece}}
+*[[Monnok]] {{1st}} {{C|as dejarik piece}}
+*[[Morseerian]] {{1st}}
+*[[Nimbanel]] {{1st}}
+*[[Pacithhip]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Qiraash]] {{1st}}
+*[[Quor'sav]] {{1st}}
+*[[Ranat]] {{1st}}
+*[[Rodian]] {{1st}}
+*[[Sakiyan]] {{1st}}
+*[[Sarkan]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Saurin]] {{1st}}
+*[[Shistavanen]] {{1st}}
+*[[Siniteen]] {{1st}}
+*[[Snivvian]] {{1st}}
+*[[Stennes Shifter]] {{1st}}
+*[[Talz]] {{1st}}
+*[[Tusken Raider]] {{1st}}
+*[[Unidentified bug-faced species]] {{1st}}
+*[[Vuvrian]] {{1st}}
+*[[Wookiee]] {{1st}}
+*[[Yam'rii]] {{1st}}
+|l-species=
+<div style="-webkit-column-count:3">
+*[[Abyssin/Legends|Abyssin]]
+*[[Advozse/Legends|Advozse]]
+*[[Anzat (species)|Anzat]]
+*[[Aqualish/Legends|Aqualish]]
+*[[Arcona/Legends|Arcona]]
+*[[Bimm/Legends|Bimm]]
+*[[Bith/Legends|Bith]]
+*[[Brizzit]]
+*[[Chadra-Fan/Legends|Chadra-Fan]]
+*[[Defel/Legends|Defel]]
+*[[Devaronian/Legends|Devaronian]]
+*[[Duros/Legends|Duros]]
+*[[Givin/Legends|Givin]]
+*[[Gotal/Legends|Gotal]]
+*[[H'nemthe (species)/Legends|H'nemthe]]
+*[[Human/Legends|Human]]
+*[[Hutt/Legends|Hutt]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Ithorian/Legends|Ithorian]]
+*[[Jawa/Legends|Jawa]]
+*[[Kubaz/Legends|Kubaz]]
+*[[Lamproid/Legends|Lamproid]]
+*[[Lutrillian/Legends|Lutrillian]]
+*[[Mantellian Savrip/Legends|Mantellian Savrip]] {{Hologram}}
+*[[Morseerian/Legends|Morseerian]]
+*[[Nimbanel/Legends|Nimbanel]]
+*[[Pacithhip/Legends|Pacithhip]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Qiraash/Legends|Qiraash]]
+*[[Quor'sav/Legends|Quor'sav]]
+*[[Ranat/Legends|Ranat]]
+*[[Rodian/Legends|Rodian]]
+*[[Sakiyan/Legends|Sakiyan]]
+*[[Sarkan/Legends|Sarkan]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Saurin/Legends|Saurin]]
+*[[Shistavanen/Legends|Shistavanen]]
+*[[Siniteen/Legends|Siniteen]]
+*[[Snivvian/Legends|Snivvian]]
+*[[Stennes Shifter/Legends|Stennes Shifter]]
+*[[Talz/Legends|Talz]]
+*[[Tusken Raider/Legends|Tusken Raider]]
+*[[Vuvrian/Legends|Vuvrian]]
+*[[Wookiee/Legends|Wookiee]]
+*[[Yam'rii/Legends|Yam'rii]]
+</div><br clear="all">
+|c-vehicles=
+*[[Bomber]] {{1st}}
+*[[Cruiser]] {{1st}}
+**[[Bulk cruiser]] {{1stm}}
+*[[Escape pod]] {{1st}}
+**[[CEC Class-1 escape pod|Model CEC Class-1]] {{1stm}} {{Imo}}
+*[[Repulsorcraft]] {{1st}}
+**[[Speeder]] {{1st}}
+***[[Airspeeder]] {{1st}}
+****[[T-16 skyhopper]] {{1st}}
+***[[Landspeeder]] {{1st}}
+****[[9000 Z001 landspeeder]] {{1st}}
+****[[A-1 Deluxe Floater]] {{1st}}
+****[[V-35 Courier]] {{1st}}
+****[[X-34 landspeeder]] {{1st}}
+****[[XP-38 sport speeder]] {{1stm}}
+**[[Rebel personnel carrier]] {{1st}}
+**[[Void Spider TX-3]] {{1st}}
+*[[Sandcrawler]] {{1st}}
+*[[Space station]] {{1st}}
+**[[Battle station]] {{1st}}
+***[[Death Star]] {{1st}}
+****[[DS-1 Orbital Battle Station|DS-1 Death Star Mobile Battle Station]] {{1st}}
+*****[[Cell Block 1138]] {{1stm}}
+*****[[Control Room 327]] {{1st}}
+*****[[Death Star conference room]] {{1st}}
+*****[[Detention Level]] {{1st}}
+******[[Detention Block AA-23]] {{1st}}
+*******[[Cell 2187]] {{1st}}
+******[[Garbage masher 3263827]] {{1st}}
+*****[[Equatorial trench]] {{1st}}
+*****[[Meridian trench]] {{1st}}
+*****[[Northern Polar Command Sector]] {{1st}}
+******[[Overbridge (Death Star I)|Overbridge]] {{1st}}
+*****[[Section N-Six/Canon|Section N6]] {{1st}}
+******[[Tractor Beam 12]] {{1st}}
+{{!}}
+*[[Starship]] {{1st}}
+**[[Capital ship]] {{1st}}
+***[[Star Cruiser]] {{1stm}}
+***[[Star Destroyer]] {{1st}}
+****[[Imperial-class Star Destroyer|''Imperial''-class Star Destroyer]] {{1st}}
+*****[[Imperial I-class Star Destroyer|''Imperial I''-class Star Destroyer]] {{1st}}
+******''[[Devastator]]'' {{1st}}
+**[[Colony ship]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}} {{Wreck}}
+***''[[Dowager Queen]]'' {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}} {{Wreck}}
+**[[Consular ship]] {{1st}}
+**[[Corvette]] {{1st}}
+***[[CR90 corvette]] {{1st}}
+****''[[Tantive IV]]'' {{1st}}
+**[[Freighter]] {{1st}}
+***[[Light freighter]] {{1st}}
+****[[YT-series]] {{1st}}
+*****[[YT-1300 light freighter]] {{1st}}
+******''[[Millennium Falcon]]'' {{1st}}
+*****[[YT-2400 light freighter]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+******''[[Outrider]]'' {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Scout ship]] {{Mo}}
+**[[Shuttle]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[Sentinel-class landing craft|''Sentinel''-class landing craft]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Spice freighter]] {{1stm}}
+**[[Starfighter]] {{1st}}
+***[[BTL-A4 Y-wing assault starfighter/bomber]] {{1st}}
+****''[[Gold One]]'' {{1st}}
+***[[TIE series|TIE fighter series]] {{1st}}
+****[[TIE/ln space superiority starfighter]] {{1st}}
+****[[TIE Advanced x1]] {{1st}}
+*****[[Darth Vader's TIE Advanced]] {{1st}}
+****[[TIE boarding craft|TIE Boarding Craft]] {{1st}} {{C|corridor only}}
+***[[X-wing starfighter]] {{1st}}
+****[[T-65B X-wing starfighter]] {{1st}}
+*****[[Biggs Darklighter's X-wing]] {{1st}}
+*****''[[Red Five (T-65B X-wing starfighter)|Red Five]]'' {{1st}}
+*****''[[Red One (T-65B X-wing starfighter)|Red One]]'' {{1st}}
+*****''[[Red Six (T-65B X-wing starfighter)|Red Six]]'' {{1st}}
+*****[[Wedge Antilles' X-wing]] {{1st}}
+*[[Transport]] {{1st}}
+**[[GR-45 medium transport]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Troop transport]] {{1st}}
+***[[Stormtrooper transport]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Swoop]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Flare-S swoop]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+|l-vehicles=
+<div style="-webkit-column-count:3">
+*[[9000 Z001 landspeeder/Legends|9000 Z001 landspeeder]]
+*[[A-1 Deluxe Floater/Legends|A-1 Deluxe Floater]]
+*[[Air-2 racing swoop]]
+*[[BTL Y-wing starfighter/Legends|BTL Y-wing starfighter]]
+*[[Bulk cruiser/Legends|Bulk cruiser]] {{Mo}}
+*[[Class-6 escape pod/Legends|Class-6 escape pod]]
+*[[CR90 corvette/Legends|CR90 corvette]]
+*[[DS-1 Orbital Battle Station/Legends|Death Star I]]
+*''[[Dowager Queen/Legends|Dowager Queen]]''
+*[[Fixer's landspeeder/Legends|Fixer's landspeeder]] {{Del}}
+*[[Flare-S swoop/Legends|Flare-S swoop]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[GR-45 medium transport/Legends|GR-45 medium transport]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Imperial I-class Star Destroyer/Legends|''Imperial I''-class Star Destroyer]]
+**''[[Conquest (Imperial-class)/Legends|Conquest]]''
+*[[Rebel personnel carrier/Legends|Rebel personnel carrier]]
+*[[Sandcrawler/Legends|Sandcrawler]]
+*[[Sentinel-class landing craft/Legends|''Sentinel''-class landing craft]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Spice freighter/Legends|Spice freighter]] {{Mo}}
+*[[Star Cruiser/Legends|Star Cruiser]] {{Mo}}
+*[[T-16 skyhopper/Legends|T-16 skyhopper]]
+*[[T-65 X-wing starfighter/Legends|T-65 X-wing starfighter]]
+*[[TIE Advanced x1/Legends|TIE Advanced x1]]
+*[[TIE/ln space superiority starfighter/Legends|TIE fighter]]
+*[[V-35 Courier/Legends|V-35 Courier]]
+*[[Void Spider TX-3 Air Taxi]]
+*[[X-34 landspeeder/Legends|X-34 landspeeder]]
+*[[XP-38 sport landspeeder]] {{Mo}}
+*[[YT-1300 light freighter/Legends|YT-1300 light freighter]]
+**''[[Millennium Falcon/Legends|Millennium Falcon]]''
+*[[YT-2400 light freighter/Legends|YT-2400 light freighter]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**''[[Outrider/Legends|Outrider]]'' {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+</div><br clear="all">
+|c-technology=
+*[[Armor]] {{1st}}
+**[[Darth Vader's armor]] {{1st}}
+**[[Helmet]] {{1st}}
+***[[Blast helmet]] {{1st}}
+***[[Flight helmet]] {{1st}}
+****[[K-22995 light flight helmet]] {{1st}}
+**[[Mandalorian armor]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[Macrobinocular viewplate]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[Mandalorian vambrace]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Stormtrooper armor]] {{1st}}
+*[[Backpack]] {{1st}}
+**[[SD-48 survival backpack]] {{1st}}
+*[[Blast door]] {{1st}}
+*[[Blaster]] {{1st}}
+**[[Blaster cannon]] {{1st}}
+**[[Blaster carbine]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+***[[EE-3 carbine rifle]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Blaster pistol]] {{1st}}
+***[[Defender sporting blaster pistol]] {{1st}}
+****[[Satine's Lament]] {{1st}}
+***[[DH-17 blaster pistol]] {{1st}}
+***[[DL-21 blaster pistol]] {{1st}}
+***[[Heavy blaster pistol]] {{1st}}
+****[[DL-44 heavy blaster pistol]] {{1st}}
+*****[[Han's heavy blaster pistol]] {{1st}}
+****[[DT-12 heavy blaster pistol]] {{1st}}
+***[[Power 5 blaster]] {{1st}}
+***[[SE-14C blaster pistol]] {{1st}}
+**[[Blaster rifle]] {{1st}}
+***[[DLT-19 heavy blaster rifle]] {{1st}}
+***[[E-11 medium blaster rifle]] {{1st}}
+***[[RT-97C heavy blaster rifle]] {{1st}}
+**[[Ion blaster]] {{1st}}
+***[[Jawa ionization blaster]] {{1st}}
+**[[Light repeating blaster]] {{1st}}
+***[[T-21 light repeating blaster]] {{1st}}
+**[[Shock blaster]] {{1st}}
+***[[CA-87 blaster]] {{1st}}
+*[[Blast shield]] {{1st}}
+*[[Bowcaster]] {{1st}}
+**[[Chewbacca's bowcaster]] {{1st}}
+*[[Breath mask]] {{1st}}
+*[[BT-16]] {{1stm}}
+*[[Droid caller|Caller]] {{1st}}
+*[[Camera]] {{1st}}
+**[[Security camera]] {{1st}}
+***[[57C]] {{1st}}
+*[[Cannon]] {{1st}}
+**[[Ion cannon]] {{1st}}
+***[[NK-7 ion cannon]] {{1st}}
+**[[Pneumatic cannon]] {{1st}} {{C|Model only}}
+*[[Club]] {{1st}}
+{{!}}
+*[[Code cylinder]] {{1st}}
+*[[Comlink]] {{1st}}
+**[[C1 personal comlink]] {{1st}}
+*[[Comm unit]] {{1st}}
+*[[Computer]] {{1st}}
+**[[Navigation computer]] {{1stm}}
+**[[Targeting computer]] {{1st}}
+*[[Computer monitor]] {{1st}}
+*[[Control box]] {{1st}}
+*[[Cryogenic density combustion booster]] {{1st}}
+*[[Cybernetics]] {{1st}}
+**[[Cyborg]] {{1st}}
+*[[Data-tape]] {{1stm}}
+*[[Datacard]] {{1st}}
+*[[Death Star plans]] {{1st}}
+*[[Deflector shield]] {{1st}}
+**[[Ray shield]] {{1st}}
+*[[Deflector shield generator]] {{1st}}
+*[[Droid]]
+*[[Droid detector]] {{1st}}
+*[[Electrobinoculars]] {{1st}}
+*[[Electrostatic repeller]] {{1st}}
+*[[Engine]] {{1stm}}
+*[[Fire extinguisher]] {{1st}}
+*[[Grappling hook]] {{1st}}
+*[[Grenade]] {{1st}}
+**[[Thermal detonator]] {{1st}}
+*[[Headset]] {{1st}}
+*[[Holocamera|Holocam]] {{1st}}
+*[[Hologram]] {{1st}}
+*[[Holoprojector]] {{1st}}
+*[[Homing beacon]] {{1stm}}
+**[[XX-23 S-thread tracker]] {{1stm}}
+*[[Humidity sensor]] {{1st}}
+*[[Jetpack]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Z-6 jetpack]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Laser]] {{1st}}
+**[[Laser cannon]] {{1st}}
+***[[Super Blaster 920 laser cannon]] {{1st}}
+***[[KX9 laser cannon]] {{1st}}
+***[[L-s1 laser cannon]] {{1st}}
+***[[Quad laser cannon]] {{1st}}
+****[[AG-2G quad laser cannon]] {{1st}}
+***[[Turbolaser]] {{1st}}
+****[[XX-9 heavy turbolaser battery]] {{1st}}
+*[[Life support]] {{1st}}
+**[[Diagnostech life support unit]] {{1st}}
+*[[Lightsaber]] {{1st}}
+**[[Obi-Wan Kenobi's third lightsaber|Obi-Wan Kenobi's lightsaber]] {{1st}}
+**[[Sith lightsaber]] {{1st}}
+***[[Dual-phase lightsaber]] {{1st}}
+****[[Darth Vader's lightsaber]] {{1st}}
+**[[Skywalker lightsaber|Skywalker's lightsaber]] {{1st}}
+*[[Macrobinoculars]] {{1st}}
+**[[MB450 macrobinoculars]] {{1st}}
+*[[Magnet]] {{1stm}}
+{{!}}
+*[[Magnetic paralyzing pincer lock]] {{1st}}
+*[[Magnetic seal]] {{1st}}
+*[[Magnetic suction tube/Canon|Magnetic suction tube]] {{1st}}
+*[[Melee weapon]] {{1st}}
+**[[Electropole]] {{1st}}
+**[[Gaderffii stick]] {{1st}}
+*[[Mind probe]] {{1stm}}
+*[[Missile]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Homing missile]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Moisture vaporator]] {{1st}}
+**[[GX-8 water vaporator]] {{1st}}
+*[[Motivator]] {{1st}}
+*[[Officer's disk]] {{1st}}
+*[[Photoreceptor]] {{1st}}
+*[[Polarizing visor|Polarized visor]] {{1st}}
+*[[Polearm]] {{1st}}
+**[[Pike]] {{1st}}
+*[[Power converter]] {{1stm}}
+*[[Proton torpedo]] {{1st}}
+**[[MG7-A proton torpedo]] {{1st}}
+*[[Quarrel]] {{1st}}
+*[[Rangefinder]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Reactor]] {{1st}}
+**[[Solar ionization reactor]] {{1st}}
+***[[I-a2b solar ionization reactor]] {{1st}}
+*[[Rebreather pack]] {{1st}}
+*[[Rectenna]] {{1st}}
+*[[Restraining bolt]] {{1st}}
+*[[Repulsorlift]] {{1st}}
+*[[Rifle]] {{1st}}
+*[[S-foils]] {{1st}}
+*[[Scomp link]] {{1st}}
+*[[Slugthrower]] {{1st}}
+**[[6-2Aug2 hunting rifle]] {{1st}}
+**[[Cycler rifle]] {{1st}}
+*[[Sonic torture device]] {{1st}}
+*[[Stabilizer]] {{1st}}
+*[[Stun]] {{1st}}
+*[[Stuncuffs]] {{1st}}
+*[[Superweapon]] {{1st}}
+**[[Superlaser]] {{1st}}
+***[[Mk I Superlaser]] {{1st}}
+*[[Thermal exhaust port]] {{1st}}
+*[[Tractor beam]] {{1st}}
+*[[Tractor beam projector]] {{1st}}
+**[[Q7 tractor beam projector]] {{1st}}
+*[[Tractor beam targeting array]] {{1st}}
+*[[Marksman-H training remote|Training remote]] {{1st}}
+*[["Tulip" style Imperial work station]] {{1st}}
+*[[Turbolift]] {{1st}}
+*[[Weapon]] {{1st}}
+|l-technology=
+<div style="-webkit-column-count:3">
+*[[6-2Aug2 hunting rifle/Legends|6-2Aug2 hunting rifle]] {{1st}}
+*[[57C holocam]] {{1st}}
+*[[ANq-51 sensor array computer/Legends|ANq-51 sensor array computer]]
+*[[Backpack/Legends|Backpack]]
+*[[Bandfill/Legends|Bandfill]]
+*[[Binders/Legends|Binders]]
+*[[Bowcaster/Legends|Bowcaster]]
+*[[Breath mask/Legends|Breath mask]]
+*[[C1 personal comlink/Legends|C1 personal comlink]]
+*[[Droid caller/Legends|Caller]]
+*[[Code cylinder/Legends|Code cylinder]]
+*[[Comlink/Legends|Comlink]]
+*[[Cybernetics/Legends|Cybernetics]]
+**[[Darth Vader's armor/Legends|Darth Vader's armor]]
+*[[Data-tape/Legends|Data-tape]] {{1stm}}
+*[[Death Star plans/Legends|Death Star plans]]
+*[[Defender sporting blaster pistol/Legends|Defender sporting blaster pistol]]
+*[[DH-17 blaster pistol/Legends|DH-17 blaster pistol]]
+*[[DL-21 blaster pistol/Legends|DL-21 blaster pistol]]
+*[[DL-44 heavy blaster pistol/Legends|DL-44 heavy blaster pistol]]
+*[[DLT-19 heavy blaster rifle/Legends|DLT-19 heavy blaster rifle]]
+*[[Dorenian Beshniquel/Legends|Dorenian Beshniquel]]
+*[[Droid/Legends|Droid]]
+*[[Droid detector/Legends|Droid detector]]
+*[[Duraplex/Legends|Duraplex]]
+*[[Durasteel/Legends|Durasteel]]
+*[[DT-12 heavy blaster pistol/Legends|DT-12 heavy blaster pistol]]
+*[[E-11 blaster rifle/Legends|E-11 blaster rifle]]
+*[[EE-3 carbine rifle/Legends|EE-3 carbine rifle]] {{C|Special Edition}}
+*[[Fanfar/Legends|Fanfar]]
+*[[Flare/Legends|Flare]]
+*[[Fusion generator supply tank]]
+*[[Gaderffii/Legends|Gaderffii]]
+*[[Garbage compactor/Legends|Garbage compactor]]
+*[[Goggles/Legends|Goggles]]
+*[[Grappling hook/Legends|Grappling hook]]
+*[[Holotable/Legends|Holotable]]
+**[[Imperial holotable]]
+*[[Hypermatter reactor/Legends|Hypermatter reactor]]
+*[[Imperial Computer Network]] {{1st}}
+*[[Ion blaster/Legends|Ion blaster]]
+**[[Jawa ionization blaster/Legends|Jawa ionization blaster]]
+*[[Kloo horn/Legends|Kloo horn]]
+*[[Life support capsule]]
+*[[Lightsaber/Legends|Lightsaber]]
+*[[Magnetic suction tube]] {{1st}}
+*[[MB450 macrobinoculars/Legends|MB450 macrobinoculars]]
+*[[Moisture vaporator/Legends|Moisture vaporator]]
+*[[Oil bath/Legends|Oil bath]]
+*[[Ommni box/Legends|Ommni box]]
+*[[Omni-directional sensor globe]] {{1st}}
+*[[OrC-19 com-scan integrator console]]
+*[[Peel rod]]
+*[[Ploong sounder/Legends|Ploong sounder]]
+*[[Polarizing visor/Legends|Polarizing visor]] {{1st}}
+*[[Power 5 heavy blaster pistol]]
+*[[Q7 tractor beam projector/Legends|Q7 tractor beam projector]]
+*[[Quarrel/Legends|Quarrel]]
+*[[Holster/Legends|Quick draw holster]]
+*[[R2n Agromech Head]] {{1st}}
+*[[Rangefinder/Legends|Rangefinder]]
+*[[Ray shield/Legends|Ray shield]]
+*[[Restraining bolt/Legends|Restraining bolt]]
+*[[RS-J24 thruster engine|RS-J24 thruster module]]
+*[[RT-97C heavy blaster rifle/Legends|RT-97C heavy blaster rifle]]
+*[[SB-920 laser cannon]]
+*[[Scope/Legends|Scope]]
+*[[SE-14C blaster pistol/Legends|SE-14C blaster pistol]]
+*[[Slugthrower/Legends|Slugthrower]]
+**[[Cycler rifle/Legends|Cycler rifle]]
+*[[Solar collector/Legends|Solar collector]]
+*[[ST2 concussion missile tube/Legends|ST2 concussion missile tube]]
+*[[Stormtrooper armor/Legends|Stormtrooper armor]]
+*[[Subspace transceiver/Legends|Subspace transceiver]]
+*[[Superlaser/Legends|Superlaser]]
+*[[T-21 light repeating blaster/Legends|T-21 light repeating blaster]]
+*[[Targeting computer/Legends|Targeting computer]]
+*[[Targeting scope]]
+*[[TD1.4 electrobinoculars]]
+*[[Thermal detonator/Legends|Thermal detonator]]
+*[[Thermal exhaust port/Legends|Thermal exhaust port]]
+*[[Transmitter/Legends|Transmitter]]
+*[[Transparisteel/Legends|Transparisteel]]
+*[[Turbolaser/Legends|Turbolaser]]
+*[[Vehicle Maintenance Energizer]]
+</div><br clear="all">
+|c-miscellanea=
+*[[1 BBY]] {{1st}}
+*[[0 ABY]] {{1st}}
+*[[Acceleration couch]] {{1st}}
+*[[Alcohol]] {{1st}}
+*[[Alien]] {{1st}}
+*[[Anti-droid sentiment]] {{1st}}
+*[[Army]] {{1st}}
+**[[Infantry]] {{1st}}
+***[[Squad]] {{1st}}
+***[[Troop]] {{1st}}
+*[[Atmosphere]] {{1st}}
+*[[Band]] {{1st}}
+*[[Black fizzer]] {{1st}}
+*[[Blockade]] {{1st}}
+*[[Blood]] {{1st}}
+*[[Bounty]] {{1st}}
+*[[Callsign]] {{1st}}
+*[[Cantina]] {{1st}}
+*[[Carbon scoring]] {{1st}}
+*[[Chalcedony]] {{1st}}
+*[[Chance cube]] {{1st}}
+**[[Han Solo's dice]] {{1st}}
+**[[Spike die]] {{1st}}
+*[[City]] {{1st}}
+**[[Spaceport]] {{1st}}
+*[[Clothing]] {{1st}}
+**[[Bandolier]] {{1st}}
+**[[Boot]] {{1st}}
+**[[Cloak]] {{1st}}
+**[[Delva Racine original hanging sleeve dress]] {{1st}}
+**[[Flight suit]] {{1st}}
+***[[Flak vest]] {{1st}}
+***[[Flight helmet]] {{1st}}
+****[[K-22995 light flight helmet]] {{1st}}
+***[[TIE pilot flight suit]] {{1st}}
+**[[Hat]] {{1st}}
+**[[Holster]] {{1st}}
+**[[Imperial military uniforms]] {{1st}}
+***[[Rank insignia plaque]] {{1st}}
+**[[Jacket]] {{1st}}
+**[[Poncho]] {{1st}}
+**[[Robe]] {{1st}}
+**[[Utility belt]] {{1st}}
+*[[Cockpit]] {{1st}}
+*[[Color]] {{1st}}
+*[[Conning tower|Command tower]] {{1st}}
+*[[Convoy]] {{1st}}
+*[[Counterpart]] {{1st}}
+*[[Cremation]] {{1st}}
+*[[Currency]] {{1st}}
+**[[Galactic Credit Standard|Credit]] {{1st}}
+*[[Death]] {{1st}}
+**[[Death|Suicide]] {{1stm}}
+*[[Death penalty]] {{1stm}} {{C|as execution}}
+*[[Death Star plans]] {{1st}}
+*[[Dejarik]] {{1st}}
+*[[Desert]] {{1st}}
+*[[Distress signal]] {{1stm}}
+*[[Durasteel]] {{1st}}
+*[[Durite]] {{1st}}
+*[[Entry dome]] {{1st}}
+*[[Eriaduan]] {{1st}}
+*[[Farm]] {{1st}}
+**[[Moisture farm]] {{1st}}
+*[[Ferrocrete]] {{1st}}
+*[[Fire]] {{1st}}
+*[[Foodstuff]] {{1st}}
+*[[Fleet]] {{1st}}
+**[[Navy]] {{1st}}
+**[[Warship]] {{1st}}
+{{!}}
+*[[Flight]] {{1st}}
+*[[The Force]] {{1st}}
+**[[Dark side of the Force]] {{1st}}
+**[[Disturbance in the Force]] {{1st}}
+**[[Force-sensitive]] {{1st}}
+**[[Force power]] {{1st}}
+***[[Force choke]] {{1st}}
+***[[Force Focus]] {{1st}}
+***[[Force spirit]] {{1st}} {{Voice}}
+***[[Mind trick]] {{1st}}
+**[[Light side of the Force]] {{1st}}
+**[[Living Force]] {{1st}}
+*[[Galaxy]] {{1st}}
+*[[Garbage compactor]] {{1st}}
+*[[Garrison]] {{1st}}
+*[[Gas]] {{1st}}
+**[[Oxygen]] {{1st}}
+*[[Glass]] {{1st}}
+*[[God]] {{1stm}}
+*[[Gold]]
+*[[Grand Plan|Great Plan]] {{1stm}} {{Imo}}
+*[[Unarmed combat|Hand-to-hand combat]] {{1st}} {{C|Failed attempt}}
+*[[Hangar]] {{1st}}
+*[[Chaos|Hell]] {{1stm}} {{C|as expletive}}
+*[[Hermit]] {{1st}}
+*[[Holster]] {{1st}}
+*[[Homeworld|Home planet]] {{1stm}}
+*[[Hull]] {{1st}}
+*[[Humanoid]] {{1st}}
+*[[Hunting]] {{1stm}}
+*[[Hyperspace]] {{1st}}
+*[[Immortality]] {{1st}} {{Ghost}}
+*[[Imperial crest]] {{1st}}
+*[[Jedi training]] {{1st}}
+*[[Jungle]] {{1st}}
+*[[Kessel Run|Kessel run]] {{1stm}}
+*[[Language]] {{1st}}
+**[[Antarian]] {{1st}}
+**[[Aqualish (language)|Aqualish]] {{1st}}
+**[[Arconese]] {{1st}}
+**[[Binary]] {{1st}}
+**[[Bocce]] {{1stm}}
+**[[Chadra-Fan (language)|Chadra-Fan]] {{1st}}
+**[[Cruly-3]] {{1st}}
+**[[Durese]] {{1st}}
+**[[Galactic Basic Standard]] {{1st}}
+***"[[May the Force be with you]]" {{1st}}
+***"[[Wizard]]" {{1st}}
+**[[Gonkian]] {{1st}}
+**[[H'nemthe (language)|H'nemthe]] {{1st}}
+**[[Huttese]] {{1st}}
+**[[Ithorese]] {{1st}}
+**[[Jawaese]] {{1st}}
+**[[Kubazian]] {{1st}}
+**[[Kyhhhsik]] {{1st}}
+**[[Lamproid (language)|Lamproid]] {{1st}}
+**[[Nyahnyah]] {{1st}}
+**[[Rodian (language)|Rodian]] {{1st}}
+**[[Sarkese]] {{1st}}
+**[[Saurin (language)|Saurin]] {{1st}}
+**[[Shimiese]] {{1st}}
+**[[Shyriiwook]] {{1st}}
+**[[Talzzi]] {{1st}}
+**[[Trade language]] {{1st}}
+***[[Jawa Trade Talk]] {{1st}}
+**[[Tusken]] {{1st}}
+**[[Writing]] {{1st}}
+***[[High Galactic]] {{1st}} {{C|Pre-[[Star Wars Trilogy (DVD)|DVD version]] only}}
+**[[Aurebesh]] {{C|Post-[[2004]] releases}}
+*[[Leather]] {{1st}}
+*[[Lightsaber combat]] {{1st}}
+**[[Lightsaber duel]] {{1st}}
+*[[Lightspeed]] {{1st}}
+*[[Luke Skywalker's T-16 skyhopper model]] {{1st}}
+*[[Maker]] {{1stm}}
+*[[Medal]] {{1st}}
+**[[Medal of Bravery]] {{1st}}
+*[[Meditation]] {{1st}}
+*[[Memory wipe]] {{1stm}}
+*[[Metal]] {{1st}}
+**[[Aurodium]] {{1st}}
+**[[Chromium]] {{1st}}
+*[[Meteor shower]] {{1stm}}
+*[[Meter]] {{1stm}}
+*[[Military rank]] {{1st}}
+*[[Milk]] {{1st}}
+**[[Blue milk]] {{1st}}
+*[[Mining]] {{1stm}}
+*[[Music]] {{1st}}
+**[[Bandfill]] {{1st}}
+**[[Dorenian Beshniquel]] {{1st}}
+**[[Double jocimer]] {{1st}}
+**"[[Dune Sea Special]]" {{1st}}
+**[[Fanfar]] {{1st}}
+**[[Kloo horn]] {{1st}}
+**"[[Mad About Me]]" {{1st}}
+**[[Ommni box]] {{1st}}
+{{!}}
+*[[Space warfare|Naval warfare]] {{1st}}
+*[[Necklace]] {{1st}}
+**[[Chalcedony waves]] {{1st}}
+*[[Noble]] {{1st}}
+*[[Oil]] {{1st}}
+*[[Oil bath]] {{1st}}
+*[[Operating number]] {{1st}}
+*[[Order 66]] {{1stm}} {{Imo}}
+*[[Oversector]] {{1st}}
+*[[Parsec]] {{1stm}}
+*[[Plant]] {{1st}}
+**[[Tree]] {{1st}}
+*[[Plasma]] {{1st}}
+*[[Plastoid]] {{1st}}
+*[[Politics]] {{1st}}
+*[[Pourstone]] {{1st}}
+*[[Prisoner]] {{1st}}
+*[[Quadanium steel]] {{1st}}
+*[[Realspace]] {{1st}}
+*[[Rebel Alliance starbird]] {{1st}}
+*[[Rebel command insignia]] {{1st}}
+*[[Sector]] {{1st}}
+*[[Slavery]] {{Mo}} {{Del}}
+*[[Smoking]] {{1st}}
+*[[Snub-fighter]] {{1stm}}
+*[[Spaceport]] {{1st}}
+*[[Species]] {{1st}}
+**[[Brain]] {{1stm}}
+**[[Elephantine]] {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Eye]] {{1st}}
+**[[Hair]] {{1st}}
+**[[Limb]] {{1st}}
+**[[Mouth]] {{1st}}
+**[[Parent]] {{1st}}
+**[[Proboscis]] {{1st}}
+**[[Reptile]] {{1st}}
+**[[Sentience]] {{1st}}
+**[[Gender|Sexes]] {{1st}}
+**[[Skeleton]] {{1st}}
+**[[Twin]] {{1st}}
+*[[Spice]] {{1stm}}
+*[[Spoon]] {{1st}}
+*[[Star system]] {{1st}}
+**[[Asteroid]] {{1st}}
+***[[Asteroid field]] {{1st}}
+**[[Moon]] {{1st}}
+**[[Orbit]] {{1st}}
+**[[Planet]] {{1st}}
+***[[Gas giant]] {{1st}}
+**[[Star]] {{1st}}
+***[[Binary star system]] {{1st}}
+*[[Supernova]] {{1stm}}
+*[[Tech dome]] {{1st}}
+*[[Time]] {{1st}}
+**[[Millennium]] {{1st}}
+**[[Nanosecond]] {{1st}}
+**[[Second]] {{1st}}
+**[[Standard century]] {{1st}}
+**[[Standard day]] {{1st}}
+**[[Standard decade]] {{1st}}
+**[[Standard hour]] {{1st}}
+**[[Standard minute]] {{1st}}
+**[[Standard month]] {{1st}}
+**[[Standard week]] {{1st}}
+**[[Standard year]] {{1st}}
+*[[Time travel]] {{1stm}} {{C|Mentioned sarcastically}}
+*[[Torture]] {{1st}}
+*[[Transparisteel]] {{1st}}
+*[[Treason]] {{1st}}
+*[[Universe]] {{1st}}
+*[[Vacuum]] {{1st}}
+*[[Victory decal]] {{1st}}
+*[[Viewport]] {{1st}}
+*[[Sentry tower|Watchtower]] {{1st}}
+*[[Water]] {{1st}}
+|l-miscellanea=
+<div style="-webkit-column-count:3">
+*[[4-DOF robot arm]]
+*[[Alliance Starbird]]
+*[[Armor/Legends|Armor]]
+*[[Axidite]]
+*[[Blockade/Legends|Blockade]]
+*[[Blood/Legends|Blood]] {{1st}}
+*[[Boot/Legends|Boot]] {{1st}}
+*[[Chance cube/Legends|Chance cube]] {{1st}}
+*[[Chromium/Legends|Chromium]] {{1st}}
+*[[Clothing/Legends|Clothing]] {{1st}}
+**[[Alderaan royal family traditional gown]] {{1st}}
+**[[Alderaan royalty symbolic belt]] {{1st}}
+**[[Corellian spacer black vest]] {{1st}}
+**[[Flak vest/Legends|Flak vest]] {{1st}}
+**[[Flight helmet/Legends|Flight helmet]] {{1st}}
+**[[Jedi apparel/Legends|Jedi apparel]]
+**[[Poncho/Legends|Poncho]]
+**[[Shirt]]
+**[[Shock-helmet]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+**[[Tatooine farm tunic]]
+*[[Corellian Bloodstripe]]
+*[[Cremation/Legends|Cremation]]
+*[[Death/Legends|Death]]
+*[[Denscris]]
+*[[Doonium/Legends|Doonium]]
+*[[Funnel plant/Legends|Funnel plant]]
+*[[Hunting/Legends|Hunting]] {{Mo}}
+*[[Grease/Legends|Grease]] {{Mo}}
+*[[GX-8 water vaporator/Legends|GX-8 water vaporator]]
+*[[The Force/Legends|The Force]]
+**[[Dark side of the Force/Legends|Dark side of the Force]] {{1st}}
+**[[Sound mimicry]] {{1st}}
+**[[Force ghost/Legends|Force ghost]] {{Voice}}
+**[[Mind trick/Legends|Mind trick]]
+*[[Galactic Basic Standard/Legends|Galactic Basic Standard]]
+*[[Fire/Legends|Fire]]
+*[[Flight harness/Legends|Flight harness]]
+*[[Gruu pipe|''Gruu'' pipe]] {{1st}} {{C|introduced in ''[[The Star Wars Trilogy Special Edition|Special Edition]]''}}
+*[[Huttese/Legends|Huttese]]
+*[[Impervium/Legends|Impervium]]
+*[[Jungle/Legends|Jungle]]
+*[[Language/Legends|Language]]
+**[[Antarian/Legends|Antarian]]
+**[[Aqualish (language)/Legends|Aqualish]]
+**[[Binary/Legends|Binary]]
+**[[Bocce/Legends|Bocce]] {{Mo}}
+**[[Chadra-Fan (language)/Legends|Chadra-Fan]]
+**[[Durese/Legends|Durese]]
+**[[Huttese/Legends|Huttese]]
+**[[Galactic Basic Standard/Legends|Galactic Basic Standard]]
+***"[[May the Force be with you/Legends|May the Force be with you]]" {{1st}}
+**[[Ithorese/Legends|Ithorese]]
+**[[Jawa Trade language]]
+**[[Jawaese/Legends|Jawaese]]
+**[[Rodese/Legends|Rodese]]
+**[[Shistavanen (language)|Shistavanen]]
+**[[Shyriiwook/Legends|Shyriiwook]]
+**[[Talz (language)|Talz]]
+**[[Tusken/Legends|Tusken]]
+*[[Lightsaber combat/Legends|Lightsaber combat]]
+**[[Sai tok/Legends|Sai tok]]
+*[[MB450 macrobinoculars/Legends|MB450 macrobinoculars]]
+*[[Medal of Bravery/Legends|Medal of Bravery]]
+*[[Milk/Legends|Milk]]
+**[[Blue milk/Legends|Blue milk]]
+*[[Molator/Legends|Molator]] {{Hologram}}
+*[[Music/Legends|Music]]
+**[[Dune Sea Special/Legends|Dune Sea Special]]
+**[[Mad About Me/Legends|"Mad About Me"]]
+*[[Omni-directional sensor globe]]
+*[[Plasma/Legends|Plasma]]
+*[[Plastex/Legends|Plastex]]
+*[[Plastoid/Legends|Plastoid]]
+*[[Pourstone/Legends|Pourstone]]
+*[[Power fusion generator]]
+*[[Quadanium steel/Legends|Quadanium steel]]
+*[[Sentry tower/Legends|Sentry tower]] {{1st}}
+*[[Ship's log]] {{1stm}}
+*[[Spoon/Legends|Spoon]] {{1st}}
+*[[Transparisteel/Legends|Transparisteel]] {{1st}}
+*[[Utility belt/Legends|Utility belt]]
+*[[Viewport/Legends|Viewport]] {{1st}}
+*[[Wupiupi/Legends|Wupiupi]] {{Ret}}
+</div><br clear="all">
+}}
+

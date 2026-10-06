@@ -365,7 +365,8 @@
 
   /*
    * Article page: the lead reads as one column of prose; the facts sit beside it on wide
-   * screens, like a wiki infobox, and after it on narrow ones (DOM order).
+   * screens, like a wiki infobox, and after it on narrow ones (DOM order). Appearance lists
+   * run full width below, in as many columns as fit.
    */
   article {
     display: grid;
@@ -404,9 +405,40 @@
       grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
 
       /* No inner scrolling: a scrollable box would need keyboard focus (axe). */
-      & > section {
+      & > section[aria-labelledby='facts'] {
         grid-column: 2;
         grid-row: span 2;
+      }
+    }
+
+    & > section:is([aria-labelledby='appearances'], [aria-labelledby='cast']) {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 0.75rem;
+
+      & summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      & :is(ol, ul) {
+        columns: 18rem;
+        column-gap: var(--gap);
+        margin-block-start: 0.75rem;
+      }
+
+      /* Numbers hang in the gap before each column: leave room for "607.". */
+      & ol {
+        column-gap: calc(var(--gap) + 5ch);
+      }
+
+      & li {
+        break-inside: avoid;
+        padding-block: 0.15rem;
+      }
+
+      & small {
+        color: var(--text-muted);
       }
     }
   }
