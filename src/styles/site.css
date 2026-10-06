@@ -236,13 +236,31 @@
     padding-block: 1rem;
     border-block-end: 1px solid var(--border);
 
-    & > p a {
+    & > p:first-of-type a {
       font-family: var(--font-display);
       font-size: var(--step-1);
       font-weight: 800;
       letter-spacing: 0.04em;
       color: var(--text);
       text-decoration: none;
+    }
+
+    /* The Sabacc link: a small amber pill beside the site name, something to play. */
+    & > p + p a {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: var(--step--1);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+
+      &:hover,
+      &[aria-current] {
+        background: color-mix(in oklch, var(--accent) 18%, transparent);
+      }
     }
 
     & nav ul {
@@ -546,5 +564,41 @@
     body > header nav a[aria-current] {
       outline: 2px solid CanvasText;
     }
+  }
+}
+
+@layer components {
+  /* Sabacc's ways to play: cards, like the home page's sections. */
+  main > section > ul:has(> li > a + p) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: var(--gap);
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: grid;
+      gap: 0.5rem;
+      align-content: start;
+      padding: var(--gap);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      box-shadow: var(--shadow);
+    }
+
+    & a {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 700;
+    }
+
+    & p {
+      color: var(--text-muted);
+    }
+  }
+
+  main > section > h2 {
+    margin-block-end: 0.75rem;
   }
 }

@@ -7,7 +7,7 @@ import { sectionPath } from '../domain/archive.js';
 import { CC_BY_SA_3 } from '../domain/attribution.js';
 import { SECTIONS, type Section } from '../domain/sections.js';
 import { absolute, SITE_NAME } from '../site.js';
-import { SECTION_LABELS, TEXT } from '../labels.js';
+import { SABACC_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
 
 /** Where the built CSS and JS live; dev and production differ (scripts/dev.ts, scripts/build.ts). */
 const WOOKIEEPEDIA_HOME = 'https://starwars.fandom.com';
@@ -63,6 +63,9 @@ const banner = (meta: PageMeta) => serverHtml`
   <a href="#main">${TEXT.skipLink}</a>
   <header>
     <p><a href="/" aria-current=${meta.path === '/' ? 'page' : nothing}>${SITE_NAME}</a></p>
+    <p>
+      <a href="/sabacc/" aria-current=${meta.path === '/sabacc/' ? 'page' : nothing}>${SABACC_TEXT.nav}</a>
+    </p>
     <nav aria-label=${TEXT.primaryNav}>
       <ul>
         ${SECTIONS.map(

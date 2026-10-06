@@ -11,6 +11,7 @@ import { articleBody, articleMeta } from './article.js';
 import { homeBody, homeMeta } from './home.js';
 import { layout, type Assets, type PageMeta } from './layout.js';
 import { offlineBody, offlineMeta } from './offline.js';
+import { sabaccBody, sabaccMeta } from './sabacc.js';
 import { searchBody, searchMeta } from './search.js';
 import { byLetter, letterBody, letterMeta, sectionBody, sectionMeta } from './section.js';
 
@@ -60,6 +61,7 @@ export function createSite(assets: Assets, { archive, articles }: SiteData): Sit
     ['/', { meta: homeMeta, body: () => homeBody(archive) }],
     [searchMeta.path, { meta: searchMeta, body: searchBody }],
     [offlineMeta.path, { meta: offlineMeta, body: offlineBody }],
+    [sabaccMeta.path, { meta: sabaccMeta, body: sabaccBody }],
   ]);
   for (const section of SECTIONS) {
     // Every section has a page, even an empty one: the header links to all of them.

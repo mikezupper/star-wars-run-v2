@@ -252,6 +252,38 @@ export const CREDIT = {
   modified: 'Modified for this site.',
 } as const;
 
+/** The /sabacc/ page and its header link. Every claim matches what sabacc.starwars.run says. */
+export const SABACC_TEXT = {
+  nav: 'Sabacc',
+  title: 'Sabacc',
+  description:
+    'Play Sabacc, the card game that won the Millennium Falcon, in your browser: classic or 3D, solo against droids or at a private table with friends.',
+  intro:
+    'The card game that won Han Solo the Millennium Falcon. Play it at sabacc.starwars.run, with the classic Legends rules.',
+  modesHeading: 'Ways to play',
+  modes: [
+    {
+      key: 'home',
+      name: 'Play in your browser',
+      about: 'The classic table, ready the moment the page loads.',
+    },
+    { key: 'threeD', name: 'Play in 3D', about: 'The same game at a fully rendered 3D table.' },
+    {
+      key: 'home',
+      name: 'Play with friends',
+      about: 'Open a private table for up to five players. Droids take any empty seats.',
+    },
+    {
+      key: 'home',
+      name: 'Play solo',
+      about: 'No crew around? Droid opponents are always ready to deal.',
+    },
+  ],
+  rulesHeading: 'New to sabacc?',
+  rules: 'Read the rules',
+  rulesAbout: 'They are on the game page, next to the table.',
+} as const;
+
 export const UNITS = {
   cm: 'cm',
   kg: 'kg',

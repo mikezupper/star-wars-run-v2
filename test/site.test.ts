@@ -150,6 +150,28 @@ describe('section and letter pages', () => {
   });
 });
 
+describe('Sabacc', () => {
+  it('is linked from every page header', () => {
+    for (const [page, body] of pages)
+      expect(body, page).toMatch(/<a href="\/sabacc\/"[^>]*>Sabacc<\/a>/);
+  });
+
+  it('describes the game and links to each way to play and to the rules', () => {
+    const sabacc = pages.get('/sabacc/') ?? '';
+    expect(sabacc).toContain(
+      '<a href="https://sabacc.starwars.run/" rel="external">Play in your browser</a>',
+    );
+    expect(sabacc).toContain(
+      '<a href="https://sabacc.starwars.run/3d.html" rel="external">Play in 3D</a>',
+    );
+    expect(sabacc).toContain('up to five players');
+    expect(sabacc).toContain(
+      '<a href="https://sabacc.starwars.run/#rules" rel="external">Read the rules</a>',
+    );
+    expect(site.sitemapPaths).toContain('/sabacc/');
+  });
+});
+
 describe('helpers', () => {
   it('normalises paths, titles and sitemaps', () => {
     expect(normalise('/characters')).toBe('/characters/');
