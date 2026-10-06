@@ -1,0 +1,42 @@
+{{Top|sprot|mprot|rwm|aor|title=''Star Wars'': Episode IV ''A New Hope''}}
+{{Otheruses|Star Wars: Episode IV A New Hope}}
+{{MultipleIssues|redlink|citation|cleanup}}
+{{Movie
+|image=[[1977-StarWars-theatricalposter.jpg]]
+|title=''Star Wars'': Episode IV<br />''A New Hope''
+|director=[[George Lucas]]<ref name="Episode">''Star Wars'': Episode IV ''A New Hope''</ref>
+|producer=*[[Gary Kurtz]]<ref name="Year by Year">''[[Star Wars Year By Year: A Visual History, Updated and Expanded Edition]]''</ref>
+*[[Rick McCallum]] {{C|[[The Star Wars Trilogy Special Edition|Special Edition]]}}
+*[[George Lucas]] {{C|Executive producer}}<ref name="Episode" />
+|production company=
+|writer=[[George Lucas]]<ref name="Year by Year" />
+|starring=*[[Mark Hamill]]<ref name="Year by Year" />
+*[[Harrison Ford]]<ref name="Year by Year" />
+*[[Carrie Fisher]]<ref name="Year by Year" />
+*[[Peter Mayhew]]<ref name="Year by Year" />
+*[[Anthony Daniels]]<ref name="Year by Year" />
+*[[Kenny Baker]]<ref name="Year by Year" />
+*[[Peter Cushing]]<ref name="Year by Year" />
+*[[Alec Guinness]]<ref name="Year by Year" />
+*[[James Earl Jones]]<ref name="Year by Year" />
+*[[David Prowse]]<ref name="Year by Year" />
+|music=[[John Williams]]<ref name="Year by Year" />
+|release date=*[[May 25]], [[1977]] {{C|[[Original unaltered trilogy|Original version]]}}<ref name="Year by Year" />
+*[[January 31]], [[1997]] {{C|Special Edition}}
+|runtime=*121 minutes {{C|Original}}
+*125 minutes {{C|Special Edition, DVD, Blu-ray and Digital HD}}
+|budget=$11,000,000
+|language=English<ref name="Episode" />
+|canon_timeline=[[1 BBY]]&ndash;[[0 ABY]]<ref name="EP4Date">{{FilmDate|IV}}</ref>
+|legends_timeline=[[0 BBY/Legends|0 BBY]]&ndash;[[0 ABY/Legends|0 ABY]]<ref name="Legends Date">''[[The New Essential Chronology]]'' dates the events of {{Film|IV}} to [[0 BBY/Legends|0 BBY]]&ndash;[[0 ABY/Legends|0 ABY]].</ref>
+|series=[[Original trilogy]], [[Star Wars saga|''Star Wars'' saga]]
+|preceded by=[[Star Wars: Episode III Revenge of the Sith|Episode III ''Revenge of the Sith'']]
+|followed by=[[Star Wars: Episode V The Empire Strikes Back|Episode V ''The Empire Strikes Back'']]
+}}
+{{Quote|A film for a generation growing up without fairy tales.|George Lucas|<ref name="Topps">{{Topps|set=1995 Topps Star Wars Galaxy Series 3|cardname=Joseph Campbell/George Lucas|link=https://www.tcdb.com/ViewCard.cfm/sid/82503/cid/7522576}}</ref>}}
+'''''Star Wars'': Episode IV ''A New Hope''''', originally released as '''''Star Wars''''', is a [[1977]] space opera film written and directed by [[George Lucas]]. It is the first part of the ''[[Star Wars]]'' [[original trilogy]] and the first ''Star Wars'' film released.
+
+The film is set 19 [[Standard year|years]] after the [[Proclamation of the New Order|formation]] of the [[Galactic Empire]] and the events of ''[[Star Wars: Episode III Revenge of the Sith|Revenge of the Sith]]''; construction has finished on the [[DS-1 Orbital Battle Station|Death Star]], a weapon capable of destroying a [[planet]]. After [[Princess]] [[Leia Skywalker Organa Solo|Leia Organa]], a leader of the [[Alliance to Restore the Republic|Rebel Alliance]], receives the weapon's plans in the hope of finding a weakness, she is kidnapped and taken to the Death Star. Meanwhile, a young [[Moisture farmer|farmer]] named [[Luke Skywalker]] meets [[Obi-Wan Kenobi]], who has lived in seclusion for years on the desert planet of [[Tatooine]]. When [[Lars homestead|Luke's home]] is burned and his [[Beru Whitesun Lars|aunt]] and [[Owen Lars|uncle]] killed, Obi-Wan begins Luke's [[Jedi]] [[Jedi training|training]] as they—along with [[Han Solo]], [[Chewbacca]], [[C-3PO]], and [[R2-D2]] attempt to rescue the princess from the Empire.
+
+Inspired by films like the ''[[Wikipedia:Flash Gordon (serial)|Flash Gordon]]'' [[Wikipedia:Movie serial|serials]] and the [[Wikipedia:Samurai|samurai]] films of [[Wikipedia:Akira Kurosawa|Akira Kurosawa]], as well as such critical works as [[Wikipedia:Joseph Campbell|Joseph Campbell]]'s ''[[Wikipedia:The Hero with a Thousand Faces|The Hero with a Thousand Faces]]'' and [[Wikipedia:Frank Herbert|Frank Herbert]]'s ''[[Wikipedia:Dune (franchise)|Dune]]'' books, Lucas began work on ''Star Wars'' in 1974. Ground-breaking in its use of [[Wikipedia:Special effect|special effects]], this is considered to be among the most successful—and most influential—films of all time. Produced with a budget of [[Wikipedia:US$|US$]]11,000,000 and released on [[May 25]], 1977, the film became one of the most successful of all time, earning $215 million in the [[Wikipedia:United States|United States]] and $337 million overseas during its original theatrical release, as well as winning several film awards, including 10 [[Wikipedia:Academy Award|Academy Award]] nominations. It was re-released several times, sometimes with [[List of changes in Star Wars re-releases|significant changes]]; the most notable versions were the 1997 [[The Star Wars Trilogy Special Edition|Special Edition]] and the 2004 [[Wikipedia:DVD|DVD]], which were modified with [[Wikipedia:Computer generated imagery|CGI]] effects and recreated scenes. It was re-released in the Blu-ray format in [[September]] of [[2011]] and 4K in [[2020]]. A full remaster of the original 1977 version will be re-released in theaters on [[February 19]], [[2027]]. The film was selected to be preserved by the [[Wikipedia:Library of Congress|Library of Congress]] as part of its [[Wikipedia:National Film Registry|National Film Registry]] in 1989, the program's first year in existence.
+

@@ -1,0 +1,36 @@
+{{Top}}
+{{Update|[[The High Republic: Light of the Jedi]], [[Life Day (comic story)|Life Day]], [[Life Day Part 2]], [[Queen's Shadow]], [[Queen's Hope]], [[Star Wars Jedi: Fallen Order]], [[A Time to Survive]], [[Blood Moon Uprising (short story)|Blood Moon]], [[Star Wars (2020) 9]], [[From a Certain Point of View: The Empire Strikes Back]], [[Life Day 1]], [[Life Day Treasury]], [[Star Wars: Build the Millennium Falcon 43]], [[Star Wars: Scum and Villainy: Case Files on the Galaxy's Most Notorious]], [[Star Wars: The Rise and Fall of the Galactic Empire]], [[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]]}}
+{{Species
+|image=[[File:Chewbacca-Fathead.png]]
+|name=Wookiee
+|designation=[[Sentience|Sentient]]<ref name="AbEverything">''[[Star Wars: Absolutely Everything You Need to Know]]''</ref>
+|class=
+|subspecies=[[Silverback]]s<ref name="TRB">''[[The Rebellion Begins]]''</ref>
+|races=
+|height=2.23&ndash;2.54 [[meter]]s<ref name="SWJB">''[[Star Wars Journeys: Beginnings]]''</ref>
+|length=
+|wingspan=
+|mass=*100 [[Kilogram|kg]] {{C|[[Gender|female]]}}<ref name="AbEverything" />
+*150 kg {{C|male}}<ref name="AbEverything" />
+|skincolor=
+|haircolor=*[[Color|Brown]]<ref name="Episode IV">{{Film|IV}}</ref>
+*Black<ref name="Darth Vader 1">[[Darth Vader (2015) 1|''Darth Vader'' (2015) 1]]</ref>
+*Gray<ref name="Lost Stars">''[[Lost Stars]]''</ref>
+*White<ref name="Lost Stars" />
+|feathers=
+|eyecolor=*Blue<ref name="Episode IV" />
+*Brown<ref name="TCW:TG">{{TCW|The Gathering (episode)}}</ref>
+*Gray<ref name="Creature Shop">{{SW|url=news/the-acolyte-creature-shop-bazil-reveal|text=Inside ''The Acolyte'' Creature Shop: Meet Bazil, the Tynnan Tracker - First Details}}</ref>
+|distinctions=*Shaggy [[water]]-shedding coat of [[hair]]<ref name="AbEverything" />
+*Long lifespans<ref name="AbEverything" />
+|lifespan=Over 400 [[standard year]]s<ref name="AbEverything" />
+|origin=[[Kashyyyk]]<ref name="AbEverything" />
+|habitat=[[Tree|Forest]]<ref name="AbEverything" />
+|diet=[[Diet|Omnivore]]<ref name="AbEverything" />
+|language=*[[Shyriiwook]]<ref name="AbEverything" />
+*[[Thykarann]]<ref name="AbEverything" />
+*[[Xaczik]]<ref name="AbEverything" />
+}}
+{{Quote|Let him have it. It's not wise to upset a Wookiee.''"<br />"''But sir, nobody worries about upsetting a droid.''"<br />"''That's 'cause a droid don't pull people's arms out of their sockets when they lose. Wookiees are known to do that.''"<br />"''I see your point, sir. I suggest a new strategy, Artoo. Let the Wookiee win.|Han Solo and [[C-3PO]]|<ref name="Episode IV" />}}
+'''Wookiees''', known in their own language of [[Shyriiwook]] as "'''the People of the Trees'''," were a [[species]] of tall, [[hair]]y [[humanoid]]s that were native to the [[planet]] [[Kashyyyk]]. A notable member of this species was the warrior [[Chewbacca]], [[Han Solo]]'s best friend and co-[[pilot]], who played a vital role in the [[Clone Wars]] during the [[Battle of Kashyyyk]], the [[Galactic Civil War]] by aiding the [[Alliance to Restore the Republic|Rebel Alliance]] in their fight against the [[Galactic Emperor|Galactic Empire]], and the [[First Order-Resistance War|war]] against the [[First Order]]. They were quite strong, and were known to rip people's arms out of their sockets when provoked. Though being from a temperate planet known for its [[swamp]]s and [[forest]]s, Wookiees were perfectly comfortable on icy worlds like [[Ilum]] and [[Hoth]], not requiring any additional protective [[clothing]], i.e. [[glove]]s or [[boot]]s.
+

@@ -1,0 +1,154 @@
+{{Top|italics=1}}
+{{Otheruses}}
+{{MultipleIssues|expand|updatecontent=[[Star Wars: Lando - Double or Nothing]], [[Solo: A Star Wars Story]], [[Star Wars: Han Solo & Chewbacca]], [[Star Wars (2015)|Star Wars (Marvel Comics 2015)]], [[In the Lair of the Dragon Slug]], [[From a Certain Point of View: The Empire Strikes Back]], [[Star Wars (2020) 2]], [[Star Wars (2020) 8]], [[Star Wars Vol. 3: War of the Bounty Hunters]], [[War of the Bounty Hunters 4]], [[War of the Bounty Hunters 5]], [[Star Wars (2020) 26]], [[Revelations (2022) 1]], [[Star Wars (2020) 36]], [[Star Wars (2020) 37]], [[Star Wars (2020) 38]], [[Star Wars (2020) 39]], [[Star Wars (2020) 40]], [[Return of the Jedi – Lando 1]], [[The Princess and the Scoundrel]], [[Star Wars: Poe Dameron Book VII: The Awakening]], [[Star Wars: Allegiance]], [[Flight of the Falcon]], [[Resistance Reborn]], [[Through the Turbulence]], [[Ghosts of Kashyyyk, Part 1]], [[Ghosts of Kashyyyk, Part 3]], [[Spark of the Resistance]], [[Pirate's Price]], [[Hyperspace Stories 4]], [[Star Wars: Episode IX The Rise of Skywalker]], [[Star Wars: Build the Millennium Falcon]], [[YT-1300 Millennium Falcon Owners' Workshop Manual]], [[Star Wars: Smuggler's Guide]], [[Star Wars: Millennium Falcon: A 3D Owner's Guide]]', [[Millennium Falcon (reference book)|The Millennium Falcon]], [[Star Wars: The Rise of Skywalker: The Visual Dictionary]], [[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]]|redlink}}
+{{Conflicting|''[[Lost Stars]]''|''[[Faith in an Old Friend]]''}}
+{{IndividualShip
+|image=[[File:Millennium_Falcon_Fathead_TROS.png]]
+|name=''Millennium Falcon''
+|designer=
+|manufacturer=[[Corellian Engineering Corporation]]<ref name="Cross">''[[Star Wars: The Force Awakens: Incredible Cross-Sections]]''</ref><ref name="USW NE">''[[Ultimate Star Wars, New Edition]]''</ref>
+|line=[[YT-series]]<ref name="Manual">''[[YT-1300 Millennium Falcon Owners' Workshop Manual]]''</ref>
+|model=*[[YT-1300 light freighter]]<ref name="USW">''[[Ultimate Star Wars]]''</ref> {{C|modified}}<ref name="Manual" />
+**Modified [[YT-1300 light freighter#YT-1300f light freighter|YT-1300f light freighter]] {{C|model configuration}}<ref name="Cross" />
+|type=*[[Freighter|Star freighter]]<ref name="USW" />
+**[[Light freighter]]<ref name="Cross" /> {{C|heavily modified}}<ref name="USW">''[[Ultimate Star Wars]]''</ref>
+|cost=
+|modifier=*A [[Unidentified technician (Stellar Envoy)|technician]]<ref name="Altaya">{{EncyclopediaCite|Millennium Falcon}}</ref>
+*[[Landonis Balthazar Calrissian|Lando Calrissian]]<ref name="Episode V">{{Film|V}}</ref>
+*[[Han Solo]]<ref name="Cross" />
+*[[Chewbacca]]<ref name="Cross" />
+*[[Gannis Ducain]]<ref name="Cross" />
+*[[Vanver Irving|Vanver]] and [[Toursant Irving]]<ref name="Cross" />
+*[[Unkar Plutt]]<ref name="Cross" />
+*[[Rey Skywalker|Rey]]<ref name="Episode VII">{{Film|VII}}</ref>
+*[[Rose Tico]]<ref name="TROSVD">''[[Star Wars: The Rise of Skywalker: The Visual Dictionary]]''</ref>
+*[[Klaus Vandangante|Klaus "Doc" Vandagante]]<ref name="Altaya" />
+|sysmods=
+|length=34.52 [[meter]]s (113.25 [[Foot|feet]]) {{C|by 34 [['ABY-BBY' dating system|ABY]]}} <ref name="Cross" />
+|width=25.61 meters<ref name="Altaya" /> {{C|84 ft}}<ref name="MS2 Art">[[The Art of Star Wars: The Mandalorian (Season Two)|''The Art of Star Wars: The Mandalorian'' Season Two]]</ref>
+|height=7.8 meters<ref name="Solo Official Guide">''[[Solo: A Star Wars Story The Official Guide]]''</ref> {{C|26 ft}}<ref name="MS2 Art" />
+|mass=
+|max accel=
+|mglt=75 [[Megalight per hour|MGLT]]<ref name="Graphics">''[[Star Wars Super Graphic: A Visual Guide to a Galaxy Far, Far Away]]''</ref>
+|max speed=*1,200 [[Kilometer per hour|kph]] {{C|under Calrissian}}<ref name="Solo Official Guide" />
+*1,050 kph {{C|later}}<ref name="AbEverything">''[[Star Wars: Absolutely Everything You Need to Know]]''</ref>
+|maneuverability=
+|engine=*[[Girodyne]] [[SRB42 sublight engine|SRB42]] [[sublight engine]]s (2) {{C|heavily modified}}<ref name="IncrediBuilds">''[[Star Wars: Millennium Falcon Deluxe Book and Model Set]]''</ref>
+*Landing jets<ref name="Manual" />
+|hyperdrive=*Class 1.0 {{C|under Calrissian}}<ref name="Manual" />
+*Class 0.5 {{C|later}}<ref name="Cross" /> <ref name="AbEverything" />
+*Class 10 {{C|backup}}<ref name="Manual" />
+|hdrange=
+|hdsystem=*[[Avatar-10]] [[hyperdrive]] {{C|under Calrissian}}<ref name="Altaya" />
+*[[Isu-Sim]] [[SSP05 hyperdrive generator|SSP05 hyperdrive]] {{C|heavily modified}}<ref name="Cross" />
+*[[401 series hyperdrive]] {{C|later}}<ref name="Altaya" />
+*Backup hyperdrive<ref name="Manual" />
+|poweroutput=
+|power=*[[Quadex]] [[Quadex power core|power core]]<ref name="Cross" />
+*[[Incom Corporation|InCom]] [[N2I-4 power converter/Canon|N2I-4 power converter]]<ref name="Altaya" />
+*[[Koensayr Manufacturing|Koensayr]] [[TLB power converter]]<ref name="Altaya" />
+*CEC emergency [[power converter]]<ref name="Altaya" />
+*[[Cryogenic reserve power cell/Canon|Cryogenic reserve power cells]]<ref name="Altaya" />
+|shield gen=*[[Torplex]] [[Deflector shield generator|deflector shield projector]]<ref name="IncrediBuilds" />
+*[[Nordoxicon Unlimited]] [[Anti-concussion field generator]]<ref name="Manual" />
+*[[Novaldex]] [[stasis-type shield generator]]<ref name="Manual" />
+*[[Kuat Drive Yards]] & [[Nordoxicon-38 deflector shield projector]]<ref name="IncrediBuilds" />
+|hull=*[[Torplex]] & [[Novaldex]] [[Durasteel]] shell<ref name="Altaya" />
+**[[Duralloy]] and durasteel plating<ref name="Manual" />
+**Military-grade armor<ref name="Manual" />
+|sensor=*[[Fabritech]] [[ANq-51 sensor array computer]]<ref name="Manual" />
+*Fabritech [[ANy-20 active sensor transceiver]]<ref name="Manual" />
+*[[Siep-Irol]] [[passive sensor antenna]]<ref name="Manual" />
+*[[Sienar Fleet Systems]] [[pulse generator]]<ref name="Altaya" />
+|target=
+|navigation=[[Microaxial]] [[Rubicon navicomputer]] with [[HyD modular navicomputer]] backup {{C|modified}}<ref name="Manual" />
+|avionics=
+|maincomp=*[[Hanx-Wargel]] [[SuperFlow IV]] computer {{C|modified with 3 droid brains}}<ref name="Manual" />
+**V-5 transport droid brain<ref name="Manual" />
+**Corporate espionage slicer droid brain<ref name="Manual" />
+**[[L3-37]]'s droid brain<ref name="Manual" />
+|countermeasures=[[Carbanti]] [[29L electromagnetic countermeasures package]] with [[signal-augmented sensor jammer]]<ref name="Manual" />
+|armament=*[[Arakyd Industries|Arakyd]] [[Tomral RM-76 heavy laser cannon]]s (2)<ref name="Solo Official Guide" />
+*CEC [[AG-2G quad laser cannon]]s (2)<ref name="Cross" />
+*Arakyd [[ST2 concussion missile tube]]s (2) {{C|carrying 8 missiles}}<ref name="Cross" />
+*[[BlasTech Industries|BlasTech]] [[Ax-108 "Ground Buzzer" blaster cannon]] (1)<ref name="Cross" />
+*[[Ion cannon]]<ref name="GE Smuggler's Run>{{GEAttr|Millennium Falcon: Smuggler's Run}}</ref>
+*[[Phylon Transport]] [[C5 tractor beam emitter]]s (2)<ref name="Manual" />
+|complement=[[YT Dart]] {{C|under Lando}}<ref name="Solo">''[[Solo: A Star Wars Story]]''</ref>
+|bays=
+|escapepods=[[CEC Class-1 escape pod|Model CEC Class-1s]] (5)<ref name="AbEverything" />
+|crew=*Pilot (1)<ref name="Cross" />
+*Co-pilot (1)<ref name="Cross" />
+*Gunners (2)
+|skeleton=1<ref name="Episode VII" />
+|passengers=6<ref name="AbEverything" />
+|capacity=100 [[metric ton]]s<ref name="AbEverything" />
+|cargohandling=Freight elevator<ref name="Manual" />
+|consumables=2 [[Standard month|months]]' supply<ref name="IncrediBuilds" />
+|lifesupport=[[Life support|Equipped]]<ref name="IncrediBuilds" />
+|communications=*Upgraded [[Chedak]] subspace radio<ref name="Cross" />
+*Chedak [[Frequency Agile subspace transceiver]]<ref name="Manual" />
+|othersystems=*[[Gelieg]] [[20m-cp Strobe/C-Beam Lamp]]s<ref name="IncrediBuilds" />
+*[[Dejarik]] table<ref name="Cross" />
+*[[Autopilot]]<ref name="SW1">[[Star Wars (2015) 1|''Star Wars'' (2015) 1]]</ref>
+*[[Flotation pontoon]]s<ref name="Powered Down 1">{{IDWAdventuresCite-2017|issue=10|story=Powered Down, Part 1}}</ref>
+*[[Athakam II Med Unit]]<ref name="Manual" />
+*[[Thermal regulator]]s<ref name="Manual" />
+*[[KapriCorp]] [[Acceleration compensator]]<ref name="Manual" />
+*[[Alluvial damper]]s<ref name="Manual" />
+|role=*[[Freighter]]<ref name="Manual" />
+*[[Smuggler|Smuggling]] ship<ref name="Manual" />
+|commission=c. [[60 BBY]]<ref name="100 Objects">''[[Star Wars 100 Objects]]''</ref>
+|destroyed=
+|retired=
+|affiliation=*[[Corell Industries Limited]]<ref name="Altaya" />
+*[[Republic Group]]<ref name="Manual" />
+*[[Crimson Dawn]]<ref name="Solo" />
+*[[Jabba's criminal empire|Jabba Desilijic Tiure's criminal empire]]<ref name="Episode IV">{{Film|IV}}</ref>
+*[[Alliance to Restore the Republic]]<ref name="Episode IV" />
+*[[New Republic]]<ref name="Aftermath">[[Aftermath (novel)|''Aftermath'']]</ref>
+*[[Resistance]]<ref name="Episode VII" />
+*[[Ohnaka Transport Solutions]]<ref name="Smuggler's Run">''[[Smuggler's Run: A Han Solo & Chewbacca Adventure]]''</ref>
+|navy=*[[Rebel Alliance Navy]]<ref name="Episode V" />
+*[[New Republic Defense Fleet]]<ref name="Aftermath" />
+*[[Resistance navy]]<ref name="Episode VII" />
+|fleet=[[Citizens' Fleet]]<ref name="Episode IX">{{Film|IX}}</ref>
+|owners=*Lando Calrissian<ref name="Episode V" />
+*Han Solo<ref name="Episode IV" />
+*Gannis Ducain<ref name="Cross" />
+*Vanver and Toursant [[Irving Boys|Irving]]<ref name="Cross" />
+*Unkar Plutt<ref name="Cross" />
+*Chewbacca<ref name="Smuggler's Guide">''[[Star Wars: Smuggler's Guide]]''</ref>
+*Rey<ref name="Episode IX" />
+|captains=*Lando Calrissian<ref name="Episode V" />
+*Han Solo<ref name="Episode IV" />
+*Chewbacca<ref name="AEYNTK-UE">''[[Star Wars: Absolutely Everything You Need to Know, Updated and Expanded]]''</ref>
+*Rey<ref name="Episode VIII">{{Film|VIII}}</ref>
+*[[Poe Dameron]]<ref name="Episode IX" />
+|registry=YT 492727ZED<ref name="Manual" /><!-- commenting out until a source showing this appears - image, source of image, etc. <div style="width:140px;overflow:scroll">10114155626301787505290188934432<ref name="MOD1">{{UnlinkedRef}} Visible on studio model</ref></div>-->
+|aliases=*''Broken Bell''<ref name="Smuggler's Run" />
+*''Close Shave''<ref name="Manual" />
+*''Corell's Pride''<ref name="BMF56">{{BuildFalconCite|56|Secrets of Spaceflight}}</ref>
+*''Fickle Flyer''<ref name="BMF56" />
+*''Foul Matter''<ref name="Smuggler's Run" />
+*''Graphite Skipper''<ref name="Smuggler's Guide" />
+*''Jin-Den Smoke''<ref name="Smuggler's Run" />
+*''Longshot''<ref name="SWZ">{{FFGXW2|set=Jango Fett's Slave I Expansion Pack|cardname=False Transponder Codes}}</ref>
+*''Lost and Found''<ref name="Smuggler's Run" />
+*''Meetyl's Misery''<ref name="BMF56" />
+*''Star Princess''<ref name="SWZ" />
+*''Stellar Envoy''<ref name="Manual" />
+*''Sunfighter Franchise''<ref name="Smuggler's Guide" />
+*''Sweet Surprise''<ref name="SWZ" />
+*''Wayward Son''<ref name="BMF56" />
+*''Victory Ring''<ref name="Manual" />
+}}
+{{Quote|You've never heard of the ''Millennium Falcon''?"<br />"Should I have?"<br />"It's the ship that made the Kessel Run in less than twelve parsecs. I've outrun Imperial starships. Not the local bulk cruisers, mind you, I'm talking about the big Corellian ships now. She's fast enough for you, old man.|Han Solo and Obi-Wan Kenobi|<ref name="Episode IV" />}}
+The '''''Millennium Falcon''''', originally designated '''YT 492727ZED''' and formerly known as the '''''Stellar Envoy''''', and registered or known under various aliases and pseudonyms including '''''Broken Bell''''', '''''Corell's Pride''''', '''''Close Shave''''', '''''Fickle Flyer''''', '''''Foul Matter''''', '''''Graphite Skipper''''', '''''Jin-Den Smoke''''', '''''Longshot''''', '''''Lost and Found''''', '''''Star Princess''''', '''''Sunfighter Franchise''''', '''''Sweet Suprise''''', '''''Meetyl's Misery''''', '''''Wayward Son''''', and '''''Victory Ring''''', was a [[Corellian]] [[YT-1300 light freighter]] built around [[60 BBY]]. Earning a legendary status under their ownership, the ship was most famously used by the [[smuggler]]s [[Han Solo]] and [[Chewbacca]] before, during, and following the [[Galactic Civil War]].
+
+During the ''Falcon''{{'s}} time in the possession of the smuggler [[Landonis Balthazar Calrissian|Lando Calrissian]], it accumulated numerous modifications in the name of convenience and luxury, including painted exterior paneling and a large [[escape pod]]. However, during Han Solo's famous record-breaking [[Kessel Run]], in which he piloted the freighter for the first time, many of these additions were destroyed or lost, leaving the ship battered by the time Solo won it from Calrissian shortly afterwards in a game of [[sabacc]]. Its aged appearance still belied numerous advanced modifications to boost the ship's speed, weapons, and [[Deflector shield|shields]], including a [[hyperdrive]] engine among the fastest in [[The galaxy|the entire galaxy]], enabling it to outrun [[Imperial-class Star Destroyer|Imperial Star Destroyers]]. It also included sensor-proof smuggling compartments, which were used during the [[Rescue of Princess Leia|rescue]] of [[Princess]] [[Leia Skywalker Organa Solo|Leia Organa]] in [[1 BBY]] to evade [[Galactic Empire|Imperial]] [[stormtrooper]]s. Afterwards, the ''Millennium Falcon'' saw further action when Solo chose to join the [[Alliance to Restore the Republic|Rebel Alliance]] during the [[Battle of Yavin]], where it was able to sneak up and fire on [[Anakin Skywalker|Darth Vader's]] [[Darth Vader's TIE Advanced|TIE Advanced]], allowing [[Luke Skywalker]] to fire the [[proton torpedo]]es from [[Red Five (T-65B X-wing starfighter)|his]] [[T-65B X-wing starfighter|T-65B]] [[X-wing starfighter]] that destroyed the [[DS-1 Orbital Battle Station|Death Star]].
+
+After Solo was [[Escape from Cloud City|captured]] on [[Bespin]], Calrissian took command of the ''Falcon'' once more to search for him. In [[4 ABY]], following Solo's [[Rescue of Han Solo|rescue]], Calrissian flew the ship at the [[Battle of Endor]], where it entered the [[DS-2 Death Star II Mobile Battle Station]] and aided in its destruction from within. Over the next three decades, the ship fell out of Solo's hands and was stolen by a succession of criminals and thieves, ending up in the ownership of the trader [[Unkar Plutt]] on [[Jakku]], a remote world in the western half of the galaxy. The ''Falcon'' was eventually stolen by the [[Force-sensitive]] [[scavenger]] [[Rey Skywalker|Rey]], former [[First Order stormtrooper]] [[Finn]], and [[Resistance]] [[droid]] [[BB-8]] to escape the forces of the [[First Order]] in [[34 ABY]]. Shortly thereafter, it was reunited with Solo and Chewbacca.
+
+Following Solo's [[death]] soon after, the ''Millennium Falcon'' became a Resistance vessel piloted by its new owner, Rey, throughout much of the [[First Order-Resistance War]]. In [[35 ABY]], the ship was once again captained by Calrissian during the [[Battle of Exegol]], which saw a decisive victory for the Resistance and [[Jedi Order]], before being returned to Rey, who had been newly dubbed a [[Skywalker family|Skywalker]].
+

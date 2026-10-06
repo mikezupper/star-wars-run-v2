@@ -1,0 +1,123 @@
+{{Top}}
+{{Rhere|000|the [[protocol droid]], [[0-0-0]]}}
+{{Rhere|Imperial Center|[[Imperial Center (disambiguation)|other uses]]}}
+{{Youmay|the [[planet]]|a [[Coruscant (reference book)|volume]] of [[Star Wars Encyclopedia]]}}
+{{Doom|overall cleanup}}
+{{Update|{{InsiderCite|237|Galactic Tales: Another Face in the Crowd}}}}
+{{CelestialBody
+|image=[[File:CoruscantGlobeE1.png]]
+|name=Coruscant
+|region=*[[Core Worlds]]<ref name="UltimateSW">''[[Ultimate Star Wars]]''</ref>
+*[[The Interior]]<ref name="Episode II">{{Film|II}}</ref>
+|sector=*[[Corusca sector]]<ref name="UltimateSW" />
+**[[Coruscant subsector]]<ref name="UltimateSW" />
+|system=[[Coruscant system]]<ref name="GA">''[[Star Wars: Galactic Atlas]]''</ref>
+|coordinates=[[Standard Galactic Grid|L-9]]<ref name="TFABG">[[Star Wars: The Force Awakens Beginner Game|''Star Wars: The Force Awakens'' Beginner Game]]</ref>
+|xyz=[[Galactic coordinates|0, 0, 0]]<ref name="AbEverything">''[[Star Wars: Absolutely Everything You Need to Know]]''</ref>
+|distance=
+|suns=1: [[Coruscant Prime]]<ref name="SWTVE">''[[Star Wars: The Visual Encyclopedia]]''</ref>
+|orbited=
+|position=
+|moons=*4<ref name="SWCL">[[Star Wars: Complete Locations (2016)|''Star Wars: Complete Location'']]</ref>
+**[[Centax-1]]<ref name="Falcon 61">{{BuildFalconCite|61|Guide to the Galaxy}}</ref>
+**[[Centax-2]]<ref name="Falcon 26">{{BuildFalconCite|26|Guide to the Galaxy}}</ref>
+**[[Centax-3]]<ref name="TMCAFOF">''[[The Mighty Chewbacca in the Forest of Fear!]]''</ref>
+**[[Hesperidium]]<ref name="Falcon 26" />
+|routes=*[[Corellian Run]]<ref name="TFABG" />
+*[[Koros Trunk Line]]<ref name="Falcon 36">{{BuildFalconCite|36|Guide to the Galaxy}}</ref>
+*[[Metellos Trade Route]]<ref name="Scum and Villainy">''[[Star Wars: Scum and Villainy: Case Files on the Galaxy's Most Notorious]]''</ref>
+*[[Namadii Corridor]]<ref name="Collapse">''[[Collapse of the Republic]]''</ref>
+*[[Nexus Route]]<ref name="The Citadel">{{TCW|The Citadel (episode)}}</ref>
+*[[Perlemian Trade Route]]<ref name="TFABG" />
+*[[Stassia Alley]]<ref name="Starcruiser">[[Star Wars: Galactic Starcruiser|''Star Wars'': Galactic Starcruiser]]</ref>
+|lengthday=24 [[standard hour]]s<ref name="AbEverything" />
+|lengthyear=365 [[standard day]]s<ref name="AbEverything" />
+|class=
+|diameter=12,240 [[kilometer]]s<ref name="SWCL" /> {{C|7,606 miles}}<ref name="AcolyteVG" />
+|atmosphere=[[Atmosphere|Breathable]]<ref name="Episode I">{{Film|I}}</ref>
+|climate=[[Temperature|Temperate]] {{C|artificial}}<ref name="Coruscant">{{Databank|coruscant|Coruscant}}</ref>
+|gravity=
+|terrain=*[[Ecumenopolis]]<ref name="Coruscant" />
+**[[City]] megastructure<ref name="Collapse" />
+*[[Mountain]]ous {{C|Historically}}<ref name="Light of the Jedi">''[[The High Republic: Light of the Jedi]]''</ref>
+|water=[[Ocean]] {{C|Historically}}<ref name="SWCL" />
+|interest=
+*[[Great Western Sea]]<ref name="TLF">''[[The Living Force]]''</ref>
+*[[Manarai range]]<ref name="Light of the Jedi" />
+**[[Umate]]<ref name="Light of the Jedi" />
+|flora=
+|fauna=*[[Conduit worm]]<ref name="CVD">''[[Star Wars: The Complete Visual Dictionary, New Edition]]''</ref>
+*[[Corridor ghoul]]<ref name="Star Wars (2020) 28">[[Star Wars (2020) 28|''Star Wars'' (2020) 28]]</ref>
+*[[Crown finch]]<ref name="Dooku: Jedi Lost">''[[Dooku: Jedi Lost]]''</ref>
+*[[Duracrete slug]]<ref name="Dooku: Jedi Lost" />
+*[[Granite slug]]<ref name="Rise of the Separatists">''[[Rise of the Separatists]]''</ref>
+*[[Nuna]]<ref name="Senate Murders">{{TCW|Senate Murders}}</ref>
+*[[Pikobi]]<ref name="TJWKTM">{{TCW|The Jedi Who Knew Too Much}}</ref>
+*[[Song sparrow]]<ref name="Dooku: Jedi Lost" />
+*[[Stone mite]]<ref name="CVD" />
+*[[Tooka]]<ref name="Tooka in Databank">{{Databank|tooka|Tooka}}</ref>
+|otherlife=
+|species=*[[Human]]<ref name="Uprising">''[[Star Wars: Uprising]]''</ref> {{C|disputed but generally accepted}}<ref name="SWTVE" />
+*[[Taung]] {{C|historically}}<ref name="Falcon 61" />
+*[[Zhell]] {{C|historically}}<ref name="Falcon 61" />
+|otherspecies=Hundreds of species
+|socialgroup=
+|language=*[[Galactic Basic Standard]]<ref name="AbEverything" />
+*Thousands of others<ref name="AbEverything" />
+|government=*Representative Republic<ref name="Collapse" />
+**[[Galactic Senate]]<ref name="Coruscant" />
+**[[Coruscanti government]]<ref name="Victory's Price">''[[Victory's Price: An Alphabet Squadron Novel]]''</ref>
+**[[Coruscant's provisional government]]<ref name="Empire's End">''[[Aftermath: Empire's End]]''</ref>
+|population=*2,981,780,000,000 {{C|[[132 BBY]]; estimated}}<ref name="AcolyteVG">''[[Star Wars: The Acolyte: The Visual Guide]]''</ref>
+**78% humans<ref name="Collapse" />
+**22% other<ref name="Collapse" />
+*Nearly 3 trillion, a third are permanent residents {{C|[[9 ABY]]; estimated}}<ref name="MandoVG">''[[Star Wars: The Mandalorian Visual Guide]]''</ref><ref name="S3 Date">{{MandoDate|S3}}</ref>
+|demonym=[[Coruscanti]]<ref name="Tarkin">[[Tarkin (novel)|''Tarkin'']]</ref>
+|cities=*[[Imperial City]]<ref name="UltimateSW" />
+**[[Abbo-Suer District]]<ref name="MoF">''[[Reign of the Empire: The Mask of Fear]]''</ref>
+**[[Arts District]]<ref name="MoF" />
+**[[B'ankor Refuge]]<ref name="Catalyst">''[[Catalyst: A Rogue One Novel]]''</ref>
+**[[Bindai district]]<ref name="Dooku: Jedi Lost">''[[Dooku: Jedi Lost]]''</ref>
+**[[Central District]]<ref name="Catalyst" />
+**[[CoCo Town|Collective Commerce District (CoCo Town)]]<ref name="DexsDiner">{{Databank|dexs-diner|Dex's Diner}}</ref><ref name="AotC">{{Film|II}}</ref>
+**[[Federal District]] {{C|[[capital]]}}<ref name="Thrawn">[[Thrawn (novel)|''Thrawn'']]</ref>
+***[[Palace Court]]<ref name="Tarkin">[[Tarkin (novel)|''Tarkin'']]</ref>
+**[[Fobosi District]]<ref name="OSWM">{{GermanFanCite|107|Database}}</ref>
+**[[Financial District (Coruscant)|Financial District]]<ref name="SWCL2016">[[Star Wars: Complete Locations (2016)|''Star Wars: Complete Locations'']]</ref><ref name="CLNE">''[[Star Wars: Complete Locations, New Edition]]''</ref>
+**[[Industrial District]]<ref name="Dark Lord of the Sith 6">[[Darth Vader (2017) 6|''Darth Vader'' (2017) 6]]</ref>
+***[[The Works]]<ref name="Dark Lord of the Sith 6" />
+**[[Jrade District]]<ref name="Lightsaber Lost">{{TCW|Lightsaber Lost}}</ref>
+**[[Lower market districts]]<ref name="EvilPlans">{{TCW|Evil Plans}}</ref>
+**[[Old downtown area]]<ref name="TCW Film">[[Star Wars: The Clone Wars (film)|''Star Wars: The Clone Wars'' film]]</ref>
+**[[Port District]]<ref name="Coruscant Altaya">{{EncyclopediaCite|Coruscant}}</ref>
+**[[Sector H-46|Sah'c Town]]<ref name="SWCL2016" />
+**[[Shipyard Depot]]<ref name="Chapter 19">{{TheMandalorian|Chapter 19: The Convert}}</ref>
+**[[TriOpt District]]<ref name="MoF" />
+**[[Unidentified residential district]]<ref name="Elderblock">{{InsiderCite|236|Galactic Tales: A Death in Elderblock 26-0640}}</ref>
+**[[Uscru District]]<ref name="SWCL2016" />
+***[[Uscru Entertainment District]]<ref name="SWCL2016" />
+**[[Wellness district]]<ref name="Convergence">''[[The High Republic: Convergence]]''</ref>
+**[[Coruscant Underworld]]<ref name="The Right Wrong Turn">[[Star Wars Adventures (2017) 25|''Star Wars Adventures'' (2017) 25]]</ref>
+|imports=*[[Foodstuff]]s<ref name="Collapse" />
+*Medical goods<ref name="Collapse" />
+|exports=*Culture<ref name="Collapse" />
+*Paperwork<ref name="Collapse" />
+|affiliation=*[[Dai Bendu]]<ref name="Falcon 61" />
+*[[Galactic Republic]]<ref name="Coruscant" />
+*[[Jedi Order]]<ref name="Coruscant" />
+*[[Sith]] Order<ref name="Tarkin" />
+*[[Galactic Empire]]<ref name="Coruscant" />
+*[[New Republic]]<ref name="TFAVisual">''[[Star Wars: The Force Awakens: The Visual Dictionary]]''</ref>
+*[[First Order]]<ref name="TROS JN">''[[Star Wars: The Rise of Skywalker: A Junior Novel]]''</ref>
+}}
+{{Quote|Coruscant. The entire planet is one big city.|[[Ric Olié]], to Anakin Skywalker|<ref name="Episode I" />}}
+'''Coruscant''' {{Pronounced|'kɔɹəsɑnt}}, also known as '''Jewel of the Core Worlds''', or '''Imperial Center''' during the [[Imperial Era|rule]] of the [[Galactic Empire]], was an [[ecumenopolis]]&mdash;a [[city]]-covered [[planet]], in the [[Coruscant system]] of the [[Core Worlds]]. Prior to being covered by over five thousand metallic levels of what would become known as [[Imperial City]], Coruscant was the ancient [[homeworld]] of the [[Taung]] and [[Zhell]] [[species]]. Though debated by [[historian]]s, the theory that Coruscant was the ancestral world of [[human]]s remained unproven. Noted for its cosmopolitan culture and towering [[skyscraper]]s, Coruscant's population consisted of trillions of [[Coruscanti|citizens]] hailing from a vast array of both [[humanoid]] and [[alien]] species. In addition, Coruscant's strategic location at the end of several major [[Hyperspace route|trade routes]] enabled it to grow in power and influence, causing the city-planet to surpass its early rivals and become the hub of [[Galaxy|galactic]] culture, education, finance, fine arts, [[politics]] and technology. It was the location of several major landmarks, including the [[Imperial Palace|Jedi Temple]], [[Monument Plaza]], and the [[Imperial Senate Building|Senate Building]].
+
+Serving as the [[capital]] of [[the galaxy]] since the ancient [[Standard day|days]] of the old [[Galactic Republic]], Coruscant was at the center of many [[Timeline of galactic history|historic events]], such as the [[Jedi Order]]'s [[Jedi-Sith War|conflict]] with the [[Sith]]. Although the planet [[Battle of Coruscant (Jedi-Sith War)|fell]] under Sith control for a [[time]], Republic forces ultimately [[Liberation of Coruscant|liberated Coruscant]] with the aid of the [[Jedi Knight]]s. Their victory was so decisive that at one point the Sith became all but extinct, replacing an [[Fall of the Old Republic|age of darkness and strife]] with the [[Democracy|democratic rule]] of the modern Galactic Republic. Retaining its status as galactic capital, it was on Coruscant where the [[Galactic Senate]] governed the galaxy for [[Standard century|centuries]], establishing an [[Republic Era|era]] of [[High Republic Era|peace]] that lasted for almost a [[millennium]] under the protection of the [[Jedi]] [[Law enforcement agency|peacekeepers]]. However, political intrigue wrought by corruption and [[Separatist Crisis|secession]] transformed Coruscant into a dangerous environment by the time of the [[Clone Wars]] with the [[Confederacy of Independent Systems]]. On the [[Duel in Palpatine's office|eve]] of the [[New Order]], fulfilling a [[Grand Plan|grand scheme]], [[Supreme Chancellor]] [[Darth Sidious|Sheev Palpatine]], who was, in fact, the [[Sith Lord]] [[Darth]] Sidious, declared the Jedi [[Treason|enemies of the state]], resulting in a [[Great Jedi Purge|galaxy-wide purge]] that all but destroyed the Jedi Order. Without the Jedi to oppose him, Palpatine dissolved the Republic and [[Proclamation of the New Order|declared]] himself [[Galactic Emperor]] to the applause of the now [[Imperial Senate]].
+
+Coruscant continued to serve as galactic capital under the Empire, having become the Emperor's [[throneworld]], although Palpatine himself disappeared from public view for the most part, leaving the [[Standard day|day]]-to-day governing to his [[advisor]]s in the [[Imperial Ruling Council]]. The Empire maintained a firm hold on Coruscant throughout the Emperor's [[Imperial Era|reign]], but with his defeat at the [[Battle of Endor]] in [[4 ABY]] by the [[Alliance to Restore the Republic]], citizens of Coruscant [[Riot in Monument Plaza|celebrated]] by [[Coruscant civil war|revolting]]. Unable to command the [[Imperial Military|military]]'s allegiance as the rebels [[Declaration of a New Republic|restored]] the Republic, [[Grand Vizier]] [[Mas Amedda]]'s rule was limited to Coruscant while [[Fleet Admiral]] [[Gallius Rax]], the self-proclaimed [[Counselor to the Empire]], assumed ''de facto'' control of the collapsing Imperial government. Hoping to escape prosecution for war crimes, Amedda ultimately surrendered himself to the [[New Republic]] in return for amnesty. Following Rax's death at the [[Battle of Jakku]] in [[5 ABY]], Amedda signed the [[Galactic Concordance]]&mdash;a peace treaty recognizing the Empire's [[Galactic Concordance|capitulation]] and the end of the [[Galactic Civil War]]. Amedda himself was permitted to return to Coruscant as the head of a [[Coruscant's provisional government|provisional government]]. Yet his authority was merely ceremonial; under the supervision of Republic overseers, he became a virtually powerless figurehead.
+
+Unlike previous galactic governments, the [[New Republic]] broke with millennia of tradition by not establishing Coruscant as their headquarters, instead preferring to designate other member worlds with the status of galactic capital through an electoral system. During the [[New Republic Era]], Coruscant had become the capital of the New Republic as it was designed to handle and administer the galaxy's infrastructure. As part of the [[New Republic Senate]], Coruscant enjoyed full senatorial representation and, by the time of the [[Cold War]], was aligned with the worlds that identified as [[Centrists]]. However, by this point, Coruscant had actually fallen under the control of crime syndicates. Now a symbol of the disturbing realities of the galaxy's current era, gangs fought a [[Gang war on Coruscant|bloody war]] for control by the time after the [[Battle of Crait]].
+
+During the [[First Order-Resistance War]], at least two sizeable battlegroup were deployed by the [[First Order]] to Coruscant in the apparent hope of seizing it and ruling the galaxy from the ecumenopolis as the Galactic Empire once did, however these efforts were defeated. In the aftermath of the [[Battle of Exegol]], various worlds sought to drive the [[First Order military]] from their soil. Coruscant was one such world where an [[Uprising on Coruscant|uprising]] took place as part of a [[Uprising against the First Order|galaxy-wide effort]] to overthrow the First Order.
+

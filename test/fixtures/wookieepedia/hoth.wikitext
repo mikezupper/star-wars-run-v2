@@ -1,0 +1,68 @@
+{{Top}}
+{{Update|[[Star Wars (2015) 75]], [[In the Lair of the Dragon Slug]], [[From a Certain Point of View: The Empire Strikes Back]], [[Doctor Aphra (2020) 1]], [[Star Wars: Uprising]], [[Very Interesting, As an Astrogation Problem]], [[Star Wars: The Rebel Files]], [[Star Wars: The Galactic Explorer's Guide]], [[Star Wars: The High Republic: Chronicles of the Jedi]], [[Star Wars: The Rise and Fall of the Galactic Empire]], [[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]], [[Star Wars: Galactic Atlas: Updated Edition]]}}
+{{CelestialBody
+|image=[[File:Hoth-2024SWHyperspace.png]]
+|name=Hoth
+|region=*[[Outer Rim Territories]]<ref name="Databank">{{Databank|echo-base|Echo Base}}</ref>
+**[[Galactic Frontier]]<ref name="Chronicles">''[[Star Wars: The High Republic: Chronicles of the Jedi]]''</ref>
+*[[Western Reaches]]<ref name="Explorer's Guide">''[[Star Wars: The Galactic Explorer's Guide]]''</ref>
+|sector=[[Anoat sector]]<ref name="Ultimate SW">''[[Ultimate Star Wars]]''</ref>
+|system=[[Hoth system]]<ref name="sweHO">{{SWE|locations|hoth|Hoth}}</ref>
+|coordinates=[[Standard Galactic Grid|K-18]]<ref name="TFABG">[[Star Wars: The Force Awakens Beginner Game|''Star Wars: The Force Awakens'' Beginner Game]]</ref>
+|xyz=
+|distance=50,250 [[Light-year|light years]]<ref name="AbEverything">''[[Star Wars: Absolutely Everything You Need to Know]]''</ref>
+|suns=1:<ref name="Journey Through Space (2015)">[[Star Wars: Journey Through Space (2015)|''Star Wars: Journey Through Space'']]</ref> [[Hoth (star)|Hoth]]<ref name="ESB paperback novel">[[Star Wars: The Empire Strikes Back (paperback novel)|''Star Wars: The Empire Strikes Back'' junior novelization]]</ref>
+|orbited=
+|position=6<ref name="ESB">{{Film|V}}</ref>
+|moons=3<ref name="ESB" />
+|routes=*[[Ison Trade Corridor]] {{C|one hyperjump away}}<ref name="Rebel Files">''[[Star Wars: The Rebel Files]]''</ref>
+*[[Corellian Trade Spine]] {{C|one hyperjump away}}<ref name="Rebel Files" />
+|lengthday=23 [[standard hour]]s<ref name="FF">''[[Star Wars: Fascinating Facts]]''</ref>
+|lengthyear=549 [[local day]]s<ref name="CL 2016">[[Star Wars: Complete Locations (2016)|''Star Wars: Complete Locations'']]</ref> {{C|526 [[standard day]]s}}<ref name="AbEverything" />
+|class=Terrestrial<ref name="ESB" />
+|diameter=7,200 [[kilometer]]s<ref name="AbEverything" /> {{C|4,474 miles}}<ref name="VE">''[[Star Wars: The Visual Encyclopedia]]''</ref>
+|atmosphere=[[Atmosphere|Breathable]],<ref name="ESB" /> clean<ref name="Rebel Files" />
+|climate=[[Temperature|Frigid]]<ref name="sweHO" />
+|gravity=
+|terrain=Frozen [[Water|ice]] plains, glaciers, [[ocean]]s<ref name="sweHO" /> [[mountain]]s<ref name="CL 2016" />
+|water=33% {{C|oceans}}<ref name="AbEverything" />
+|interest=*[[Clabburn Range]]<ref name="Ultimate SW" />
+**[[Echo Base]]<ref name="sweHO" />
+*[[Echo Station 3-T-8]]<ref name="GD">''[[Star Wars: Galactic Defense]]''</ref>
+*[[Icefall Plains]]<ref name="Commander">''[[Star Wars: Commander]]''</ref>
+*[[Moorsh Moraine]]<ref name="GD" />
+*[[Outpost Beta]]<ref name="Battlefront">''[[Star Wars Battlefront]]''</ref>
+*[[Perimeter Outpost Delta]]<ref name="Twilight Company">''[[Battlefront: Twilight Company]]''</ref>
+*[[Shyloah's Crest]]<ref name="Commander" />
+*[[Wampa Mountain]]<ref name="Commander" />
+|flora=*[[Algae]]<ref name="Explorer's Guide" />
+*[[Lichen]]<ref name="Explorer's Guide" />
+|fauna=*[[Dragon Slug]]<ref name="In the Lair">{{StoryCite|story=In the Lair of the Dragon Slug|book=Tales from the Rancor Pit}}</ref>
+*[[Fork-nosed ice worm]]<ref name="Doctor Aphra 1">[[Doctor Aphra (2020) 1|''Doctor Aphra'' (2020) 1]]</ref>
+*[[Hoth hog]]<ref name="Bestiary">''[[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]]''</ref>
+*[[Hoth spider]]<ref name="In the Lair" />
+*[[Ice scrabbler]]<ref name="4th Grade Reading and Writing">''[[Star Wars Workbook: 4th Grade Reading and Writing]]''</ref>
+*[[Rayboo]]<ref name="Battlefront" />
+*[[Sapphire ice worm]]<ref name="Ultimate SW" />
+*[[Tauntaun]]<ref name="ESB" />
+*[[Wampa]]<ref name="ESB" />
+|otherlife=[[Ice fungus]]<ref name="Good Kiss">{{StoryCite|story=A Good Kiss|book=From a Certain Point of View: The Empire Strikes Back}}</ref>
+|species=
+|otherspecies=
+|socialgroup=
+|language=
+|government=
+|population=Fewer than 10<ref name="Journey Through Space (2015)" />
+|demonym=Hothian<ref name="SYWTBAJ">''[[The Empire Strikes Back: So You Want to Be a Jedi?]]''</ref>
+|cities=
+|imports=
+|exports=
+|affiliation=[[Alliance to Restore the Republic]]<ref name="ESB" />
+}}
+{{Quote|There isn't enough life on this ice cube to fill a space cruiser!|Han Solo|audio=Solo-Icecube.flac|<ref name="ESB" />}}
+'''Hoth''' was a remote, icy [[planet]] that was the sixth planet in the [[star system]] of the [[Hoth system|same name]], located in the [[Anoat sector]] of [[the galaxy]]'s [[Outer Rim Territories]]. It was the [[homeworld]] to the primitive [[wampa]] [[species]].
+
+It notably hosted [[Echo Base]] during the [[Galactic Civil War]], the temporary headquarters of the [[Alliance to Restore the Republic]], until the [[Galactic Empire]] located them, initiating a major confrontation known as the [[Battle of Hoth]]. In the months following, [[scavenger]]s established temporary base camps on the planet to scrap the [[All Terrain Armored Transport|AT-ATs]] destroyed.
+
+In the [[Standard month|months]] after the [[Battle of Endor]], rumors emerged about the [[New Republic]] intending to repurpose Hoth into a [[prison]] for those who remained loyal to the Empire, however, the credibility of the rumors were dismissed as [[Chancellor (New Republic)|Chancellor]] [[Mon Mothma]] had been dedicated to a pretext of justice over punishment. Meanwhile, the war returned to Hoth, where it became the site of another [[Battle of Hoth (Iron Blockade)|battle]] during the [[Iron Blockade]].
+

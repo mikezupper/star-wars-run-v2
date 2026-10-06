@@ -1,0 +1,1561 @@
+{
+  "all-terrain-armored-transport.wikitext": {
+    "era": "canon",
+    "kind": "ShipSeries",
+    "fields": {
+      "manufacturer": [
+        "[Kuat Drive Yards→Kuat Drive Yards]",
+        "[Kuat-Entralla Drive Yards→Kuat-Entralla Drive Yards]"
+      ],
+      "line": [
+        "[AT-series→AT-series]"
+      ],
+      "models": [
+        "[All Terrain Armored Transport (Prototype)→All Terrain Armored Transport (Prototype)]",
+        "[All Terrain Armored Transport (Galactic Civil War)→All Terrain Armored Transport (Galactic Civil War)]",
+        "[All Terrain Armored Cargo Transport→All Terrain Armored Cargo Transport]",
+        "[Elite AT-AT→Elite AT-AT]",
+        "[First Order All Terrain Armored Transport→First Order All Terrain Armored Transport]"
+      ],
+      "role": [
+        "[Military Walker→Walker]",
+        "Mechanized infantry",
+        "Self-propelled artillery",
+        "Troop [transport→Transport]"
+      ],
+      "firstuse": [
+        "During the [Clone Wars→Clone Wars]"
+      ],
+      "affiliation": [
+        "[Galactic Empire→Galactic Empire]",
+        "[Imperial Army→Imperial Army]",
+        "[Mantis crew→Stinger Mantis crew] (stolen)",
+        "[Phoenix Cell→Phoenix Cell] (stolen)",
+        "[Spectres→Spectres] (stolen)",
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic] (stolen)",
+        "[Lothal resistance group→Lothal resistance group] (stolen)",
+        "[Tatooine rebel cell→Tatooine rebel cell] (stolen)",
+        "[Heroes of Yavin→Heroes of Yavin] (stolen)",
+        "[Inferno Squad→Inferno Squad] (stolen)",
+        "[Imperial Remnants→Imperial Remnants]",
+        "[Imperial territory G5-623→Imperial territory G5-623]",
+        "[Jakku Imperial remnant→Jakku Imperial remnant]",
+        "[Hellhound attack force→Hellhound attack force]",
+        "[Neo-Imperial forces→Neo-Imperial forces]",
+        "[Barro's Imperial remnant→Barro's Imperial remnant]",
+        "[New Republic→New Republic]",
+        "[First Order→First Order]",
+        "[First Order Army→First Order Army]"
+      ]
+    },
+    "lead": [
+      "The All Terrain Armored Transport (AT-AT) was a four-legged combat [walker→Walker] of the [All-terrain vehicle→AT-series] line used by the [ground forces→Imperial Army] of the [Galactic Empire→Galactic Empire], and the [First Order→First Order]. Along with the [Imperial-class Star Destroyer→Imperial-class Star Destroyer], [stormtroopers→Stormtrooper], and the [TIE fighter→TIE/ln space superiority starfighter], it was one of the most famous symbols of the Empire's [military→Imperial Military] might."
+    ]
+  },
+  "battle-of-yavin.wikitext": {
+    "era": "canon",
+    "kind": "Battle",
+    "fields": {
+      "prev": [
+        "[Rescue of Princess Leia→Rescue of Princess Leia]",
+        "[Alderaan vigil rioting→Alderaan vigil rioting]"
+      ],
+      "conc": [
+        "[Battle on Vir Aphshire→Battle on Vir Aphshire]"
+      ],
+      "next": [
+        "[Royal Award Ceremony→Royal Award Ceremony]",
+        "[Ambush on Taanab→Ambush on Taanab]"
+      ],
+      "conflict": [
+        "[Galactic Civil War→Galactic Civil War]"
+      ],
+      "place": [
+        "[Yavin system→Yavin system]"
+      ],
+      "result": [
+        "Decisive [Rebel Alliance→Alliance to Restore the Republic] victory",
+        "Destruction of the [First Death Star→DS-1 Orbital Battle Station]",
+        "[Death→Death] of [Grand Moff→Grand Moff] [Wilhuff Tarkin→Wilhuff Tarkin]"
+      ],
+      "side1": [
+        "[Galactic Empire→Galactic Empire]",
+        "[Sith→Sith]"
+      ],
+      "side2": [
+        "Alliance to Restore the Republic"
+      ],
+      "commanders1": [
+        "Grand [Moff→Moff] Wilhuff Tarkin†",
+        "[Dark Lord of the Sith→Dark Lord of the Sith] [Darth Vader→Anakin Skywalker]",
+        "[Chief of the Imperial Navy→Chief of the Imperial Navy] [Admiral→Admiral] [Conan Antonio Motti→Conan Antonio Motti]†"
+      ],
+      "commanders2": [
+        "[General→General] [Jan Dodonna→Jan Dodonna]",
+        "[Red Leader→Red Leader] [Commander→Commander] [Garven Dreis→Garven Dreis]†",
+        "[Gold Leader→Gold Leader] [Captain→Captain] [Jon Vander→Jon Vander]†",
+        "[Red Five→Red Five] [Luke Skywalker→Luke Skywalker]"
+      ],
+      "unit1": [
+        "[Black Squadron→Black Squadron (Galactic Empire)]"
+      ],
+      "unit2": [
+        "[Gold Squadron→Gold Squadron (Rebel Alliance)]",
+        "[Green Squadron→Green Squadron (Rebel Alliance)]†",
+        "[Red Squadron→Red Squadron (Rebel Alliance)]"
+      ],
+      "forces1": [
+        "Several [starfighters→Starfighter]",
+        "At least 12 [TIE/ln space superiority starfighters→TIE/ln space superiority starfighter]",
+        "[Darth Vader's TIE Advanced→Darth Vader's TIE Advanced]",
+        "Several [pilots→Pilot]",
+        "[Black Two→Black Two] [Mithel→Mithel]†",
+        "[Black Eleven→Black Eleven] [Wampa→\"Wampa\"]",
+        "[Sigma Three→Sigma Three] [Iden Versio→Iden Versio]",
+        "[Backstabber→\"Backstabber\"]†",
+        "[Death Star→Death Star]† (thousands of weapon emplacements)",
+        "1 [Imperial-class Star Destroyer→Imperial-class Star Destroyer] (Held in reserve)",
+        "[Fortitude→Tarkin's Will] (Held in reserve)"
+      ],
+      "forces2": [
+        "30 starfighters",
+        "22 [T-65B X-wing starfighters→T-65B X-wing starfighter]",
+        "8 [BTL-A4 Y-wing assault starfighter/bombers→BTL-A4 Y-wing assault starfighter/bomber]",
+        "30 pilots",
+        "Several [astromech droids→Astromech droid]",
+        "1 [YT-1300 light freighter→YT-1300 light freighter]"
+      ],
+      "casual1": [
+        "Death Star and most Imperials",
+        "No known survivors other than Darth Vader, Iden Versio and Ellian Zahra",
+        "At least 11 TIE fighters",
+        "Black Two Mithel",
+        "Backstabber",
+        "Fortitude damaged"
+      ],
+      "casual2": [
+        "20 X-wings",
+        "Red One",
+        "Red Six",
+        "7 Y-wings",
+        "Gold One",
+        "All squadron pilots and their droids except Luke Skywalker, Wedge Antilles, and Evaan Verlaine"
+      ]
+    },
+    "lead": [
+      "The Battle of Yavin, also known as the Battle of the Death Star or the Miracle of Yavin, was a major and decisive battle of the [Galactic Civil War→Galactic Civil War], in which the [Rebel Alliance→Alliance to Restore the Republic] was able to destroy the [Death Star→DS-1 Orbital Battle Station] and was seen as one of the first major victories over the [Galactic Empire→Galactic Empire]."
+    ]
+  },
+  "c-3po.wikitext": {
+    "era": "canon",
+    "kind": "Droid",
+    "fields": {
+      "homeworld": [
+        "[Tatooine→Tatooine]"
+      ],
+      "birth": [
+        "Between [34 BBY→34 BBY] and [32 BBY→32 BBY]"
+      ],
+      "death": [
+        "[0 ABY→0 ABY], [Vrogas Vas→Vrogas Vas] (rebuilt)",
+        "[3 ABY→3 ABY], [Bespin→Bespin] (rebuilt)"
+      ],
+      "creator": [
+        "[Anakin Skywalker→Anakin Skywalker]"
+      ],
+      "manufacturer": [
+        "[Cybot Galactica→Cybot Galactica]"
+      ],
+      "model": [
+        "[3PO-series protocol droid→3PO-series protocol droid]"
+      ],
+      "class": [
+        "[Protocol droid→Protocol droid]"
+      ],
+      "height": [
+        "1.77 [meters→Meter] (5 [ft→Foot], 10 in)"
+      ],
+      "mass": [
+        "75 [kilograms→Kilogram]"
+      ],
+      "gender": [
+        "[Masculine programming→Gender]"
+      ],
+      "pronouns": [
+        "He/him"
+      ],
+      "sensor": [
+        "[Yellow→Color]",
+        "Purple (under [Scourge infection→Scourge crisis])",
+        "Red (briefly)"
+      ],
+      "plating": [
+        "Gray, later [golden→Gold]"
+      ],
+      "armament": [
+        "[E-5 blaster rifle→E-5 blaster rifle] (briefly, unwillingly)"
+      ],
+      "equipment": [
+        "[TranLang III communication module→TranLang III communications module]"
+      ],
+      "affiliation": [
+        "[Skywalker family→Skywalker family]",
+        "[Confederacy of Independent Systems→Confederacy of Independent Systems] (briefly, unwillingly)",
+        "A [battle droid legion→Unidentified battle droid legion] (briefly, unwillingly)",
+        "[Royal House of Naboo→Royal House of Naboo]",
+        "[Galactic Republic→Galactic Republic]",
+        "[Galactic Senate→Galactic Senate]",
+        "[House of Organa→House of Organa]",
+        "[Galactic Empire→Galactic Empire]",
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[Heroes of Yavin→Heroes of Yavin]",
+        "[Endor strike team→Endor strike team]",
+        "[Scourge→Scourge] (As a [vessel→Scourge crisis])",
+        "[Hutt Clan→Hutt Clan] (Reluctantly, briefly)",
+        "[Jabba's criminal empire→Jabba's criminal empire] (Reluctantly, briefly)",
+        "[Bright Tree tribe→Bright Tree tribe] (Honorary member)",
+        "[New Republic→New Republic]",
+        "[Senate Defense Council→Senate Defense Council]",
+        "[Resistance→Resistance]",
+        "[Resistance spy droid network→Resistance spy droid network]"
+      ]
+    },
+    "lead": [
+      "C-3PO (See-Threepio) was a [3PO-series protocol droid→3PO-series protocol droid] designed to interact with [organics→Sentience], programmed primarily for etiquette and protocol. Sometimes referred to as Threepio, he was fluent in over six million forms of [communication→Language], and developed a fussy and worry-prone personality throughout his many [decades→Time] of operation. Along with his counterpart, the [astromech droid→Astromech droid] [R2-D2→R2-D2], C-3PO constantly found himself directly involved in pivotal moments of [galactic→The galaxy] [history→Timeline of galactic history], and aided in saving the galaxy on many occasions.",
+      "C-3PO was rebuilt from spare parts by [Anakin Skywalker→Anakin Skywalker], an [enslaved→Slavery] [human→Human] who lived in [Mos Espa→Mos Espa], a [city→City] on the [Outer Rim→Outer Rim Territories] world of [Tatooine→Tatooine]. During the [Clone Wars→Clone Wars], he would serve the [Naboo→Naboo] [Senator→Senator] [Padmé Amidala→Padmé Amidala Naberrie]. Shortly after the Clone Wars, C-3PO's memory was [erased→Memory wipe], though R2-D2's memory was not. C-3PO and R2-D2 were assigned to the [Alderaan→Alderaan] [cruiser→CR90 corvette] [Tantive IV→Tantive IV], where they served senator [Bail Organa→Bail Prestor Organa] for nineteen years, assisting in his fledgling [resistance movement→Bail Organa's resistance movement] against the [Galactic Empire→Galactic Empire]. At some point during this time, C-3PO's right leg was fitted with mismatched plating.",
+      "C-3PO remained constant companions with R2, and in [1 BBY→1 BBY], the pair became embroiled in the [Galactic Civil War→Galactic Civil War] when [Leia Organa→Leia Skywalker Organa Solo] of the [Rebel Alliance→Alliance to Restore the Republic] entrusted them to bring a copy of the [Death Star plans→Death Star plans] to the [Jedi Master→Jedi Master] [Obi-Wan Kenobi→Obi-Wan Kenobi] on Tatooine. After meeting Skywalker's son, [Luke→Luke Skywalker] and the [smuggler→Smuggler] [Han Solo→Han Solo], the droids helped rescue [Princess→Princess] Leia from the Empire's [Death Star→DS-1 Orbital Battle Station]. They became directly attached to the three humans, helping them and their rebellion defeat the Empire and restore freedom to the galaxy, most notably when he convinced the [Ewoks→Ewok] to aid the Rebels at the [Battle of Endor→Battle of Endor].",
+      "Following the Battle of Endor, C-3PO continued serving the Skywalkers and Solo during the time of the [New Republic→New Republic]. About thirty years after the events on [Endor→Endor], C-3PO was still an aide to Organa, who had become a [general→General] in the [Resistance→Resistance], a private military group opposed to the [First Order→First Order], a military junta that emulated the Old Empire. By that time, C-3PO was fitted with a new set of gold plating, which had a more symmetrical design than his previous coverings, with the exception of his head. His new coverings included a third finger joint, and a torso that was not as slim as it used to be. Because of his new plating, he no longer had a mismatched right lower leg. Although, he did end up wearing a red left arm for a very short time. By that time, C-3PO's language database had also been updated so that he could understand and communicate in over seven million different forms of communication, including ancient Sith dialects. He would assist [Rey→Rey Skywalker] in translating Sith writings in order to locate [Darth Sidious→Darth Sidious] and the [Sith Eternal→Sith Eternal]'s fleet, the [Final Order→Final Order], on [Exegol→Exegol], allowing his memory to be wiped in order to carry out the task. However, his friend R2 backed up a large portion of his memories, and after the Resistance defeated Sidious and the Sith Eternal in the [Battle of Exegol→Battle of Exegol], his memory was restored."
+    ]
+  },
+  "coruscant.wikitext": {
+    "era": "canon",
+    "kind": "CelestialBody",
+    "fields": {
+      "region": [
+        "[Core Worlds→Core Worlds]",
+        "[The Interior→The Interior]"
+      ],
+      "sector": [
+        "[Corusca sector→Corusca sector]",
+        "[Coruscant subsector→Coruscant subsector]"
+      ],
+      "system": [
+        "[Coruscant system→Coruscant system]"
+      ],
+      "coordinates": [
+        "[L-9→Standard Galactic Grid]"
+      ],
+      "xyz": [
+        "[0, 0, 0→Galactic coordinates]"
+      ],
+      "suns": [
+        "1: [Coruscant Prime→Coruscant Prime]"
+      ],
+      "moons": [
+        "4",
+        "[Centax-1→Centax-1]",
+        "[Centax-2→Centax-2]",
+        "[Centax-3→Centax-3]",
+        "[Hesperidium→Hesperidium]"
+      ],
+      "routes": [
+        "[Corellian Run→Corellian Run]",
+        "[Koros Trunk Line→Koros Trunk Line]",
+        "[Metellos Trade Route→Metellos Trade Route]",
+        "[Namadii Corridor→Namadii Corridor]",
+        "[Nexus Route→Nexus Route]",
+        "[Perlemian Trade Route→Perlemian Trade Route]",
+        "[Stassia Alley→Stassia Alley]"
+      ],
+      "lengthday": [
+        "24 [standard hours→Standard hour]"
+      ],
+      "lengthyear": [
+        "365 [standard days→Standard day]"
+      ],
+      "diameter": [
+        "12,240 [kilometers→Kilometer] (7,606 miles)"
+      ],
+      "atmosphere": [
+        "[Breathable→Atmosphere]"
+      ],
+      "climate": [
+        "[Temperate→Temperature] (artificial)"
+      ],
+      "terrain": [
+        "[Ecumenopolis→Ecumenopolis]",
+        "[City→City] megastructure",
+        "[Mountainous→Mountain] (Historically)"
+      ],
+      "water": [
+        "[Ocean→Ocean] (Historically)"
+      ],
+      "interest": [
+        "[Great Western Sea→Great Western Sea]",
+        "[Manarai range→Manarai range]",
+        "[Umate→Umate]"
+      ],
+      "fauna": [
+        "[Conduit worm→Conduit worm]",
+        "[Corridor ghoul→Corridor ghoul]",
+        "[Crown finch→Crown finch]",
+        "[Duracrete slug→Duracrete slug]",
+        "[Granite slug→Granite slug]",
+        "[Nuna→Nuna]",
+        "[Pikobi→Pikobi]",
+        "[Song sparrow→Song sparrow]",
+        "[Stone mite→Stone mite]",
+        "[Tooka→Tooka]"
+      ],
+      "species": [
+        "[Human→Human] (disputed but generally accepted)",
+        "[Taung→Taung] (historically)",
+        "[Zhell→Zhell] (historically)"
+      ],
+      "otherspecies": [
+        "Hundreds of species"
+      ],
+      "language": [
+        "[Galactic Basic Standard→Galactic Basic Standard]",
+        "Thousands of others"
+      ],
+      "government": [
+        "Representative Republic",
+        "[Galactic Senate→Galactic Senate]",
+        "[Coruscanti government→Coruscanti government]",
+        "[Coruscant's provisional government→Coruscant's provisional government]"
+      ],
+      "population": [
+        "2,981,780,000,000 ([132 BBY→132 BBY]; estimated)",
+        "78% humans",
+        "22% other",
+        "Nearly 3 trillion, a third are permanent residents ([9 ABY→9 ABY]; estimated)"
+      ],
+      "demonym": [
+        "[Coruscanti→Coruscanti]"
+      ],
+      "cities": [
+        "[Imperial City→Imperial City]",
+        "[Abbo-Suer District→Abbo-Suer District]",
+        "[Arts District→Arts District]",
+        "[B'ankor Refuge→B'ankor Refuge]",
+        "[Bindai district→Bindai district]",
+        "[Central District→Central District]",
+        "[Collective Commerce District (CoCo Town)→CoCo Town]",
+        "[Federal District→Federal District] ([capital→Capital])",
+        "[Palace Court→Palace Court]",
+        "[Fobosi District→Fobosi District]",
+        "[Financial District→Financial District (Coruscant)]",
+        "[Industrial District→Industrial District]",
+        "[The Works→The Works]",
+        "[Jrade District→Jrade District]",
+        "[Lower market districts→Lower market districts]",
+        "[Old downtown area→Old downtown area]",
+        "[Port District→Port District]",
+        "[Sah'c Town→Sector H-46]",
+        "[Shipyard Depot→Shipyard Depot]",
+        "[TriOpt District→TriOpt District]",
+        "[Unidentified residential district→Unidentified residential district]",
+        "[Uscru District→Uscru District]",
+        "[Uscru Entertainment District→Uscru Entertainment District]",
+        "[Wellness district→Wellness district]",
+        "[Coruscant Underworld→Coruscant Underworld]"
+      ],
+      "imports": [
+        "[Foodstuffs→Foodstuff]",
+        "Medical goods"
+      ],
+      "exports": [
+        "Culture",
+        "Paperwork"
+      ],
+      "affiliation": [
+        "[Dai Bendu→Dai Bendu]",
+        "[Galactic Republic→Galactic Republic]",
+        "[Jedi Order→Jedi Order]",
+        "[Sith→Sith] Order",
+        "[Galactic Empire→Galactic Empire]",
+        "[New Republic→New Republic]",
+        "[First Order→First Order]"
+      ]
+    },
+    "lead": [
+      "Coruscant 'kɔɹəsɑnt, also known as Jewel of the Core Worlds, or Imperial Center during the [rule→Imperial Era] of the [Galactic Empire→Galactic Empire], was an [ecumenopolis→Ecumenopolis]—a [city→City]-covered [planet→Planet], in the [Coruscant system→Coruscant system] of the [Core Worlds→Core Worlds]. Prior to being covered by over five thousand metallic levels of what would become known as [Imperial City→Imperial City], Coruscant was the ancient [homeworld→Homeworld] of the [Taung→Taung] and [Zhell→Zhell] [species→Species]. Though debated by [historians→Historian], the theory that Coruscant was the ancestral world of [humans→Human] remained unproven. Noted for its cosmopolitan culture and towering [skyscrapers→Skyscraper], Coruscant's population consisted of trillions of [citizens→Coruscanti] hailing from a vast array of both [humanoid→Humanoid] and [alien→Alien] species. In addition, Coruscant's strategic location at the end of several major [trade routes→Hyperspace route] enabled it to grow in power and influence, causing the city-planet to surpass its early rivals and become the hub of [galactic→Galaxy] culture, education, finance, fine arts, [politics→Politics] and technology. It was the location of several major landmarks, including the [Jedi Temple→Imperial Palace], [Monument Plaza→Monument Plaza], and the [Senate Building→Imperial Senate Building].",
+      "Serving as the [capital→Capital] of [the galaxy→The galaxy] since the ancient [days→Standard day] of the old [Galactic Republic→Galactic Republic], Coruscant was at the center of many [historic events→Timeline of galactic history], such as the [Jedi Order→Jedi Order]'s [conflict→Jedi-Sith War] with the [Sith→Sith]. Although the planet [fell→Battle of Coruscant (Jedi-Sith War)] under Sith control for a [time→Time], Republic forces ultimately [liberated Coruscant→Liberation of Coruscant] with the aid of the [Jedi Knights→Jedi Knight]. Their victory was so decisive that at one point the Sith became all but extinct, replacing an [age of darkness and strife→Fall of the Old Republic] with the [democratic rule→Democracy] of the modern Galactic Republic. Retaining its status as galactic capital, it was on Coruscant where the [Galactic Senate→Galactic Senate] governed the galaxy for [centuries→Standard century], establishing an [era→Republic Era] of [peace→High Republic Era] that lasted for almost a [millennium→Millennium] under the protection of the [Jedi→Jedi] [peacekeepers→Law enforcement agency]. However, political intrigue wrought by corruption and [secession→Separatist Crisis] transformed Coruscant into a dangerous environment by the time of the [Clone Wars→Clone Wars] with the [Confederacy of Independent Systems→Confederacy of Independent Systems]. On the [eve→Duel in Palpatine's office] of the [New Order→New Order], fulfilling a [grand scheme→Grand Plan], [Supreme Chancellor→Supreme Chancellor] [Sheev Palpatine→Darth Sidious], who was, in fact, the [Sith Lord→Sith Lord] [Darth→Darth] Sidious, declared the Jedi [enemies of the state→Treason], resulting in a [galaxy-wide purge→Great Jedi Purge] that all but destroyed the Jedi Order. Without the Jedi to oppose him, Palpatine dissolved the Republic and [declared→Proclamation of the New Order] himself [Galactic Emperor→Galactic Emperor] to the applause of the now [Imperial Senate→Imperial Senate].",
+      "Coruscant continued to serve as galactic capital under the Empire, having become the Emperor's [throneworld→Throneworld], although Palpatine himself disappeared from public view for the most part, leaving the [day→Standard day]-to-day governing to his [advisors→Advisor] in the [Imperial Ruling Council→Imperial Ruling Council]. The Empire maintained a firm hold on Coruscant throughout the Emperor's [reign→Imperial Era], but with his defeat at the [Battle of Endor→Battle of Endor] in [4 ABY→4 ABY] by the [Alliance to Restore the Republic→Alliance to Restore the Republic], citizens of Coruscant [celebrated→Riot in Monument Plaza] by [revolting→Coruscant civil war]. Unable to command the [military→Imperial Military]'s allegiance as the rebels [restored→Declaration of a New Republic] the Republic, [Grand Vizier→Grand Vizier] [Mas Amedda→Mas Amedda]'s rule was limited to Coruscant while [Fleet Admiral→Fleet Admiral] [Gallius Rax→Gallius Rax], the self-proclaimed [Counselor to the Empire→Counselor to the Empire], assumed de facto control of the collapsing Imperial government. Hoping to escape prosecution for war crimes, Amedda ultimately surrendered himself to the [New Republic→New Republic] in return for amnesty. Following Rax's death at the [Battle of Jakku→Battle of Jakku] in [5 ABY→5 ABY], Amedda signed the [Galactic Concordance→Galactic Concordance]—a peace treaty recognizing the Empire's [capitulation→Galactic Concordance] and the end of the [Galactic Civil War→Galactic Civil War]. Amedda himself was permitted to return to Coruscant as the head of a [provisional government→Coruscant's provisional government]. Yet his authority was merely ceremonial; under the supervision of Republic overseers, he became a virtually powerless figurehead.",
+      "Unlike previous galactic governments, the [New Republic→New Republic] broke with millennia of tradition by not establishing Coruscant as their headquarters, instead preferring to designate other member worlds with the status of galactic capital through an electoral system. During the [New Republic Era→New Republic Era], Coruscant had become the capital of the New Republic as it was designed to handle and administer the galaxy's infrastructure. As part of the [New Republic Senate→New Republic Senate], Coruscant enjoyed full senatorial representation and, by the time of the [Cold War→Cold War], was aligned with the worlds that identified as [Centrists→Centrists]. However, by this point, Coruscant had actually fallen under the control of crime syndicates. Now a symbol of the disturbing realities of the galaxy's current era, gangs fought a [bloody war→Gang war on Coruscant] for control by the time after the [Battle of Crait→Battle of Crait].",
+      "During the [First Order-Resistance War→First Order-Resistance War], at least two sizeable battlegroup were deployed by the [First Order→First Order] to Coruscant in the apparent hope of seizing it and ruling the galaxy from the ecumenopolis as the Galactic Empire once did, however these efforts were defeated. In the aftermath of the [Battle of Exegol→Battle of Exegol], various worlds sought to drive the [First Order military→First Order military] from their soil. Coruscant was one such world where an [uprising→Uprising on Coruscant] took place as part of a [galaxy-wide effort→Uprising against the First Order] to overthrow the First Order."
+    ]
+  },
+  "galactic-empire.wikitext": {
+    "era": "canon",
+    "kind": "Government",
+    "fields": {
+      "founding": [
+        "[Proclamation of the New Order→Proclamation of the New Order]"
+      ],
+      "constitution": [
+        "[Imperial Charter→Imperial Charter]"
+      ],
+      "headofstate": [
+        "[Galactic Emperor→Galactic Emperor] ([19 BBY→19 BBY]–[4 ABY→4 ABY])",
+        "[Grand Vizier→Grand Vizier] ([5 ABY→5 ABY], officially)",
+        "[Counselor to the Empire→Counselor to the Empire] (5 ABY, de facto)"
+      ],
+      "headofgov": [
+        "Grand Vizier"
+      ],
+      "commander": [
+        "[Commander-in-Chief→Commander-in-Chief] (informally)",
+        "[Supreme commander of the Imperial fleet→Supreme commander of the Imperial fleet]",
+        "[Supreme Commander→Supreme Commander (Galactic Empire)]"
+      ],
+      "executive": [
+        "[Imperial Ruling Council→Imperial Ruling Council]"
+      ],
+      "legislative": [
+        "[Imperial Senate→Imperial Senate] ([19 BBY→19 BBY]–[1 BBY→1 BBY], [disbanded→Dissolution of the Imperial Senate] by [Emperor→Emperor] [Sheev Palpatine→Darth Sidious])"
+      ],
+      "judicial": [
+        "[Judicial Department→Judicial Department] (Early reign)",
+        "[Department of Imperial Justice→Department of Imperial Justice]"
+      ],
+      "military": [
+        "[Imperial Military→Imperial Military]"
+      ],
+      "capital": [
+        "[Imperial City→Imperial City], [Coruscant→Coruscant]"
+      ],
+      "language": [
+        "[Galactic Basic Standard→Galactic Basic Standard]"
+      ],
+      "currency": [
+        "[Imperial credit→Galactic Credit Standard]"
+      ],
+      "religious": [
+        "[New Order→New Order] ([political→Politics] religion)"
+      ],
+      "holiday": [
+        "[Empire Day→Empire Day]"
+      ],
+      "anthem": [
+        "\"[Glory of the Empire→Glory of the Empire]\""
+      ],
+      "formed": [
+        "[Galactic Republic→Galactic Republic]"
+      ],
+      "established": [
+        "19 BBY"
+      ],
+      "fragmented": [
+        "[4 ABY→4 ABY], into the [Imperial Remnants→Imperial Remnants] and numerous independent [star systems→Star system] and nations"
+      ],
+      "reorganized": [
+        "[5 ABY→5 ABY], into a [rump state in the inner systems→Inner systems' Imperial remnant] and within the [New Republic→New Republic]",
+        "By [9 ABY→9 ABY], into the [neo-Imperial forces→Neo-Imperial forces]"
+      ],
+      "dissolved": [
+        "5 ABY"
+      ],
+      "restored": [
+        "[21 ABY→21 ABY], as the [First Order→First Order] (publicly formed in [29 ABY→29 ABY])",
+        "[35 ABY→35 ABY], as the [Final Order→Final Order]"
+      ],
+      "affiliation": [
+        "[Sith→Sith] (secretly)"
+      ]
+    },
+    "lead": [
+      "The Galactic Empire, also known as the First Galactic Empire, the Imperial regime, Palpatine's regime, or simply the Empire, and later as the Old Empire, was a [fascist→Fascism] and imperialist [dictatorship→Dictatorship] that [replaced→Proclamation of the New Order] the [Galactic Republic→Galactic Republic] at the [end→Battle of Utapau] of the [Clone Wars→Clone Wars]. Though the Empire rose to power by promising to bring order to [the galaxy→The galaxy], it oversaw a [period→Time] of [military→Imperial Military] rule and aggressive expansion. The subsequent [Imperial Era→Imperial Era] would last only two [decades→Standard decade], for it was eventually overthrown by the [Alliance to Restore the Republic→Alliance to Restore the Republic] in the [Galactic Civil War→Galactic Civil War], but not before the sovereign [star systems→Star system] of the [galaxy→Galaxy]'s [known regions→Lesser Space] had been largely conquered by the Empire's forces.",
+      "The Empire traced its origins to a [Sith conspiracy→Grand Plan] to destroy the [Jedi Order→Jedi Order] and [regain→Jedi-Sith War] control over the galaxy. The Empire was secretly controlled by the [Sith→Sith], for the [Galactic Emperor→Galactic Emperor] was, in fact, the [Sith Lord→Sith Lord] [Darth Sidious→Darth Sidious], whose reign was enforced by his [apprentice→Sith apprentice], [Darth Vader→Anakin Skywalker], whom he eventually elevated to the position of [supreme commander of the Imperial fleet→Supreme commander of the Imperial fleet]. Rising to power on a groundswell of populist support and capitalizing on [anti-Jedi→Anti-Jedi sentiment] and [anti-droid sentiment→Anti-droid sentiment] and [human→Human]-[ethnocentrism→Xenophobia] manufactured by the destructive Clone Wars, [Darth→Darth] Sidious appointed himself [Emperor→Emperor] at the end of the conflict by promising security and stability to the war-torn Republic. Gaining the overwhelming approval of the [Galactic Senate→Galactic Senate], Darth Sidious staged a coup by the [Jedi→Jedi] and oversaw their subsequent [purge→Great Jedi Purge] from the galaxy, assisted by his [right-hand→Emperor's Fist], Darth Vader.",
+      "The Empire stood virtually unchallenged during its rise to power, with the backing of the [Imperial Senate→Imperial Senate] and the spreading of its massive technological military force across the galaxy and began a major expansion and encroaching into the unexplored regions. At first, the Galactic Empire was a constitutional monarchy in basic theory, however it [gradually→Public Order Resentencing Directive] [evolved→Imperial Emergency Act] into a [stratocracy→Stratocracy] as the power of the Imperial Senate waned. However, [numerous insurgent cells→Rebel cell/Canon] sprang up against the Empire and gradually united to initiate a [growing rebellion→Early rebellion against the Galactic Empire], winning its [first major victory→Action at Mustafar] over [Mustafar→Mustafar] in [4 BBY→4 BBY]. These rebel groups eventually [formed→Declaration of Rebellion] the Rebel Alliance in [2 BBY→2 BBY], and achieved its first major victory with the [theft→Battle of Scarif] of the [Death Star plans→Death Star plans] on [Scarif→Scarif], which, in turn, led to the destruction of the [Death Star→DS-1 Orbital Battle Station] at the [Battle of Yavin→Battle of Yavin]. The following years saw initial Alliance successes until a [major Imperial victory→Battle of Hoth] on [Hoth→Hoth] in [3 ABY→3 ABY], but the Empire suffered a devastating defeat [one year later→4 ABY] at the [Battle of Endor→Battle of Endor]. During the battle, Darth Sidious was slain at the hands of his former disciple, the redeemed Anakin Skywalker, who himself died shortly thereafter, marking the end of Sith rule and the deterioration of the Empire and the [resumption→Declaration of a New Republic] of the Galactic Republic, the [New Republic→New Republic].",
+      "With the deaths of the Emperor and his top lieutenant, factionalism overcame the Empire as it fractured into breakaway fiefdoms led by splinter [Moffs→Moff], [admirals→Admiral], and [generals→General], many of whom ignored [Grand Vizier→Grand Vizier] [Mas Amedda→Mas Amedda]'s authority at the [capital→Capital] and became [warlords→Warlord] as the Empire continued to fight the Republic. The [Imperial Navy→Imperial Navy] came to be publicly led by loyalist [Grand Admiral→Grand Admiral] [Rae Sloane→Rae Sloane], though she was a figurehead for [Fleet Admiral→Fleet Admiral] [Gallius Rax→Gallius Rax]. Ultimately, Rax seized control over the loyalist forces, removing Sloane from power and becoming Emperor-in-effect through his new position as [Counselor to the Empire→Counselor to the Empire]. Under Rax's command, the Empire made its final stand at the [Battle of Jakku→Battle of Jakku] in [5 ABY→5 ABY], ultimately losing and [capitulating→Galactic Concordance] to the New Republic. With the cessation of the fighting, the [Galactic Concordance→Galactic Concordance] was signed, vanquishing the Empire.",
+      "While the Empire was gone, the New Republic faced continued resistance from several Imperial remants [in the years→9 ABY] after. Eventually its successor, the [First Order→First Order] [began→Project Resurrection] a clandestine armament program to [rebuild→First Order military] the former Imperial Military. The [miltary junta→First Order High Command] was unaware, however, that they had been manipulated by a new hidden [conspiracy→Contingency], for [secret→Sith Eternal] [cultists→Sith cultist] on the lost [world→Planet] of [Exegol→Exegol] attended to the [spirit→Transference] of Darth Sidious, and constructed a [fleet→Final Order] built to turn the First Order into a true [empire→Sith Empire]. The [cult→Sith cult] efforts [ultimately failed→Battle of Exegol], however, for they were [opposed→First Order-Resistance War] by the [Resistance→Resistance] and Jedi Order, leading to an [end of the First Order→Uprising against the First Order]."
+    ]
+  },
+  "han-solo.wikitext": {
+    "era": "canon",
+    "kind": "Character",
+    "fields": {
+      "homeworld": [
+        "[Corellia→Corellia]"
+      ],
+      "birth": [
+        "[32 BBY→32 BBY], Corellia"
+      ],
+      "death": [
+        "[34 ABY→34 ABY], [Starkiller Base→Starkiller Base], [Ilum→Ilum]"
+      ],
+      "species": [
+        "[Human→Human] ([Corellian→Corellian])"
+      ],
+      "gender": [
+        "[Male→Gender]"
+      ],
+      "pronouns": [
+        "He/him"
+      ],
+      "height": [
+        "1.8 [meters→Meter]"
+      ],
+      "mass": [
+        "80 [kilograms→Kilogram]"
+      ],
+      "hair": [
+        "[Brown→Color], later gray"
+      ],
+      "eyes": [
+        "Hazel-green"
+      ],
+      "skin": [
+        "Light"
+      ],
+      "families": [
+        "[Solo family→Solo family]",
+        "[Skywalker family→Skywalker family] (through [marriage→Marriage])",
+        "[House Organa→House of Organa] (through marriage)"
+      ],
+      "parents": [
+        "[Ovan→Ovan]"
+      ],
+      "partners": [
+        "[Qi'ra→Qi'ra]",
+        "[Leia Skywalker Organa Solo→Leia Skywalker Organa Solo] ([wife→Wedding of Han Solo and Leia Organa])"
+      ],
+      "children": [
+        "[Ben Solo→Ben Solo]"
+      ],
+      "affiliation": [
+        "[White Worms→White Worms]",
+        "[Galactic Empire→Galactic Empire]",
+        "[Carida Academy→Carida Academy]",
+        "[Carida Squadron→Carida Squadron]",
+        "[Onyx Squadron→Onyx Squadron]",
+        "[224th Imperial Armored Division→224th Imperial Armored Division]",
+        "[Crimson Dawn→Crimson Dawn]",
+        "[Beckett's gang→Beckett's gang]",
+        "[Hutt clan→Hutt Clan]",
+        "[Jabba's criminal empire→Jabba's criminal empire]",
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[Heroes of Yavin→Heroes of Yavin]",
+        "[Endor strike team→Endor strike team]",
+        "[Special Forces Trackers Unit→Special Forces Trackers Unit]",
+        "[Kingdom of Han→Queen of Ktath'atn's hive] (briefly)",
+        "[Bright Tree tribe→Bright Tree tribe] (honorary member)",
+        "[New Republic→New Republic]",
+        "[New Republic Pilots Commission→New Republic Pilots Commission]",
+        "[Han Solo's shipping company→Han Solo's shipping company]",
+        "[Resistance→Resistance]"
+      ],
+      "masters": [
+        "[Tobias Beckett→Tobias Beckett] (mentor)"
+      ],
+      "apprentices": [
+        "[Rey→Rey Skywalker] (protégée)",
+        "[Finn→Finn] (protégé)"
+      ]
+    },
+    "lead": [
+      "Han Solo, known only as Han until being given the surname Solo, was a [human→Human] [male→Gender] [smuggler→Smuggler] and hero of the [Alliance to Restore the Republic→Alliance to Restore the Republic]. He rose from an impoverished childhood to become [captain→Captain] of the [Millennium Falcon→Millennium Falcon], a leader in the Rebel Alliance and an instrumental figure in the [Galactic Civil War→Galactic Civil War] during the [reign→Imperial Era] of the [Galactic Empire→Galactic Empire]. Although he did not believe in [the Force→The Force] controlling his [destiny→Destiny], Han came to believe in the cause of galactic freedom, joining [Jedi→Jedi] [Luke Skywalker→Luke Skywalker] and [Princess→Princess] [Leia Organa→Leia Skywalker Organa Solo] in the fight for the Rebellion. Following the war, Han and Leia welcomed a son, [Ben Solo→Ben Solo], who became the dark knight Kylo Ren after being corrupted by the [dark side of the Force→Dark side of the Force]. Although their relationship floundered, Leia hoped that Han, as Ben's [father→Parent], could find a way to break the dark side's hold on their son. Han Solo became legendary across [the galaxy→The galaxy] as both a smuggler and war hero of the Rebellion.",
+      "As a young man fighting for survival on the mean streets of [Corellia→Corellia], Han yearned to fly among the [stars→Star] with dreams of becoming the galaxy's best [pilot→Pilot]. With a fellow [scrumrat→Scrumrat] named [Qi'ra→Qi'ra], Han lived as a street thief with Corellia's notorious [White Worms→White Worms] gang until an important deal with [Lady→Lady] [Proxima→Proxima] went bad, causing Han to flee Corellia. He was given the full name \"Han Solo\" by an [Imperial recruitment officer→Drawd Munbrin] while entering the Imperial Academy. He became known as Cadet 124-329 while serving as an [Imperial cadet→Imperial cadet], and was eventually assigned to the [224th Imperial Armored Division→224th Imperial Armored Division]. On [Mimban→Mimban], Han met the thief [Tobias Beckett→Tobias Beckett] and wound up deserting the Empire and joining his [crew→Beckett's gang] to [steal→Raid on Kessel] unrefined [coaxium→Coaxium] from [Kessel→Kessel] in order to pay a debt to [Dryden Vos→Dryden Vos], a kingpin with the [Crimson Dawn→Crimson Dawn] crime syndicate. By the end of this scheme, during which he reunited with Qi'ra, Han was forced to kill his mentor Beckett after a brutal [double-cross→Showdown on Savareen]. Han also became rivals and close friends with fellow smuggler [Lando Calrissian→Landonis Balthazar Calrissian] and the [Wookiee→Wookiee] [Chewbacca→Chewbacca], the latter who became his best friend. Calrissian owned the Millennium Falcon, a fast ship with which Han made the [Kessel Run→Kessel Run] in just twelve [parsecs→Parsec] and won from Lando in a game of [sabacc→Sabacc].",
+      "With only Chewbacca remaining at his side, as his trusted copilot who swore a [life debt→Life debt] to the Corellian smuggler, Han Solo embarked on a smuggling career under the employ of [Jabba→Jabba Desilijic Tiure] the [Hutt→Hutt], a notorious [gangster→Gangster] and [crime lord→Crime lord] of [Tatooine→Tatooine]. After ditching a shipment of [spice→Spice] to avoid trouble with the Empire, Solo owed a great deal of [money→Galactic Credit Standard] to Jabba, who then placed a [bounty→Bounty] on the smuggler's head, as a result. His fortune seemed to have changed when Han and Chewbacca were hired to charter Luke Skywalker, [Obi-Wan Kenobi→Obi-Wan Kenobi], and the [droids→Droid] [R2-D2→R2-D2] and [C-3PO→C-3PO] to [Alderaan→Alderaan], avoiding [Imperial stormtroopers→Stormtrooper] who were searching for Luke's droids. However, as they find Alderaan destroyed by the Empire's new [superweapon→Superweapon], the [Death Star→DS-1 Orbital Battle Station], Solo became caught up in the rebellion against the Empire, [rescuing→Rescue of Princess Leia] Princess Leia Organa, delivering the stolen [Death Star plans→Death Star plans] to the hidden Rebel base on [Yavin 4→Yavin 4], and saved Luke from the [Sith Lord→Sith Lord] [Darth Vader→Anakin Skywalker] in the [Battle of Yavin→Battle of Yavin], allowing Skywalker to destroy the Death Star. Solo fought with the Rebellion for a number of [years→Standard year] afterward, taking part in numerous operations and battles against the Empire.",
+      "After the [Battle of Hoth→Battle of Hoth], Solo sought refuge with Organa—with whom he had fallen in love—Chewbacca, and C-3PO on [Cloud City→Cloud City], which was operated by his old friend Lando Calrissian. There, they were captured by [Darth→Darth] Vader as part of a trap to bait Skywalker to the [city→City]. Solo was [frozen→Carbon-freezing] in [carbonite→Carbonite] and taken to [Jabba's Palace→Boba Fett's Palace] on Tatooine by the [bounty hunter→Bounty hunter] [Boba Fett→Boba Fett], where he remained encased in carbonite for [months→Standard month] until he was [rescued→Rescue of Han Solo] by his friends. After returning to the [Alliance Fleet→Rebel Alliance Navy], Solo was promoted to the [rank→Military rank] of [general→General] and was given command of the [Pathfinders→Special Forces Trackers Unit], a [special forces→Special forces] [squad→Squad], for the [Battle of Endor→Battle of Endor]. Solo led the Pathfinders to [Endor→Endor], where he, Organa, Chewbacca, and the special forces team, with the help of the native [Ewoks→Ewok], destroyed the [shield generator→Death Star's shield generator] protecting the [second Death Star→DS-2 Death Star II Mobile Battle Station] that was being constructed in [orbit→Orbit]. Their actions allowed the Alliance [Fleet→Fleet] to destroy the superweapon.",
+      "The Battle of Endor, which saw the [deaths→Death] of [Emperor→Galactic Emperor] [Sheev Palpatine→Darth Sidious] and Darth Vader, allowed the Rebellion to form the [New Republic→New Republic]. In the early [days→Standard day] after Endor, Solo continued to lead the Pathfinders against the Empire. He [married→Marriage] Organa, and the two had a son, Ben Solo. The boy struggled with the dark side of the Force—like his mother, who was the daughter of Darth Vader and twin sister of Luke Skywalker, Ben was [Force-sensitive→Force-sensitive]—so Organa sent him to be [trained→Jedi training] as a Jedi by Skywalker. Ben was seduced to the dark side by [Snoke→Snoke], [Supreme Leader→Supreme Leader] of the [First Order→First Order], resulting in the [destruction→Destruction of the Jedi Temple] of Skywalker's attempt to rebuild the [Jedi Order→Jedi Order].",
+      "Having lost their son, Solo left and returned to smuggling, and even lost the Millennium Falcon to numerous thieves. He continued to smuggle until he was brought back into the fight by a [scavenger→Scavenger] named [Rey→Rey Skywalker] and a defected First Order [stormtrooper→First Order stormtrooper] named [Finn→Finn], who carried with them a droid, [BB-8→BB-8], that had part of a [map→Map to Skywalker] to Skywalker's [location→Ahch-To]. Solo, who retrieved the Falcon from Rey and Finn, returned to Organa, who led the [Resistance→Resistance] against the First Order, and fought in the [battle→Battle of Starkiller Base] to destroy the First Order superweapon known as [Starkiller Base→Starkiller Base]. During the battle, Solo saw his son, who had taken the name Kylo Ren, and tried to convince him to return home. Instead, Ren stabbed his father with [his lightsaber→Kylo Ren's lightsaber]. Mortally wounded, Solo fell to his death in the bowels of the Starkiller weapon. However, Solo's heroic memory survived and his spirit remained alive and appeared in a [Force vision→Force vision] a [year later→35 ABY] to convince Ren to abandon the dark side and defeat the resurrected Darth Sidious, after a [duel→Mission to Kef Bir] on the [remains→Death Star ruins] of the second Death Star between Rey and Ren, being enough for Ben Solo to return and eventually [sacrifice his own life→Battle of Exegol] to help Rey end Sidious and the Sith for good."
+    ]
+  },
+  "hoth.wikitext": {
+    "era": "canon",
+    "kind": "CelestialBody",
+    "fields": {
+      "region": [
+        "[Outer Rim Territories→Outer Rim Territories]",
+        "[Galactic Frontier→Galactic Frontier]",
+        "[Western Reaches→Western Reaches]"
+      ],
+      "sector": [
+        "[Anoat sector→Anoat sector]"
+      ],
+      "system": [
+        "[Hoth system→Hoth system]"
+      ],
+      "coordinates": [
+        "[K-18→Standard Galactic Grid]"
+      ],
+      "distance": [
+        "50,250 [light years→Light-year]"
+      ],
+      "suns": [
+        "1: [Hoth→Hoth (star)]"
+      ],
+      "position": [
+        "6"
+      ],
+      "moons": [
+        "3"
+      ],
+      "routes": [
+        "[Ison Trade Corridor→Ison Trade Corridor] (one hyperjump away)",
+        "[Corellian Trade Spine→Corellian Trade Spine] (one hyperjump away)"
+      ],
+      "lengthday": [
+        "23 [standard hours→Standard hour]"
+      ],
+      "lengthyear": [
+        "549 [local days→Local day] (526 [standard days→Standard day])"
+      ],
+      "class": [
+        "Terrestrial"
+      ],
+      "diameter": [
+        "7,200 [kilometers→Kilometer] (4,474 miles)"
+      ],
+      "atmosphere": [
+        "[Breathable→Atmosphere], clean"
+      ],
+      "climate": [
+        "[Frigid→Temperature]"
+      ],
+      "terrain": [
+        "Frozen [ice→Water] plains, glaciers, [oceans→Ocean] [mountains→Mountain]"
+      ],
+      "water": [
+        "33% (oceans)"
+      ],
+      "interest": [
+        "[Clabburn Range→Clabburn Range]",
+        "[Echo Base→Echo Base]",
+        "[Echo Station 3-T-8→Echo Station 3-T-8]",
+        "[Icefall Plains→Icefall Plains]",
+        "[Moorsh Moraine→Moorsh Moraine]",
+        "[Outpost Beta→Outpost Beta]",
+        "[Perimeter Outpost Delta→Perimeter Outpost Delta]",
+        "[Shyloah's Crest→Shyloah's Crest]",
+        "[Wampa Mountain→Wampa Mountain]"
+      ],
+      "flora": [
+        "[Algae→Algae]",
+        "[Lichen→Lichen]"
+      ],
+      "fauna": [
+        "[Dragon Slug→Dragon Slug]",
+        "[Fork-nosed ice worm→Fork-nosed ice worm]",
+        "[Hoth hog→Hoth hog]",
+        "[Hoth spider→Hoth spider]",
+        "[Ice scrabbler→Ice scrabbler]",
+        "[Rayboo→Rayboo]",
+        "[Sapphire ice worm→Sapphire ice worm]",
+        "[Tauntaun→Tauntaun]",
+        "[Wampa→Wampa]"
+      ],
+      "otherlife": [
+        "[Ice fungus→Ice fungus]"
+      ],
+      "population": [
+        "Fewer than 10"
+      ],
+      "demonym": [
+        "Hothian"
+      ],
+      "affiliation": [
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]"
+      ]
+    },
+    "lead": [
+      "Hoth was a remote, icy [planet→Planet] that was the sixth planet in the [star system→Star system] of the [same name→Hoth system], located in the [Anoat sector→Anoat sector] of [the galaxy→The galaxy]'s [Outer Rim Territories→Outer Rim Territories]. It was the [homeworld→Homeworld] to the primitive [wampa→Wampa] [species→Species].",
+      "It notably hosted [Echo Base→Echo Base] during the [Galactic Civil War→Galactic Civil War], the temporary headquarters of the [Alliance to Restore the Republic→Alliance to Restore the Republic], until the [Galactic Empire→Galactic Empire] located them, initiating a major confrontation known as the [Battle of Hoth→Battle of Hoth]. In the months following, [scavengers→Scavenger] established temporary base camps on the planet to scrap the [AT-ATs→All Terrain Armored Transport] destroyed.",
+      "In the [months→Standard month] after the [Battle of Endor→Battle of Endor], rumors emerged about the [New Republic→New Republic] intending to repurpose Hoth into a [prison→Prison] for those who remained loyal to the Empire, however, the credibility of the rumors were dismissed as [Chancellor→Chancellor (New Republic)] [Mon Mothma→Mon Mothma] had been dedicated to a pretext of justice over punishment. Meanwhile, the war returned to Hoth, where it became the site of another [battle→Battle of Hoth (Iron Blockade)] during the [Iron Blockade→Iron Blockade]."
+    ]
+  },
+  "luke-skywalker-legends.wikitext": {
+    "era": "canon",
+    "kind": "Character",
+    "fields": {
+      "homeworld": [
+        "[Tatooine→Tatooine/Legends]"
+      ],
+      "birth": [
+        "[19 BBY→19 BBY/Legends], [Polis Massa→Polis Massa/Legends]"
+      ],
+      "death": [
+        "Between [45 ABY→45 ABY] and [137 ABY→137 ABY]"
+      ],
+      "species": [
+        "[Human→Human/Legends]"
+      ],
+      "gender": [
+        "[Male→Gender/Legends]"
+      ],
+      "pronouns": [
+        "He/him"
+      ],
+      "height": [
+        "1.72 [meters→Meter/Legends]"
+      ],
+      "mass": [
+        "77 [kilograms→Kilogram/Legends]"
+      ],
+      "hair": [
+        "[Blond→Color/Legends]"
+      ],
+      "eyes": [
+        "Blue"
+      ],
+      "skin": [
+        "Light"
+      ],
+      "cyber": [
+        "[Prosthetic right hand→Cybernetics/Legends]"
+      ],
+      "families": [
+        "[Skywalker family→Skywalker family/Legends]",
+        "[Lars family→Lars family/Legends]"
+      ],
+      "parents": [
+        "[Padmé Amidala→Padmé Amidala/Legends]",
+        "[Anakin Skywalker→Anakin Skywalker/Legends]"
+      ],
+      "partners": [
+        "[Mara Jade Skywalker→Mara Jade Skywalker]"
+      ],
+      "siblings": [
+        "[Leia Organa Solo→Leia Organa Solo/Legends]"
+      ],
+      "children": [
+        "[Ben Skywalker→Ben Skywalker]"
+      ],
+      "affiliation": [
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic/Legends]",
+        "[Red Squadron→Red Squadron (Rebel Alliance)/Legends]",
+        "[Rogue Squadron→Rogue Squadron/Legends]",
+        "[Endor strike team→Endor strike team/Legends]",
+        "[Jedi Order→Jedi Order/Legends]",
+        "[Alliance of Free Planets→Alliance of Free Planets]",
+        "[Bright Tree Village→Bright Tree Village/Legends]",
+        "[New Republic→New Republic/Legends]",
+        "[Combined Defense Forces of the New Republic→New Republic Defense Force/Legends]",
+        "[Order of the Sith Lords→Order of the Sith Lords] (briefly)",
+        "[Dark Empire→Dark Empire] (briefly)",
+        "[Imperial Navy→Imperial Navy/Legends] (briefly)",
+        "[New Jedi Order→New Jedi Order]",
+        "[Jedi High Council→Jedi High Council (New Jedi Order)]",
+        "[Saber Squadron→Saber Squadron (Eclipse)]",
+        "[Twin Suns Squadron→Twin Suns Squadron]",
+        "[Blackmoon Squadron→Blackmoon Squadron]",
+        "[Hardpoint Squadron→Hardpoint Squadron]",
+        "[StealthX wing→StealthX wing]",
+        "[Jedi Coalition→Jedi Coalition]",
+        "[Galactic Federation of Free Alliances→Galactic Federation of Free Alliances]"
+      ],
+      "masters": [
+        "[Obi-Wan Kenobi→Obi-Wan Kenobi/Legends]",
+        "[Yoda→Yoda/Legends]",
+        "[Joruus C'baoth→Joruus C'baoth] (briefly)",
+        "[Palpatine→Palpatine/Legends] (briefly)"
+      ],
+      "apprentices": [
+        "[X2→X2]",
+        "[Ken→Ken]",
+        "Leia Organa Solo",
+        "[Kam Solusar→Kam Solusar]",
+        "[Rayf Ysanna→Rayf Ysanna]",
+        "[Jem Ysanna→Jem Ysanna]",
+        "[Brakiss→Brakiss]",
+        "[Dorsk 81→Dorsk 81]",
+        "[Gantoris→Gantoris]",
+        "[Corran Horn→Corran Horn/Legends]",
+        "[Kyle Katarn→Kyle Katarn]",
+        "[Madurrin→Madurrin]",
+        "[Tionne Solusar→Tionne Solusar]",
+        "[Streen→Streen]",
+        "[Kirana Ti→Kirana Ti]",
+        "[Kyp Durron→Kyp Durron]",
+        "Mara Jade Skywalker",
+        "[Cilghal→Cilghal]",
+        "[Nichos Marr→Nichos Marr]",
+        "[Cray Mingla→Cray Mingla]",
+        "[Dolph→Kueller]",
+        "[Keyan Farlander→Keyan Farlander/Legends]",
+        "[Desann→Desann]",
+        "[Havet Storm→Havet Storm]",
+        "an [orange-skinned Jedi student→Orange Jedi student]",
+        "a [brown-skinned Jedi student→Unidentified brown Jedi student]",
+        "a [gray-skinned Jedi student→Gray Jedi student]",
+        "[Dal Konur→Dal Konur]",
+        "[Eelysa→Eelysa]",
+        "a [Quarren Jedi student→Unidentified Quarren Jedi student]",
+        "[Sannah→Sannah]",
+        "a [tree-like Jedi→Unidentified tree-like Jedi]",
+        "[Zekk→Zekk]",
+        "[Anakin Solo→Anakin Solo]",
+        "[Jacen Solo→Darth Caedus]",
+        "[Finn Galfridian→Finn Galfridian]",
+        "[Kenth Hamner→Kenth Hamner]",
+        "Ben Skywalker",
+        "[Vestara Khai→Vestara Khai]"
+      ]
+    },
+    "lead": [
+      "Luke Skywalker was a renowned [Force-sensitive→Force-sensitive/Legends] [Human→Human/Legends] [male→Gender/Legends] who helped defeat the [Galactic Empire→Galactic Empire/Legends] in the [Galactic Civil War→Galactic Civil War/Legends] and helped found the [New Republic→New Republic/Legends], as well as the [New Jedi Order→New Jedi Order].",
+      "Born in [19 BBY→19 BBY/Legends] as the son of the fallen [Jedi Knight→Jedi Knight/Legends] [Anakin Skywalker→Anakin Skywalker/Legends] and the [Queen→Queen/Legends] and [Senator→Senator/Legends] of [Naboo→Naboo/Legends], [Padmé Amidala→Padmé Amidala/Legends], Luke was raised on [Tatooine→Tatooine/Legends] and hidden from [Emperor→Galactic Emperor/Legends] [Palpatine→Palpatine/Legends] and his [father→Parent/Legends], who had recently become [Darth→Darth/Legends] Vader, [Dark Lord of the Sith→Dark Lord of the Sith/Legends]. In [0 BBY→0 BBY/Legends], Skywalker's life changed forever. A chance purchase of two [droids→Droid/Legends], [R2-D2→R2-D2/Legends] and [C-3PO→C-3PO/Legends], led to him to receive [training→Jedi training/Legends] in the ways of [the Force→The Force/Legends] from [Jedi Master→Jedi Master/Legends] [Obi-Wan Kenobi→Obi-Wan Kenobi/Legends] and to meet [Han Solo→Han Solo/Legends], and [Princess→Princess/Legends] [Leia Organa→Leia Organa Solo/Legends], who was, unbeknownst to him, his [twin→Twin/Legends] sister. Skywalker then [destroyed→Battle of Yavin/Legends] the [first→DS-1 Orbital Battle Station/Legends] [Death Star→Death Star/Legends] and joined the [Rebel Alliance→Alliance to Restore the Republic/Legends].",
+      "Over the next few [years→Standard year/Legends], he fought in many of the most important battles of the Galactic Civil War, helping to found [Rogue Squadron→Rogue Squadron/Legends] and fighting Imperial forces across [the galaxy→The galaxy/Legends]. In [3 ABY→3 ABY/Legends], Skywalker received Jedi training from [Yoda→Yoda/Legends], and learned from Vader that the [Sith Lord→Sith Lord/Legends] was his father. [One year later→4 ABY/Legends], he fought in the [Battle of Endor→Battle of Endor/Legends], and succeeded in turning his father back to the [light→Light side of the Force/Legends]. Thanks to Skywalker, [Palpatine→Palpatine/Legends] was [killed→Death/Legends], and the Empire was dealt a crippling blow. One year later, the New Republic was formed.",
+      "Throughout the succeeding decades, Skywalker helped keep peace throughout the galaxy as the New Republic slowly defeated [remnants of the Empire→Imperial Remnant]. When Palpatine returned in the form of several [clone→Cloning/Legends] bodies, Skywalker in an attempt to bring the [Dark Empire→Dark Empire] from winning, temporarily fell to the [dark side→Dark side of the Force/Legends] and became the reborn [Emperor's→Emperor/Legends] [acolyte→Dark side adept/Legends], known as Lord Skywalker. He was later redeemed with the help of his friends, and continued with his goal of reviving the Jedi Order. In [11 ABY→11 ABY/Legends], he founded the New Jedi Order, and began teaching Force-sensitives about the ways of [the Force→The Force/Legends] at the [Jedi Praxeum→Jedi Praxeum], fulfilling his destiny as the first of the new Jedi. In the midst of this rebirth came numerous challenges for Skywalker and his [apprentices→Padawan/Legends], including the [Black Fleet Crisis→Black Fleet Crisis], the [Almanian Uprising→Almanian Uprising], and the lure of [Waru→Waru], but Skywalker, aided by fellow Jedi and his friends, was able to overcome each trial. Meanwhile, after a long series of failed relationships, Luke [married→Wedding of Luke Skywalker and Mara Jade] fellow Jedi and former [Emperor's Hand→Emperor's Hand/Legends] [Mara Jade→Mara Jade Skywalker] in [19 ABY→19 ABY/Legends].",
+      "Several years after the conclusion of the Galactic Civil War, Skywalker found himself, yet again, on the front lines. Skywalker served as the leader of the New Jedi Order, during the [Yuuzhan Vong War→Yuuzhan Vong War], an invasion by the [extra-galactic→Extragalactic/Legends] [Yuuzhan Vong→Yuuzhan Vong] [species→Species/Legends]. During the war, Skywalker's wife gave birth to a son, who they named [Ben→Ben Skywalker], in memory of his first mentor of [the Force→The Force/Legends]: [Ben Kenobi→Obi-Wan Kenobi/Legends]. Skywalker endured countless battles as the New Republic was first pushed back, including the [fall→Battle of Coruscant (Yuuzhan Vong War)] of his home on [Coruscant→Coruscant/Legends]. However, the newly reformed government, labeling itself the [Galactic Federation of Free Alliances→Galactic Federation of Free Alliances], regrouped and helped push back the [alien→Alien/Legends] invaders. In the final stages of the war, Skywalker sought out the living [world→Planet/Legends] of [Zonama Sekot→Zonama Sekot/Legends], convincing the planet to join the Galactic Alliance in a final [battle→Battle of Yuuzhan'tar] on Coruscant, in which Skywalker personally led the assault on [Supreme Overlord→Supreme Overlord] [Shimrra Jamaane→Shimrra Jamaane]'s [citadel→Shimrra's Citadel] and slew Jamaane. Combined with the fact that his nephew, [Jacen Solo→Darth Caedus], would soon after kill Jamaane's puppet master, [Onimi→Onimi], the Yuuzhan Vong were defeated and the war was ended.",
+      "After the Yuuzhan Vong War, Skywalker maintained a prominent role among the Jedi into the [Dark Nest Crisis→Dark Nest Crisis], which saw him call a [Jedi convocation→Conclave on Ossus] to deal with strife within the Order. Faced with disunity, Skywalker assumed the title of [Grand Master→Grand Master/Legends] and direct control over the reestablished [Jedi Council→Jedi High Council (New Jedi Order)]. Despite the successful handling of the Dark Nest Crisis and the [Swarm War→Swarm War], lasting peace was yet to be achieved, as the [Second Galactic Civil War→Second Galactic Civil War] broke out a few [years→Standard year/Legends] later. Skywalker was plunged into a dark [time→Time/Legends] as his nephew, Jacen Solo, became a [Sith apprentice→Sith apprentice/Legends] under his old adversary [Lumiya→Lumiya] and [slew→Skirmish on Kavan] his beloved Mara. His grief was further compounded by his son's treading near the dark side as well, but he continued to lead the Jedi, forming the [Jedi Coalition→Jedi Coalition] to oppose the rule of the Alliance by his nephew, now a [Sith Lord→Sith Lord/Legends] by the name of Darth Caedus. With Skywalker's aid, Caedus was [killed→Battle of Uroro Station] by his twin sister [Jaina→Jaina Solo Fel], ending the war and restoring peace to the galaxy.",
+      "In the aftermath of the war, [Natasi Daala→Natasi Daala] ascended to the position of [Chief of State→Chief of State (Galactic Alliance)] and fostered a wide spread [anti-Jedi sentiment→Anti-Jedi sentiment/Legends] resulting in tensions between the Jedi Order and her government. Daala ultimately had Skywalker [arrested→The Galactic Federation of Free Alliances versus Luke Skywalker] for dereliction of duty, and in exchange for his freedom, he was [exiled→Exile (punishment)/Legends] and forbidden from involving himself in the affairs of the Jedi Order. Skywalker and his son embarked on an odyssey across the galaxy in order to discover the causes of Jacen Solo's fall to the dark side. During their journey, the Skywalkers encountered the [Lost Tribe of Sith→Lost Tribe of Sith], as well as a malevolent dark side entity known as [Abeloth→Abeloth]. With the help of his son and the rest of the Jedi, Skywalker returned to his position as Grand Master. Skywalker and his allies then repelled the Sith threat, and with the help of an [unlikely Sith ally→Darth Krayt], defeated Abeloth, preventing another disaster that could endanger the galaxy; during that time, Skywalker had a vision of the future in which his grand-niece, [Allana Solo→Allana Djo Solo], sat on the [Throne of Balance→Throne of Balance] surrounded by Jedi.",
+      "Wishing to ensure Abeloth's destruction, Grand Master Skywalker launched a [hunt for Mortis→Hunt for Mortis], in the process discovering a [Force monolith→Unidentified monolith] and defeating the [Qreph→Craitheus Qreph] [brothers→Marvid Qreph] before finally retiring in [45 ABY→45 ABY], deciding that the Jedi Order was in good hands with its new generation. He eventually passed away and became [one→Force ghost/Legends] with the Force."
+    ]
+  },
+  "luke-skywalker.wikitext": {
+    "era": "canon",
+    "kind": "Character",
+    "fields": {
+      "homeworld": [
+        "[Tatooine→Tatooine]"
+      ],
+      "birth": [
+        "(2 [days→Standard day] after [Empire Day→Empire Day]), [19 BBY→19 BBY], [Polis Massa→Polis Massa]"
+      ],
+      "death": [
+        "[34 ABY→34 ABY], [Ahch-To→Ahch-To]"
+      ],
+      "species": [
+        "[Human→Human]"
+      ],
+      "gender": [
+        "[Male→Gender]"
+      ],
+      "pronouns": [
+        "He/him"
+      ],
+      "height": [
+        "1.72 [meters→Meter] (5 [ft→Foot], 8 in)"
+      ],
+      "mass": [
+        "73 [kilograms→Kilogram]"
+      ],
+      "hair": [
+        "[Blond→Color] ([1 BBY→1 BBY])",
+        "Ash-brown ([21 ABY→21 ABY])",
+        "Gray and white ([34 ABY→34 ABY])"
+      ],
+      "eyes": [
+        "Blue",
+        "Red (under [Abersyn symbiote→Abersyn symbiote] influence)",
+        "Purple (briefly; under [Scourge infection→Scourge crisis])"
+      ],
+      "skin": [
+        "Light"
+      ],
+      "cyber": [
+        "[Prosthetic→Cybernetics] right [hand→Limb]"
+      ],
+      "families": [
+        "[Skywalker family→Skywalker family]",
+        "[Lars family→Lars family]"
+      ],
+      "parents": [
+        "[Anakin Skywalker→Anakin Skywalker]",
+        "[Padmé Amidala Naberrie→Padmé Amidala Naberrie]"
+      ],
+      "siblings": [
+        "[Leia Skywalker Organa Solo→Leia Skywalker Organa Solo] ([twin→Twin] sister)"
+      ],
+      "affiliation": [
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[Red Squadron→Red Squadron (Rebel Alliance)]",
+        "[Heroes of Yavin→Heroes of Yavin]",
+        "[Rogue Squadron→Rogue Squadron]",
+        "[Endor strike team→Endor strike team]",
+        "[Jedi Order→Jedi Order]",
+        "[Queen of Ktath'atn's hive→Queen of Ktath'atn's hive] (briefly)",
+        "[Scourge→Scourge] (briefly; as a vessel)",
+        "[Bright Tree tribe→Bright Tree tribe] (honorary member)",
+        "[New Republic→New Republic]"
+      ],
+      "masters": [
+        "[Obi-Wan Kenobi→Obi-Wan Kenobi]",
+        "[Yoda→Yoda]"
+      ],
+      "apprentices": [
+        "Leia Organa",
+        "[Grogu→Din Grogu]",
+        "[Ben Solo→Ben Solo]",
+        "Several other students",
+        "[Hennix→Hennix]",
+        "[Tai→Tai]",
+        "[Voe→Voe]",
+        "[Rey→Rey Skywalker]"
+      ]
+    },
+    "lead": [
+      "Luke Skywalker, a [Force-sensitive→Force-sensitive] [human→Human] [male→Gender], was a legendary [Jedi Master→Jedi Master] who fought in the [Galactic Civil War→Galactic Civil War] during the [reign→Imperial Era] of the [Galactic Empire→Galactic Empire]. Along with his companions, [Princess→Princess] [Leia Organa→Leia Skywalker Organa Solo] and [General→General] [Han Solo→Han Solo], Skywalker served as a revolutionary on the side of the [Alliance to Restore the Republic→Alliance to Restore the Republic]—an organization committed to the downfall of the [Galactic→The galaxy] [Empire→Politics] and the restoration of [democracy→Democracy]. Following the war, Skywalker became a living legend, and was remembered as one of the greatest [Jedi→Jedi] in [galactic history→Timeline of galactic history].",
+      "The son of [Jedi Knight→Jedi Knight] [Anakin Skywalker→Anakin Skywalker] and [Senator→Senator] [Padmé Amidala→Padmé Amidala], Luke Skywalker was [born→Reproduction] along with his [twin→Twin] sister, Leia, in [19 BBY→19 BBY]. As a result of Amidala's [death→Death] and Anakin's fall to the [dark side of the Force→Dark side of the Force], the Skywalker [children→Youngling] were separated and sent into hiding, with Leia adopted by the [royal family→House of Organa] of [Alderaan→Alderaan] while Luke was raised by his [relatives→Lars family] on [Tatooine→Tatooine]. Longing for a life of adventure and purpose, Skywalker joined the Rebellion and began learning the ways of [the Force→The Force] under the guidance of Jedi Master [Obi-Wan Kenobi→Obi-Wan Kenobi], whose first [apprentice→Padawan] was Luke's own [father→Parent]. During the [Battle of Yavin→Battle of Yavin], Skywalker saved the Alliance from annihilation by destroying the Empire's [planet→Planet]-killing [superweapon→Superweapon], the [Death Star→DS-1 Orbital Battle Station]. He continued his [training→Jedi training] in the [years→Standard year] that followed, determined to become a Jedi Knight like his father before him, and found a new mentor in [Grand Master→Grand Master] [Yoda→Yoda]. After his master's death, Skywalker participated in the [Battle of Endor→Battle of Endor] in [4 ABY→4 ABY], during which he confronted the [Sith Lord→Sith Lord] [Darth→Darth] Vader, whom he [learned→Duel on Cloud City] was in fact his father, Anakin Skywalker. With Luke's help, Anakin returned to the [light side of the Force→Light side of the Force] by killing the [Emperor→Galactic Emperor] and [Dark Lord of the Sith→Dark Lord of the Sith] [Darth Sidious→Darth Sidious] at the cost of his own life, fulfilling his destiny as the [Chosen One→Chosen One]. Following the Battle of Endor, Skywalker trained his sister as a first Jedi apprentice on [Ajan Kloss→Ajan Kloss], but Leia ended her training after the birth of her son and seeing his death as a result of finishing her knighthood.",
+      "With the [Sith→Sith]'s destruction and the subsequent [capitulation→Galactic Concordance] of the Empire, Skywalker became a living legend as he traveled across the [galaxy→Galaxy] during [New Republic→New Republic] [Era→New Republic Era], searching for knowledge that would aid him in rebuilding the [Jedi Order→Jedi Order], and serving the New Republic and its allies where he could. As the war raged for a year after Endor, Skywalker was heavily involved with the New Republic's efforts against self-declared [Grand Moff→Grand Moff] [Ubrik Adelhard→Ubrik Adelhard] in the [Anoat sector→Anoat sector], before defeating the madman at the [Battle of Jakku→Battle of Jakku]. Around [6 ABY→6 ABY], Skywalker committed himself to the liberation of the [Nagai→Nagai] and their homeworld [Nagi→Nagi] from beneath the heel of their enslavers. Later, in [9 ABY→9 ABY], Skywalker [rescued→Second rescue of Grogu] [Grogu→Din Grogu], a [Mandalorian→Mandalorian] Force-sensitive child that belonged to the same [species→Yoda's species] as Yoda, from [Moff→Moff] [Gideon→Gideon]'s [forces→Gideon's Imperial remnant], and after temporarily taking the child as an apprentice on [Ossus→Ossus]. During the training, Skywalker was visited by Anakin's former padawan, [Ahsoka Tano→Ahsoka Tano], where they discussed Grogu and how Skywalker sensed that the child's heart was not in relearning the Jedi path. After Grogu's caregiver, [Din Djarin→Din Djarin], visited the planet bearing a [gift→Grogu's chainmail shirt] for Grogu, Skywalker offered him with a choice, accept the gift and return to the Mandalorian, or take [Yoda's lightsaber→Yoda's second lightsaber] and continue with his Jedi training. Grogu chose to return to Djarin, while Skywalker bid Tano farewell as she departed for ways unknown.",
+      "By [15 ABY→15 ABY], Skywalker had taken on [Ben Solo→Ben Solo], his sister's son who inherited the [family bloodline→Skywalker family] in the Force and had the potential for limitless power, as an apprentice. While both [traveled→Mission to Elphrona] to [Elphrona→Elphrona] with the [explorer→Scout] [Lor San Tekka→Lor San Tekka] to study lost Jedi lore, Solo began to be groomed by [Snoke→Snoke], a [humanoid→Humanoid] being powerful in the Force. Upon the planet, the trio first encountered the [Knights of Ren→Knights of Ren]. In [21 ABY→21 ABY], Skywalker started feeling an increasing darkness in the Force, having dark visions that frequently came to him in meditation, and undertook a [quest to find→Quest for Exegol] the hidden world of [Exegol→Exegol]. Skywalker journeyed to [Tython→Tython], where he saw a vision of Exegol and faced nine wraiths when the Force ghost of Anakin Skywalker appeared next to him. Following this, Skywalker was able to defeat [Kiza→Kiza] and the spirit of [Exim Panshard→Exim Panshard] but was ultimately unable to locate Exegol after failing to [track down→Mission to Pasaana] an [assassin→Assassin] called [Ochi→Ochi].",
+      "In [28 ABY→28 ABY], sensing the extent of Snoke's corruption in Solo and glimpsing a dark future, Skywalker momentarily contemplated killing his nephew to prevent it, yet immediately reconsidered upon igniting his lightsaber. The rash action had devastating effect, though, completing Solo's fall to the dark side. The [destruction→Destruction of the Jedi Temple] of his [temple→Jedi Temple of Luke Skywalker] and the deaths of all of his students convinced a haunted and regretful Skywalker that the [time→Time] had come for the Jedi to end. Skywalker therefore sought [exile→Exile (punishment)] on the [distant→Unknown Regions] world of [Ahch-To→Ahch-To], having elected to live out his remaining [days→Standard day] as a [hermit→Hermit] despite the galaxy's pleas for help during the [rise→Cold War] of the [First Order→First Order]. His solitude was interrupted in [34 ABY→34 ABY], shortly after the [fall→Hosnian Cataclysm] of the New Republic, resulting in a chain of events that led Skywalker to play [one last, momentous role→Battle of Crait] in the conflict between light and darkness. Although he [passed away into the Force→Force spirit], his legend would spread throughout the galaxy, rekindling a spark of hope in the enemies of the First Order. Before his death, Skywalker declared that the Jedi Order would not die with him, having trained a final apprentice: the [Jakku→Jakku] [scavenger→Scavenger] known as [Rey→Rey Skywalker].",
+      "A [year later→35 ABY], Skywalker's spirit communed with Rey during the final days of the [war→First Order-Resistance War]. The Jedi apprentice had exiled herself to Ahch-To, following in Skywalker's example. However, he urged Rey to [confront→Battle of Exegol] her [grandfather→Palpatine family], the [resurrected→Cloning] Darth Sidious. Believing he had been wrong, Skywalker told Rey that a Jedi's destiny was to confront fear. Following the Emperor's destruction, the spirits of Skywalker and his sister watched over Rey as she buried their lightsabers in Skywalker's [childhood home→Lars homestead] on Tatooine and adopted the Skywalker name as her own, honoring their legacy and recognizing herself as a member of her chosen family."
+    ]
+  },
+  "millennium-falcon.wikitext": {
+    "era": "canon",
+    "kind": "IndividualShip",
+    "fields": {
+      "manufacturer": [
+        "[Corellian Engineering Corporation→Corellian Engineering Corporation]"
+      ],
+      "line": [
+        "[YT-series→YT-series]"
+      ],
+      "model": [
+        "[YT-1300 light freighter→YT-1300 light freighter] (modified)",
+        "Modified [YT-1300f light freighter→YT-1300 light freighter] (model configuration)"
+      ],
+      "modifier": [
+        "A [technician→Unidentified technician (Stellar Envoy)]",
+        "[Lando Calrissian→Landonis Balthazar Calrissian]",
+        "[Han Solo→Han Solo]",
+        "[Chewbacca→Chewbacca]",
+        "[Gannis Ducain→Gannis Ducain]",
+        "[Vanver→Vanver Irving] and [Toursant Irving→Toursant Irving]",
+        "[Unkar Plutt→Unkar Plutt]",
+        "[Rey→Rey Skywalker]",
+        "[Rose Tico→Rose Tico]",
+        "[Klaus \"Doc\" Vandagante→Klaus Vandangante]"
+      ],
+      "length": [
+        "34.52 [meters→Meter] (113.25 [feet→Foot]) (by 34 [ABY→'ABY-BBY' dating system])"
+      ],
+      "height": [
+        "7.8 meters (26 ft)"
+      ],
+      "mglt": [
+        "75 [MGLT→Megalight per hour]"
+      ],
+      "max speed": [
+        "1,200 [kph→Kilometer per hour] (under Calrissian)",
+        "1,050 kph (later)"
+      ],
+      "engine": [
+        "[Girodyne→Girodyne] [SRB42→SRB42 sublight engine] [sublight engines→Sublight engine] (2) (heavily modified)",
+        "Landing jets"
+      ],
+      "hyperdrive": [
+        "Class 1.0 (under Calrissian)",
+        "Class 0.5 (later)",
+        "Class 10 (backup)"
+      ],
+      "hdsystem": [
+        "[Avatar-10→Avatar-10] [hyperdrive→Hyperdrive] (under Calrissian)",
+        "[Isu-Sim→Isu-Sim] [SSP05 hyperdrive→SSP05 hyperdrive generator] (heavily modified)",
+        "[401 series hyperdrive→401 series hyperdrive] (later)",
+        "Backup hyperdrive"
+      ],
+      "power": [
+        "[Quadex→Quadex] [power core→Quadex power core]",
+        "[InCom→Incom Corporation] [N2I-4 power converter→N2I-4 power converter/Canon]",
+        "[Koensayr→Koensayr Manufacturing] [TLB power converter→TLB power converter]",
+        "CEC emergency [power converter→Power converter]",
+        "[Cryogenic reserve power cells→Cryogenic reserve power cell/Canon]"
+      ],
+      "shield gen": [
+        "[Torplex→Torplex] [deflector shield projector→Deflector shield generator]",
+        "[Nordoxicon Unlimited→Nordoxicon Unlimited] [Anti-concussion field generator→Anti-concussion field generator]",
+        "[Novaldex→Novaldex] [stasis-type shield generator→Stasis-type shield generator]",
+        "[Kuat Drive Yards→Kuat Drive Yards] & [Nordoxicon-38 deflector shield projector→Nordoxicon-38 deflector shield projector]"
+      ],
+      "hull": [
+        "[Torplex→Torplex] & [Novaldex→Novaldex] [Durasteel→Durasteel] shell",
+        "[Duralloy→Duralloy] and durasteel plating",
+        "Military-grade armor"
+      ],
+      "sensor": [
+        "[Fabritech→Fabritech] [ANq-51 sensor array computer→ANq-51 sensor array computer]",
+        "Fabritech [ANy-20 active sensor transceiver→ANy-20 active sensor transceiver]",
+        "[Siep-Irol→Siep-Irol] [passive sensor antenna→Passive sensor antenna]",
+        "[Sienar Fleet Systems→Sienar Fleet Systems] [pulse generator→Pulse generator]"
+      ],
+      "navigation": [
+        "[Microaxial→Microaxial] [Rubicon navicomputer→Rubicon navicomputer] with [HyD modular navicomputer→HyD modular navicomputer] backup (modified)"
+      ],
+      "maincomp": [
+        "[Hanx-Wargel→Hanx-Wargel] [SuperFlow IV→SuperFlow IV] computer (modified with 3 droid brains)",
+        "V-5 transport droid brain",
+        "Corporate espionage slicer droid brain",
+        "[L3-37→L3-37]'s droid brain"
+      ],
+      "countermeasures": [
+        "[Carbanti→Carbanti] [29L electromagnetic countermeasures package→29L electromagnetic countermeasures package] with [signal-augmented sensor jammer→Signal-augmented sensor jammer]"
+      ],
+      "armament": [
+        "[Arakyd→Arakyd Industries] [Tomral RM-76 heavy laser cannons→Tomral RM-76 heavy laser cannon] (2)",
+        "CEC [AG-2G quad laser cannons→AG-2G quad laser cannon] (2)",
+        "Arakyd [ST2 concussion missile tubes→ST2 concussion missile tube] (2) (carrying 8 missiles)",
+        "[BlasTech→BlasTech Industries] [Ax-108 \"Ground Buzzer\" blaster cannon→Ax-108 \"Ground Buzzer\" blaster cannon] (1)",
+        "[Ion cannon→Ion cannon]",
+        "[Phylon Transport→Phylon Transport] [C5 tractor beam emitters→C5 tractor beam emitter] (2)"
+      ],
+      "complement": [
+        "[YT Dart→YT Dart] (under Lando)"
+      ],
+      "escapepods": [
+        "[Model CEC Class-1s→CEC Class-1 escape pod] (5)"
+      ],
+      "crew": [
+        "Pilot (1)",
+        "Co-pilot (1)",
+        "Gunners (2)"
+      ],
+      "skeleton": [
+        "1"
+      ],
+      "passengers": [
+        "6"
+      ],
+      "capacity": [
+        "100 [metric tons→Metric ton]"
+      ],
+      "cargohandling": [
+        "Freight elevator"
+      ],
+      "consumables": [
+        "2 [months→Standard month]' supply"
+      ],
+      "lifesupport": [
+        "[Equipped→Life support]"
+      ],
+      "communications": [
+        "Upgraded [Chedak→Chedak] subspace radio",
+        "Chedak [Frequency Agile subspace transceiver→Frequency Agile subspace transceiver]"
+      ],
+      "othersystems": [
+        "[Gelieg→Gelieg] [20m-cp Strobe/C-Beam Lamps→20m-cp Strobe/C-Beam Lamp]",
+        "[Dejarik→Dejarik] table",
+        "[Autopilot→Autopilot]",
+        "[Flotation pontoons→Flotation pontoon]",
+        "[Athakam II Med Unit→Athakam II Med Unit]",
+        "[Thermal regulators→Thermal regulator]",
+        "[KapriCorp→KapriCorp] [Acceleration compensator→Acceleration compensator]",
+        "[Alluvial dampers→Alluvial damper]"
+      ],
+      "role": [
+        "[Freighter→Freighter]",
+        "[Smuggling→Smuggler] ship"
+      ],
+      "commission": [
+        "c. [60 BBY→60 BBY]"
+      ],
+      "affiliation": [
+        "[Corell Industries Limited→Corell Industries Limited]",
+        "[Republic Group→Republic Group]",
+        "[Crimson Dawn→Crimson Dawn]",
+        "[Jabba Desilijic Tiure's criminal empire→Jabba's criminal empire]",
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[New Republic→New Republic]",
+        "[Resistance→Resistance]",
+        "[Ohnaka Transport Solutions→Ohnaka Transport Solutions]"
+      ],
+      "navy": [
+        "[Rebel Alliance Navy→Rebel Alliance Navy]",
+        "[New Republic Defense Fleet→New Republic Defense Fleet]",
+        "[Resistance navy→Resistance navy]"
+      ],
+      "fleet": [
+        "[Citizens' Fleet→Citizens' Fleet]"
+      ],
+      "owners": [
+        "Lando Calrissian",
+        "Han Solo",
+        "Gannis Ducain",
+        "Vanver and Toursant [Irving→Irving Boys]",
+        "Unkar Plutt",
+        "Chewbacca",
+        "Rey"
+      ],
+      "captains": [
+        "Lando Calrissian",
+        "Han Solo",
+        "Chewbacca",
+        "Rey",
+        "[Poe Dameron→Poe Dameron]"
+      ],
+      "registry": [
+        "YT 492727ZED"
+      ],
+      "aliases": [
+        "Broken Bell",
+        "Close Shave",
+        "Corell's Pride",
+        "Fickle Flyer",
+        "Foul Matter",
+        "Graphite Skipper",
+        "Jin-Den Smoke",
+        "Longshot",
+        "Lost and Found",
+        "Meetyl's Misery",
+        "Star Princess",
+        "Stellar Envoy",
+        "Sunfighter Franchise",
+        "Sweet Surprise",
+        "Wayward Son",
+        "Victory Ring"
+      ]
+    },
+    "lead": [
+      "The Millennium Falcon, originally designated YT 492727ZED and formerly known as the Stellar Envoy, and registered or known under various aliases and pseudonyms including Broken Bell, Corell's Pride, Close Shave, Fickle Flyer, Foul Matter, Graphite Skipper, Jin-Den Smoke, Longshot, Lost and Found, Star Princess, Sunfighter Franchise, Sweet Suprise, Meetyl's Misery, Wayward Son, and Victory Ring, was a [Corellian→Corellian] [YT-1300 light freighter→YT-1300 light freighter] built around [60 BBY→60 BBY]. Earning a legendary status under their ownership, the ship was most famously used by the [smugglers→Smuggler] [Han Solo→Han Solo] and [Chewbacca→Chewbacca] before, during, and following the [Galactic Civil War→Galactic Civil War].",
+      "During the Falcon time in the possession of the smuggler [Lando Calrissian→Landonis Balthazar Calrissian], it accumulated numerous modifications in the name of convenience and luxury, including painted exterior paneling and a large [escape pod→Escape pod]. However, during Han Solo's famous record-breaking [Kessel Run→Kessel Run], in which he piloted the freighter for the first time, many of these additions were destroyed or lost, leaving the ship battered by the time Solo won it from Calrissian shortly afterwards in a game of [sabacc→Sabacc]. Its aged appearance still belied numerous advanced modifications to boost the ship's speed, weapons, and [shields→Deflector shield], including a [hyperdrive→Hyperdrive] engine among the fastest in [the entire galaxy→The galaxy], enabling it to outrun [Imperial Star Destroyers→Imperial-class Star Destroyer]. It also included sensor-proof smuggling compartments, which were used during the [rescue→Rescue of Princess Leia] of [Princess→Princess] [Leia Organa→Leia Skywalker Organa Solo] in [1 BBY→1 BBY] to evade [Imperial→Galactic Empire] [stormtroopers→Stormtrooper]. Afterwards, the Millennium Falcon saw further action when Solo chose to join the [Rebel Alliance→Alliance to Restore the Republic] during the [Battle of Yavin→Battle of Yavin], where it was able to sneak up and fire on [Darth Vader's→Anakin Skywalker] [TIE Advanced→Darth Vader's TIE Advanced], allowing [Luke Skywalker→Luke Skywalker] to fire the [proton torpedoes→Proton torpedo] from [his→Red Five (T-65B X-wing starfighter)] [T-65B→T-65B X-wing starfighter] [X-wing starfighter→X-wing starfighter] that destroyed the [Death Star→DS-1 Orbital Battle Station].",
+      "After Solo was [captured→Escape from Cloud City] on [Bespin→Bespin], Calrissian took command of the Falcon once more to search for him. In [4 ABY→4 ABY], following Solo's [rescue→Rescue of Han Solo], Calrissian flew the ship at the [Battle of Endor→Battle of Endor], where it entered the [DS-2 Death Star II Mobile Battle Station→DS-2 Death Star II Mobile Battle Station] and aided in its destruction from within. Over the next three decades, the ship fell out of Solo's hands and was stolen by a succession of criminals and thieves, ending up in the ownership of the trader [Unkar Plutt→Unkar Plutt] on [Jakku→Jakku], a remote world in the western half of the galaxy. The Falcon was eventually stolen by the [Force-sensitive→Force-sensitive] [scavenger→Scavenger] [Rey→Rey Skywalker], former [First Order stormtrooper→First Order stormtrooper] [Finn→Finn], and [Resistance→Resistance] [droid→Droid] [BB-8→BB-8] to escape the forces of the [First Order→First Order] in [34 ABY→34 ABY]. Shortly thereafter, it was reunited with Solo and Chewbacca.",
+      "Following Solo's [death→Death] soon after, the Millennium Falcon became a Resistance vessel piloted by its new owner, Rey, throughout much of the [First Order-Resistance War→First Order-Resistance War]. In [35 ABY→35 ABY], the ship was once again captained by Calrissian during the [Battle of Exegol→Battle of Exegol], which saw a decisive victory for the Resistance and [Jedi Order→Jedi Order], before being returned to Rey, who had been newly dubbed a [Skywalker→Skywalker family]."
+    ]
+  },
+  "revan.wikitext": {
+    "era": "canon",
+    "kind": "Character",
+    "fields": {
+      "affiliation": [
+        "[Sith→Sith]"
+      ]
+    },
+    "lead": [
+      "Revan was a [Sith Lord→Sith Lord] and the namesake of the [Sith Eternal→Sith Eternal] [army's→Sith Eternal army] [Revan Legion→Revan Legion]. Since the [history→Timeline of galactic history] of the [Sith→Sith] was kept hidden from [the galaxy→The galaxy], only [Sith cultists→Sith cultist] knew the significance of Revan's name. In [3 ABY→3 ABY], cultists searching the catacombs beneath the [Sith Citadel→Sith Citadel] on the [planet→Planet] [Exegol→Exegol] repeated Revan's name in something similar to a chant, along with the names of other Sith.",
+      "[Sith trooper→Sith trooper] [legions→Legion] were each numerically identified and additionally named after an ancient Sith Lord. The Revan Legion was activated in [35 ABY→35 ABY] along with the rest of the [Sith Eternal forces→Sith Eternal military] during the [war→First Order-Resistance War] between the [First Order→First Order] and the [Resistance→Resistance]."
+    ]
+  },
+  "star-wars-episode-iv-a-new-hope.wikitext": {
+    "era": "canon",
+    "kind": "Movie",
+    "fields": {
+      "title": [
+        "Star Wars: Episode IV",
+        "A New Hope"
+      ],
+      "director": [
+        "[George Lucas→George Lucas]"
+      ],
+      "producer": [
+        "[Gary Kurtz→Gary Kurtz]",
+        "[Rick McCallum→Rick McCallum] ([Special Edition→The Star Wars Trilogy Special Edition])",
+        "[George Lucas→George Lucas] (Executive producer)"
+      ],
+      "writer": [
+        "[George Lucas→George Lucas]"
+      ],
+      "starring": [
+        "[Mark Hamill→Mark Hamill]",
+        "[Harrison Ford→Harrison Ford]",
+        "[Carrie Fisher→Carrie Fisher]",
+        "[Peter Mayhew→Peter Mayhew]",
+        "[Anthony Daniels→Anthony Daniels]",
+        "[Kenny Baker→Kenny Baker]",
+        "[Peter Cushing→Peter Cushing]",
+        "[Alec Guinness→Alec Guinness]",
+        "[James Earl Jones→James Earl Jones]",
+        "[David Prowse→David Prowse]"
+      ],
+      "music": [
+        "[John Williams→John Williams]"
+      ],
+      "release date": [
+        "[May 25→May 25], [1977→1977] ([Original version→Original unaltered trilogy])",
+        "[January 31→January 31], [1997→1997] (Special Edition)"
+      ],
+      "runtime": [
+        "121 minutes (Original)",
+        "125 minutes (Special Edition, DVD, Blu-ray and Digital HD)"
+      ],
+      "budget": [
+        "$11,000,000"
+      ],
+      "language": [
+        "English"
+      ],
+      "canon_timeline": [
+        "[1 BBY→1 BBY]–[0 ABY→0 ABY]"
+      ],
+      "legends_timeline": [
+        "[0 BBY→0 BBY/Legends]–[0 ABY→0 ABY/Legends]"
+      ],
+      "series": [
+        "[Original trilogy→Original trilogy], [Star Wars saga→Star Wars saga]"
+      ],
+      "preceded by": [
+        "[Episode III Revenge of the Sith→Star Wars: Episode III Revenge of the Sith]"
+      ],
+      "followed by": [
+        "[Episode V The Empire Strikes Back→Star Wars: Episode V The Empire Strikes Back]"
+      ]
+    },
+    "lead": [
+      "Star Wars: Episode IV A New Hope, originally released as Star Wars, is a [1977→1977] space opera film written and directed by [George Lucas→George Lucas]. It is the first part of the [Star Wars→Star Wars] [original trilogy→Original trilogy] and the first Star Wars film released.",
+      "The film is set 19 [years→Standard year] after the [formation→Proclamation of the New Order] of the [Galactic Empire→Galactic Empire] and the events of [Revenge of the Sith→Star Wars: Episode III Revenge of the Sith]; construction has finished on the [Death Star→DS-1 Orbital Battle Station], a weapon capable of destroying a [planet→Planet]. After [Princess→Princess] [Leia Organa→Leia Skywalker Organa Solo], a leader of the [Rebel Alliance→Alliance to Restore the Republic], receives the weapon's plans in the hope of finding a weakness, she is kidnapped and taken to the Death Star. Meanwhile, a young [farmer→Moisture farmer] named [Luke Skywalker→Luke Skywalker] meets [Obi-Wan Kenobi→Obi-Wan Kenobi], who has lived in seclusion for years on the desert planet of [Tatooine→Tatooine]. When [Luke's home→Lars homestead] is burned and his [aunt→Beru Whitesun Lars] and [uncle→Owen Lars] killed, Obi-Wan begins Luke's [Jedi→Jedi] [training→Jedi training] as they—along with [Han Solo→Han Solo], [Chewbacca→Chewbacca], [C-3PO→C-3PO], and [R2-D2→R2-D2] attempt to rescue the princess from the Empire.",
+      "Inspired by films like the Flash Gordon serials and the samurai films of Akira Kurosawa, as well as such critical works as Joseph Campbell's The Hero with a Thousand Faces and Frank Herbert's Dune books, Lucas began work on Star Wars in 1974. Ground-breaking in its use of special effects, this is considered to be among the most successful—and most influential—films of all time. Produced with a budget of US$11,000,000 and released on [May 25→May 25], 1977, the film became one of the most successful of all time, earning $215 million in the United States and $337 million overseas during its original theatrical release, as well as winning several film awards, including 10 Academy Award nominations. It was re-released several times, sometimes with [significant changes→List of changes in Star Wars re-releases]; the most notable versions were the 1997 [Special Edition→The Star Wars Trilogy Special Edition] and the 2004 DVD, which were modified with CGI effects and recreated scenes. It was re-released in the Blu-ray format in [September→September] of [2011→2011] and 4K in [2020→2020]. A full remaster of the original 1977 version will be re-released in theaters on [February 19→February 19], [2027→2027]. The film was selected to be preserved by the Library of Congress as part of its National Film Registry in 1989, the program's first year in existence."
+    ]
+  },
+  "t-65b-x-wing-starfighter.wikitext": {
+    "era": "canon",
+    "kind": "StarshipClass",
+    "fields": {
+      "manufacturer": [
+        "[Incom Corporation→Incom Corporation]"
+      ],
+      "line": [
+        "[X-wing starfighter→X-wing starfighter]",
+        "[T-65 X-wing starfighter→T-65 X-wing starfighter]"
+      ],
+      "model": [
+        "T-65B space superiority fighter"
+      ],
+      "cost": [
+        "150,000 Imperial [credits→Galactic Credit Standard] (new)",
+        "65,000 (used)"
+      ],
+      "length": [
+        "12.5 [meters→Meter] (41 ft)"
+      ],
+      "height": [
+        "4.4 meters (14 ft 5 in)"
+      ],
+      "mass": [
+        "10 [metric tons→Metric ton]"
+      ],
+      "max accel": [
+        "3,700 G"
+      ],
+      "mglt": [
+        "100 [MGLT→Megalight per hour]"
+      ],
+      "max speed": [
+        "1,050 [kph→Kilometer per hour]"
+      ],
+      "engine": [
+        "Incom [4L4 fusial thrust engines→4L4 fusial thrust engine] (4) Alternate configuration:",
+        "Incom [4j.4 fusial thrust engines→4j.4 fusial thrust engine] (4)"
+      ],
+      "hyperdrive": [
+        "[Class 1→Hyperdrive]"
+      ],
+      "hdsystem": [
+        "[Koensayr→Koensayr Manufacturing] [GBk-585 hyperdrive motivators→GBk-585 hyperdrive motivator] (4)"
+      ],
+      "power": [
+        "[Novaldex→Novaldex] [04-Z cryogenic power generator→04-Z cryogenic power generator]"
+      ],
+      "shield gen": [
+        "[Chempat→Chempat] [\"Defender\" deflector shield projector→\"Defender\" deflector shield projector]",
+        "[Deflector shield generator→Deflector shield generator]"
+      ],
+      "hull": [
+        "[Titanium→Titanium] armor alloy"
+      ],
+      "sensor": [
+        "[Fabritech→Fabritech] [k-blakan mini sensor→K-blakan mini sensor]",
+        "[Carbanti→Carbanti] transceiver package:",
+        "Fabritech [ANs-5d \"lock track\" full-spectrum transceiver→ANs-5d \"lock track\" full-spectrum transceiver]",
+        "[Melihat→Melihat] [\"Multi Imager\" dedicated energy receptor→\"Multi Imager\" dedicated energy receptor]",
+        "[Tana Ire→Tana Ire] [Electro-photo receptor→Electro-photo receptor]",
+        "Alternate Configuration combines:",
+        "Fabritech [ANs-5d \"lock track\" full-spectrum transceiver→ANs-5d \"lock track\" full-spectrum transceiver] with [PA-9r long-range phased tachyon detection array→PA-9r long-range phased tachyon detection array] and [PG-7u short-range primary threat analysis grid→PG-7u short-range primary threat analysis grid]"
+      ],
+      "target": [
+        "Fabritech [ANq 3.6 tracking computer→ANq 3.6 sensor computer] with [IN-344-B \"Sightline\" holographic imaging system→IN-344-B \"Sightline\" holographic imaging system]"
+      ],
+      "navigation": [
+        "[Astromech droid→Astromech droid] (up to 10 sets of hyperspace coordinates)"
+      ],
+      "countermeasures": [
+        "[Bertriak→Bertriak] [\"Screamer\" sensor jammer→\"Screamer\" sensor jammer]"
+      ],
+      "armament": [
+        "[Taim & Bak→Taim & Bak] [KX9 laser cannons→KX9 laser cannon] (4)",
+        "[Krupx→Krupx Munitions] [MG7 proton torpedo launchers→MG7 proton torpedo launcher] (2)",
+        "[Proton torpedoes→Proton torpedo] (6)"
+      ],
+      "escapepods": [
+        "[Guidenhauser→Guidenhauser] [ejector seat→Ejector seat]"
+      ],
+      "crew": [
+        "[Pilot→Pilot] (1)",
+        "Astromech droid (1)"
+      ],
+      "consumables": [
+        "1 week"
+      ],
+      "lifesupport": [
+        "[Compact life-support system→Life support]"
+      ],
+      "communications": [
+        "Equipped"
+      ],
+      "othersystems": [
+        "[S-foils→S-foils]"
+      ],
+      "affiliation": [
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[Rebel Alliance Navy→Rebel Alliance Navy]",
+        "[Phoenix Squadron→Phoenix Squadron]",
+        "[Red Squadron→Red Squadron (Rebel Alliance)]",
+        "[Blue Squadron→Blue Squadron (Rebel Alliance)]",
+        "[Yellow Squadron→Yellow Squadron (Rebel Alliance)]",
+        "[Plasma Devils→Plasma Devils]",
+        "[Echo Squadron→Echo Squadron]",
+        "[Rogue Squadron→Rogue Squadron]",
+        "[Tatooine rebel cell→Tatooine rebel cell]",
+        "[Corona Squadron→Corona Squadron]",
+        "[Partisans→Partisans]",
+        "[Jedi Order→Jedi Order]",
+        "[New Republic→New Republic]",
+        "[New Republic Defense Fleet→New Republic Defense Fleet]",
+        "[Phantom Squadron→Phantom Squadron]",
+        "[Vanguard Squadron→Vanguard Squadron]",
+        "[Anvil Squadron→Anvil Squadron]",
+        "[Adelphi Rangers→Adelphi Rangers]",
+        "[Amaxine warriors→Amaxine warriors (New Republic Era)]",
+        "[Resistance→Resistance]",
+        "[Inferno Squad→Inferno Squad (Resistance)]"
+      ]
+    },
+    "lead": [
+      "The T-65B X-wing starfighter, also known as the T-65B space superiority fighter, or T-65B X-wing multi-role starfighter, was a single-seat craft manufactured by [Incom Corporation→Incom Corporation] and used most famously by the [Alliance to Restore the Republic→Alliance to Restore the Republic] against the [Galactic Empire→Galactic Empire]. Renowned for its speed and maneuverability during the [Galactic Civil War→Galactic Civil War], it became the backbone of the [Rebel Alliance Starfighter Corps→Rebel Alliance Starfighter Corps], being both harder hitting and tougher under fire than its main adversary, the mass-produced [TIE/ln space superiority starfighter→TIE/ln space superiority starfighter] of the [Imperial Navy→Imperial Navy].",
+      "[Years→Standard year] following the [destruction→Galactic Concordance] of the Galactic Empire and the [establishment→Declaration of a New Republic] of the [New Republic→New Republic], the T-65B was initially retained by the [New Republic Defense Fleet→New Republic Defense Fleet] before eventually being replaced by newer X-wing models, such as the [T-70 X-wing starfighter→T-70 X-wing starfighter], and the [T-85 X-wing→T-85 X-wing starfighter]."
+    ]
+  },
+  "tatooine.wikitext": {
+    "era": "canon",
+    "kind": "CelestialBody",
+    "fields": {
+      "region": [
+        "[Outer Rim Territories→Outer Rim Territories]",
+        "[Galactic Frontier→Galactic Frontier]",
+        "[Occlusion Zone→Occlusion Zone]",
+        "[Spice Triangle→Spice Triangle]",
+        "[The Slice→The Slice]"
+      ],
+      "sector": [
+        "[Arkanis sector→Arkanis sector]"
+      ],
+      "system": [
+        "[Tatoo system→Tatoo system]"
+      ],
+      "coordinates": [
+        "[R-16→Standard Galactic Grid]"
+      ],
+      "distance": [
+        "43,000 [light years→Light-year]"
+      ],
+      "suns": [
+        "2:",
+        "[Tatoo I→Tatoo I]",
+        "[Tatoo II→Tatoo II]"
+      ],
+      "position": [
+        "First from the suns"
+      ],
+      "moons": [
+        "3:",
+        "[Ghomrassen→Ghomrassen]",
+        "[Guermessa→Guermessa]",
+        "[Chenini→Chenini]"
+      ],
+      "routes": [
+        "[Mumble's Turnaround→Mumble's Turnaround]",
+        "[Old Corellian Run→Old Corellian Run/Canon]",
+        "[Triellus Trade Route→Triellus Trade Route]"
+      ],
+      "lengthday": [
+        "23 [hours→Standard hour]"
+      ],
+      "lengthyear": [
+        "304 [standard days→Standard day]"
+      ],
+      "class": [
+        "Terrestrial"
+      ],
+      "diameter": [
+        "10,465 [km→Kilometer]"
+      ],
+      "atmosphere": [
+        "[Breathable→Atmosphere]"
+      ],
+      "climate": [
+        "[Hot→Temperature] and arid"
+      ],
+      "terrain": [
+        "Canyons",
+        "[Desert→Desert]",
+        "[Mountains→Mountain]",
+        "Rocky bluffs"
+      ],
+      "water": [
+        "1%"
+      ],
+      "interest": [
+        "[Beggar's Canyon→Beggar's Canyon]",
+        "[Ben's Mesa→Ben's Mesa]",
+        "[Boba Fett's Palace→Boba Fett's Palace]",
+        "[Contented Krayt→Contented Krayt]",
+        "[Dune Sea→Dune Sea]",
+        "[Gardulla Besadii the Elder's fortress→Gardulla Besadii the Elder's fortress]",
+        "[Great Mesra Plateau→Great Mesra Plateau]",
+        "[Great Pit of Carkoon→Great Pit of Carkoon]",
+        "[Hubba Heights→Hubba Heights]",
+        "[Jundland Wastes→Jundland Wastes]",
+        "[Mochot Steep→Mochot Steep]",
+        "[Mos Pelgo territories→Mos Pelgo territories]",
+        "[Mospic High Range→Mospic High Range]",
+        "[Plibene Rock→Plibene Rock]",
+        "[Fort Tusken→Fort Tusken]",
+        "[Tosche Station→Tosche Station]",
+        "[Western Dune Sea→Western Dune Sea]",
+        "[Xelric Draw→Xelric Draw]"
+      ],
+      "flora": [
+        "[Black melon→Black melon]",
+        "[Funnel flower→Funnel flower]",
+        "[Lamta→Lamta]",
+        "[Pallie→Pallie]",
+        "[Poonten grass→Poonten grass]",
+        "[Polta bean→Polta bean]",
+        "[Tuber→Tuber]",
+        "[Wortwood tree→Wortwood tree]"
+      ],
+      "fauna": [
+        "[Bantha→Bantha]",
+        "[Bonegnawer→Bonegnawer]",
+        "[Cave sketto→Sketto]",
+        "[Dewback→Dewback]",
+        "[Eopie→Eopie]",
+        "[Etobi→Etobi]",
+        "[Horned gekko→Horned gekko]",
+        "[Jakrab→Jakrab]",
+        "[Jerba→Jerba]",
+        "[Krayt dragon→Krayt dragon]",
+        "[Massiff→Massiff]",
+        "[Profrogg→Profogg]",
+        "[Rock wart→Rock wart]",
+        "[Ronto→Ronto]",
+        "[Sand beast→Sand beast]",
+        "[Sand skitter→Sand skitter]",
+        "[Sarlacc→Sarlacc]",
+        "[Scurrier→Scurrier]",
+        "[Slug-beetle→Slug-beetle]",
+        "[Tatooine hyena→Tatooine hyena]",
+        "[Urusai→Urusai]",
+        "[Womp rat→Womp rat]",
+        "[Woodoo→Woodoo]",
+        "[Worrt→Worrt]",
+        "[Worrt rooster→Worrt rooster]"
+      ],
+      "species": [
+        "[Jawa→Jawa]",
+        "[Tusken Raider→Tusken Raider]"
+      ],
+      "language": [
+        "[Bocce→Bocce]",
+        "[Galactic Basic Standard→Galactic Basic Standard]",
+        "[Huttese→Huttese]",
+        "[Jawaese→Jawaese]",
+        "[Tusken→Tusken]"
+      ],
+      "population": [
+        "200,000 ([Republic Era→Republic Era]/[Imperial Era→Imperial Era])",
+        "1.1 million ([New Republic Era→New Republic Era])"
+      ],
+      "demonym": [
+        "Tatooinian"
+      ],
+      "cities": [
+        "[Anchorhead→Anchorhead]",
+        "[Bestine→Bestine (city)] (capital)",
+        "[Freetown→Freetown]",
+        "[Mos Algo→Mos Algo]",
+        "[Mos Doba→Mos Doba]",
+        "[Mos Eisley→Mos Eisley]",
+        "[Mos Elrey→Mos Elrey]",
+        "[Mos Entha→Mos Entha]",
+        "[Mos Espa→Mos Espa] (de facto capital)",
+        "[Mos Gofti→Mos Gofti]",
+        "[Mos Taike→Mos Taike]",
+        "[Mos Zabu→Mos Zabu]",
+        "[Wayfar→Wayfar]"
+      ],
+      "imports": [
+        "Consumables",
+        "Technology",
+        "[Water→Water]"
+      ],
+      "exports": [
+        "[Dilarium oil→Dilarium oil]",
+        "[Silicax oxalate→Silicax oxalate]",
+        "[Slaves→Slavery]"
+      ],
+      "affiliation": [
+        "[Hutt Clan→Hutt Clan]",
+        "[Jabba's criminal empire→Jabba's criminal empire]",
+        "[Galactic Empire→Galactic Empire]",
+        "[Alliance to Restore the Republic→Alliance to Restore the Republic]",
+        "[Fett gotra→Fett gotra]",
+        "[Pyke Syndicate→Pyke Syndicate]"
+      ]
+    },
+    "lead": [
+      "Tatooine was a sparsely inhabited circumbinary [desert→Desert] [planet→Planet] located in [the galaxy→The galaxy]'s [Outer Rim Territories→Outer Rim Territories]. Part of a [binary→Binary star system] [star system→Star system], the planet orbited two [scorching→Heat] [suns→Star], resulting in the world lacking the necessary surface [water→Water] to sustain large populations. As a result, many residents of the planet instead drew water from the [atmosphere→Atmosphere] via [moisture farms→Moisture farm]. The planet also had little surface vegetation. It was the [homeworld→Homeworld] to the native [Jawa→Jawa] and [Tusken Raider→Tusken Raider] [species→Species] and of [Anakin→Anakin Skywalker] and [Luke Skywalker→Luke Skywalker], who would go on to shape [galactic→Galaxy] history.",
+      "It saw a population explosion following the search for valuable [mining→Mining] deposits on the planet's [silicate→Silicon] surface. Finding the [ore→Ore] to have undesirable [metallurgical→Metal] properties, mining firms left the planet en masse, leaving behind valuable equipment, most notably large [sandcrawlers→Sandcrawler], which were later used by the Jawa population. The planet then became a haven for [smugglers→Smuggler] and criminal activity, and fell under the [influence→Jabba's criminal empire] of the [Hutt Clan→Hutt Clan] while scattered, isolated [settlements→City] of hard-working inhabitants endured.",
+      "Generally ignored by the [galaxy→Galaxy] at large, Tatooine gained the notice of the [Galactic Empire→Galactic Empire] during the [Galactic Civil War→Galactic Civil War] when an escape pod carrying [two→C-3PO] [droids→R2-D2] in possession of [top-secret information→Death Star plans] [landed→Secret mission to Tatooine] on the sandy Outer Rim world. The Empire went on to establish a heavier presence on the planet, forging a tenuous relationship with [Jabba Desilijic Tiure→Jabba Desilijic Tiure] of the Hutt Clan. [Open conflict→Operations on Tatooine] soon broke out between the Empire and a [Rebel Alliance→Alliance to Restore the Republic] [cell→Tatooine rebel cell] on Tatooine that culminated in a [battle→Battle for Tatooine] that left the Empire's hold on the world significantly weakened.",
+      "Following the [death→Rescue of Han Solo] of Jabba and the withdrawal of Imperial forces after the [Battle of Endor→Battle of Endor], an enormous power vacuum occurred on the world, with numerous crime syndicates like the [Red Key Raiders→Red Key Raiders] attempting to build legitimacy as mining companies. Eventually, former [bounty hunter→Bounty hunter] [Boba Fett→Boba Fett] [returned→Attack on Jabba's Palace (Boba Fett)] and [took over→Fett gotra] Jabba's former territory. Coming into conflict with both the Hutt Clan and the [Pyke Syndicate→Pyke Syndicate], the new [Daimyo→Daimyo] was pulled into a [gang war→War against the Pykes] that threatened the future of Tatooine. With help from the [Mandalorian→Mandalorian] [Din Djarin→Din Djarin], Fett rallied the denizens of the settlements [Mos Espa→Mos Espa] and [Freetown→Freetown] to push back against the invaders, ushering in a new era of respect between the people of the planet."
+    ]
+  },
+  "wookiee.wikitext": {
+    "era": "canon",
+    "kind": "Species",
+    "fields": {
+      "designation": [
+        "[Sentient→Sentience]"
+      ],
+      "subspecies": [
+        "[Silverbacks→Silverback]"
+      ],
+      "height": [
+        "2.23–2.54 [meters→Meter]"
+      ],
+      "mass": [
+        "100 [kg→Kilogram] ([female→Gender])",
+        "150 kg (male)"
+      ],
+      "haircolor": [
+        "[Brown→Color]",
+        "Black",
+        "Gray",
+        "White"
+      ],
+      "eyecolor": [
+        "Blue",
+        "Brown",
+        "Gray"
+      ],
+      "distinctions": [
+        "Shaggy [water→Water]-shedding coat of [hair→Hair]",
+        "Long lifespans"
+      ],
+      "lifespan": [
+        "Over 400 [standard years→Standard year]"
+      ],
+      "origin": [
+        "[Kashyyyk→Kashyyyk]"
+      ],
+      "habitat": [
+        "[Forest→Tree]"
+      ],
+      "diet": [
+        "[Omnivore→Diet]"
+      ],
+      "language": [
+        "[Shyriiwook→Shyriiwook]",
+        "[Thykarann→Thykarann]",
+        "[Xaczik→Xaczik]"
+      ]
+    },
+    "lead": [
+      "Wookiees, known in their own language of [Shyriiwook→Shyriiwook] as \"the People of the Trees,\" were a [species→Species] of tall, [hairy→Hair] [humanoids→Humanoid] that were native to the [planet→Planet] [Kashyyyk→Kashyyyk]. A notable member of this species was the warrior [Chewbacca→Chewbacca], [Han Solo→Han Solo]'s best friend and co-[pilot→Pilot], who played a vital role in the [Clone Wars→Clone Wars] during the [Battle of Kashyyyk→Battle of Kashyyyk], the [Galactic Civil War→Galactic Civil War] by aiding the [Rebel Alliance→Alliance to Restore the Republic] in their fight against the [Galactic Empire→Galactic Emperor], and the [war→First Order-Resistance War] against the [First Order→First Order]. They were quite strong, and were known to rip people's arms out of their sockets when provoked. Though being from a temperate planet known for its [swamps→Swamp] and [forests→Forest], Wookiees were perfectly comfortable on icy worlds like [Ilum→Ilum] and [Hoth→Hoth], not requiring any additional protective [clothing→Clothing], i.e. [gloves→Glove] or [boots→Boot]."
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{{Top}}
+{{MultipleIssues|image|updatecontent=[[The High Republic — The Blade 1]], [[The High Republic: Temptation of the Force]], [[Queen's Shadow]], [[Queen's Hope]], [[Part I]], [[Part VI]], [[Han Solo & Chewbacca 7]], [[Han Solo & Chewbacca 8]], [[Han Solo & Chewbacca 10]], [[Star Wars (2020) 37]], [[Star Wars (2020) 38]], [[Star Wars (2020) 39]], [[Star Wars (2020) 40]], [[Tales from the Rancor Pit]], [[Galactic Tales: Valnir and Laizhu]], [[Return of the Jedi – Jabba's Palace 1]], [[Return of the Jedi – Max Rebo 1]], [[Star Wars: Complete Locations (2016)|Star Wars: Complete Locations]], [[Star Wars Helmet Collection 11]], [[Star Wars Helmet Collection 17]], [[Chapter 5: The Gunslinger]], [[Chapter 9: The Marshal]], [[Chapter 1: Stranger in a Strange Land]], [[Chapter 2: The Tribes of Tatooine]], [[Chapter 3: The Streets of Mos Espa]], [[Chapter 4: The Gathering Storm]], [[Very Interesting, As an Astrogation Problem]], {{EncyclopediaCite|Tatooine}}, [[Star Wars: The High Republic: Chronicles of the Jedi]], [[Star Wars: The Rise and Fall of the Galactic Empire]], [[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]]}}
+{{CelestialBody
+|image=[[File:Tatooine_TPM.png]]
+|name=Tatooine
+|region=*[[Outer Rim Territories]]<ref name="DBTa">{{Databank|tatooine|Tatooine}}</ref>
+**[[Galactic Frontier]]<ref name="Chronicles">''[[Star Wars: The High Republic: Chronicles of the Jedi]]''</ref>
+***[[Occlusion Zone]]<ref name="Acolyte Visual Guide">''[[Star Wars: The Acolyte: The Visual Guide]]''</ref>
+**[[Spice Triangle]]<ref name="SWSG">''[[Star Wars: Smuggler's Guide]]''</ref>
+*[[The Slice]]<ref name="BMF 64">{{BuildFalconCite|64|Guide to the Galaxy}}</ref>
+|sector=[[Arkanis sector]]<ref name="Ultimate Star Wars">''[[Ultimate Star Wars]]''</ref>
+|system=[[Tatoo system]]<ref name="Ultimate Star Wars" />
+|coordinates=[[Standard Galactic Grid|R-16]]<ref name="TFABG">[[Star Wars: The Force Awakens Beginner Game|''Star Wars: The Force Awakens'' Beginner Game]]</ref>
+|xyz=
+|distance=43,000 [[Light-year|light years]]<ref name="AbEverything" />
+|suns=2:<ref name="AbEverything">''[[Star Wars: Absolutely Everything You Need to Know]]''</ref>
+*[[Tatoo I]]<ref name="AbEverything" />
+*[[Tatoo II]]<ref name="AbEverything" />
+|orbited=
+|position=First from the suns<ref name="FF">''[[Star Wars: Fascinating Facts]]''</ref>
+|moons=3:<ref name="AbEverything" />
+*[[Ghomrassen]]<ref name="AbEverything" />
+*[[Guermessa]]<ref name="AbEverything" />
+*[[Chenini]]<ref name="AbEverything" />
+|routes=*[[Mumble's Turnaround]]<ref name="SWSG" />
+*[[Old Corellian Run/Canon|Old Corellian Run]]<ref name="Corellian">{{YouTube|video=PRBdfJqGj_k|text=Star Wars: Galaxy's Edge Kyber Crystals - Series 2 - Rey Skywalker - Holocron & Wayfinder|channel=@NickTierce|name=Nick Tierce|date=2024-05-04}}</ref>
+*[[Triellus Trade Route]]<ref name="RotS">''[[Rise of the Separatists]]''</ref>
+|lengthday=23 [[Standard hour|hours]]<ref name="Galactic Explorer's Guide" />
+|lengthyear=304 [[standard day]]s<ref name="AbEverything" />
+|class=Terrestrial
+|diameter=10,465 [[Kilometer|km]]<ref name="AbEverything" />
+|atmosphere=[[Atmosphere|Breathable]]<ref name="ANH">{{Film|IV}}</ref>
+|climate=[[Temperature|Hot]] and arid<ref name="DBTa" />
+|gravity=
+|terrain=*Canyons<ref name="DBTa" />
+*[[Desert]]<ref name="ANH" />
+*[[Mountain]]s<ref name="Gonk">{{IDWAdventuresCite-2017|issue=8|story=Tales from Wild Space: Gonk!}}</ref>
+*Rocky bluffs<ref name="DBTa" />
+|water=1%<ref name="AbEverything" />
+|interest=
+*[[Beggar's Canyon]]<ref name="ANH" />
+*[[Ben's Mesa]]<ref name="CL">[[Star Wars: Complete Locations (2016)|''Star Wars: Complete Locations'']]</ref>
+*[[Boba Fett's Palace]]<ref name="ROTJ" />
+*[[Contented Krayt]]<ref name="Catalyst">''[[Catalyst: A Rogue One Novel]]''</ref>
+*[[Dune Sea]]<ref name="ROTJ">{{Film|VI}}</ref>
+*[[Gardulla Besadii the Elder's fortress]]<ref name="Legacy of Vader 2">[[Legacy of Vader 2|''Legacy of Vader'' 2]]</ref>
+*[[Great Mesra Plateau]]<ref name="Ultimate Star Wars" />
+*[[Great Pit of Carkoon]]<ref name="ROTJ" />
+*[[Hubba Heights]]<ref name="CL" />
+*[[Jundland Wastes]]<ref name="Ultimate Star Wars" />
+*[[Mochot Steep]]<ref name="Geektionary">''[[Star Wars: Geektionary: The Galaxy from A - Z]]''</ref>
+*[[Mos Pelgo territories]]<ref name="Chapter 6" />
+*[[Mospic High Range]]<ref name="CL" />
+*[[Plibene Rock]]<ref name="CL" />
+*[[Fort Tusken]]<ref name="HC 11">{{HelmetCollectionCite|11|Weapons & Uniforms}}</ref>
+*[[Tosche Station]]<ref name="Ultimate Star Wars" />
+*[[Western Dune Sea]]<ref name="AbEverything" />
+*[[Xelric Draw]]<ref name="Ultimate Star Wars" />
+|flora=*[[Black melon]]<ref name="Star Wars 7">[[Star Wars (2015) 7|''Star Wars'' (2015) 7]]</ref>
+*[[Funnel flower]]<ref name="Stories in the Sand">{{StoryCite|story=Stories in the Sand|book=From a Certain Point of View}}</ref>
+*[[Lamta]]<ref name="VE">''[[Star Wars: The Visual Encyclopedia]]''</ref>
+*[[Pallie]]<ref name="TPM">{{Film|I}}</ref>
+*[[Poonten grass]]<ref name="CL" />
+*[[Polta bean]]<ref name="CL" />
+*[[Tuber]]<ref name="AbEverything" />
+*[[Wortwood tree]]<ref name="Highlights">{{SW|url=news/the-book-of-boba-fett-chapter-2-highlights|text=The Best of ''The Book of Boba Fett'': 5 Highlights from "Chapter 2: The Tribes of Tatooine"}}</ref>
+|fauna=*[[Bantha]]<ref name="DBTa" />
+*[[Bonegnawer]]<ref name="Outlaws">''[[Star Wars Outlaws]]''</ref>
+*[[Sketto|Cave sketto]]<ref name="SW:Tcvd">''[[Star Wars: The Complete Visual Dictionary, New Edition]]''</ref>
+*[[Dewback]]<ref name="DBTa" />
+*[[Eopie]]<ref name="TPM" />
+*[[Etobi]]<ref name="TSWB">''[[The Star Wars Book]]''</ref>
+*[[Horned gekko]]<ref name="Tribes of Tatooine">{{BOBF|Chapter 2: The Tribes of Tatooine}}</ref>
+*[[Jakrab]]<ref name="Disney">''[[Disney Infinity 3.0]]''</ref>
+*[[Jerba]]<ref name="ANH" />
+*[[Krayt dragon]]<ref name="Ultimate Star Wars" />
+*[[Massiff]]<ref name="AOTC" />
+*[[Profogg|Profrogg]]<ref name="STWB">''[[Star Wars Battlefront]]''</ref>
+*[[Rock wart]]<ref name="AbEverything" />
+*[[Ronto]]<ref name="DBTa" />
+*[[Sand beast]]<ref name="Stranger">{{BOBF|Chapter 1: Stranger in a Strange Land}}</ref>
+*[[Sand skitter]]<ref name="ROTJ" />
+*[[Sarlacc]]<ref name="DBTa" />
+*[[Scurrier]]<ref name="ANH" />
+*[[Slug-beetle]]<ref name="Sphere">{{TCW|Sphere of Influence}}</ref>
+*[[Tatooine hyena]]<ref name="Star Wars 15">[[Star Wars (2015) 15|''Star Wars'' (2015) 15]]</ref>
+*[[Urusai]]<ref name="Bestiary">[[Star Wars Bestiary, Vol. 1: Creatures of the Galaxy]]</ref>
+*[[Womp rat]]<ref name="ANH" />
+*[[Woodoo]]<ref name="Escape" />
+*[[Worrt]]<ref name="AbEverything" />
+*[[Worrt rooster]]<ref name="BOBF Chapter 5">{{BOBF|Chapter 5: Return of the Mandalorian}}</ref>
+|otherlife=
+|species=*[[Jawa]]<ref name="AbEverything" />
+*[[Tusken Raider]]<ref name="AbEverything" />
+|otherspecies=
+|socialgroup=
+|language=*[[Bocce]]<ref name="AbEverything" />
+*[[Galactic Basic Standard]]<ref name="AbEverything" />
+*[[Huttese]]<ref name="AbEverything" />
+*[[Jawaese]]<ref name="AbEverything" />
+*[[Tusken]]<ref name="AbEverything" />
+|government=
+|population=*200,000 {{C|[[Republic Era]]/[[Imperial Era]]}}<ref name="Journey Through Space (2015)">[[Star Wars: Journey Through Space (2015)|''Star Wars: Journey Through Space'']]</ref>
+*1.1 million {{C|[[New Republic Era]]}}<ref name="Galactic Explorer's Guide">''[[Star Wars: The Galactic Explorer's Guide]]''</ref>
+|demonym=Tatooinian<ref name="Stories in the Sand">{{StoryCite|story=Stories in the Sand|book=From a Certain Point of View}}</ref>
+|cities=*[[Anchorhead]]<ref name="ANH" />
+*[[Bestine (city)|Bestine]] {{C|capital}}<ref name="CL" />
+*[[Freetown]]<ref name="CL" /><ref name="Life Debt">''[[Aftermath: Life Debt]]''</ref>
+*[[Mos Algo]]<ref name="Outlaws" />
+*[[Mos Doba]]<ref name="Commander">''[[Star Wars: Commander]]''</ref>
+*[[Mos Eisley]]<ref name="ANH" />
+*[[Mos Elrey]]<ref name="CL" />
+*[[Mos Entha]]<ref name="CL" />
+*[[Mos Espa]]<ref name="TPM" /> {{C|''de facto'' capital}}<ref name="Ultimate Star Wars" />
+*[[Mos Gofti]]<ref name="Old Hope">{{StoryCite|story=An Old Hope|book=Life Day Treasury}}</ref>
+*[[Mos Taike]]<ref name="CL" />
+*[[Mos Zabu]]<ref name="JTC-E3">{{JTC|3}}</ref>
+*[[Wayfar]]<ref name="Outlaws" />
+|imports=*Consumables<ref name="RotS" />
+*Technology<ref name="RotS" />
+*[[Water]]<ref name="RotS" />
+|exports=*[[Dilarium oil]]<ref name="Empire's End">''[[Aftermath: Empire's End]]''</ref>
+*[[Silicax oxalate]]<ref name="Empire's End" />
+*[[Slavery|Slaves]]<ref name="Empire's End" />
+|affiliation=*[[Hutt Clan]]<ref name="TPM" />
+**[[Jabba's criminal empire]]<ref name="TPM" />
+*[[Galactic Empire]]<ref name="ANH" />
+*[[Alliance to Restore the Republic]]<ref name="Commander" />
+*[[Fett gotra]]<ref name="Stranger" />
+*[[Pyke Syndicate]]<ref name="Tribes of Tatooine" />
+}}
+{{Quote|Well, if there's a bright center to the universe, you're on the planet that it's farthest from.|Luke Skywalker, to C-3PO|audio=BrightCenter.flac|<ref name="ANH" />}}
+'''Tatooine''' was a sparsely inhabited circumbinary [[desert]] [[planet]] located in [[the galaxy]]'s [[Outer Rim Territories]]. Part of a [[Binary star system|binary]] [[star system]], the planet orbited two [[Heat|scorching]] [[Star|suns]], resulting in the world lacking the necessary surface [[water]] to sustain large populations. As a result, many residents of the planet instead drew water from the [[atmosphere]] via [[moisture farm]]s. The planet also had little surface vegetation. It was the [[homeworld]] to the native [[Jawa]] and [[Tusken Raider]] [[species]] and of [[Anakin Skywalker|Anakin]] and [[Luke Skywalker]], who would go on to shape [[Galaxy|galactic]] history.
+
+It saw a population explosion following the search for valuable [[mining]] deposits on the planet's [[Silicon|silicate]] surface. Finding the [[ore]] to have undesirable [[metal]]lurgical properties, mining firms left the planet en masse, leaving behind valuable equipment, most notably large [[sandcrawler]]s, which were later used by the Jawa population. The planet then became a haven for [[smuggler]]s and criminal activity, and fell under the [[Jabba's criminal empire|influence]] of the [[Hutt Clan]] while scattered, isolated [[City|settlements]] of hard-working inhabitants endured.
+
+Generally ignored by the [[galaxy]] at large, Tatooine gained the notice of the [[Galactic Empire]] during the [[Galactic Civil War]] when an escape pod carrying [[C-3PO|two]] [[R2-D2|droids]] in possession of [[Death Star plans|top-secret information]] [[Secret mission to Tatooine|landed]] on the sandy Outer Rim world. The Empire went on to establish a heavier presence on the planet, forging a tenuous relationship with [[Jabba Desilijic Tiure]] of the Hutt Clan. [[Operations on Tatooine|Open conflict]] soon broke out between the Empire and a [[Alliance to Restore the Republic|Rebel Alliance]] [[Tatooine rebel cell|cell]] on Tatooine that culminated in a [[Battle for Tatooine|battle]] that left the Empire's hold on the world significantly weakened.
+
+Following the [[Rescue of Han Solo|death]] of Jabba and the withdrawal of Imperial forces after the [[Battle of Endor]], an enormous power vacuum occurred on the world, with numerous crime syndicates like the [[Red Key Raiders]] attempting to build legitimacy as mining companies. Eventually, former [[bounty hunter]] [[Boba Fett]] [[Attack on Jabba's Palace (Boba Fett)|returned]] and [[Fett gotra|took over]] Jabba's former territory. Coming into conflict with both the Hutt Clan and the [[Pyke Syndicate]], the new [[Daimyo]] was pulled into a [[War against the Pykes|gang war]] that threatened the future of Tatooine. With help from the [[Mandalorian]] [[Din Djarin]], Fett rallied the denizens of the settlements [[Mos Espa]] and [[Freetown]] to push back against the invaders, ushering in a new era of respect between the people of the planet.
+

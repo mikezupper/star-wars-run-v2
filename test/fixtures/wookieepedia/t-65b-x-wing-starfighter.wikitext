@@ -1,0 +1,96 @@
+{{Top|leg=T-65 X-wing starfighter}}
+{{Conflicting|''[[Star Wars: Ships of the Galaxy]]''|''[[Star Wars: Absolutely Everything You Need to Know]]''|''[[Rebel Starfighters Owners' Workshop Manual]]''}}
+{{Update|[[Star Wars: The Rebel Files]], [[Starships and Speeders]]}}
+{{StarshipClass
+|image=[[File:Xwing-SWB.png]]
+|name=T-65B X-wing starfighter
+|designer=
+|manufacturer=[[Incom Corporation]]<ref name="Ultimate Star Wars">''[[Ultimate Star Wars]]''</ref><ref name="Encyc">{{SWE|technology|xwing|X-wing starfighter}}</ref>
+|line=*[[X-wing starfighter]]<ref name="Ultimate Star Wars" />
+**[[T-65 X-wing starfighter]]<ref name="Ultimate Star Wars" />
+|model=T-65B space superiority fighter<ref name="RSOWM">''[[Rebel Starfighters Owners' Workshop Manual]]''</ref>
+|type=*[[Starfighter]]<ref name="Ultimate Star Wars" />
+**[[Snub-fighter]]<ref name="ANH">{{Film|IV}}</ref>
+|cost=*150,000 Imperial [[Galactic Credit Standard|credits]] {{C|new}}<ref name="IncrediBuilds X-wing">''[[Star Wars: X-Wing Deluxe Book and Model Set]]''</ref>
+*65,000 {{C|used}}<ref name="RSOWM" />
+|modifier=
+|sysmods=
+|length=12.5 [[meter]]s {{C|41 ft}}<ref name="RSOWM" />
+|width=11 meters {{C|36 feet 1 in}}<ref name="RSOWM" />
+|height=4.4 meters {{C|14 ft 5 in}}<ref name="RSOWM" />
+|mass=10 [[metric ton]]s<ref name="SYWtBaJ?">''[[The Empire Strikes Back: So You Want to Be a Jedi?]]''</ref>
+|max accel=3,700 G<ref name="IncrediBuilds X-wing" />
+|mglt=100 [[Megalight per hour|MGLT]]<ref name="Graphics">''[[Star Wars Super Graphic: A Visual Guide to a Galaxy Far, Far Away]]''</ref>
+|max speed=1,050 [[Kilometer per hour|kph]]<ref name="Ships of the Galaxy">''[[Star Wars: Ships of the Galaxy]]''</ref>
+|maneuverability=
+|engine=*Incom [[4L4 fusial thrust engine]]s (4)<ref name="SWCT">{{SWCT|set=Blueprints|cardname=X-wing Starfighter}}</ref>
+Alternate configuration:
+*Incom [[4j.4 fusial thrust engine]]s (4)<ref name="SWCT" />
+|hyperdrive=[[Hyperdrive|Class 1]]<ref name="Encyclopedia of Starfighters and Other Vehicles">''[[Star Wars Encyclopedia of Starfighters and Other Vehicles]]''</ref>
+|hdrange=
+|hdsystem=[[Koensayr Manufacturing|Koensayr]] [[GBk-585 hyperdrive motivator]]s (4)<ref name="IncrediBuilds X-wing" />
+|poweroutput=
+|power=[[Novaldex]] [[04-Z cryogenic power generator]]<ref name="SWCT" />
+|shield gen=*[[Chempat]] [["Defender" deflector shield projector]]<ref name="SWCT" />
+*[[Deflector shield generator]]<ref name="SWCT" />
+|hull=[[Titanium]] armor alloy<ref name="RSOWM" />
+|sensor=*[[Fabritech]] [[k-blakan mini sensor]]<ref name="RSOWM" />
+*[[Carbanti]] transceiver package:
+**Fabritech [[ANs-5d "lock track" full-spectrum transceiver]]<ref name="SWCT" />
+**[[Melihat]] [["Multi Imager" dedicated energy receptor]]<ref name="SWCT" />
+**[[Tana Ire]] [[Electro-photo receptor]]<ref name="SWCT" />
+*Alternate Configuration combines:
+**Fabritech [[ANs-5d "lock track" full-spectrum transceiver]] with [[PA-9r long-range phased tachyon detection array]] and [[PG-7u short-range primary threat analysis grid]]<ref name="SWCT" />
+|target=Fabritech [[ANq 3.6 sensor computer|ANq 3.6 tracking computer]] with [[IN-344-B "Sightline" holographic imaging system]]<ref name="RSOWM" />
+|navigation=[[Astromech droid]]<ref name="ESB">{{Film|V}}</ref> {{C|up to 10 sets of hyperspace coordinates}}<ref name="RSOWM" />
+|avionics=
+|maincomp=
+|countermeasures=[[Bertriak]] [["Screamer" sensor jammer]]<ref name="RSOWM" />
+|armament=*[[Taim & Bak]] [[KX9 laser cannon]]s (4)<ref name="SWCT" />
+*[[Krupx Munitions|Krupx]] [[MG7 proton torpedo launcher]]s (2)<ref name="SWCT" />
+**[[Proton torpedo]]es (6)<ref name="RSOWM" />
+|complement=
+|bays=
+|escapepods=[[Guidenhauser]] [[ejector seat]]<ref name="RSOWM" />
+|crew=*[[Pilot]] (1)<ref name="ANH" />
+*Astromech droid (1)<ref name="ANH" />
+|skeleton=
+|passengers=
+|capacity=
+|cargohandling=
+|consumables=1 week<ref name="Ships of the Galaxy" />
+|lifesupport=[[Life support|Compact life-support system]]<ref name="RSOWM" />
+|communications=Equipped<ref name="ANH" />
+|othersystems=[[S-foils]]<ref name="ANH" />
+|availability=
+|role=
+|firstuse=
+|retired=
+|affiliation=*[[Alliance to Restore the Republic]]<ref name="ANH" />
+**[[Rebel Alliance Navy]]<ref name="ANH" />
+**[[Phoenix Squadron]]<ref name="Rebel Assault">{{Rebels|Rebel Assault}}</ref>
+**[[Red Squadron (Rebel Alliance)|Red Squadron]]<ref name="ANH" />
+**[[Blue Squadron (Rebel Alliance)|Blue Squadron]]<ref name="Rogue One">''[[Rogue One: A Star Wars Story]]''</ref>
+**[[Yellow Squadron (Rebel Alliance)|Yellow Squadron]]<ref name="Vader Down 1">[[Vader Down 1|''Vader Down'' 1]]</ref>
+**[[Plasma Devils]]<ref name="Shadows and Secrets, Part VI">[[Darth Vader (2015) 12|''Darth Vader'' (2015) 12]]</ref>
+**[[Echo Squadron]]<ref name="Squadrons">''[[Star Wars: Squadrons]]''</ref>
+**[[Rogue Squadron]]<ref name="Star Wars 53">[[Star Wars (2015) 53|''Star Wars'' (2015) 53]]</ref>
+**[[Tatooine rebel cell]]<ref name="Commander" />
+**[[Corona Squadron]]<ref name="Lost Stars">''[[Lost Stars]]''</ref>
+*[[Partisans]]<ref name="Saw's Renegades">{{FFGXW|set=Saw's Renegades Expansion Pack}}</ref>
+*[[Jedi Order]]<ref name="ESB" />
+*[[New Republic]]<ref name="Battlefront">''[[Star Wars Battlefront]]'': Battle of Jakku DLC''</ref>
+**[[New Republic Defense Fleet]]<ref name="Battlefront" />
+**[[Phantom Squadron]]<ref name="Life Debt">''[[Aftermath: Life Debt]]''</ref>
+**[[Vanguard Squadron]]<ref name="Squadrons" />
+**[[Anvil Squadron]]<ref name="Squadrons" />
+**[[Adelphi Rangers]]<ref name="Chapter 10">{{TheMandalorian|Chapter 10: The Passenger}}</ref>
+*[[Amaxine warriors (New Republic Era)|Amaxine warriors]]<ref name="Bloodline">[[Bloodline (novel)|''Bloodline'']]</ref>
+*[[Resistance]]<ref name="Episode IX">{{Film|IX}}</ref>
+**[[Inferno Squad (Resistance)|Inferno Squad]]<ref name="Battlefront II">''[[Star Wars Battlefront II]]''</ref>
+}}
+{{Quote|People love the X-wing pilots because they think of them as the great fighters of the Rebellion. See? People haven't forgotten the war. It's just that it was all so very long ago.|[[Senator]] [[Varish Vicly]]|<ref name="Bloodline" />}}
+The '''T-65B X-wing starfighter''', also known as the '''T-65B space superiority fighter''', or '''T-65B X-wing multi-role starfighter''', was a single-seat craft manufactured by [[Incom Corporation]] and used most famously by the [[Alliance to Restore the Republic]] against the [[Galactic Empire]]. Renowned for its speed and maneuverability during the [[Galactic Civil War]], it became the backbone of the [[Rebel Alliance Starfighter Corps]], being both harder hitting and tougher under fire than its main adversary, the mass-produced [[TIE/ln space superiority starfighter]] of the [[Imperial Navy]].
+
+[[Standard year|Years]] following the [[Galactic Concordance|destruction]] of the Galactic Empire and the [[Declaration of a New Republic|establishment]] of the [[New Republic]], the T-65B was initially retained by the [[New Republic Defense Fleet]] before eventually being replaced by newer X-wing models, such as the [[T-70 X-wing starfighter]], and the [[T-85 X-wing starfighter|T-85 X-wing]].
+
