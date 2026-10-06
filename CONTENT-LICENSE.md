@@ -18,9 +18,6 @@ ingest:wookieepedia` writes), are licensed under the
 The test fixtures in `test/fixtures/wookieepedia/` are unmodified excerpts under the same
 license.
 
-**Other data:** the original records come from [swapi.info](https://swapi.info), which builds on
-the original SWAPI by Paul Hallett and Juriy Bura.
-
 **Images** from Wookieepedia are not covered by CC BY-SA (they are copyrighted material used
 there as fair use), so this site doesn't use them.
 

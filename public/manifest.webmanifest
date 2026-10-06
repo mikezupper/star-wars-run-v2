@@ -1,7 +1,7 @@
 {
   "name": "starwars.run",
   "short_name": "starwars.run",
-  "description": "An archive of the Star Wars saga, Episodes I to VI: every film, character, planet, species, vehicle and starship, searchable and linked to each other.",
+  "description": "Every Wookieepedia article, canon and Legends: characters, planets, starships, battles and stories, searchable, linked to each other, and readable offline.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

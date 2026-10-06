@@ -21,11 +21,11 @@ const NODE = [
 ];
 const INGEST = [
   '(^|/)ingest/',
-  'Only scripts/ingest.ts uses src/ingest: raw source data must never reach the build or the browser. Read records through src/data, or move the shared code to src/domain.',
+  'Only scripts/ingest-wookieepedia.ts uses src/ingest: raw wikitext must never reach the build or the browser. Read articles through src/data, or move the shared code to src/domain.',
 ];
 const DATA = [
   '(^|/)data/',
-  'src/data reads files from disk at build time. Take a Dataset as a parameter instead; scripts/build.ts and scripts/dev.ts load it.',
+  'src/data reads files from disk at build time. Take the site data as a parameter instead; scripts/build.ts and scripts/dev.ts load it.',
 ];
 const RENDER = [
   '(^|/)render/',
@@ -34,10 +34,6 @@ const RENDER = [
 const ISLANDS = [
   '(^|/)islands/',
   'Only src/render may import islands (to server-render them). Lower layers must not depend on UI.',
-];
-const VALIBOT = [
-  '^valibot$',
-  'Schema checks belong at the boundary, in src/ingest. Code past it relies on the domain types.',
 ];
 const GYRAL = [
   '^@gyral/|^lit($|/)',
@@ -103,21 +99,21 @@ export default tseslint.config(
   {
     // Every user-facing string; read by pages and islands alike, so it depends on types only.
     files: ['src/labels.ts'],
-    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
     // The header policy is plain data; preview and the Caddyfile generator read it.
     files: ['src/hosting/**/*.ts'],
-    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
     // The precache list is pure; the worker imports only Workbox.
     files: ['src/offline/**/*.ts'],
-    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
     files: ['src/domain/**/*.ts'],
-    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, VALIBOT, GYRAL),
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
     files: ['src/ingest/**/*.ts'],
@@ -125,14 +121,14 @@ export default tseslint.config(
   },
   {
     files: ['src/data/**/*.ts'],
-    rules: forbid(INGEST, RENDER, ISLANDS, VALIBOT, GYRAL),
+    rules: forbid(INGEST, RENDER, ISLANDS, GYRAL),
   },
   {
     files: ['src/render/**/*.ts'],
-    rules: forbid(NODE, INGEST, DATA, VALIBOT),
+    rules: forbid(NODE, INGEST, DATA),
   },
   {
     files: ['src/islands/**/*.ts'],
-    rules: forbid(NODE, INGEST, DATA, RENDER, VALIBOT, GYRAL_SSR),
+    rules: forbid(NODE, INGEST, DATA, RENDER, GYRAL_SSR),
   },
 );
