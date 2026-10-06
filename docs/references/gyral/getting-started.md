@@ -202,3 +202,5 @@ focus, rendering) run in a browser with [Vitest browser mode](https://vitest.dev
   and [Views](/docs/views/).
 - Browse the [examples](/examples/): forms, HTTP, routing, shared state and server rendering.
 - See a whole application in [gyral-shop](https://github.com/gyraljs/gyral-shop).
+- Before you ship, read [Deploying](/docs/deploying/) and the
+  [known issues](/docs/packages/#known-issues).

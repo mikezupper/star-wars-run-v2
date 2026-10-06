@@ -11,4 +11,5 @@ file and update its status line, or add a new ADR that supersedes it.
 | [0004-design.md](0004-design.md)                       | Semantic HTML, modern CSS, no framework, accessible light and dark                             |
 | [0005-writing.md](0005-writing.md)                     | The writing skill and a brief for each kind of text; playful site voice                        |
 | [0006-workflow.md](0006-workflow.md)                   | Beads for work, `docs/` for knowledge, commit rules, local-only CI                             |
+| [0007-wookieepedia.md](0007-wookieepedia.md)           | Wookieepedia via the XML dump: all ~227k articles, prose, DuckDB Explore, Gyral 0.2.0          |
 | [0008-wookieepedia-only.md](0008-wookieepedia-only.md) | Wookieepedia replaces swapi.info; sections and URLs; pages on 0.2.0; sample builds in the gate |

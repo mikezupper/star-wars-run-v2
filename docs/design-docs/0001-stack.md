@@ -21,7 +21,10 @@ repo follows.
 - **TypeScript** in strict mode, with `exactOptionalPropertyTypes` and
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
-- **pnpm**, with versions pinned to match gyral.dev.
+- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on 0.2.0 (2026-10-06), and
+  `lit-html` is pinned to 3.3.0 with a pnpm override: later versions leak a DOM comment per
+  removed `repeat()` item (lit/lit#5298; see
+  [docs/references/gyral](../references/gyral/README.md)). Drop the pin once upstream fixes it.
 - **One gate, `pnpm check`:** typecheck, lint, format, tests with coverage, build. A change
   isn't done until it passes.
 - **Coverage of at least 80%** on lines, branches, functions and statements, measured over
