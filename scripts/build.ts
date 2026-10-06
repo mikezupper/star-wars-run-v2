@@ -7,7 +7,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
 import * as pagefind from 'pagefind';
+import { homedir } from 'node:os';
 import { loadSiteData } from '../src/data/archive.js';
+import { WOOKIEEPEDIA_DIR } from '../src/data/wookieepedia.js';
+import { dumpPath, prepareSnapshot, workersFrom } from '../src/ingest/wookieepedia/source.js';
 import { createSite, sitemaps } from '../src/render/site.js';
 import { exploreRows } from '../src/domain/rows.js';
 import { inboundLinks, titleShards } from '../src/domain/titles.js';
@@ -34,6 +37,19 @@ async function stage<T>(name: string, run: () => Promise<T>): Promise<T> {
 
 export async function buildSite(dist: string): Promise<readonly string[]> {
   const manifest = join(dist, '.vite', 'manifest.json');
+  // The snapshot comes from the dump and is never stored (ADR 0007): bring it up to date
+  // first. When it already matches the dump, this is a checksum of the dump and nothing more.
+  const workers = workersFrom(process.env);
+  await stage('snapshot', () =>
+    prepareSnapshot({
+      dump: dumpPath(process.env, homedir()),
+      out: WOOKIEEPEDIA_DIR,
+      log: (m) => {
+        console.log(m);
+      },
+      ...(workers === undefined ? {} : { workers }),
+    }),
+  );
   const data = await stage('load', () => loadSiteData(sampleOption()));
   const site = createSite(
     {

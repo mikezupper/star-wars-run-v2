@@ -6,9 +6,9 @@ lists the 607 stories he turns up in, and A New Hope's page lists everyone who t
 You can search everything, ask the archive questions in SQL on the Explore page, and the pages
 you've visited still work offline.
 
-**Status:** rebuilt in October 2026. Pages, search, Explore and offline support work. Next:
-building all 227,000 pages at once, and putting the Wookieepedia dump into the build, Docker
-and CI.
+**Status:** rebuilt in October 2026. All 227,000 pages build from the Wookieepedia dump, locally
+and in Docker, with search, Explore and offline support. Next: offline search for any word, and
+deploying the image.
 
 ## How it works
 
@@ -28,13 +28,15 @@ The details are in [ARCHITECTURE.md](ARCHITECTURE.md) and the
 You need Node 24 or later and pnpm 10.
 
 The site is built from Wookieepedia's dump, `starwars_pages_current.xml.7z` (about 260 MB), from
-[Fandom's database dumps](https://starwars.fandom.com/wiki/Special:Statistics). Turn it into a
-snapshot once; it takes about 6.5 minutes:
+[Fandom's database dumps](https://starwars.fandom.com/wiki/Special:Statistics). Put it in
+`~/Downloads`, or set `WOOKIEEPEDIA_DUMP` to wherever it is. The first build turns it into a
+snapshot in `data/wookieepedia/` (about 6.5 minutes); later builds reuse the snapshot until the
+dump changes.
 
 ```sh
 pnpm install
-pnpm ingest:wookieepedia ~/Downloads/starwars_pages_current.xml.7z
-pnpm dev        # http://localhost:5500
+pnpm build:sample   # the first time: ingests the dump, then builds a sample of pages
+pnpm dev            # http://localhost:5500
 ```
 
 To build the static site and serve it the way production does:
@@ -44,8 +46,9 @@ pnpm build
 pnpm preview    # http://localhost:5501
 ```
 
-To build and run the production image (Caddy serving the static site). For now, the image
-builds only where `data/wookieepedia/` exists, since the dump isn't wired into Docker yet:
+To build and run the production image (Caddy serving the static site). The image builds from
+the dump alone, ingesting it inside the build, so it takes about 15 minutes and 10 GB of memory.
+`WOOKIEEPEDIA_WORKERS` (default 4 in Docker) trades ingest time for memory:
 
 ```sh
 pnpm docker:build

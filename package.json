@@ -23,9 +23,9 @@
     "smoke": "node scripts/smoke.mjs",
     "icons": "node scripts/render-icons.mjs",
     "caddyfile": "tsx scripts/caddyfile.ts",
-    "docker:build": "docker build -t starwars-run .",
+    "docker:build": "tsx scripts/docker-build.ts",
     "docker:run": "docker run --rm -p 8080:8080 starwars-run",
-    "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml",
+    "ci:local": "tsx scripts/ci-local.ts",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
     "build:sample": "SITE_SAMPLE=20 pnpm build",
     "build:explore": "tsx scripts/build-explore.ts"

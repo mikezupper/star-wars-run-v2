@@ -17,22 +17,22 @@ disagree, the doc wins; fix this file.
 
 ## Commands
 
-| Command                                | What it does                                                                                           |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm install`                         | Install. `@gyral/*` comes from npm                                                                     |
-| `pnpm check`                           | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke              |
-| `pnpm invariants`                      | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                            |
-| `pnpm dev`                             | Dev server on http://localhost:5500; loads the whole archive (~15 s; `SITE_SAMPLE=N` for less)         |
-| `pnpm build`                           | Prerender every article to `dist/` (all ~227k: 8–13 min, 10 GB); `pnpm build:sample` builds the gate's |
-| `pnpm preview`                         | Serve `dist/` with production URL rules on http://localhost:5501                                       |
-| `pnpm test`                            | Vitest with coverage; fails below 80% on any metric                                                    |
-| `pnpm format`                          | Prettier, in place                                                                                     |
-| `pnpm ingest:wookieepedia [dump.7z]`   | Wookieepedia dump → `data/wookieepedia/` (~6.5 min, `--workers N` to save memory)                      |
-| `pnpm smoke`                           | Built site in Chromium: axe, links, search, offline, Explore. `SMOKE_PAGES=1000` for a full build      |
-| `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                                     |
-| `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                                |
-| `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080                                          |
-| `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**                    |
+| Command                                | What it does                                                                                                              |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                         | Install. `@gyral/*` comes from npm                                                                                        |
+| `pnpm check`                           | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke                                 |
+| `pnpm invariants`                      | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                                               |
+| `pnpm dev`                             | Dev server on http://localhost:5500; loads the whole archive (~15 s; `SITE_SAMPLE=N` for less)                            |
+| `pnpm build`                           | Ingest the dump if the snapshot is stale, then prerender all ~227k pages (8–13 min, 10 GB); `build:sample` for the gate's |
+| `pnpm preview`                         | Serve `dist/` with production URL rules on http://localhost:5501                                                          |
+| `pnpm test`                            | Vitest with coverage; fails below 80% on any metric                                                                       |
+| `pnpm format`                          | Prettier, in place                                                                                                        |
+| `pnpm ingest:wookieepedia [dump.7z]`   | Dump → `data/wookieepedia/` (~6.5 min). The dump is `$WOOKIEEPEDIA_DUMP`, else `~/Downloads`; `--force` rebuilds          |
+| `pnpm smoke`                           | Built site in Chromium: axe, links, search, offline, Explore. `SMOKE_PAGES=1000` for a full build                         |
+| `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                                                        |
+| `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                                                   |
+| `pnpm docker:build`, `pnpm docker:run` | Build the production image from the dump (~15 min); serve it on http://localhost:8080                                     |
+| `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**                                       |
 
 First run needs `pnpm exec playwright install chromium`.
 

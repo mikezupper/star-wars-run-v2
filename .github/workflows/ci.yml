@@ -1,4 +1,5 @@
-# Runs LOCALLY only, and only when the owner asks: `pnpm ci:local` (gh act + Docker).
+# Runs LOCALLY only, and only when the owner asks: `pnpm ci:local` (gh act + Docker, with the
+# Wookieepedia dump mounted at /dump: see scripts/ci-local.ts).
 # See docs/design-docs/0006-workflow.md. Do not add push, pull_request or schedule triggers:
 # scripts/check-workflows.mjs rejects them, because they would spend GitHub Actions minutes.
 name: ci
@@ -17,4 +18,9 @@ jobs:
           node-version: 24
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
+      # pnpm ci:local mounts the dump at /dump and sets WOOKIEEPEDIA_DUMP. The gate's sample
+      # build ingests it first (about 6.5 minutes); the full build then reuses that snapshot.
       - run: pnpm check
+        env:
+          WOOKIEEPEDIA_WORKERS: 4
+      - run: pnpm build
