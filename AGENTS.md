@@ -1,7 +1,7 @@
 # AGENTS.md — starwars.run
 
-A Star Wars content site: a page for every film, character, planet, species, vehicle and
-starship, linked to each other, with search, and usable offline. Built with Gyral and
+A Star Wars content site: a page for every Wookieepedia article, canon and Legends (~227k),
+linked to each other, with search, SQL in the browser (Explore), and usable offline. Built with Gyral and
 prerendered to static files; served from a Docker image behind Cloudflare.
 
 This file is a **map**. The linked docs are the system of record. If this file and a doc
@@ -17,24 +17,22 @@ disagree, the doc wins; fix this file.
 
 ## Commands
 
-| Command                              | What it does                                                                                   |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `pnpm install`                       | Install. `@gyral/*` comes from npm                                                             |
-| `pnpm check`                         | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke      |
-| `pnpm invariants`                    | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                    |
-| `pnpm dev`                           | Dev server on http://localhost:5500; loads the whole archive (~15 s; `SITE_SAMPLE=N` for less) |
-| `pnpm build`                         | Prerender every article to `dist/` (all ~227k); `pnpm build:sample` builds the gate's sample   |
-| `pnpm preview`                       | Serve `dist/` with production URL rules on http://localhost:5501                               |
-| `pnpm test`                          | Vitest with coverage; fails below 80% on any metric                                            |
-| `pnpm format`                        | Prettier, in place                                                                             |
-| `pnpm ingest`                        | Fetch swapi.info, parse, check, rewrite `data/`. The only network step                         |
-| `pnpm ingest:wookieepedia [dump.7z]` | Wookieepedia dump → `data/wookieepedia/` (~6.5 min, `--workers N` to save memory)              |
-
-| `pnpm smoke` | Built site in Chromium: status, console, axe, 360px, links, search, offline, dev server |
-| `pnpm icons` | Render `public/icons/icon.svg` to the PNG sizes; commit the result |
-| `pnpm caddyfile` | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it) |
-| `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080 |
-| `pnpm ci:local` | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks** |
+| Command                                | What it does                                                                                   |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `pnpm install`                         | Install. `@gyral/*` comes from npm                                                             |
+| `pnpm check`                           | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke      |
+| `pnpm invariants`                      | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                    |
+| `pnpm dev`                             | Dev server on http://localhost:5500; loads the whole archive (~15 s; `SITE_SAMPLE=N` for less) |
+| `pnpm build`                           | Prerender every article to `dist/` (all ~227k); `pnpm build:sample` builds the gate's sample   |
+| `pnpm preview`                         | Serve `dist/` with production URL rules on http://localhost:5501                               |
+| `pnpm test`                            | Vitest with coverage; fails below 80% on any metric                                            |
+| `pnpm format`                          | Prettier, in place                                                                             |
+| `pnpm ingest:wookieepedia [dump.7z]`   | Wookieepedia dump → `data/wookieepedia/` (~6.5 min, `--workers N` to save memory)              |
+| `pnpm smoke`                           | Built site in Chromium: status, console, axe, 360px, links, search, offline, dev server        |
+| `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                             |
+| `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                        |
+| `pnpm docker:build`, `pnpm docker:run` | Build the production image; serve it on http://localhost:8080                                  |
+| `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**            |
 
 First run needs `pnpm exec playwright install chromium`.
 
@@ -48,11 +46,11 @@ First run needs `pnpm exec playwright install chromium`.
 | [docs/references/gyral/](docs/references/gyral/README.md)          | Gyral's docs, copied in. **Read before writing Gyral code**                                     |
 | [docs/lessons-learned.md](docs/lessons-learned.md)                 | Real bugs: symptom, cause, fix, guard                                                           |
 | `src/site.ts`                                                      | Site-wide constants: origin, name, description                                                  |
-| `src/domain/`                                                      | Record types, slugs, URL paths, catalog (lookup, relations)                                     |
-| `src/ingest/`                                                      | swapi.info parser (`swapi.ts`), value parsers, fetch, write                                     |
+| `src/domain/`                                                      | Article types, sections, slugs, URLs, quantities, Explore rows                                  |
+| `src/ingest/wookieepedia/`                                         | Dump reader, wikitext parser (fields, lead, Appearances), link resolution, snapshot             |
 | `src/data/`                                                        | Loads the snapshot for the build                                                                |
-| `data/`                                                            | The committed snapshot. Written only by `pnpm ingest`                                           |
-| `src/render/`                                                      | Route table (`site.ts`), layout, home/list/record templates                                     |
+| `data/wookieepedia/`                                               | The snapshot. Never committed; written only by `pnpm ingest:wookieepedia`                       |
+| `src/render/`                                                      | Route table (`site.ts`), layout, home, section, article and page templates                      |
 | `src/labels.ts`                                                    | **Every user-facing string.** Change copy here, nowhere else                                    |
 | `src/islands/`, `src/entry-client.ts`, `src/page.ts`               | Search island and its Pagefind driver; hydration entry; `/` key and service worker registration |
 | `src/islands/explore.ts`, `duckdb.ts`; `scripts/build-database.ts` | Explore: SQL in the browser over `dist/data/archive.duckdb` (ADR 0008)                          |
@@ -63,14 +61,14 @@ First run needs `pnpm exec playwright install chromium`.
 
 ## Read before changing…
 
-| Area                                      | Read                                                                                |
-| ----------------------------------------- | ----------------------------------------------------------------------------------- |
-| Anything                                  | [0001-stack.md](docs/design-docs/0001-stack.md), [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Ingest, data shapes, slugs, links         | [0002-data.md](docs/design-docs/0002-data.md)                                       |
-| Docker, headers, caching, service worker  | [0003-hosting.md](docs/design-docs/0003-hosting.md)                                 |
-| Markup, CSS, accessibility                | [0004-design.md](docs/design-docs/0004-design.md)                                   |
-| Any text: docs, beads, commits, site copy | [0005-writing.md](docs/design-docs/0005-writing.md)                                 |
-| Beads, git, CI                            | [0006-workflow.md](docs/design-docs/0006-workflow.md)                               |
+| Area                                      | Read                                                                                                                                   |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Anything                                  | [0001-stack.md](docs/design-docs/0001-stack.md), [ARCHITECTURE.md](ARCHITECTURE.md)                                                    |
+| Ingest, data shapes, slugs, links         | [0007-wookieepedia.md](docs/design-docs/0007-wookieepedia.md), [0008-wookieepedia-only.md](docs/design-docs/0008-wookieepedia-only.md) |
+| Docker, headers, caching, service worker  | [0003-hosting.md](docs/design-docs/0003-hosting.md)                                                                                    |
+| Markup, CSS, accessibility                | [0004-design.md](docs/design-docs/0004-design.md)                                                                                      |
+| Any text: docs, beads, commits, site copy | [0005-writing.md](docs/design-docs/0005-writing.md)                                                                                    |
+| Beads, git, CI                            | [0006-workflow.md](docs/design-docs/0006-workflow.md)                                                                                  |
 
 ## Skills to load
 

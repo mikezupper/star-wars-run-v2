@@ -1,17 +1,20 @@
 # starwars.run
 
-A Star Wars reference site: films, characters, planets, species, vehicles and starships, each
-on its own page and linked to everything it relates to. Luke's page links to Tatooine, and
-Tatooine's page links back to everyone from there. You can search everything, and
-the pages you've visited still work offline.
+A Star Wars reference site with a page for every Wookieepedia article: about 227,000 of them,
+canon and Legends. Every page links to the pages it mentions: Luke's page links to Tatooine and
+lists the 607 stories he turns up in, and A New Hope's page lists everyone who turns up in it.
+You can search everything, ask the archive questions in SQL on the Explore page, and the pages
+you've visited still work offline.
 
-**Status:** rebuilt in October 2026: data, pages, search, offline support and the Docker
-image are done. Local CI and a larger dataset (Wookieepedia) are next.
+**Status:** rebuilt in October 2026. Pages, search, Explore and offline support work. Next:
+building all 227,000 pages at once, and putting the Wookieepedia dump into the build, Docker
+and CI.
 
 ## How it works
 
-- **Data** comes from [swapi.info](https://swapi.info). An ingest step fetches it once,
-  checks its shape, and saves a snapshot in the repo, so builds never need the network.
+- **Data** comes from Wookieepedia's database dump, downloaded once. An ingest step parses
+  every article into a snapshot in `data/wookieepedia/`, so builds never need the network. The
+  snapshot is rebuilt from the dump and never committed.
 - **Pages** are rendered at build time with [Gyral](https://gyral.dev), a Model-View-Intent
   framework for web components. Only the search page loads the framework; other pages ship a few hundred bytes of script for
   the search shortcut.
@@ -24,8 +27,13 @@ The details are in [ARCHITECTURE.md](ARCHITECTURE.md) and the
 
 You need Node 24 or later and pnpm 10.
 
+The site is built from Wookieepedia's dump, `starwars_pages_current.xml.7z` (about 260 MB), from
+[Fandom's database dumps](https://starwars.fandom.com/wiki/Special:Statistics). Turn it into a
+snapshot once; it takes about 6.5 minutes:
+
 ```sh
 pnpm install
+pnpm ingest:wookieepedia ~/Downloads/starwars_pages_current.xml.7z
 pnpm dev        # http://localhost:5500
 ```
 
@@ -36,7 +44,8 @@ pnpm build
 pnpm preview    # http://localhost:5501
 ```
 
-To build and run the production image (Caddy serving the static site):
+To build and run the production image (Caddy serving the static site). For now, the image
+builds only where `data/wookieepedia/` exists, since the dump isn't wired into Docker yet:
 
 ```sh
 pnpm docker:build
@@ -58,8 +67,7 @@ what's next). Coding agents start at [AGENTS.md](AGENTS.md).
 
 ## Credits
 
-Star Wars data from [swapi.info](https://swapi.info), which builds on the original SWAPI by
-Paul Hallett and Juriy Bura. Star Wars and its characters are trademarks of Lucasfilm Ltd. This is an
+Text and facts from [Wookieepedia](https://starwars.fandom.com), under CC BY-SA 3.0. Star Wars and its characters are trademarks of Lucasfilm Ltd. This is an
 unofficial fan project, not affiliated with or endorsed by Lucasfilm.
 
 ## License

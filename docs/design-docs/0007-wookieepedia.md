@@ -1,7 +1,9 @@
 # ADR 0007 — Wookieepedia as a second data source
 
 Status: **accepted** (2026-10-06), with the owner's decisions below. Spike: `swr-4g6`.
-Implementation: epic `swr-7f1`.
+Implementation: epic `swr-7f1`. Partly superseded by
+[0008-wookieepedia-only.md](0008-wookieepedia-only.md): Wookieepedia became the only source
+(no swapi.info merge, `swr-7f1.5` dropped), and Explore reads a DuckDB file, not Parquet.
 
 ## Recommendation
 

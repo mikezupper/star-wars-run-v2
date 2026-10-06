@@ -7,7 +7,7 @@ export const ORIGIN = 'https://starwars.run';
 export const SITE_NAME = 'starwars.run';
 
 export const DESCRIPTION =
-  'An archive of the Star Wars saga, Episodes I to VI: every film, character, planet, species, vehicle and starship, searchable and linked to each other.';
+  'Every Wookieepedia article, canon and Legends: characters, planets, starships, battles and stories, searchable, linked to each other, and readable offline.';
 
 /** The Sabacc game that lives alongside the archive (swr-j0g). Its rules are on its own page. */
 export const SABACC = {

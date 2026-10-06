@@ -14,7 +14,7 @@ export const homeMeta: PageMeta = {
 
 export const homeBody = (archive: Archive) => serverHtml`
   <h1>${SITE_NAME}</h1>
-  <p>${TEXT.homeIntro}</p>
+  <p>${TEXT.homeIntro(archive.byTitle.size)}</p>
   <ul>
     ${SECTIONS.map((section) => {
       const count = archive.bySection.get(section)?.length ?? 0;
