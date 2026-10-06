@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { createServer as createViteServer } from 'vite';
 import { loadSiteData } from '../src/data/archive.js';
 import type * as SiteModule from '../src/render/site.js';
+import { ranged } from './lib/range.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
 const vite = await createViteServer({
@@ -34,24 +35,38 @@ const DEV_ASSETS = {
   page: '/src/page.ts',
 };
 
-const PAGEFIND_DIR = fileURLToPath(new URL('../dist/pagefind', import.meta.url));
+const DIST = fileURLToPath(new URL('../dist', import.meta.url));
+/** Build outputs the dev server can't make itself: the search index, Explore's data and engine. */
+const FROM_BUILD = ['/pagefind/', '/data/', '/duckdb/'];
 
-/** Serves /pagefind/* from dist/; without a build, a 404 that says how to make one. */
-async function servePagefind(pathname: string, res: http.ServerResponse): Promise<void> {
-  const file = normalize(join(PAGEFIND_DIR, pathname.slice('/pagefind/'.length)));
+const TYPES: Record<string, string> = {
+  '.js': 'text/javascript',
+  '.wasm': 'application/wasm',
+  '.parquet': 'application/octet-stream',
+};
+
+/** Serves build outputs from dist/; without a build, a 404 that says how to make one. */
+async function serveFromBuild(
+  pathname: string,
+  res: http.ServerResponse,
+  range: string | undefined,
+  head: boolean,
+): Promise<void> {
+  const file = normalize(join(DIST, pathname));
   try {
-    if (!file.startsWith(PAGEFIND_DIR)) throw new Error('outside dist/pagefind');
-    const body = await readFile(file);
-    res.writeHead(200, {
-      'content-type': extname(file) === '.js' ? 'text/javascript' : 'application/octet-stream',
+    if (!file.startsWith(DIST)) throw new Error('outside dist');
+    const answer = ranged(await readFile(file), range);
+    res.writeHead(answer.status, {
+      'content-type': TYPES[extname(file)] ?? 'application/octet-stream',
       'cache-control': 'no-cache',
+      ...answer.headers,
     });
-    res.end(body);
+    res.end(head ? undefined : answer.body);
   } catch {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     res.end(
-      `No search index at dist/pagefind${pathname.slice('/pagefind'.length)}. ` +
-        'Search needs one: run `pnpm build` once (and again after `pnpm ingest`), then reload.\n',
+      `No dist${pathname}. Search and Explore read files that \`pnpm build\` writes: ` +
+        'run it once (and again after the snapshot changes), then reload.\n',
     );
   }
 }
@@ -84,8 +99,8 @@ async function render(req: http.IncomingMessage, res: http.ServerResponse): Prom
 http
   .createServer((req, res) => {
     const { pathname } = new URL(req.url ?? '/', 'http://localhost');
-    if (pathname.startsWith('/pagefind/')) {
-      void servePagefind(pathname, res);
+    if (FROM_BUILD.some((prefix) => pathname.startsWith(prefix))) {
+      void serveFromBuild(pathname, res, req.headers.range, req.method === 'HEAD');
       return;
     }
     vite.middlewares(req, res, () => void render(req, res));

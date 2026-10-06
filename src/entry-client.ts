@@ -2,3 +2,4 @@
 // (docs/references/gyral/server-rendering.md, "Production checklist").
 import '@gyral/ssr/hydrate';
 import './islands/site-search.js';
+import './islands/explore.js';

@@ -245,7 +245,12 @@
       text-decoration: none;
     }
 
-    /* The Sabacc link: a small amber pill beside the site name, something to play. */
+    & > p + p {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Explore and Sabacc: small amber pills beside the site name. */
     & > p + p a {
       display: inline-block;
       padding: 0.25rem 0.75rem;

@@ -284,6 +284,59 @@ export const SABACC_TEXT = {
   rulesAbout: 'They are on the game page, next to the table.',
 } as const;
 
+/** The Explore page (swr-7f1.7): questions answered with SQL in the browser. */
+export const EXPLORE_TEXT = {
+  nav: 'Explore',
+  title: 'Explore the archive',
+  description:
+    'Ask the Star Wars archive questions with SQL, right in your browser: the tallest characters, the most crowded planets, the fastest starships, and anything else you can write.',
+  intro:
+    'Every article, as two tables you can query with SQL. It all runs in your browser: pick a question below, or write your own.',
+  noScript:
+    'Exploring runs a database in your browser, and it needs JavaScript. Without it, browse the sections instead:',
+  questions: 'Try a question',
+  sqlLabel: 'SQL',
+  run: 'Run query',
+  runHint: 'Ctrl+Enter runs the query. The first run downloads the query engine (about 8 MB).',
+  starting: 'Starting the query engine…',
+  running: 'Running…',
+  results: 'Results',
+  rows: (n: number, ms: number, truncated: boolean): string =>
+    `${n.toLocaleString('en-US')} ${n === 1 ? 'row' : 'rows'}${truncated ? ' (showing the first 500)' : ''} in ${Math.max(1, Math.round(ms)).toLocaleString('en-US')} ms.`,
+  failed: (reason: string): string => `The query didn't run: ${reason}`,
+  tablesHeading: 'The tables',
+  archiveTable:
+    'archive: one row per article. title, name, path, section, kind, era, and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
+  factsTable:
+    'facts: one row per infobox value. title, field, item (0 for the first), text, and link: the article it points to (homeworld → Tatooine).',
+  presets: [
+    {
+      label: 'Tallest characters',
+      sql: "SELECT name, path, height_m\nFROM archive\nWHERE section = 'characters' AND height_m IS NOT NULL\nORDER BY height_m DESC\nLIMIT 25",
+    },
+    {
+      label: 'Who comes from Tatooine?',
+      sql: "SELECT a.name, a.path, a.era\nFROM facts f JOIN archive a USING (title)\nWHERE f.field = 'homeworld' AND f.link = 'Tatooine'\nORDER BY a.name",
+    },
+    {
+      label: 'Most populous planets',
+      sql: "SELECT name, path, population\nFROM archive\nWHERE section = 'planets' AND population IS NOT NULL\nORDER BY population DESC\nLIMIT 25",
+    },
+    {
+      label: 'Fastest starships',
+      sql: "SELECT name, path, mglt, hyperdrive_class\nFROM archive\nWHERE section = 'starships' AND mglt IS NOT NULL\nORDER BY mglt DESC\nLIMIT 25",
+    },
+    {
+      label: 'Biggest starships',
+      sql: "SELECT name, path, length_m\nFROM archive\nWHERE section = 'starships' AND length_m IS NOT NULL\nORDER BY length_m DESC\nLIMIT 25",
+    },
+    {
+      label: 'Articles per section',
+      sql: 'SELECT section, era, count(*) AS articles\nFROM archive\nGROUP BY ALL\nORDER BY section, era',
+    },
+  ],
+} as const;
+
 export const UNITS = {
   cm: 'cm',
   kg: 'kg',

@@ -11,6 +11,7 @@ data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (secti
                                                               │
                          scripts/dev.ts: per request ◄────────┤  (archive loaded once at start)
                          scripts/build.ts: prerender every path → dist/
+articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist/data/archive.duckdb (Explore)
 src/islands/*.ts ──► vite build ──► dist/assets/   (hydrated in the browser)
 src/styles/site.css ──► vite build ──► dist/assets/
 public/ ──► copied to dist/

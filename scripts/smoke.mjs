@@ -13,6 +13,8 @@
 // - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
 //   once the service worker controls the page, a visited record page, search, and the offline
 //   page for an unvisited record all work with the network off;
+// - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
+//   archive's database, with names linking to their pages;
 // - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
 //   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
 //   SMOKE_BASE_URL points at another server.
@@ -80,6 +82,7 @@ try {
   await checkSearch();
   await checkWithoutJavaScript();
   await checkOffline();
+  await checkExplore();
   if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
@@ -298,6 +301,51 @@ async function checkOffline() {
   }
 }
 
+async function checkExplore() {
+  const where = '/explore/';
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    watch(page, where);
+    await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    const explore = page.locator('swr-explore');
+    const status = () =>
+      explore.evaluate((el) => el.shadowRoot?.querySelector('[role=status]')?.textContent ?? '');
+    for (const [question, expected] of [
+      ['Who comes from Tatooine?', '/characters/luke-skywalker/'],
+      ['Articles per section', null],
+    ]) {
+      await explore.getByRole('button', { name: question }).click();
+      try {
+        await page.waitForFunction(
+          () =>
+            /rows? in|didn't run/.test(
+              document.querySelector('swr-explore')?.shadowRoot?.querySelector('[role=status]')
+                ?.textContent ?? '',
+            ),
+          undefined,
+          { timeout: 60_000 },
+        );
+      } catch {
+        fail(where, `"${question}" never finished`);
+        continue;
+      }
+      const text = await status();
+      if (!/rows? in/.test(text)) fail(where, `"${question}": ${text}`);
+      if (expected !== null) {
+        const links = await explore.evaluate((el) =>
+          [...(el.shadowRoot?.querySelectorAll('tbody a') ?? [])].map((a) =>
+            a.getAttribute('href'),
+          ),
+        );
+        if (!links.includes(expected)) fail(where, `"${question}" has no link to ${expected}`);
+      }
+    }
+  } finally {
+    await context.close();
+  }
+}
+
 /** A port nothing is listening on right now. */
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -367,7 +415,7 @@ const seconds = ((Date.now() - started) / 1000).toFixed(0);
 const report = [
   '# Smoke report',
   '',
-  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline and the dev server (${seconds}s).`,
+  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline, Explore and the dev server (${seconds}s).`,
   '',
   failures.length === 0 ? 'All checks passed.' : failures.map((f) => `- ${f}`).join('\n'),
   '',
@@ -378,5 +426,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline and dev server: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore and dev server: all checks passed (${seconds}s)`,
 );

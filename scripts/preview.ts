@@ -7,6 +7,7 @@ import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { headersFor } from '../src/hosting/headers.js';
+import { ranged } from './lib/range.js';
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -20,6 +21,8 @@ const TYPES: Record<string, string> = {
   '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.wasm': 'application/wasm',
+  '.parquet': 'application/octet-stream',
 };
 
 const isFile = async (path: string): Promise<boolean> =>
@@ -35,11 +38,14 @@ export function createPreview(dist: string): http.Server {
       const path = decodeURIComponent(url.pathname);
       const local = normalize(join(dist, path));
       const send = async (file: string, status: number) => {
-        res.writeHead(status, {
+        // Range requests (DuckDB reads Parquet in pieces) apply to successful responses only.
+        const answer = status === 200 ? ranged(await readFile(file), req.headers.range) : undefined;
+        res.writeHead(answer?.status ?? status, {
           'content-type': TYPES[extname(file)] ?? 'application/octet-stream',
           ...headersFor(path, status),
+          ...(answer?.headers ?? {}),
         });
-        res.end(await readFile(file));
+        res.end(req.method === 'HEAD' ? undefined : (answer?.body ?? (await readFile(file))));
       };
       if (!local.startsWith(dist)) {
         await send(join(dist, '404.html'), 404);

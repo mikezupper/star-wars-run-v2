@@ -65,11 +65,13 @@ describe('every page', () => {
     expect(broken).toEqual([]);
   });
 
-  it('ships only the every-page script, plus the island entry on /search/', () => {
+  it('ships only the every-page script, plus the island entry on /search/ and /explore/', () => {
     for (const [page, body] of pages) {
       const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
       expect(scripts, page).toEqual(
-        page === '/search/' ? ['/assets/page.js', '/assets/entry.js'] : ['/assets/page.js'],
+        ['/search/', '/explore/'].includes(page)
+          ? ['/assets/page.js', '/assets/entry.js']
+          : ['/assets/page.js'],
       );
     }
   });

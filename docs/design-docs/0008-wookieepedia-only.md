@@ -74,6 +74,30 @@ The misses are mostly not numbers ("Equipped", "Stationary", "Tall", "Over twent
 `lengthyear` stays low on purpose: most years are given in **local** days, which aren't
 comparable to standard days, so they're left out rather than mixed in.
 
+## Explore: SQL in the browser (`swr-7f1.7`)
+
+`/explore/` runs DuckDB-WASM in the visitor's browser. No server is involved.
+
+- **Data:** the build writes `dist/data/archive.duckdb` with two tables: `archive` (one row per
+  article: title, name, path, section, kind, era, and the number columns above) and `facts` (one
+  row per infobox value: title, field, item, text, link). The full archive is 37 MB (18 MB
+  gzipped). DuckDB attaches it read-only and fetches only the blocks a query needs, through
+  HTTP range requests.
+- **Why a DuckDB file, not Parquet:** reading Parquet makes DuckDB-WASM download its parquet
+  extension from `extensions.duckdb.org`. The CSP allows only this origin, and should keep doing
+  so; DuckDB's own file format needs no extension. In testing, the `eh` build also failed with
+  "function signature mismatch" while it tried to load that extension. With the native file, it
+  works.
+- **Engine:** the `eh` build (WebAssembly exceptions, Baseline), self-hosted under `/duckdb/`:
+  36 MB raw, about 8 MB gzipped. Only the Explore page loads it, on the first query. The service
+  worker doesn't precache it.
+- **Versions:** the build writes with DuckDB 1.5.6 (`@duckdb/node-api`); the browser runs 1.5.4
+  (`@duckdb/duckdb-wasm` 1.33). The file pins `STORAGE_VERSION 'v1.2.0'` so the older reader
+  can open it.
+- **Serving:** Caddy answers range requests. The preview and dev servers do too
+  (`scripts/lib/range.ts`), and the dev server serves `/data/` and `/duckdb/` from the last
+  build.
+
 ## Consequences
 
 - Every machine that builds the site needs the dump (ADR 0007 decision 7), and `pnpm check`

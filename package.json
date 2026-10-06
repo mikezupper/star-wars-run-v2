@@ -31,6 +31,7 @@
     "build:sample": "SITE_SAMPLE=20 pnpm build"
   },
   "dependencies": {
+    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
     "@gyral/core": "^0.1.0",
     "@gyral/ssr": "^0.1.0",
     "@lit-labs/ssr": "4.1.0",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
+    "@duckdb/node-api": "1.5.6-r.1",
     "@eslint/js": "10.0.1",
     "@gyral/testing": "^0.1.0",
     "@types/node": "24.19.1",
