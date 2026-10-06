@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { loadWookieepediaIndex } from '../../src/data/wookieepedia.js';
+import { loadArticles, loadWookieepediaIndex, summaryOf } from '../../src/data/wookieepedia.js';
 import { articleLine, snapshotFiles } from '../../src/ingest/wookieepedia/snapshot.js';
 
 const dirs: string[] = [];
@@ -32,5 +32,41 @@ describe('the Wookieepedia snapshot index', () => {
     await expect(loadWookieepediaIndex(join(tmpdir(), 'swr-no-such-dir'))).rejects.toThrow(
       /pnpm ingest:wookieepedia/,
     );
+  });
+});
+
+describe('reading a line\u2019s summary without parsing the article', () => {
+  const lineOf = (title: string, kind?: string) =>
+    articleLine(title, {
+      era: 'legends',
+      ...(kind === undefined ? {} : { kind }),
+      fields: [{ name: 'title', items: [[{ text: '"title":"Decoy"' }]] }],
+      lead: [],
+    }).line;
+
+  it('matches a full parse, for titles with quotes and backslashes, with or without a kind', () => {
+    for (const line of [
+      lineOf('Luke Skywalker/Legends', 'Character'),
+      lineOf('"Wild Karrde" \\ the ship', 'Ship'),
+      lineOf('Untyped'),
+    ]) {
+      const { title, era, kind } = JSON.parse(line) as Record<string, string>;
+      expect(summaryOf(line)).toEqual({ title, era, ...(kind === undefined ? {} : { kind }) });
+    }
+  });
+
+  it('falls back to a full parse when the keys come in another order', () => {
+    expect(summaryOf('{"era":"canon","title":"Hoth"}')).toEqual({ title: 'Hoth', era: 'canon' });
+  });
+
+  it('loads only the articles asked for', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'swr-only-'));
+    dirs.push(dir);
+    const lines = ['A', 'B', 'C'].map((t) => articleLine(t, { era: 'canon', fields: [], lead: [] }));
+    for (const [file, bytes] of snapshotFiles(lines, new Map())) {
+      await writeFile(join(dir, file), bytes);
+    }
+    expect([...(await loadArticles(dir, new Set(['B']))).keys()]).toEqual(['B']);
+    expect((await loadArticles(dir)).size).toBe(3);
   });
 });

@@ -103,10 +103,33 @@ export function createSite(assets: Assets, { archive, articles }: SiteData): Sit
   };
 }
 
-/** sitemap.xml for every indexable path. */
-export const sitemap = (paths: readonly string[]): string =>
-  `<?xml version="1.0" encoding="UTF-8"?>
+/** The sitemap protocol's limit: at most 50,000 URLs in one file. */
+export const SITEMAP_MAX = 50_000;
+
+/**
+ * Every indexable path as sitemap files: `sitemap.xml` is an index of `sitemap-1.xml`,
+ * `sitemap-2.xml`…, each holding up to `max` URLs. The full archive needs five; a sample build
+ * has the same shape with one, so what the gate tests is what production ships.
+ */
+export function sitemaps(paths: readonly string[], max = SITEMAP_MAX): ReadonlyMap<string, string> {
+  const files = new Map<string, string>();
+  for (let i = 0; i === 0 || i * max < paths.length; i++) {
+    files.set(
+      `sitemap-${String(i + 1)}.xml`,
+      `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths.map((p) => `  <url><loc>${absolute(p)}</loc></url>`).join('\n')}
+${paths
+  .slice(i * max, (i + 1) * max)
+  .map((p) => `  <url><loc>${absolute(p)}</loc></url>`)
+  .join('\n')}
 </urlset>
+`,
+    );
+  }
+  const index = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${[...files.keys()].map((f) => `  <sitemap><loc>${absolute(`/${f}`)}</loc></sitemap>`).join('\n')}
+</sitemapindex>
 `;
+  return new Map([['sitemap.xml', index], ...files]);
+}

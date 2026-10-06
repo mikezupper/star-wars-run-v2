@@ -5,6 +5,8 @@ import { CACHE, cacheControl, caddyfile, CSP, headersFor } from '../../src/hosti
 describe('cache policy', () => {
   it('caches hashed assets for a year and rechecks the service worker every time', () => {
     expect(cacheControl('/assets/site-abc.css', 200)).toBe(CACHE.assets);
+    expect(cacheControl('/pagefind/fragment/en_1a2b.pf_fragment', 200)).toBe(CACHE.assets);
+    expect(cacheControl('/pagefind/pagefind-entry.json', 200)).toBe(CACHE.pages);
     expect(cacheControl('/icons/icon-192.png', 200)).toBe(CACHE.icons);
     expect(cacheControl('/sw.js', 200)).toBe(CACHE.serviceWorker);
   });

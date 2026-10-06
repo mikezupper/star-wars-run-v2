@@ -73,6 +73,20 @@ Each entry has four parts:
   one line. The ingest then wrote its own format back. Two tools disagreeing about the same
   files.
 - **Fix:** `data/` is in `.prettierignore`. Generated files belong to their generator.
-- **Guard:** `test/data/committed-snapshot.test.ts` checks that every file in `data/` is
-  byte-for-byte what `snapshotFiles()` would write, so a reformat or a hand edit fails
-  `pnpm check`. Fix such a failure with `pnpm ingest`, not by editing the file.
+- **Guard:** `test/data/committed-snapshot.test.ts` checked that every file in `data/` was
+  byte-for-byte what the ingest would write. It went with the swapi.info source
+  (`swr-7f1.15`); the Wookieepedia snapshot isn't committed, and `data/` stays in
+  `.prettierignore`.
+
+## The service worker precached the whole search index (2026-10-06)
+
+- **Symptom:** The first full build (`swr-7f1.6`) wrote an 18 MB `sw.js` listing 228,489 files
+  to precache: every visitor's first page load would have started downloading 131 MB of search
+  index. Building that list also read every file in `dist/` into memory, 1.7 GB of it.
+- **Cause:** `src/offline/precache.ts` precached all of `pagefind/`, a rule written when the
+  site had 260 pages and the index was a few hundred KB. Nothing measured it at full size.
+- **Fix:** the precache keeps Pagefind's runtime only; `src/offline/sw.ts` caches index chunks
+  and fragments as searches fetch them. `scripts/build-sw.ts` decides by path before reading a
+  file.
+- **Guard:** `test/offline/precache.test.ts` checks that index chunks and fragments aren't
+  precached, and the build logs the precache count and the size of `sw.js` on every run.

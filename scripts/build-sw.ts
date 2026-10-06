@@ -7,21 +7,20 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 import { build, type Rolldown } from 'vite';
-import { precacheEntries, type BuiltFile } from '../src/offline/precache.js';
+import { isPrecached, precacheEntries, type BuiltFile } from '../src/offline/precache.js';
 
 const INJECTION_POINT = 'self.__WB_MANIFEST';
 
+/** The precached files in dist/, with their bytes for the revision hash. */
 async function builtFiles(dist: string): Promise<BuiltFile[]> {
   const files: BuiltFile[] = [];
   const walk = async (dir: string): Promise<void> => {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);
+      const rel = relative(dist, path).split(sep).join('/');
       if (entry.isDirectory()) await walk(path);
-      else
-        files.push({
-          path: relative(dist, path).split(sep).join('/'),
-          content: await readFile(path),
-        });
+      // Read only what's precached: the full archive's 227k pages would not fit in memory.
+      else if (isPrecached(rel)) files.push({ path: rel, content: await readFile(path) });
     }
   };
   await walk(dist);

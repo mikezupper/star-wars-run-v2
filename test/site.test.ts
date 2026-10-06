@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { wookieepediaUrl } from '../src/domain/attribution.js';
 import { fullTitle } from '../src/render/layout.js';
-import { createSite, normalise, sitemap } from '../src/render/site.js';
+import { createSite, normalise, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 import { FIXTURE_TITLES, fixtureSiteData } from './fixtures/archive.js';
 
@@ -179,7 +179,19 @@ describe('helpers', () => {
     expect(normalise('/characters')).toBe('/characters/');
     expect(fullTitle({ path: '/', title: 'Home' })).toBe('Home');
     expect(fullTitle({ path: '/media/', title: 'Media' })).toBe(`Media · ${SITE_NAME}`);
-    expect(sitemap(['/', '/media/'])).toContain(`<loc>${absolute('/media/')}</loc>`);
+  });
+
+  it('splits the sitemap into parts under an index, at most `max` URLs a part', () => {
+    const files = sitemaps(['/', '/media/', '/planets/'], 2);
+    expect([...files.keys()]).toEqual(['sitemap.xml', 'sitemap-1.xml', 'sitemap-2.xml']);
+    expect(files.get('sitemap.xml')).toContain(
+      `<sitemap><loc>${absolute('/sitemap-2.xml')}</loc></sitemap>`,
+    );
+    expect(files.get('sitemap-1.xml')).toContain(`<loc>${absolute('/media/')}</loc>`);
+    expect(files.get('sitemap-2.xml')).toContain(`<loc>${absolute('/planets/')}</loc>`);
+    expect(files.get('sitemap-2.xml')).not.toContain('/media/');
+    // Nothing to list still makes a valid, empty part: the index never points nowhere.
+    expect([...sitemaps([]).keys()]).toEqual(['sitemap.xml', 'sitemap-1.xml']);
   });
 });
 

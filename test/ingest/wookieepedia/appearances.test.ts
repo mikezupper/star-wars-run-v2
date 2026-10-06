@@ -92,7 +92,8 @@ describe('one Appearances line', () => {
   });
 });
 
-describe('the Appearances section', () => {
+// Parsing the real sections takes seconds, more on a busy machine.
+describe('the Appearances section', { timeout: 30_000 }, () => {
   it('stops at the next level-2 heading, and is empty without one', () => {
     expect(
       appearancesSection('Lead.\n==Appearances==\n*[[A]]\n===Sub===\n*[[B]]\n==Sources==\n*[[C]]'),
@@ -122,7 +123,7 @@ describe('the Appearances section', () => {
     expect(FILMS.filter((f) => luke.has(f))).toEqual(FILMS.slice(2));
     expect(FILMS.filter((f) => canon('c-3po').has(f))).toEqual(FILMS);
     expect(parseAppearances(fixture('luke-skywalker')).some((a) => a.noncanon === true)).toBe(true);
-  }, 20_000);
+  });
 
   it('reads every fixture without losing a work line', () => {
     for (const name of ['c-3po', 'luke-skywalker-legends', 'millennium-falcon', 'tatooine']) {

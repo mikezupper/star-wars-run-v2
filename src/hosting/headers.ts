@@ -44,15 +44,23 @@ export const CACHE = {
   icons: 'public, max-age=86400',
   /** The service worker must be rechecked on every load, or a deploy never reaches visitors. */
   serviceWorker: 'no-cache',
-  /** HTML, the search index, the manifest, the sitemap. */
+  /** HTML, Pagefind's entry files, the manifest, the sitemaps. */
   pages: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
   /** The 404 page: short, so a page that appears after a deploy isn't hidden for long. */
   notFound: 'public, max-age=60',
 } as const;
 
+/** Paths whose file names are content hashes: Vite's output and Pagefind's index parts. */
+export const HASHED_PATHS = [
+  '/assets/',
+  '/pagefind/index/',
+  '/pagefind/fragment/',
+  '/pagefind/filter/',
+] as const;
+
 export function cacheControl(path: string, status: number): string {
   if (status === 404) return CACHE.notFound;
-  if (path.startsWith('/assets/')) return CACHE.assets;
+  if (HASHED_PATHS.some((p) => path.startsWith(p))) return CACHE.assets;
   if (path.startsWith('/icons/')) return CACHE.icons;
   if (path === '/sw.js') return CACHE.serviceWorker;
   return CACHE.pages;
@@ -89,13 +97,13 @@ export function caddyfile(): string {
 
 ${security('\t')}
 
-\t@assets path /assets/*
+\t@assets path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')}
 \theader @assets Cache-Control ${quote(CACHE.assets)}
 \t@icons path /icons/*
 \theader @icons Cache-Control ${quote(CACHE.icons)}
 \t@sw path /sw.js
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
-\t@pages not path /assets/* /icons/* /sw.js
+\t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js
 \theader @pages Cache-Control ${quote(CACHE.pages)}
 
 \tfile_server
