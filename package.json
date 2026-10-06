@@ -27,7 +27,8 @@
     "docker:build": "docker build -t starwars-run .",
     "docker:run": "docker run --rm -p 8080:8080 starwars-run",
     "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml",
-    "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts"
+    "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
+    "match:swapi": "tsx scripts/match-swapi.ts"
   },
   "dependencies": {
     "@gyral/core": "^0.1.0",
