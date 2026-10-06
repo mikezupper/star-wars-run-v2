@@ -30,8 +30,8 @@
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts"
   },
   "dependencies": {
-    "@gyral/core": "^0.1.0",
-    "@gyral/ssr": "^0.1.0",
+    "@gyral/core": "^0.2.0",
+    "@gyral/ssr": "^0.2.0",
     "@lit-labs/ssr": "4.1.0",
     "@lit-labs/ssr-client": "1.1.8",
     "lit": "3.3.3"
@@ -40,7 +40,7 @@
     "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
-    "@gyral/testing": "^0.1.0",
+    "@gyral/testing": "^0.2.0",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
@@ -65,5 +65,10 @@
     "workbox-precaching": "7.4.1",
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "lit-html": "3.3.0"
+    }
   }
 }

@@ -2,7 +2,7 @@
 title: Devtools
 description: Watch every message, state change and command in your app with an in-page panel that costs nothing in production builds.
 section: Guides
-order: 12
+order: 16
 ---
 
 # Devtools
