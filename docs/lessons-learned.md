@@ -13,6 +13,21 @@ Each entry has four parts:
 
 ---
 
+## A 50 MB generated snapshot got committed on another branch (2026-10-06)
+
+- **Symptom:** An ADR-only commit on `spike/wookieepedia` also added all of `data/wookieepedia/`
+  (12 shards, 50 MB), and it was pushed to an open PR. The owner had decided the snapshot is
+  never stored.
+- **Cause:** The ignore rule for `data/wookieepedia/` existed only on the branch that created
+  the snapshot. After switching branches, the files were untracked but not ignored, and
+  `git add -A` picked them up.
+- **Fix:** The commit was rebuilt with only the ADR, and the PR branch was force-pushed with
+  `--force-with-lease` (owner approved); nothing had reached `main`. Every branch that touches
+  Wookieepedia work now ignores `data/wookieepedia/`.
+- **Guard:** Stage files by name, not with `git add -A`, after switching to a branch made
+  before a new generated directory existed, and check `git show --stat` before pushing. No
+  automated check yet: a pre-push size guard is a possible follow-up.
+
 ## Search failed on the dev server: no index at /pagefind/ (2026-10-05)
 
 - **Symptom:** On `pnpm dev` (http://localhost:5500), search said "The search index didn't
