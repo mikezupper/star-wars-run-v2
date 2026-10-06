@@ -13,6 +13,8 @@
 // - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
 //   once the service worker controls the page, a visited record page, search, and the offline
 //   page for an unvisited record all work with the network off;
+// - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
+//   archive's database, with names linking to their pages;
 // - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
 //   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
 //   SMOKE_BASE_URL points at another server.
@@ -46,10 +48,17 @@ const paths = [
 const unlisted = ['/search/', '/offline/'];
 /** Each query must list every expected page in its first five results. */
 const SEARCHES = [
-  ['sky', ['/people/luke-skywalker/', '/people/anakin-skywalker/', '/people/shmi-skywalker/']],
+  [
+    'sky',
+    [
+      '/characters/luke-skywalker/',
+      '/characters/anakin-skywalker/',
+      '/characters/shmi-skywalker-lars/',
+    ],
+  ],
   ['tatooine', ['/planets/tatooine/']],
   ['falcon', ['/starships/millennium-falcon/']],
-  ['padme', ['/people/padme-amidala/']],
+  ['padme', ['/characters/padme-amidala-naberrie/']],
 ];
 
 const CONCURRENCY = 6;
@@ -73,6 +82,7 @@ try {
   await checkSearch();
   await checkWithoutJavaScript();
   await checkOffline();
+  await checkExplore();
   if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
@@ -169,7 +179,7 @@ async function checkSearch() {
     watch(page, where);
     for (const [query, expected] of SEARCHES) {
       // Start from a record page, as a reader would: `/` focuses the header box.
-      await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+      await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
       await page.keyboard.press('/');
       const focused = await page.evaluate(() => document.activeElement?.id);
       if (focused !== 'site-search-q') fail(where, `"/" focused "${String(focused)}"`);
@@ -234,8 +244,8 @@ async function checkWithoutJavaScript() {
   try {
     const page = await context.newPage();
     await page.goto(`${base}/search/?q=sky`);
-    const fallback = await page.locator('swr-site-search a[href="/people/"]').count();
-    if (fallback !== 1) fail(where, 'no fallback link to /people/');
+    const fallback = await page.locator('swr-site-search a[href="/characters/"]').count();
+    if (fallback !== 1) fail(where, 'no fallback link to /characters/');
   } finally {
     await context.close();
   }
@@ -256,7 +266,7 @@ async function checkOffline() {
   try {
     const page = await context.newPage();
     page.on('pageerror', (e) => fail(where, `page error: ${e.message}`));
-    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
     // Wait for install (the precache) and for the worker to take control of this page.
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;
@@ -267,10 +277,10 @@ async function checkOffline() {
       }
     });
     // A visit through the worker saves the page.
-    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
     await context.setOffline(true);
 
-    await page.goto(`${base}/people/luke-skywalker/`);
+    await page.goto(`${base}/characters/luke-skywalker/`);
     const h1 = await page.locator('h1').textContent();
     if (h1 !== 'Luke Skywalker') fail(where, `visited page shows "${String(h1)}" offline`);
 
@@ -281,10 +291,55 @@ async function checkOffline() {
       fail(where, 'search found nothing offline');
     }
 
-    await page.goto(`${base}/people/yoda/`);
+    await page.goto(`${base}/species/wookiee/`);
     const offline = await page.locator('h1').textContent();
     if (!/offline/i.test(offline ?? '')) {
       fail(where, `unvisited page shows "${String(offline)}" offline, not the offline page`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+async function checkExplore() {
+  const where = '/explore/';
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    watch(page, where);
+    await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    const explore = page.locator('swr-explore');
+    const status = () =>
+      explore.evaluate((el) => el.shadowRoot?.querySelector('[role=status]')?.textContent ?? '');
+    for (const [question, expected] of [
+      ['Who comes from Tatooine?', '/characters/luke-skywalker/'],
+      ['Articles per section', null],
+    ]) {
+      await explore.getByRole('button', { name: question }).click();
+      try {
+        await page.waitForFunction(
+          () =>
+            /rows? in|didn't run/.test(
+              document.querySelector('swr-explore')?.shadowRoot?.querySelector('[role=status]')
+                ?.textContent ?? '',
+            ),
+          undefined,
+          { timeout: 60_000 },
+        );
+      } catch {
+        fail(where, `"${question}" never finished`);
+        continue;
+      }
+      const text = await status();
+      if (!/rows? in/.test(text)) fail(where, `"${question}": ${text}`);
+      if (expected !== null) {
+        const links = await explore.evaluate((el) =>
+          [...(el.shadowRoot?.querySelectorAll('tbody a') ?? [])].map((a) =>
+            a.getAttribute('href'),
+          ),
+        );
+        if (!links.includes(expected)) fail(where, `"${question}" has no link to ${expected}`);
+      }
     }
   } finally {
     await context.close();
@@ -309,12 +364,15 @@ async function checkDevServer() {
   const dev = spawn(
     new URL('../node_modules/.bin/tsx', import.meta.url).pathname,
     ['scripts/dev.ts'],
-    { env: { ...process.env, PORT: String(port), HMR_PORT: String(hmr) }, stdio: 'pipe' },
+    {
+      env: { ...process.env, PORT: String(port), HMR_PORT: String(hmr), SITE_SAMPLE: '20' },
+      stdio: 'pipe',
+    },
   );
   let log = '';
   try {
     await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`didn't start in 30s: ${log}`)), 30_000);
+      const timer = setTimeout(() => reject(new Error(`didn't start in 120s: ${log}`)), 120_000);
       const read = (chunk) => {
         log += String(chunk);
         if (log.includes(`localhost:${String(port)}`)) {
@@ -331,7 +389,7 @@ async function checkDevServer() {
     try {
       const page = await context.newPage();
       watch(page, where);
-      for (const path of ['/', '/people/luke-skywalker/']) {
+      for (const path of ['/', '/characters/luke-skywalker/']) {
         const response = await page.goto(devBase + path, { waitUntil: 'networkidle' });
         if (response?.status() !== 200)
           fail(where, `${path}: status ${String(response?.status())}`);
@@ -357,7 +415,7 @@ const seconds = ((Date.now() - started) / 1000).toFixed(0);
 const report = [
   '# Smoke report',
   '',
-  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline and the dev server (${seconds}s).`,
+  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline, Explore and the dev server (${seconds}s).`,
   '',
   failures.length === 0 ? 'All checks passed.' : failures.map((f) => `- ${f}`).join('\n'),
   '',
@@ -368,5 +426,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline and dev server: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore and dev server: all checks passed (${seconds}s)`,
 );

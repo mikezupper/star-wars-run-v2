@@ -236,13 +236,36 @@
     padding-block: 1rem;
     border-block-end: 1px solid var(--border);
 
-    & > p a {
+    & > p:first-of-type a {
       font-family: var(--font-display);
       font-size: var(--step-1);
       font-weight: 800;
       letter-spacing: 0.04em;
       color: var(--text);
       text-decoration: none;
+    }
+
+    & > p + p {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Explore and Sabacc: small amber pills beside the site name. */
+    & > p + p a {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: var(--step--1);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+
+      &:hover,
+      &[aria-current] {
+        background: color-mix(in oklch, var(--accent) 18%, transparent);
+      }
     }
 
     & nav ul {
@@ -255,7 +278,8 @@
 
     & nav a {
       display: inline-block;
-      padding: 0.4rem 0.7rem;
+      padding: 0.3rem 0.55rem;
+      font-size: var(--step--1);
       border-radius: 999px;
       color: var(--text-muted);
       text-decoration: none;
@@ -339,16 +363,30 @@
     }
   }
 
-  /* Record page: facts card, opening crawl, a grid of relationship cards. */
+  /*
+   * Article page: the lead reads as one column of prose; the facts sit beside it on wide
+   * screens, like a wiki infobox, and after it on narrow ones (DOM order). Appearance lists
+   * run full width below, in as many columns as fit.
+   */
   article {
     display: grid;
     gap: var(--gap);
-    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
     align-items: start;
     container-type: inline-size;
 
-    & > h1 {
+    & > h1,
+    & > p {
       grid-column: 1 / -1;
+    }
+
+    & > div {
+      display: grid;
+      gap: 1em;
+      max-inline-size: var(--measure);
+
+      & > p:last-child {
+        color: var(--text-muted);
+      }
     }
 
     & > section {
@@ -363,48 +401,92 @@
       }
     }
 
-    /* Facts and the crawl span the full width; relationship cards share rows. */
-    & > section:has(dl),
-    & > section:has(blockquote) {
+    @media (width > 60rem) {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+
+      /* No inner scrolling: a scrollable box would need keyboard focus (axe). */
+      & > section[aria-labelledby='facts'] {
+        grid-column: 2;
+        grid-row: span 2;
+      }
+    }
+
+    & > section:is([aria-labelledby='appearances'], [aria-labelledby='cast']) {
       grid-column: 1 / -1;
-    }
+      display: grid;
+      gap: 0.75rem;
 
-    & section ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      padding: 0;
-      list-style: none;
-    }
+      & summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
 
-    & section li a {
-      display: inline-block;
-      padding: 0.3rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      text-decoration: none;
+      & :is(ol, ul) {
+        columns: 18rem;
+        column-gap: var(--gap);
+        margin-block-start: 0.75rem;
+      }
 
-      &:hover {
-        border-color: var(--accent);
+      /* Numbers hang in the gap before each column: leave room for "607.". */
+      & ol {
+        column-gap: calc(var(--gap) + 5ch);
+      }
+
+      & li {
+        break-inside: avoid;
+        padding-block: 0.15rem;
+      }
+
+      & small {
+        color: var(--text-muted);
       }
     }
   }
 
   dl {
     display: grid;
-    grid-template-columns: minmax(8rem, max-content) 1fr;
-    gap: 0.5rem 1.5rem;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.35rem 1rem;
 
     & dt {
+      grid-column: 1;
       color: var(--text-muted);
     }
 
     & dd {
+      grid-column: 2;
       font-weight: 600;
     }
+  }
 
-    @container (inline-size > 44rem) {
-      grid-template-columns: repeat(2, minmax(8rem, max-content) 1fr);
+  /* A section's letters: chips with their counts. */
+  nav[aria-label='Browse by letter'] ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+    }
+
+    & a {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    & data {
+      color: var(--text-muted);
+      font-size: var(--step--1);
     }
   }
 
@@ -519,5 +601,41 @@
     body > header nav a[aria-current] {
       outline: 2px solid CanvasText;
     }
+  }
+}
+
+@layer components {
+  /* Sabacc's ways to play: cards, like the home page's sections. */
+  main > section > ul:has(> li > a + p) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: var(--gap);
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: grid;
+      gap: 0.5rem;
+      align-content: start;
+      padding: var(--gap);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      box-shadow: var(--shadow);
+    }
+
+    & a {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 700;
+    }
+
+    & p {
+      color: var(--text-muted);
+    }
+  }
+
+  main > section > h2 {
+    margin-block-end: 0.75rem;
   }
 }

@@ -13,6 +13,19 @@ Each entry has four parts:
 
 ---
 
+## A decimal comma made a clone 183 meters tall (2026-10-06)
+
+- **Symptom:** Explore's "Tallest characters" listed an unidentified clone navigation officer at
+  183 m, the canon article for the same person said 1.83 m.
+- **Cause:** The Legends article writes "1,83 meters", with a decimal comma. The number pattern
+  took any comma as a thousands separator, so "1,83" became 183. 22 field values in the snapshot
+  start with a decimal-comma number.
+- **Fix:** In `src/domain/quantities.ts`, a comma counts only in proper thousands groups
+  (`1,830`), and a number directly followed by `,<digit>` is ambiguous and isn't read.
+- **Guard:** `test/domain/quantities.test.ts` covers "1,83 meters", "1,9 meters" and "2,5
+  million" (not read) and "1,830 meters" (read). Found by eyeballing Explore's results on the
+  full archive: worth doing after any parsing change.
+
 ## A 50 MB generated snapshot got committed on another branch (2026-10-06)
 
 - **Symptom:** An ADR-only commit on `spike/wookieepedia` also added all of `data/wookieepedia/`

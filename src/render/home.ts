@@ -1,9 +1,9 @@
-// The home page: what the site is, and a way into each section.
+// The home page: what the archive is, and a way into each section.
 import { serverHtml } from '@gyral/ssr';
-import { kindPath } from '../domain/paths.js';
-import { KINDS, type Dataset } from '../domain/records.js';
+import { sectionPath, type Archive } from '../domain/archive.js';
+import { SECTIONS } from '../domain/sections.js';
 import { DESCRIPTION, SITE_NAME } from '../site.js';
-import { KIND_BLURBS, KIND_LABELS, TEXT } from '../labels.js';
+import { SECTION_LABELS, TEXT } from '../labels.js';
 import type { PageMeta } from './layout.js';
 
 export const homeMeta: PageMeta = {
@@ -12,16 +12,17 @@ export const homeMeta: PageMeta = {
   description: DESCRIPTION,
 };
 
-export const homeBody = (data: Dataset) => serverHtml`
+export const homeBody = (archive: Archive) => serverHtml`
   <h1>${SITE_NAME}</h1>
   <p>${TEXT.homeIntro}</p>
   <ul>
-    ${KINDS.map(
-      (kind) => serverHtml`<li>
-        <a href=${kindPath(kind)}>${KIND_LABELS[kind].plural}</a>
-        <data value=${String(data[kind].length)}>${String(data[kind].length)}</data>
-        <p>${KIND_BLURBS[kind]}</p>
-      </li>`,
-    )}
+    ${SECTIONS.map((section) => {
+      const count = archive.bySection.get(section)?.length ?? 0;
+      return serverHtml`<li>
+        <a href=${sectionPath(section)}>${SECTION_LABELS[section].plural}</a>
+        <data value=${String(count)}>${count.toLocaleString('en-US')}</data>
+        <p>${SECTION_LABELS[section].blurb}</p>
+      </li>`;
+    })}
   </ul>
 `;

@@ -1,16 +1,26 @@
 // The route table and the request handler: one function renders every page, and it serves
-// both the dev server (per request) and the build (prerendered to files).
+// both the dev server (per request) and the build (prerendered to files). Pages come from the
+// Wookieepedia archive (ADR 0008).
 import { renderToStream, renderToString, serverHtml } from '@gyral/ssr';
-import { createCatalog } from '../domain/catalog.js';
-import { KINDS, type Dataset } from '../domain/records.js';
+import type { ArticleRecord } from '../domain/article.js';
+import type { Archive } from '../domain/archive.js';
+import { SECTIONS } from '../domain/sections.js';
 import { absolute } from '../site.js';
-import { homeBody, homeMeta } from './home.js';
 import { TEXT } from '../labels.js';
+import { articleBody, articleMeta } from './article.js';
+import { homeBody, homeMeta } from './home.js';
 import { layout, type Assets, type PageMeta } from './layout.js';
-import { listBody, listMeta } from './list.js';
-import { recordBody, recordMeta } from './record.js';
 import { offlineBody, offlineMeta } from './offline.js';
+import { exploreBody, exploreMeta } from './explore.js';
+import { sabaccBody, sabaccMeta } from './sabacc.js';
 import { searchBody, searchMeta } from './search.js';
+import { byLetter, letterBody, letterMeta, sectionBody, sectionMeta } from './section.js';
+
+/** What the site renders: the archive's address book, and each article's content. */
+export interface SiteData {
+  readonly archive: Archive;
+  readonly articles: ReadonlyMap<string, ArticleRecord>;
+}
 
 interface Route {
   readonly meta: PageMeta;
@@ -43,23 +53,35 @@ const notFoundBody = () => serverHtml`
 
 const HTML = { 'content-type': 'text/html; charset=utf-8' };
 
-/** Paths always end with a slash; `/people` and `/people/` are the same page. */
+/** Paths always end with a slash; `/characters` and `/characters/` are the same page. */
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-export function createSite(assets: Assets, data: Dataset): Site {
-  const catalog = createCatalog(data);
+export function createSite(assets: Assets, { archive, articles }: SiteData): Site {
   const table = new Map<string, Route>([
-    ['/', { meta: homeMeta, body: () => homeBody(data) }],
+    ['/', { meta: homeMeta, body: () => homeBody(archive) }],
     [searchMeta.path, { meta: searchMeta, body: searchBody }],
     [offlineMeta.path, { meta: offlineMeta, body: offlineBody }],
+    [sabaccMeta.path, { meta: sabaccMeta, body: sabaccBody }],
+    [exploreMeta.path, { meta: exploreMeta, body: exploreBody }],
   ]);
-  for (const kind of KINDS) {
-    const list = listMeta(kind, data);
-    table.set(list.path, { meta: list, body: () => listBody(kind, data) });
-    for (const record of data[kind]) {
-      const meta = recordMeta(record);
-      table.set(meta.path, { meta, body: () => recordBody(record, catalog) });
+  for (const section of SECTIONS) {
+    // Every section has a page, even an empty one: the header links to all of them.
+    const entries = archive.bySection.get(section) ?? [];
+    const letters = byLetter(entries);
+    const meta = sectionMeta(section, entries.length);
+    table.set(meta.path, { meta, body: () => sectionBody(section, letters) });
+    for (const [letter, inLetter] of letters) {
+      const lm = letterMeta(section, letter, inLetter.length);
+      table.set(lm.path, { meta: lm, body: () => letterBody(section, letter, inLetter) });
+    }
+    for (const entry of entries) {
+      const record = articles.get(entry.title);
+      if (record === undefined) continue;
+      table.set(entry.path, {
+        meta: articleMeta(entry),
+        body: () => articleBody(entry, record, archive),
+      });
     }
   }
 

@@ -3,13 +3,13 @@
 // server (commands never do), and nothing loads until the search page hydrates.
 // Adapted from gyral.dev's src/islands/pagefind.ts.
 import { command, defineDriver, type Command } from '@gyral/core';
-import { KINDS, type Kind } from '../domain/records.js';
+import { SECTIONS, type Section } from '../domain/sections.js';
 
 /** One search result, ready for the view. */
 export interface Hit {
   readonly url: string;
   readonly title: string;
-  readonly kind: Kind | undefined;
+  readonly kind: Section | undefined;
   /** The excerpt split into plain text and matched (`mark`) runs: no HTML reaches the view. */
   readonly excerpt: readonly { readonly text: string; readonly mark: boolean }[];
 }
@@ -17,7 +17,7 @@ export interface Hit {
 /** What to search for: the text, and optionally one kind of record. */
 export interface Query {
   readonly text: string;
-  readonly kind: Kind | undefined;
+  readonly kind: Section | undefined;
 }
 
 export interface PagefindResult {
@@ -75,9 +75,9 @@ export const splitExcerpt = (excerpt: string): Hit['excerpt'] =>
     );
 
 /** The kind a record page was indexed under (`data-pagefind-filter="kind:people"`). */
-const kindOf = (d: PagefindResult): Kind | undefined => {
+const kindOf = (d: PagefindResult): Section | undefined => {
   const value = d.filters?.['kind']?.[0];
-  return KINDS.find((kind) => kind === value);
+  return SECTIONS.find((kind) => kind === value);
 };
 
 export const toHit = (d: PagefindResult): Hit => ({
@@ -136,7 +136,7 @@ export const readQuery = <M>(toMsg: (query: Query) => M): Command<M> =>
     onSuccess: (params) =>
       toMsg({
         text: params.get('q') ?? '',
-        kind: KINDS.find((kind) => kind === params.get('kind')),
+        kind: SECTIONS.find((kind) => kind === params.get('kind')),
       }),
   });
 

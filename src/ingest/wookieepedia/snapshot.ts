@@ -2,15 +2,12 @@
 // title, in shards of SHARD_SIZE articles, plus the redirect table and meta.json. Gzip is
 // written without a timestamp, so the same dump always produces the same bytes.
 import { gzipSync } from 'node:zlib';
-import type { ParsedArticle } from './wikitext.js';
+import type { ArticleRecord, ParsedArticle } from '../../domain/article.js';
 
-export const SNAPSHOT_VERSION = 1;
+export type { ArticleRecord } from '../../domain/article.js';
+
+export const SNAPSHOT_VERSION = 2;
 export const SHARD_SIZE = 20_000;
-
-/** One article in the snapshot. */
-export interface ArticleRecord extends ParsedArticle {
-  readonly title: string;
-}
 
 /** One serialized article, with the two facts meta.json counts, so nobody re-parses it. */
 export interface Line {

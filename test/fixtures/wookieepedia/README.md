@@ -8,3 +8,7 @@ Wookieepedia dump (`starwars_pages_current.xml.7z`, published 2026-08-01). The p
 [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Each file is an excerpt of the
 article named by the file. Excerpts were cut at the first heading and are otherwise unchanged.
 Don't edit them. To refresh them, extract the same pages from a newer dump.
+
+`appearances/` holds the **Appearances** section of five of these articles, from its
+`==Appearances==` heading up to the next level-2 heading. It's the same dump and license, and
+the same rule applies: cut, not edited.

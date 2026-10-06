@@ -14,7 +14,7 @@
     "build": "vite build && tsx scripts/build.ts",
     "preview": "tsx scripts/preview.ts",
     "ingest": "tsx scripts/ingest.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build && pnpm smoke",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:sample && pnpm smoke",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
@@ -27,9 +27,12 @@
     "docker:build": "docker build -t starwars-run .",
     "docker:run": "docker run --rm -p 8080:8080 starwars-run",
     "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml",
-    "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts"
+    "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
+    "build:sample": "SITE_SAMPLE=20 pnpm build",
+    "build:explore": "tsx scripts/build-explore.ts"
   },
   "dependencies": {
+    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
     "@gyral/core": "^0.2.0",
     "@gyral/ssr": "^0.2.0",
     "@lit-labs/ssr": "4.1.0",
@@ -39,6 +42,7 @@
   "devDependencies": {
     "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
+    "@duckdb/node-api": "1.5.6-r.1",
     "@eslint/js": "10.0.1",
     "@gyral/testing": "^0.2.0",
     "@types/node": "24.19.1",

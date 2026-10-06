@@ -3,12 +3,15 @@
 // JavaScript.
 import { nothing } from 'lit';
 import { page, serverHtml } from '@gyral/ssr';
-import { kindPath } from '../domain/paths.js';
-import { KINDS, type Kind } from '../domain/records.js';
+import { sectionPath } from '../domain/archive.js';
+import { CC_BY_SA_3 } from '../domain/attribution.js';
+import { SECTIONS, type Section } from '../domain/sections.js';
 import { absolute, SITE_NAME } from '../site.js';
-import { KIND_LABELS, TEXT } from '../labels.js';
+import { EXPLORE_TEXT, SABACC_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
 
 /** Where the built CSS and JS live; dev and production differ (scripts/dev.ts, scripts/build.ts). */
+const WOOKIEEPEDIA_HOME = 'https://starwars.fandom.com';
+
 export interface Assets {
   readonly stylesheet: string;
   /** The client entry that hydrates islands; only pages with islands load it. */
@@ -24,9 +27,9 @@ export interface PageMeta {
   readonly title: string;
   readonly description: string;
   /** The section this page belongs to, marked current in the nav. */
-  readonly section?: Kind;
+  readonly section?: Section;
   /** Index this page for site search, filterable under this kind (record pages). */
-  readonly searchKind?: Kind;
+  readonly searchKind?: Section;
   /** True when the body contains islands that need the client entry. */
   readonly islands?: boolean;
   /** Not indexed by search engines and left out of the sitemap (404). */
@@ -60,13 +63,21 @@ const banner = (meta: PageMeta) => serverHtml`
   <a href="#main">${TEXT.skipLink}</a>
   <header>
     <p><a href="/" aria-current=${meta.path === '/' ? 'page' : nothing}>${SITE_NAME}</a></p>
+    <p>
+      <a href="/explore/" aria-current=${meta.path === '/explore/' ? 'page' : nothing}>${EXPLORE_TEXT.nav}</a>
+      <a href="/sabacc/" aria-current=${meta.path === '/sabacc/' ? 'page' : nothing}>${SABACC_TEXT.nav}</a>
+    </p>
     <nav aria-label=${TEXT.primaryNav}>
       <ul>
-        ${KINDS.map(
-          (kind) => serverHtml`<li>
-            <a href=${kindPath(kind)} aria-current=${
-              meta.path === kindPath(kind) ? 'page' : meta.section === kind ? 'true' : nothing
-            }>${KIND_LABELS[kind].plural}</a>
+        ${SECTIONS.map(
+          (section) => serverHtml`<li>
+            <a href=${sectionPath(section)} aria-current=${
+              meta.path === sectionPath(section)
+                ? 'page'
+                : meta.section === section
+                  ? 'true'
+                  : nothing
+            }>${SECTION_LABELS[section].plural}</a>
           </li>`,
         )}
       </ul>
@@ -88,7 +99,11 @@ const banner = (meta: PageMeta) => serverHtml`
 
 const footer = () => serverHtml`
   <footer>
-    <p>${TEXT.dataCredit} <a href="https://swapi.info" rel="external">swapi.info</a>.</p>
+    <p>
+      ${TEXT.dataCredit} <a href=${WOOKIEEPEDIA_HOME} rel="external">Wookieepedia</a>,
+      ${TEXT.dataLicense} <a href=${CC_BY_SA_3} rel="license external">CC BY-SA 3.0</a>.
+      ${TEXT.dataPerPage}
+    </p>
     <p><small>${TEXT.fanProject}</small></p>
   </footer>
 `;

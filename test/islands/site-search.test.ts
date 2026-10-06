@@ -8,9 +8,9 @@ import { SiteSearch, type Msg, type State } from '../../src/islands/site-search.
 
 const spec = SiteSearch.spec;
 const luke: Hit = {
-  url: '/people/luke-skywalker/',
+  url: '/characters/luke-skywalker/',
   title: 'Luke Skywalker',
-  kind: 'people',
+  kind: 'characters',
   excerpt: [{ text: 'Luke', mark: true }],
 };
 const live = (text: string, kind?: 'planets'): Extract<State, { _tag: 'Live' }> => ({
@@ -107,7 +107,7 @@ describe('site search', () => {
   it('renders the no-JavaScript fallback on the server', async () => {
     const out = await renderToString(html`<swr-site-search></swr-site-search>`);
     expect(out).toContain(TEXT.searchNoScript);
-    expect(out).toContain('href="/people/"');
+    expect(out).toContain('href="/characters/"');
   });
 
   it('parses typing, the kind filter and keys into messages', () => {
@@ -155,7 +155,7 @@ describe('site search view', () => {
     expect(await view({ ...live('sky'), result: { _tag: 'Searching' } })).toContain(TEXT.searching);
     const found = await view({ ...live('luke'), result: { _tag: 'Found', hits: [luke] } });
     expect(found).toContain(TEXT.resultCount(1, 'luke'));
-    expect(found).toContain('<a id="hit-0" href="/people/luke-skywalker/">');
+    expect(found).toContain('<a id="hit-0" href="/characters/luke-skywalker/">');
     expect(found).toContain('<small>character</small>');
     expect(found).toContain('<mark>Luke</mark>');
     const two = await view({
