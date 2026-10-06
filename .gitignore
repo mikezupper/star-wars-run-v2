@@ -11,3 +11,6 @@ coverage/
 
 .DS_Store
 .smoke/
+
+# The Wookieepedia snapshot: where it lives is decided by swr-7f1.3 once its size is known.
+data/wookieepedia/
