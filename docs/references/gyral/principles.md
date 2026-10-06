@@ -44,9 +44,10 @@ and nothing stops you from dropping down to Lit or to the DOM when you need to.
 
 ## No paradigm required
 
-You don't need streams, Effect or decorators to use Gyral. Internally, `@gyral/core` runs
-commands with Effect; publicly, the API is plain TypeScript: functions, objects, unions and
-promises. Implementation choices stay implementation details.
+You don't need streams, a functional-effects library or decorators to use Gyral. The API is
+plain TypeScript: functions, objects, unions and promises. Implementation choices stay
+implementation details: Gyral 0.1 ran commands on Effect, 0.2 runs them on a small built-in
+runtime, and no public type changed.
 
 ## Semantic HTML and accessibility are correctness
 
@@ -64,7 +65,7 @@ hydration of real server output against production builds.
 ## Enforce invariants, not intentions
 
 Rules that matter become checks with error messages that explain the fix. In Gyral's own repo,
-the public types are checked to never mention Effect, views can't attach closures, and every
+`@gyral/core` is checked to have no runtime dependency besides Lit, views can't attach closures, and every
 decision record is indexed. This site follows the same rule: every code sample on it compiles
 against the real packages, and every page passes accessibility checks in light and dark mode.
 
