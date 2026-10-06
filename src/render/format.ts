@@ -2,7 +2,7 @@
 // dates, lists. Machine-readable values go in <data value> and <time datetime>.
 import { serverHtml } from '@gyral/ssr';
 import type { Count } from '../domain/records.js';
-import { UNITS } from '../labels.js';
+import { ERAS, UNITS } from '../labels.js';
 
 const numbers = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
 
@@ -51,3 +51,14 @@ export function roman(n: number): string {
   }
   return out;
 }
+
+/**
+ * An in-universe year with its era spelled out for readers who don't know it:
+ * `19BBY` → `19<abbr title="Before the Battle of Yavin">BBY</abbr>`. Other text passes through.
+ */
+export const year = (value: string) => {
+  const match = /^(\d+(?:\.\d+)?)(BBY|ABY)$/.exec(value);
+  if (match?.[1] === undefined || match[2] === undefined) return value;
+  const era = match[2] as keyof typeof ERAS;
+  return serverHtml`${match[1]}<abbr title=${ERAS[era]}>${era}</abbr>`;
+};

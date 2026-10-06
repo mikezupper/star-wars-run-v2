@@ -153,6 +153,11 @@ describe('record pages', () => {
   it('show known facts with units, and leave unknown ones out', () => {
     const luke = pages.get('/people/luke-skywalker/') ?? '';
     expect(luke).toContain('<dt>Height</dt> <dd><data value="172">172 cm</data></dd>');
+    expect(luke).toContain(
+      '<dt>Born</dt> <dd>19<abbr title="Before the Battle of Yavin">BBY</abbr></dd>',
+    );
+    expect(pages.get('/people/')).toContain('Birth years count from the Battle of Yavin');
+    expect(pages.get('/planets/')).not.toContain('Battle of Yavin');
     const yoda = pages.get('/people/yoda/') ?? '';
     expect(yoda).not.toContain('<dt>Homeworld</dt>');
   });
