@@ -126,21 +126,20 @@ numbers. That's a change from swapi.info's typed fields.
    server-only components in `src/render/layout.ts`: written once, rendered into every page.
    Hydrated `define()` components are only for interactive parts; making the header one would
    add framework JavaScript to every page without removing any markup. Measured on Luke's page
-   (0.1.0): the chrome is about 2.5 KB raw, 1.1 KB gzipped, against 2.1 KB of content. If
-   on-disk duplication matters at full size, Caddy can stitch shared chrome in at serve time
-   (`templates`); `swr-7f1.6` decides that with real numbers.
+   (0.1.0): the chrome is about 2.5 KB raw, 1.1 KB gzipped, against 2.1 KB of content. Each
+   page keeps its own copy; that's what makes it complete without JavaScript.
 
 ## Implementation (epic `swr-7f1`)
 
-| Bead         | Work                                                              | Needs      |
-| ------------ | ----------------------------------------------------------------- | ---------- |
-| `swr-7f1.1`  | Upgrade to Gyral 0.2.0; pin lit-html 3.3.0                        | —          |
-| `swr-7f1.2`  | Wikitext parsing: clean infobox fields and lead prose             | `.1`       |
-| `swr-7f1.3`  | Dump ingest: stream the 7z into a snapshot; choose the format     | `.2`       |
-| `swr-7f1.4`  | Generalize kinds to every infobox type                            | `.3`       |
-| `swr-7f1.5`  | Merge swapi.info records into Wookieepedia ones                   | `.3`       |
-| `swr-7f1.6`  | Build at full size: measure, set budgets, decide chrome stitching | `.4`       |
-| `swr-7f1.7`  | Explore page: DuckDB-WASM over Parquet                            | `.3`       |
-| `swr-7f1.8`  | Offline at scale: title index                                     | `.6`       |
-| `swr-7f1.9`  | Attribution and CC BY-SA on every page                            | `.3`       |
-| `swr-7f1.10` | Render article prose                                              | `.3`, `.9` |
+| Bead         | Work                                                          | Needs      |
+| ------------ | ------------------------------------------------------------- | ---------- |
+| `swr-7f1.1`  | Upgrade to Gyral 0.2.0; pin lit-html 3.3.0                    | —          |
+| `swr-7f1.2`  | Wikitext parsing: clean infobox fields and lead prose         | `.1`       |
+| `swr-7f1.3`  | Dump ingest: stream the 7z into a snapshot; choose the format | `.2`       |
+| `swr-7f1.4`  | Generalize kinds to every infobox type                        | `.3`       |
+| `swr-7f1.5`  | Merge swapi.info records into Wookieepedia ones               | `.3`       |
+| `swr-7f1.6`  | Build at full size: measure and set budgets                   | `.4`       |
+| `swr-7f1.7`  | Explore page: DuckDB-WASM over Parquet                        | `.3`       |
+| `swr-7f1.8`  | Offline at scale: title index                                 | `.6`       |
+| `swr-7f1.9`  | Attribution and CC BY-SA on every page                        | `.3`       |
+| `swr-7f1.10` | Render article prose                                          | `.3`, `.9` |
