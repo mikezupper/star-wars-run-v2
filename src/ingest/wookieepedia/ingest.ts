@@ -5,7 +5,7 @@
 // Then the lines are sorted by title and written as shards (snapshot.ts).
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { availableParallelism } from 'node:os';
 import { basename, join } from 'node:path';
 import { Worker } from 'node:worker_threads';
@@ -22,6 +22,22 @@ export interface IngestOptions {
   /** Worker threads; defaults to one per core but one. 0 parses on this thread (tests). */
   readonly workers?: number;
   readonly log?: (message: string) => void;
+  /** Rebuild even when `out` already holds a snapshot of this dump. */
+  readonly force?: boolean;
+}
+
+const PARSER = 'wikiparser-node@1.48.0';
+
+/** The snapshot already in `out`, if it was built from this dump by this code. */
+async function current(out: string, sha256: string): Promise<Meta | undefined> {
+  try {
+    const meta = JSON.parse(await readFile(join(out, 'meta.json'), 'utf8')) as Meta;
+    const same =
+      meta.source.sha256 === sha256 && meta.version === SNAPSHOT_VERSION && meta.parser === PARSER;
+    return same ? meta : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /** Every page of the dump, closing the 7-Zip process when done. */
@@ -91,6 +107,15 @@ export async function ingest(options: IngestOptions): Promise<Meta> {
   const started = Date.now();
   const elapsed = () => `${((Date.now() - started) / 1000).toFixed(0)}s`;
 
+  // The snapshot is rebuilt from the dump, never stored (ADR 0007): skip the 6-minute ingest
+  // when the snapshot on disk already matches this dump and this code.
+  const dumpHash = await sha256(options.dump);
+  const existing = options.force === true ? undefined : await current(options.out, dumpHash);
+  if (existing !== undefined) {
+    log(`snapshot in ${options.out} is current for this dump; skipping (use --force to rebuild)`);
+    return existing;
+  }
+
   // Pass 1: titles and redirects.
   const articles = new Set<string>();
   const redirects = new Map<string, string>();
@@ -145,8 +170,8 @@ export async function ingest(options: IngestOptions): Promise<Meta> {
 
   const meta: Meta = {
     version: SNAPSHOT_VERSION,
-    source: { file: basename(options.dump), sha256: await sha256(options.dump), latestRevision },
-    parser: 'wikiparser-node@1.48.0',
+    source: { file: basename(options.dump), sha256: dumpHash, latestRevision },
+    parser: PARSER,
     counts: {
       articles: lines.length,
       redirects: redirects.size,

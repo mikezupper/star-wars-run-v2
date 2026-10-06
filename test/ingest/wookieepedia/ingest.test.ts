@@ -225,5 +225,24 @@ describe('ingest, end to end', () => {
         { text: ' and knew Nobody Here.' },
       ],
     ]);
+
+    // Same dump, same code: the snapshot is kept, not rebuilt. --force rebuilds it.
+    const again: string[] = [];
+    await ingest({
+      dump: join(dir, 'dump.7z'),
+      out: join(dir, 'out'),
+      workers: 0,
+      log: (m) => again.push(m),
+    });
+    expect(again).toEqual([expect.stringMatching(/is current for this dump; skipping/)]);
+    const forced: string[] = [];
+    await ingest({
+      dump: join(dir, 'dump.7z'),
+      out: join(dir, 'out'),
+      workers: 0,
+      force: true,
+      log: (m) => forced.push(m),
+    });
+    expect(forced.some((m) => m.startsWith('pass 1:'))).toBe(true);
   });
 });
