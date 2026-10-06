@@ -24,7 +24,12 @@ export const FEATURED = [
 
 export async function loadSiteData(
   options: { readonly sample?: number; readonly dir?: string } = {},
-): Promise<{ archive: Archive; articles: Map<string, ArticleRecord> }> {
+): Promise<{
+  archive: Archive;
+  articles: Map<string, ArticleRecord>;
+  /** Redirect title → target, for the search title index (swr-357). */
+  redirects: ReadonlyMap<string, string>;
+}> {
   const dir = options.dir ?? WOOKIEEPEDIA_DIR;
   const index = await loadWookieepediaIndex(dir);
   let summaries: Summary[] = [...index.articles.values()];
@@ -35,5 +40,5 @@ export async function loadSiteData(
   }
   const archive = buildArchive(summaries);
   const articles = await loadArticles(dir, options.sample === undefined ? undefined : new Set(archive.byTitle.keys()));
-  return { archive, articles };
+  return { archive, articles, redirects: index.redirects };
 }

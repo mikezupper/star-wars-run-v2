@@ -1,9 +1,9 @@
 /// <reference types="node" />
 // `pnpm dev`: Vite serves the client modules, the stylesheet and public/; every other request is rendered by the
 // same code the build prerenders, reloaded per request so edits show up.
-// The search index is the exception: Pagefind builds it from the finished pages during
-// `pnpm build`, so dev serves /pagefind/ from the last build's dist/pagefind/
-// (docs/lessons-learned.md).
+// The search indexes are the exception: the build writes them (Pagefind from the finished
+// pages, the title index from the archive), so dev serves /pagefind/ and /search-titles/ from
+// the last build's dist/ (docs/lessons-learned.md).
 import { readFile } from 'node:fs/promises';
 import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
@@ -36,8 +36,8 @@ const DEV_ASSETS = {
 };
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url));
-/** Build outputs the dev server can't make itself: the search index, Explore's data and engine. */
-const FROM_BUILD = ['/pagefind/', '/data/', '/duckdb/'];
+/** Build outputs the dev server serves from dist/: the search indexes, Explore's data and engine. */
+const FROM_BUILD = ['/pagefind/', '/search-titles/', '/data/', '/duckdb/'];
 
 const TYPES: Record<string, string> = {
   '.js': 'text/javascript',

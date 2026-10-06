@@ -8,7 +8,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { cleanupOutdatedCaches, matchPrecache, precacheAndRoute } from 'workbox-precaching';
 import type { PrecacheEntry } from 'workbox-precaching';
 import { registerRoute, setCatchHandler } from 'workbox-routing';
-import { CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 
 declare const self: {
   readonly __WB_MANIFEST: PrecacheEntry[];
@@ -55,6 +55,21 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxEntries: 2000,
+        purgeOnQuotaError: true,
+      }) as unknown as WorkboxPlugin,
+    ],
+  }),
+);
+
+// The search title index's shards (swr-357), kept as they're fetched. Their names aren't
+// hashes, so a saved shard is used at once and refreshed in the background.
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/search-titles/'),
+  new StaleWhileRevalidate({
+    cacheName: 'titles',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 500,
         purgeOnQuotaError: true,
       }) as unknown as WorkboxPlugin,
     ],
