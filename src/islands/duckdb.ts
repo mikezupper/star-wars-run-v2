@@ -15,6 +15,10 @@ export interface QueryResult {
 
 export const MAX_ROWS = 500;
 
+/** Shown when the engine's worker or WebAssembly can't be loaded (offline, blocked, missing). */
+export const ENGINE_UNAVAILABLE =
+  'the query engine could not be loaded. Check your connection and try again.';
+
 /** The engine and tables, as loaded paths; `origin` makes them absolute for DuckDB's fetches. */
 export const ENGINE = {
   wasm: '/duckdb/duckdb-eh.wasm',
@@ -44,8 +48,19 @@ let connected: Promise<Connection> | undefined;
 const connect = (origin: string): Promise<Connection> => {
   connected ??= (async () => {
     const duckdb = await import('@duckdb/duckdb-wasm');
-    const db = new duckdb.AsyncDuckDB(new duckdb.VoidLogger(), new Worker(ENGINE.worker));
-    await db.instantiate(new URL(ENGINE.wasm, origin).href);
+    const worker = new Worker(ENGINE.worker);
+    // DuckDB doesn't report a worker that fails to load: without this, the page would wait forever.
+    const workerFailed = new Promise<never>((_, reject) => {
+      worker.addEventListener(
+        'error',
+        () => {
+          reject(new Error(ENGINE_UNAVAILABLE));
+        },
+        { once: true },
+      );
+    });
+    const db = new duckdb.AsyncDuckDB(new duckdb.VoidLogger(), worker);
+    await Promise.race([db.instantiate(new URL(ENGINE.wasm, origin).href), workerFailed]);
     await db.registerFileURL(
       'archive.duckdb',
       new URL(ENGINE.database, origin).href,

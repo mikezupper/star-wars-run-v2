@@ -127,7 +127,11 @@ const MULTIPLIERS: Readonly<Record<string, number>> = {
 
 const APPROX =
   /^(?:nearly|about|around|approximately|approx\.?|roughly|over|more than|up to|under|less than|almost|at least|at most|c\.|ca\.|~)\s+/i;
-const NUMBER = String.raw`\d[\d,]*(?:\.\d+)?`;
+/**
+ * A number with optional thousands groups: `1,830`, `12,928.5`, `1.83`. A comma must be followed
+ * by exactly three digits; "1,83 meters" (a decimal comma) is ambiguous and isn't read.
+ */
+const NUMBER = String.raw`\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?`;
 
 const toNumber = (text: string): number => Number(text.replaceAll(',', ''));
 
@@ -154,6 +158,8 @@ export function parseQuantity(text: string, dimension: Dimension): Quantity | un
   ).exec(rest);
   if (match?.[1] === undefined) return undefined;
   const after = rest.slice(match[0].length).toLowerCase();
+  // "1,83 meters", "2,5 million": a decimal comma, or a broken thousands group. Not guessed.
+  if (/^,\d/.test(after)) return undefined;
   // The longest unit the dimension knows at the start of what follows ("kilograms in armor").
   const units: Units = spec.units;
   const unit = Object.keys(units)

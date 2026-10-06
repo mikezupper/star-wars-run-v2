@@ -62,17 +62,18 @@ Parse rates on the 2026-08-01 snapshot (first item of each field):
 
 | Field      | Parsed              | Field      | Parsed          |
 | ---------- | ------------------- | ---------- | --------------- |
-| height     | 6,485 / 6,959 (93%) | max speed  | 945 / 971 (97%) |
-| length     | 3,795 / 4,055 (94%) | weight     | 678 / 798 (85%) |
-| cost       | 3,485 / 3,873 (90%) | mass       | 636 / 671 (95%) |
-| crew       | 3,211 / 3,685 (87%) | lengthday  | 546 / 563 (97%) |
-| passengers | 1,793 / 2,313 (78%) | mglt       | 371 / 380 (98%) |
-| hyperdrive | 1,184 / 1,682 (70%) | diameter   | 261 / 284 (92%) |
+| height     | 6,482 / 6,959 (93%) | max speed  | 945 / 971 (97%) |
+| length     | 3,793 / 4,055 (94%) | weight     | 675 / 798 (85%) |
+| cost       | 3,487 / 3,873 (90%) | mass       | 635 / 671 (95%) |
+| crew       | 3,211 / 3,685 (87%) | lengthday  | 547 / 563 (97%) |
+| passengers | 1,792 / 2,313 (77%) | mglt       | 371 / 380 (98%) |
+| hyperdrive | 1,187 / 1,682 (71%) | diameter   | 261 / 284 (92%) |
 | population | 977 / 1,240 (79%)   | lengthyear | 194 / 583 (33%) |
 
 The misses are mostly not numbers ("Equipped", "Stationary", "Tall", "Over twenty million").
 `lengthyear` stays low on purpose: most years are given in **local** days, which aren't
-comparable to standard days, so they're left out rather than mixed in.
+comparable to standard days, so they're left out rather than mixed in. So are numbers with a
+decimal comma ("1,83 meters"): read as a thousands separator, they came out 100 times too big.
 
 ## Explore: SQL in the browser (`swr-7f1.7`)
 

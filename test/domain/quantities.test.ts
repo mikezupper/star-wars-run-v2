@@ -10,6 +10,7 @@ describe('parseQuantity', () => {
     ['158 pounds', 'kilograms', { value: 158 * 0.45359237 }],
     ['120 kilograms in armor', 'kilograms', { value: 120 }],
     ['12,928 km', 'kilometers', { value: 12928 }],
+    ['1,830 meters', 'meters', { value: 1830 }],
     ['174.2 billion', 'count', { value: 174.2e9 }],
     ['11,300,000 (approx.)', 'count', { value: 11.3e6, approx: true }],
     ['Pilot (1)', 'count', { value: 1 }],
@@ -41,6 +42,9 @@ describe('parseQuantity', () => {
     ['1,000 parsecs', 'meters'],
     ['5 apples', 'credits'],
     ['30-10 meters', 'meters'],
+    ['1,83 meters', 'meters'],
+    ['2,5 million', 'count'],
+    ['1,9 meters', 'meters'],
   ] as const)('leaves %j as %s alone', (text, dimension) => {
     expect(parseQuantity(text, dimension)).toBeUndefined();
   });

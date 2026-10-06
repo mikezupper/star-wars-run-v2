@@ -160,7 +160,7 @@ describe('DuckDB driver', () => {
     vi.stubGlobal(
       'Worker',
       class {
-        readonly stub = true;
+        addEventListener = vi.fn();
       },
     );
     vi.stubGlobal('window', { location: { origin: 'https://starwars.run' } });
@@ -180,5 +180,33 @@ describe('DuckDB driver', () => {
       "ATTACH 'archive.duckdb' AS archive_db (READ_ONLY)",
       'USE archive_db',
     ]);
+  });
+
+  it('fails with a clear message when the engine worker cannot load', async () => {
+    vi.doMock('@duckdb/duckdb-wasm', () => ({
+      AsyncDuckDB: class {
+        instantiate = () => new Promise(() => undefined); // never settles, as in a real failure
+      },
+      VoidLogger: class {
+        readonly stub = true;
+      },
+      DuckDBDataProtocol: { HTTP: 4 },
+    }));
+    vi.stubGlobal(
+      'Worker',
+      class {
+        addEventListener(_type: string, listener: () => void) {
+          setTimeout(listener, 0);
+        }
+      },
+    );
+    vi.stubGlobal('window', { location: { origin: 'https://starwars.run' } });
+    const fresh = await import('../../src/islands/duckdb.js');
+    await expect(
+      fresh.drivers.duckdb.run('SELECT 1', {
+        signal: new AbortController().signal,
+        emit: () => undefined,
+      }),
+    ).rejects.toThrow(fresh.ENGINE_UNAVAILABLE);
   });
 });

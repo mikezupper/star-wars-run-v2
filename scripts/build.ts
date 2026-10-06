@@ -74,7 +74,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 /** DuckDB-WASM's engine and worker (the `eh` build: WebAssembly exceptions, Baseline). */
-async function copyDuckDb(dist: string): Promise<void> {
+export async function copyDuckDb(dist: string): Promise<void> {
   // The package doesn't export package.json; its main entry sits in dist/ beside the engine.
   const from = dirname(createRequire(import.meta.url).resolve('@duckdb/duckdb-wasm'));
   await mkdir(join(dist, 'duckdb'), { recursive: true });

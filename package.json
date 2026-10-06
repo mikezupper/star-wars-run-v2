@@ -28,7 +28,8 @@
     "docker:run": "docker run --rm -p 8080:8080 starwars-run",
     "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
-    "build:sample": "SITE_SAMPLE=20 pnpm build"
+    "build:sample": "SITE_SAMPLE=20 pnpm build",
+    "build:explore": "tsx scripts/build-explore.ts"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
