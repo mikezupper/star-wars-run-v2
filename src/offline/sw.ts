@@ -8,7 +8,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { cleanupOutdatedCaches, matchPrecache, precacheAndRoute } from 'workbox-precaching';
 import type { PrecacheEntry } from 'workbox-precaching';
 import { registerRoute, setCatchHandler } from 'workbox-routing';
-import { NetworkFirst } from 'workbox-strategies';
+import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 
 declare const self: {
   readonly __WB_MANIFEST: PrecacheEntry[];
@@ -28,8 +28,8 @@ precacheAndRoute(self.__WB_MANIFEST, {
   ignoreURLParametersMatching: [/^q$/, /^kind$/, /^ts$/, /^utm_/],
 });
 
-// Record pages: fresh from the network when it answers within 3 seconds, else the copy saved
-// the last time this page was visited. Capped above the number of records.
+// Article pages: fresh from the network when it answers within 3 seconds, else the copy saved
+// the last time this page was visited. The 500 most recent are kept.
 registerRoute(
   ({ request }) => request.destination === 'document',
   new NetworkFirst({
@@ -39,6 +39,22 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({
         maxEntries: 500,
+        purgeOnQuotaError: true,
+      }) as unknown as WorkboxPlugin,
+    ],
+  }),
+);
+
+// The search index's chunks and result fragments, kept as they're fetched: their names are
+// content hashes, so a saved copy is never stale. Offline, a search works when its chunks were
+// fetched online (swr-7f1.8 makes all of search work offline with a title index).
+registerRoute(
+  ({ url }) => /^\/pagefind\/(?:index|fragment)\//.test(url.pathname),
+  new CacheFirst({
+    cacheName: 'search',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 2000,
         purgeOnQuotaError: true,
       }) as unknown as WorkboxPlugin,
     ],

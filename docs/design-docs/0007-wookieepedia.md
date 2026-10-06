@@ -157,6 +157,54 @@ On the 2026-08-01 dump, 12 cores:
   from it (`swr-7f1.7`), so DuckDB isn't needed until then.
 - **Decompression:** the 7-Zip binary from the `7zip-bin` package; no system install.
 
+## What the full build measured (`swr-7f1.6`)
+
+`pnpm build` on the whole archive, 12 cores. The second run, which logged each stage's time,
+shared the machine with other builds (load average 12–25), so its times run high; the first
+run was faster.
+
+| Measure          | Value                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| Pages            | 227,657: every article, 14 sections and their letter pages                         |
+| Time             | 8 min 19 s quiet; 13 min 13 s under load                                           |
+| Stages (loaded)  | load 36 s; prerender 10 min; search index 1 min 55 s                               |
+|                  | Explore database 14 s; service worker 23 s; page budget check 5 s                  |
+| Peak memory      | 10 GB                                                                              |
+| `dist/`          | 1.7 GB of files (3.9 GB on disk: 456k small files)                                 |
+| HTML             | 1.4 GB; median 5.6 KB, p99 23 KB, largest 808 KB (an appearances list)             |
+| Search index     | 131 MB in 228k files: 82 MB result fragments, 48 MB index chunks, 1.4 MB metadata  |
+| A search fetches | 1.6 MB once (engine and metadata), then 30–55 KB of index and 4–11 KB of fragments |
+| Explore database | 87 MB                                                                              |
+| Sitemaps         | an index and 5 files of up to 50,000 URLs                                          |
+
+Decisions:
+
+- **Gate budget: 6 minutes.** `pnpm check` (sample build and smoke included) took 4 min 3 s
+  after this bead, on the same busy machine. The full build stays out of the gate.
+- **Page budget: 1 MB of HTML.** The build fails, naming each page over it. The largest pages
+  are appearances lists and letter pages; splitting big letters is `swr-c4f`.
+- **Sitemaps:** `sitemap.xml` is always an index of `sitemap-N.xml` files, at any size, so the
+  sample build checks the same shape production ships.
+- **Offline:** the service worker no longer precaches the search index; at this size it was
+  18 MB of precache list for 228k files. It precaches Pagefind's runtime (1.6 MB) and caches
+  index chunks and fragments as searches use them. Offline search for any word is `swr-7f1.8`.
+  Pagefind's index, fragment and filter files have content-hashed names, so they're served as
+  immutable, like `/assets/`.
+- **Smoke at this size:** checking 227k pages in Chromium would take about a day.
+  `SMOKE_PAGES=1000 pnpm smoke` checks every section and letter page, the pages the search
+  checks expect, and an even spread of articles: 1,002 pages, plus every link on them (which,
+  through the letter pages, is every article). It took 23 minutes under load. The gate keeps
+  the 20-per-section sample build and checks all of it.
+- **Search ranking breaks at this size,** and the sample hides it: "tatooine" doesn't list the
+  planet in its top five, nor "luke" Luke Skywalker. That's `swr-357`; the full smoke run's
+  only failures are those search checks.
+- **Not measured here:** the Docker image. It needs the dump in the build first (`swr-7f1.12`);
+  `dist/` plus Caddy's image (about 50 MB) puts it near 1.8 GB.
+- **Loading** read and parsed the snapshot three times. It now reads each line's title, era
+  and kind without parsing the article, and parses only the articles it renders: a sample
+  build's load fell from 33 s to 6 s.
+- **Prerendering is 75% of the time** and runs on one thread. Parallel workers are `swr-ytr`.
+
 ## Implementation (epic `swr-7f1`)
 
 | Bead         | Work                                                          | Needs      |

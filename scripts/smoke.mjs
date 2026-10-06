@@ -1,5 +1,6 @@
 // `pnpm smoke` (part of `pnpm check`, after `pnpm build`): opens the built site in Chromium
-// through the preview server and checks every page in the sitemap, /search/ and the 404 page:
+// through the preview server and checks every page in the sitemap (or, with SMOKE_PAGES=N, a
+// sample of N: see samplePaths), /search/ and the 404 page:
 // - status 200 (404 for the 404 page), and no console errors or page errors;
 // - axe finds no violations: every page in light; in dark, home, every list page, the first
 //   two records of each kind, search and 404 (each kind shares one template and one set of
@@ -11,7 +12,7 @@
 //   Escape work, the island hydrates in place (one copy), and without JavaScript the page
 //   offers the section links instead;
 // - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
-//   once the service worker controls the page, a visited record page, search, and the offline
+//   once the service worker controls the page, a visited page, a search made before, and the offline
 //   page for an unvisited record all work with the network off;
 // - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
 //   archive's database, with names linking to their pages;
@@ -39,11 +40,15 @@ async function startPreview() {
   return preview;
 }
 
-const paths = [
-  ...readFileSync(`${dist}sitemap.xml`, 'utf8').matchAll(
-    /<loc>https:\/\/starwars\.run(\/[^<]*)<\/loc>/g,
-  ),
-].map((m) => m[1]);
+/** The paths a sitemap file lists: pages, or (in the index) the sitemap files themselves. */
+const locs = (file) =>
+  [
+    ...readFileSync(`${dist}${file}`, 'utf8').matchAll(
+      /<loc>https:\/\/starwars\.run\/([^<]*)<\/loc>/g,
+    ),
+  ].map((m) => `/${m[1]}`);
+// sitemap.xml is an index of sitemap-1.xml, sitemap-2.xml…, which list the pages.
+const listed = locs('sitemap.xml').flatMap((part) => locs(part.slice(1)));
 // Pages deliberately left out of the sitemap (noindex) that still ship.
 const unlisted = ['/search/', '/offline/'];
 /** Each query must list every expected page in its first five results. */
@@ -60,6 +65,28 @@ const SEARCHES = [
   ['falcon', ['/starships/millennium-falcon/']],
   ['padme', ['/characters/padme-amidala-naberrie/']],
 ];
+
+/**
+ * The pages to check. A full build has 227k: checking each in Chromium would take about a day,
+ * so SMOKE_PAGES=N checks every section and letter page, the pages SEARCHES expect, and an
+ * even spread of articles up to N in all (swr-7f1.6). Unset, every page is checked.
+ */
+const paths = samplePaths(listed, Number(process.env.SMOKE_PAGES ?? 'Infinity'));
+
+function samplePaths(all, limit) {
+  if (!(all.length > limit)) return all;
+  const always = new Set(SEARCHES.flatMap(([, expected]) => expected));
+  const isList = (p) =>
+    p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/[a-z0-9]\/$/.test(p);
+  const kept = all.filter((p) => isList(p) || always.has(p));
+  const keptSet = new Set(kept);
+  const rest = all.filter((p) => !keptSet.has(p));
+  const room = Math.max(0, limit - kept.length);
+  const step = rest.length / Math.max(1, room);
+  for (let i = 0; i < room && Math.floor(i * step) < rest.length; i++)
+    kept.push(rest[Math.floor(i * step)]);
+  return kept;
+}
 
 const CONCURRENCY = 6;
 const failures = [];
@@ -98,10 +125,11 @@ function darkSample(path) {
 }
 
 async function pool(items, size, work) {
-  const queue = [...items];
+  // An index, not queue.shift(): shifting a 227k-item array each time is quadratic.
+  let next = 0;
   await Promise.all(
     Array.from({ length: size }, async () => {
-      for (let item = queue.shift(); item !== undefined; item = queue.shift()) await work(item);
+      while (next < items.length) await work(items[next++]);
     }),
   );
 }
@@ -151,14 +179,18 @@ async function checkPage({ scheme, path, status }, links) {
 }
 
 async function checkLinks(links) {
-  const checked = new Map();
-  for (const href of links) {
-    const url = new URL(href);
-    if (url.origin !== base || checked.has(url.pathname)) continue;
-    const res = await fetch(base + url.pathname, { redirect: 'manual' });
-    checked.set(url.pathname, res.status);
-    if (res.status !== 200) fail('links', `${url.pathname} → ${String(res.status)}`);
-  }
+  // Letter pages link to every article, so a full build has ~227k links: fetch several at once.
+  const internal = new Set(
+    [...links]
+      .map((href) => new URL(href))
+      .filter((u) => u.origin === base)
+      .map((u) => u.pathname),
+  );
+  await pool([...internal], 16, async (path) => {
+    const res = await fetch(base + path, { redirect: 'manual' });
+    await res.body?.cancel();
+    if (res.status !== 200) fail('links', `${path} → ${String(res.status)}`);
+  });
 }
 
 function island(page) {
@@ -276,8 +308,11 @@ async function checkOffline() {
         );
       }
     });
-    // A visit through the worker saves the page.
+    // A visit through the worker saves the page, and a search saves the index chunks it reads.
     await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/search/?q=sky`);
+    await island(page).locator('ol a').first().waitFor({ timeout: 10000 });
+    await page.waitForLoadState('networkidle');
     await context.setOffline(true);
 
     await page.goto(`${base}/characters/luke-skywalker/`);

@@ -1,14 +1,14 @@
 /// <reference types="node" />
 // `pnpm build`, after `vite build`: renders every page to dist/ as static HTML, plus 404.html
-// and sitemap.xml. dist/ is then exactly what the Docker image serves.
-import { copyFile, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
+// and the sitemaps. dist/ is then exactly what the Docker image serves.
+import { copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
 import * as pagefind from 'pagefind';
 import { loadSiteData } from '../src/data/archive.js';
-import { createSite, sitemap } from '../src/render/site.js';
+import { createSite, sitemaps } from '../src/render/site.js';
 import { exploreRows } from '../src/domain/rows.js';
 import { buildDatabase } from './build-database.js';
 import { buildServiceWorker } from './build-sw.js';
@@ -20,9 +20,20 @@ const sampleOption = (): { sample?: number } => {
   return Number.isInteger(n) && n > 0 ? { sample: n } : {};
 };
 
+/** No page may be bigger than this (swr-7f1.6). The largest in the full archive is 808 KB. */
+export const PAGE_BUDGET_BYTES = 1024 * 1024;
+
+/** Runs one build stage and logs how long it took: the full build's time is spent unevenly. */
+async function stage<T>(name: string, run: () => Promise<T>): Promise<T> {
+  const started = performance.now();
+  const result = await run();
+  console.log(`${name}: ${((performance.now() - started) / 1000).toFixed(1)}s`);
+  return result;
+}
+
 export async function buildSite(dist: string): Promise<readonly string[]> {
   const manifest = join(dist, '.vite', 'manifest.json');
-  const data = await loadSiteData(sampleOption());
+  const data = await stage('load', () => loadSiteData(sampleOption()));
   const site = createSite(
     {
       stylesheet: await clientEntryFromManifest(manifest, 'src/styles/site.css'),
@@ -31,20 +42,39 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
     },
     data,
   );
-  const pages = await prerender({ app: site, paths: site.paths, outDir: dist, origin: ORIGIN });
+  const pages = await stage('prerender', () =>
+    prerender({ app: site, paths: site.paths, outDir: dist, origin: ORIGIN }),
+  );
+  await stage('page budget', () => checkPageBudget(dist, site.paths));
   await writeFile(join(dist, '404.html'), await site.notFound());
-  await writeFile(join(dist, 'sitemap.xml'), sitemap(site.sitemapPaths));
+  for (const [file, xml] of sitemaps(site.sitemapPaths)) await writeFile(join(dist, file), xml);
   // The manifest is build metadata, not a page asset: don't publish it.
   await rm(join(dist, '.vite'), { recursive: true, force: true });
   // The Explore page's data and engine (swr-7f1.7): a DuckDB database and DuckDB-WASM,
   // self-hosted because the CSP allows only this origin.
-  await buildDatabase(dist, exploreRows(data.archive, data.articles));
+  await stage('explore database', () =>
+    buildDatabase(dist, exploreRows(data.archive, data.articles)),
+  );
   await copyDuckDb(dist);
-  await indexForSearch(dist);
+  await stage('search index', () => indexForSearch(dist));
   // Last: the service worker's precache list covers everything written above.
-  const sw = await buildServiceWorker(dist);
+  const sw = await stage('service worker', () => buildServiceWorker(dist));
   console.log(`service worker: ${String(sw.entries)} precached files, sw.js ${sw.kb} KB`);
   return pages.map((p) => p.path);
+}
+
+/** Fails the build when a page passes PAGE_BUDGET_BYTES, naming every page that does. */
+async function checkPageBudget(dist: string, paths: readonly string[]): Promise<void> {
+  const over: string[] = [];
+  for (const path of paths) {
+    const { size } = await stat(join(dist, path, 'index.html'));
+    if (size > PAGE_BUDGET_BYTES) over.push(`${path} (${String(Math.round(size / 1024))} KB)`);
+  }
+  if (over.length > 0) {
+    throw new Error(
+      `pages over the ${String(PAGE_BUDGET_BYTES / 1024)} KB budget: ${over.join(', ')}`,
+    );
+  }
 }
 
 /**

@@ -13,7 +13,8 @@ const DIR = new URL('../../fixtures/wookieepedia/', import.meta.url);
 const fixture = (name: string) => readFileSync(new URL(`${name}.wikitext`, DIR), 'utf8');
 const show = (r: Rich) => r.map((x) => ('link' in x ? `[${x.text}→${x.link}]` : x.text)).join('');
 
-describe('real articles', () => {
+// Parsing all fifteen real articles takes seconds, more on a busy machine.
+describe('real articles', { timeout: 30_000 }, () => {
   const luke = parseArticle('Luke Skywalker', fixture('luke-skywalker'));
   const get = (name: string) => luke.fields.find((f) => f.name === name)?.items.map(show);
 

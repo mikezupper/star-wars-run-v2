@@ -18,13 +18,13 @@
 		-Server
 	}
 
-	@assets path /assets/*
+	@assets path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/*
 	header @assets Cache-Control "public, max-age=31536000, immutable"
 	@icons path /icons/*
 	header @icons Cache-Control "public, max-age=86400"
 	@sw path /sw.js
 	header @sw Cache-Control "no-cache"
-	@pages not path /assets/* /icons/* /sw.js
+	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js
 	header @pages Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
 
 	file_server

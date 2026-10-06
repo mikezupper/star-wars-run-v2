@@ -23,7 +23,28 @@ export interface WookieepediaIndex {
 
 const lines = (gz: Buffer): string[] => gunzipSync(gz).toString('utf8').split('\n').filter(Boolean);
 
-export async function loadWookieepediaIndex(dir: string = WOOKIEEPEDIA_DIR): Promise<WookieepediaIndex> {
+/**
+ * A line's title, era and kind, read from its start without parsing the article: articleLine()
+ * (src/ingest/wookieepedia/snapshot.ts) writes those keys first. Parsing every article in full
+ * just to index it made a 400-page sample build spend half a minute loading.
+ */
+const HEAD = /^\{"title":("(?:[^"\\]|\\.)*"),"era":"(canon|legends)"(?:,"kind":("(?:[^"\\]|\\.)*"))?/;
+
+export function summaryOf(line: string): ArticleSummary {
+  const head = HEAD.exec(line);
+  if (head?.[1] === undefined) {
+    const { title, era, kind } = JSON.parse(line) as ArticleSummary;
+    return { title, era, ...(kind === undefined ? {} : { kind }) };
+  }
+  const kind = head[3] === undefined ? undefined : (JSON.parse(head[3]) as string);
+  return {
+    title: JSON.parse(head[1]) as string,
+    era: head[2] as ArticleSummary['era'],
+    ...(kind === undefined ? {} : { kind }),
+  };
+}
+
+const articleFiles = async (dir: string): Promise<string[]> => {
   let files: string[];
   try {
     files = await readdir(dir);
@@ -32,11 +53,15 @@ export async function loadWookieepediaIndex(dir: string = WOOKIEEPEDIA_DIR): Pro
       `No Wookieepedia snapshot in ${dir}. Run \`pnpm ingest:wookieepedia <dump.7z>\` first (ADR 0007).`,
     );
   }
+  return files.filter((f) => /^articles-\d+\.jsonl\.gz$/.test(f)).sort();
+};
+
+export async function loadWookieepediaIndex(dir: string = WOOKIEEPEDIA_DIR): Promise<WookieepediaIndex> {
   const articles = new Map<string, ArticleSummary>();
-  for (const file of files.filter((f) => /^articles-\d+\.jsonl\.gz$/.test(f)).sort()) {
+  for (const file of await articleFiles(dir)) {
     for (const line of lines(await readFile(join(dir, file)))) {
-      const { title, era, kind } = JSON.parse(line) as ArticleSummary;
-      articles.set(title, { title, era, ...(kind === undefined ? {} : { kind }) });
+      const summary = summaryOf(line);
+      articles.set(summary.title, summary);
     }
   }
   const redirects = new Map<string, string>();
@@ -55,13 +80,12 @@ export async function loadArticles(
   dir: string = WOOKIEEPEDIA_DIR,
   only?: ReadonlySet<string>,
 ): Promise<Map<string, ArticleRecord>> {
-  await loadWookieepediaIndex(dir); // the same clear error when there's no snapshot
   const out = new Map<string, ArticleRecord>();
-  const files = (await readdir(dir)).filter((f) => /^articles-\d+\.jsonl\.gz$/.test(f)).sort();
-  for (const file of files) {
+  for (const file of await articleFiles(dir)) {
     for (const line of lines(await readFile(join(dir, file)))) {
+      if (only !== undefined && !only.has(summaryOf(line).title)) continue;
       const record = JSON.parse(line) as ArticleRecord;
-      if (only === undefined || only.has(record.title)) out.set(record.title, record);
+      out.set(record.title, record);
     }
   }
   return out;
