@@ -1,0 +1,34 @@
+{{Top|sprot|notoc=1}}
+{{Otheruses|Revan}}
+{{Update|[[LEGO Star Wars: Rebuild the Galaxy - Pieces of the Past]]}}
+{{Character
+|type=Sith
+|image=<!-- There is no canon image of Revan; the image in the BTS is not a canon representation of Revan since the scene was cut and the remake has not been canonized.-->
+|name=Revan
+|homeworld=
+|birth=
+|death=
+|species=
+|gender=
+|pronouns=
+|height=
+|mass=
+|hair=
+|feathers=
+|eyes=
+|skin=
+|cyber=
+|families=
+|parents=
+|partners=
+|siblings=
+|children=
+|affiliation=[[Sith]]<ref name="TROS VD">''[[Star Wars: The Rise of Skywalker: The Visual Dictionary]]''</ref>
+|masters=
+|apprentices=
+}}
+{{Quote|Revan. Revan, Revan, Revan.|Cultists of the Sith Eternal speak Revan's name|<ref name="SotS">''[[Shadow of the Sith]]''</ref>}}
+'''Revan''' was a [[Sith Lord]] and the namesake of the [[Sith Eternal]] [[Sith Eternal army|army's]] [[Revan Legion]]. Since the [[Timeline of galactic history|history]] of the [[Sith]] was kept hidden from [[the galaxy]], only [[Sith cultist]]s knew the significance of Revan's name.<ref name="TROS VD" /> In [[3 ABY]],<ref name="SotS date">The flashback in which Revan is mentioned in ''[[Shadow of the Sith]]'' takes place concurrently with [[Darth Vader (2020) 11|''Darth Vader'' (2020) 11]], which ''[[Star Wars: Timelines]]'' dates the events of to [[3 ABY]].</ref> cultists searching the catacombs beneath the [[Sith Citadel]] on the [[planet]] [[Exegol]] repeated Revan's name in something similar to a chant, along with the names of other Sith.<ref name="SotS" />
+
+[[Sith trooper]] [[legion]]s were each numerically identified and additionally named after an ancient Sith Lord. The Revan Legion was activated<ref name="TROS VD" /> in [[35 ABY]]<ref name="TROS date">''[[Star Wars: Timelines]]'' dates the events of {{Film|IX}} to [[35 ABY]].</ref> along with the rest of the [[Sith Eternal military|Sith Eternal forces]] during the [[First Order-Resistance War|war]] between the [[First Order]] and the [[Resistance]].<ref name="TROS VD" />
+

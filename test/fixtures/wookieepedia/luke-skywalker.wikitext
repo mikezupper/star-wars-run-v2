@@ -1,0 +1,71 @@
+{{Top|sprot|mprot}}
+{{Otheruses|Luke}}
+{{Conflicting|''[[Return of the Jedi: Beware the Power of the Dark Side!]]''|[[Age of Rebellion - Luke Skywalker 1|''Age of Rebellion - Luke Skywalker'' 1]]}}
+{{MultipleIssues|image|updatecontent=[[Part VI]], [[From a Certain Point of View]], [[Choose Your Destiny: A Luke & Leia Adventure]], [[Star Wars Book XII: The Escape]], [[Hyperspace Stories 2]], [[From a Certain Point of View: The Empire Strikes Back]], [[Star Wars (2020) 9]], [[Star Wars (2020) 42]], [[Star Wars (2020) 43]], [[The Princess and the Scoundrel]], [[Star Wars Adventures: Ghosts of Vader's Castle 3]], [[Victory's Price: An Alphabet Squadron Novel]], [[Shadow of the Sith]], [[The Legends of Luke Skywalker]], [[Force Collector]], [[Star Wars: The Last Jedi: Expanded Edition]], [[Star Wars: The Last Jedi: A Junior Novel]], [[Life Lessons]], [[Resistance Reborn]], [[Star Wars: The Rebel Files]], [[Star Wars: The Dark Side]], [[Star Wars: The Secrets of the Jedi]], [[Star Wars: The Rise of Skywalker: The Visual Dictionary]], [[Star Wars: The Rise of Skywalker: Expanded Edition]], [[Star Wars: The Rise of Skywalker: A Junior Novel]], {{HelmetCollectionCite|72|Helmets}}, [[Galaxy's Edge – Echoes of the Empire 1]]}}
+{{Character
+|type=Jedi
+|image=[[File:LukeSkywalker.png]]<!-- DECIDED VIA COMMUNITY CONSENSUS [[Forum:CT:Luke Skywalker transparent infobox image]] PLEASE DO NOT CHANGE THE INFOBOX IMAGE -->
+|option1=34 ABY
+|image2=[[File:LukeSkywalker-RotJAVA.png]]
+|option2=4 ABY
+|image3=[[File:LukeSkywalker9BBY-DoRVG.png]]
+|option3=9 BBY
+|name=Luke Skywalker
+|homeworld=[[Tatooine]]<ref name="Episode IV">{{Film|IV}}</ref>
+|birth={{C|2 [[Standard day|days]] after [[Empire Day]]}},<ref name="Siege of Lothal Recon">{{RebelsRecon|mTkd0MKEm2I|#2.01: Inside "The Siege of Lothal" &#124; Star Wars Rebels|sw_url=video/rebels-recon-inside-the-siege-of-lothal}}</ref> [[19 BBY]], [[Polis Massa]]<ref name="Timelines">''[[Star Wars: Timelines]]''</ref>
+|death=[[34 ABY]], [[Ahch-To]]<ref name="Timelines" />
+|species=[[Human]]<ref name="Episode IV" />
+|gender=[[Gender|Male]]<ref name="Episode IV" />
+|pronouns=He/him<ref name="Episode IV" />
+|height=1.72 [[meter]]s {{C|5 [[Foot|ft]], 8 in}}<ref name="TROS VD">''[[Star Wars: The Rise of Skywalker: The Visual Dictionary]]''</ref>
+|mass=73 [[kilogram]]s<ref name="TFA head to head">''[[Star Wars: The Force Awakens: Head-to-Head]]''</ref>
+|hair=*[[Color|Blond]] ([[1 BBY]]),<ref name="TPtSatFB">''[[A New Hope: The Princess, the Scoundrel, and the Farm Boy]]''</ref>
+*Ash-brown ([[21 ABY]])<ref name="Shadow of the Sith">''[[Shadow of the Sith]]''</ref>
+*Gray and white ([[34 ABY]])<ref name="Episode VII">{{Film|VII}}</ref>
+|feathers=
+|eyes=*Blue<ref name="Episode IV" />
+*Red {{C|under [[Abersyn symbiote]] influence}}<ref name="Aphra 8" />
+*Purple {{C|briefly; under [[Scourge crisis|Scourge infection]]}}<ref name="Dark Droids 5">[[Dark Droids 5|''Dark Droids'' 5]]</ref>
+|skin=Light<ref name="Episode IV" />
+|cyber=[[Cybernetics|Prosthetic]] right [[Limb|hand]]<ref name="Episode V">{{Film|V}}</ref>
+|families=*[[Skywalker family]]<ref name="Episode IV" />
+*[[Lars family]]<ref name="Episode IV" />
+|parents=*[[Anakin Skywalker]]<ref name="Episode VI">{{Film|VI}}</ref>
+*[[Padmé Amidala Naberrie]]<ref name="Episode III">{{Film|III}}</ref>
+|partners=
+|siblings=[[Leia Skywalker Organa Solo]] {{C|[[twin]] sister}}<ref name="Episode III" />
+|children=
+|affiliation=*[[Alliance to Restore the Republic]]<ref name="Episode IV" />
+**[[Red Squadron (Rebel Alliance)|Red Squadron]]<ref name="Episode IV" />
+**[[Heroes of Yavin]]<ref name="Star Wars 1">[[Star Wars (2015) 1|''Star Wars'' (2015) 1]]</ref>
+**[[Rogue Squadron]]<ref name="Episode V" />
+**[[Endor strike team]]<ref name="Episode VI" />
+*[[Jedi Order]]<ref name="Databank">{{Databank|luke-skywalker|Luke Skywalker}}</ref>
+*[[Queen of Ktath'atn's hive]] {{C|briefly}}<ref name="Aphra 8" />
+*[[Scourge]] {{C|briefly; as a vessel}}<ref name="Dark Droids 5" />
+*[[Bright Tree tribe]] {{C|honorary member}}<ref name="Episode VI" />
+*[[New Republic]]<ref name="Insurgency Rising 1">[[Battle of Jakku — Insurgency Rising 1|''Battle of Jakku — Insurgency Rising'' 1]]</ref>
+|masters=*[[Obi-Wan Kenobi]]<ref name="Episode IV" />
+*[[Yoda]]<ref name="Episode V" />
+|apprentices=*Leia Organa<ref name="Episode IX">{{Film|IX}}</ref>
+*[[Din Grogu|Grogu]]<ref name="Chapter 16">{{TheMandalorian|Chapter 16: The Rescue}}</ref>
+*[[Ben Solo]]<ref name="Episode VII" />
+*Several other students<ref name="Episode VIII">{{Film|VIII}}</ref>
+**[[Hennix]]<ref name="Rise of Kylo Ren 1">[[The Rise of Kylo Ren 1|''The Rise of Kylo Ren'' 1]]</ref>
+**[[Tai]]<ref name="Rise of Kylo Ren 1" />
+**[[Voe]]<ref name="Rise of Kylo Ren 1" />
+*[[Rey Skywalker|Rey]]<ref name="Episode VIII" />
+}}
+{{Quote|I am a Jedi, like my father before me.|Luke Skywalker|audio=IAmAJediLikeMyFatherBeforeMe.flac|<ref name="Episode VI" />}}
+'''Luke Skywalker''', a [[Force-sensitive]] [[human]] [[Gender|male]], was a legendary [[Jedi Master]] who fought in the [[Galactic Civil War]] during the [[Imperial Era|reign]] of the [[Galactic Empire]]. Along with his companions, [[Princess]] [[Leia Skywalker Organa Solo|Leia Organa]] and [[General]] [[Han Solo]], Skywalker served as a revolutionary on the side of the [[Alliance to Restore the Republic]]&mdash;an organization committed to the downfall of the [[The galaxy|Galactic]] [[Politics#Empire|Empire]] and the restoration of [[democracy]]. Following the war, Skywalker became a living legend, and was remembered as one of the greatest [[Jedi]] in [[Timeline of galactic history|galactic history]].
+
+The son of [[Jedi Knight]] [[Anakin Skywalker]] and [[Senator]] [[Padmé Amidala]], Luke Skywalker was [[Reproduction|born]] along with his [[twin]] sister, Leia, in [[19 BBY]]. As a result of Amidala's [[death]] and Anakin's fall to the [[dark side of the Force]], the Skywalker [[Youngling|children]] were separated and sent into hiding, with Leia adopted by the [[House of Organa|royal family]] of [[Alderaan]] while Luke was raised by his [[Lars family|relatives]] on [[Tatooine]]. Longing for a life of adventure and purpose, Skywalker joined the Rebellion and began learning the ways of [[the Force]] under the guidance of Jedi Master [[Obi-Wan Kenobi]], whose first [[Padawan|apprentice]] was Luke's own [[Parent|father]]. During the [[Battle of Yavin]], Skywalker saved the Alliance from annihilation by destroying the Empire's [[planet]]-killing [[superweapon]], the [[DS-1 Orbital Battle Station|Death Star]]. He continued his [[Jedi training|training]] in the [[Standard year|years]] that followed, determined to become a Jedi Knight like his father before him, and found a new mentor in [[Grand Master]] [[Yoda]]. After his master's death, Skywalker participated in the [[Battle of Endor]] in [[4 ABY]], during which he confronted the [[Sith Lord]] [[Darth]] Vader, whom he [[Duel on Cloud City|learned]] was in fact his father, Anakin Skywalker. With Luke's help, Anakin returned to the [[light side of the Force]] by killing the [[Galactic Emperor|Emperor]] and [[Dark Lord of the Sith]] [[Darth Sidious]] at the cost of his own life, fulfilling his destiny as the [[Chosen One]]. Following the Battle of Endor, Skywalker trained his sister as a first Jedi apprentice on [[Ajan Kloss]], but Leia ended her training after the birth of her son and seeing his death as a result of finishing her knighthood.
+
+With the [[Sith]]'s destruction and the subsequent [[Galactic Concordance|capitulation]] of the Empire, Skywalker became a living legend as he traveled across the [[galaxy]] during [[New Republic]] [[New Republic Era|Era]], searching for knowledge that would aid him in rebuilding the [[Jedi Order]], and serving the New Republic and its allies where he could. As the war raged for a year after Endor, Skywalker was heavily involved with the New Republic's efforts against self-declared [[Grand Moff]] [[Ubrik Adelhard]] in the [[Anoat sector]], before defeating the madman at the [[Battle of Jakku]]. Around [[6 ABY]], Skywalker committed himself to the liberation of the [[Nagai]] and their homeworld [[Nagi]] from beneath the heel of their enslavers. Later, in [[9 ABY]], Skywalker [[Second rescue of Grogu|rescued]] [[Din Grogu|Grogu]], a [[Mandalorian]] Force-sensitive child that belonged to the same [[Yoda's species|species]] as Yoda, from [[Moff]] [[Gideon]]'s [[Gideon's Imperial remnant|forces]], and after temporarily taking the child as an apprentice on [[Ossus]]. During the training, Skywalker was visited by Anakin's former padawan, [[Ahsoka Tano]], where they discussed Grogu and how Skywalker sensed that the child's heart was not in relearning the Jedi path. After Grogu's caregiver, [[Din Djarin]], visited the planet bearing a [[Grogu's chainmail shirt|gift]] for Grogu, Skywalker offered him with a choice, accept the gift and return to the Mandalorian, or take [[Yoda's second lightsaber|Yoda's lightsaber]] and continue with his Jedi training. Grogu chose to return to Djarin, while Skywalker bid Tano farewell as she departed for ways unknown.
+
+By [[15 ABY]], Skywalker had taken on [[Ben Solo]], his sister's son who inherited the [[Skywalker family|family bloodline]] in the Force and had the potential for limitless power, as an apprentice. While both [[Mission to Elphrona|traveled]] to [[Elphrona]] with the [[Scout|explorer]] [[Lor San Tekka]] to study lost Jedi lore, Solo began to be groomed by [[Snoke]], a [[humanoid]] being powerful in the Force. Upon the planet, the trio first encountered the [[Knights of Ren]]. In [[21 ABY]], Skywalker started feeling an increasing darkness in the Force, having dark visions that frequently came to him in meditation, and undertook a [[quest for Exegol|quest to find]] the hidden world of [[Exegol]]. Skywalker journeyed to [[Tython]], where he saw a vision of Exegol and faced nine wraiths when the Force ghost of Anakin Skywalker appeared next to him. Following this, Skywalker was able to defeat [[Kiza]] and the spirit of [[Exim Panshard]] but was ultimately unable to locate Exegol after failing to [[Mission to Pasaana|track down]] an [[assassin]] called [[Ochi]].
+
+In [[28 ABY]], sensing the extent of Snoke's corruption in Solo and glimpsing a dark future, Skywalker momentarily contemplated killing his nephew to prevent it, yet immediately reconsidered upon igniting his lightsaber. The rash action had devastating effect, though, completing Solo's fall to the dark side. The [[Destruction of the Jedi Temple|destruction]] of his [[Jedi Temple of Luke Skywalker|temple]] and the deaths of all of his students convinced a haunted and regretful Skywalker that the [[time]] had come for the Jedi to end. Skywalker therefore sought [[Exile (punishment)|exile]] on the [[Unknown Regions|distant]] world of [[Ahch-To]], having elected to live out his remaining [[Standard day|days]] as a [[hermit]] despite the galaxy's pleas for help during the [[Cold War|rise]] of the [[First Order]]. His solitude was interrupted in [[34 ABY]], shortly after the [[Hosnian Cataclysm|fall]] of the New Republic, resulting in a chain of events that led Skywalker to play [[Battle of Crait|one last, momentous role]] in the conflict between light and darkness. Although he [[Force spirit|passed away into the Force]], his legend would spread throughout the galaxy, rekindling a spark of hope in the enemies of the First Order. Before his death, Skywalker declared that the Jedi Order would not die with him, having trained a final apprentice: the [[Jakku]] [[scavenger]] known as [[Rey Skywalker|Rey]].
+
+A [[35 ABY|year later]], Skywalker's spirit communed with Rey during the final days of the [[First Order-Resistance War|war]]. The Jedi apprentice had exiled herself to Ahch-To, following in Skywalker's example. However, he urged Rey to [[Battle of Exegol|confront]] her [[Palpatine family|grandfather]], the [[Cloning|resurrected]] Darth Sidious. Believing he had been wrong, Skywalker told Rey that a Jedi's destiny was to confront fear. Following the Emperor's destruction, the spirits of Skywalker and his sister watched over Rey as she buried their lightsabers in Skywalker's [[Lars homestead|childhood home]] on Tatooine and adopted the Skywalker name as her own, honoring their legacy and recognizing herself as a member of her chosen family.
+

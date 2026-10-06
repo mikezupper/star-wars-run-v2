@@ -1,0 +1,113 @@
+{{Top|sprot|mprot}}
+{{Otheruses|Luke}}
+{{Citation}}
+{{Character
+|type=Jedi
+|image=[[File:LukeSkywalker-Insider217.png]]<!-- DECIDED VIA COMMUNITY CONSENSUS [[Forum:CT:Main Luke Skywalker image for Legends]] PLEASE DO NOT CHANGE THE INFOBOX IMAGE -->
+|option1=4 ABY
+|image2=[[File:Luke_Skywalker_EA.jpg]]
+|option2=43-44 ABY
+|name=Luke Skywalker
+|homeworld=[[Tatooine/Legends|Tatooine]]<ref name="NEGTC">''[[The New Essential Guide to Characters]]''</ref>
+|birth=[[19 BBY/Legends|19 BBY]],<ref name="NEC">''[[The New Essential Chronology]]''</ref> [[Polis Massa/Legends|Polis Massa]]<ref name="Episode III">{{Film|III}}</ref>
+|death=Between [[45 ABY]]<ref name="Crucible">[[Crucible (novel)|''Crucible'']]</ref> and [[137 ABY]]<ref name="Legacy 3">[[Legacy (2006) 3|''Legacy'' (2006) 3]]</ref>
+|species=[[Human/Legends|Human]]<ref name="NEGTC" />
+|gender=[[Gender/Legends|Male]]<ref name="NEGTC" />
+|pronouns=He/him<ref name="Episode IV">{{Film|IV}}</ref>
+|height=1.72 [[Meter/Legends|meters]]<ref name="height">[[StarWars.com]] and ''[[The New Essential Guide to Characters]]'' list Luke's official height as 1.72 meters. The actor who portrayed him, Mark Hamill, is 1.75 meters.</ref>
+|mass=77 [[Kilogram/Legends|kilograms]]<ref name="Head-to-Head">''[[Star Wars: Head-to-Head Tag Teams]]''</ref>
+|hair=[[Color/Legends|Blond]]<ref name="NEGTC" />
+|feathers=
+|eyes=Blue<ref name="NEGTC" />
+|skin=Light<ref name="Episode IV" />
+|cyber=[[Cybernetics/Legends|Prosthetic right hand]]<ref name="NEGTC" />
+|families=*[[Skywalker family/Legends|Skywalker family]]<ref name="Episode IV" />
+*[[Lars family/Legends|Lars family]]<ref name="Episode IV" />
+|parents=*[[Padmé Amidala/Legends|Padmé Amidala]]<ref name="Episode III" />
+*[[Anakin Skywalker/Legends|Anakin Skywalker]]<ref name="Episode III" />
+|partners=[[Mara Jade Skywalker]]<ref name="Allies">''[[Fate of the Jedi: Allies]]''</ref>
+|siblings=[[Leia Organa Solo/Legends|Leia Organa Solo]]<ref name="Episode III" />
+|children=[[Ben Skywalker]]<ref name="Allies" />
+|affiliation=*[[Alliance to Restore the Republic/Legends|Alliance to Restore the Republic]]<ref name="Episode IV" />
+**[[Red Squadron (Rebel Alliance)/Legends|Red Squadron]]<ref name="Episode IV" />
+**[[Rogue Squadron/Legends|Rogue Squadron]]<ref name="Episode V">{{Film|V}}</ref>
+**[[Endor strike team/Legends|Endor strike team]]<ref name="Episode VI">{{Film|VI}}</ref>
+*[[Jedi Order/Legends|Jedi Order]]<ref name="Episode IV" />
+*[[Alliance of Free Planets]]<ref name="Star Wars 90">[[Star Wars (1977) 90|''Star Wars'' (1977) 90]]</ref>
+*[[Bright Tree Village/Legends|Bright Tree Village]]<ref name="Episode VI" />
+*[[New Republic/Legends|New Republic]]<ref name="NEGTC" />
+**[[New Republic Defense Force/Legends|Combined Defense Forces of the New Republic]]<ref name="Mindor">''[[Luke Skywalker and the Shadows of Mindor]]''</ref>
+*[[Order of the Sith Lords]] {{C|briefly}}<ref name="Dark Empire 2">[[Dark Empire 2|''Dark Empire'' 2]]</ref>
+*[[Dark Empire]] {{C|briefly}}<ref name="Dark Empire 2" />
+**[[Imperial Navy/Legends|Imperial Navy]] {{C|briefly}}<ref name="Dark Empire 2" />
+*[[New Jedi Order]]<ref name="NEGTC" />
+**[[Jedi High Council (New Jedi Order)|Jedi High Council]]<ref name="Dark Nest I: The Joiner King">''[[Dark Nest I: The Joiner King]]''</ref>
+**[[Saber Squadron (Eclipse)|Saber Squadron]]<ref name="Star by Star">''[[The New Jedi Order: Star by Star]]''</ref>
+**[[Twin Suns Squadron]]<ref name="Enemy Lines I">''[[The New Jedi Order: Enemy Lines I: Rebel Dream]]''</ref>
+**[[Blackmoon Squadron]]<ref name="Enemy Lines I" />
+**[[Hardpoint Squadron]]<ref name="Betrayal">''[[Legacy of the Force: Betrayal]]''</ref>
+**[[StealthX wing]]<ref name="Vortex">''[[Fate of the Jedi: Vortex]]''</ref>
+*[[Jedi Coalition]]<ref name="Inferno">''[[Legacy of the Force: Inferno]]''</ref>
+*[[Galactic Federation of Free Alliances]]<ref name="The Unifying Force">''[[The New Jedi Order: The Unifying Force]]''</ref>
+|masters=*[[Obi-Wan Kenobi/Legends|Obi-Wan Kenobi]]<ref name="Episode IV" />
+*[[Yoda/Legends|Yoda]]<ref name="Episode V" />
+*[[Joruus C'baoth]] {{C|briefly}}<ref name="Dark Force Rising">''[[Dark Force Rising]]''</ref>
+*[[Palpatine/Legends|Palpatine]] {{C|briefly}}<ref name="NEGTC" />
+|apprentices=
+<!--4-5 ABY, Before Jedi Prince-->*[[X2]]<ref name="Elite Squadron">''[[Star Wars Battlefront: Elite Squadron]]''</ref>
+<!--5 ABY, Lost City of the Jedi-->*[[Ken]]<ref name="Lost City of the Jedi" />
+<!--9 ABY, Heir to the Empire-->*Leia Organa Solo<ref name="NEGTC" />
+<!--10 ABY, Dark Empire II 3-->*[[Kam Solusar]]<ref name="Jedi Search">''[[Jedi Search]]''</ref>
+<!--10 ABY, Dark Empire II 4-->*[[Rayf Ysanna]]<ref name="Jedi vs. Sith">[[Jedi vs. Sith: The Essential Guide to the Force (real-life book)|''Jedi vs. Sith: The Essential Guide to the Force'']]</ref>
+<!--10 ABY, Dark Empire II 4-->*[[Jem Ysanna]]<ref name="EGtC">''[[The Essential Guide to Characters]]''</ref>
+<!--11 ABY, I, Jedi-->*[[Brakiss]]<ref name="Jedi Search" />
+<!--11 ABY, I, Jedi-->*[[Dorsk 81]]<ref name="Dark Apprentice">[[Dark Apprentice (novel)|''Dark Apprentice'']]</ref>
+<!--11 ABY, I, Jedi-->*[[Gantoris]]<ref name="Jedi Search" />
+<!--11 ABY, I, Jedi-->*[[Corran Horn/Legends|Corran Horn]]<ref name="I, Jedi">''[[I, Jedi]]''</ref>
+<!--11 ABY, During I, Jedi-->*[[Kyle Katarn]]<ref name="NEC">''[[The New Essential Chronology]]''</ref>
+<!--11 ABY, During I, Jedi-->*[[Madurrin]]<ref name="Madurrin">[[The Essential Chronology (real-world book)|''The Essential Chronology'']] has a portrayal of the original Jedi Academy students on Yavin Four with an Anx Jedi, the same species as Madurrin, in it. [[Leland Chee]] later confirmed at {{SWBoards|url=thread.jspa?forumID=24&start=4365&threadID=93010&msRange=15#5003349|thread=Books, Comics, & Television VIPs|user=[[Leland Chee|Tasty Taste]]|date=2003-10-08|time=11:40 AM|quote=Seeing that we haven't seen any other Anx Jedi in this era, this is the assumption that we have been making.}} that Madurrin is assumed to be the Anx Jedi, marking her as one of Luke Skywalker's pupils.</ref>
+<!--11 ABY, I, Jedi-->*[[Tionne Solusar]]<ref name="I, Jedi" />
+<!--11 ABY, I, Jedi-->*[[Streen]]<ref name="Jedi Search" />
+<!--11 ABY, I, Jedi-->*[[Kirana Ti]]<ref name="Jedi Search" />
+<!--11 ABY, Dark Apprentice-->*[[Kyp Durron]]<ref name="Dark Apprentice" />
+<!--11 ABY, I, Jedi-->*Mara Jade Skywalker<ref name="I, Jedi" />
+<!--11 ABY, Champions of the Force-->*[[Cilghal]]<ref name="Champions of the Force">''[[Champions of the Force]]''</ref>
+<!--11 ABY, 1 year before Children of the Jedi-->*[[Nichos Marr]]<ref name="Children of the Jedi" />
+<!--11 ABY, 1 year before Children of the Jedi-->*[[Cray Mingla]]<ref name="Children of the Jedi" />
+<!--During or after 11 ABY, After Jedi Academy trilogy-->*[[Kueller|Dolph]]<ref name="The New Rebellion" />
+<!--During or after 11 ABY, After Jedi Academy trilogy-->*[[Keyan Farlander/Legends|Keyan Farlander]]<ref name="wwnjo">{{InsiderCite|57|Who's Who in the New Jedi Order}}</ref>
+<!--11-12 ABY, Before Jedi Outcast-->*[[Desann]]<ref name="Jedi Knight II">''[[Star Wars: Jedi Knight II: Jedi Outcast]]''</ref>
+<!--11-12 ABY, Before Jedi Outcast-->*[[Havet Storm]]<ref name="saga6">{{Wizards|url=default.asp?x=starwars/article/sw20050616a|series=The Dark Forces Saga|text=Part 6: Outcasts and Megalomaniacs Welcome}}</ref>
+<!--12 ABY, Jedi Academy: Leviathan 1-->*an [[orange Jedi student|orange-skinned Jedi student]]<ref name="JA:L 1">[[Jedi Academy: Leviathan 1|''Jedi Academy: Leviathan'' 1]]</ref>
+<!--12 ABY, Jedi Academy: Leviathan 4-->*a [[Unidentified brown Jedi student|brown-skinned Jedi student]]<ref name="JA:L 4">[[Jedi Academy: Leviathan 4|''Jedi Academy: Leviathan'' 4]]</ref>
+<!--12 ABY, Jedi Academy: Leviathan 4-->*a [[gray Jedi student|gray-skinned Jedi student]]<ref name="JA:L 4" />
+<!--12 ABY, Rebel Jedi-->*[[Dal Konur]]<ref name="Rebel Jedi" />
+<!--17 ABY, The New Rebellion-->*[[Eelysa]]<ref name="The New Rebellion">''[[The New Rebellion]]''</ref>
+<!--19 ABY, Union 2-->*a [[Unidentified Quarren Jedi student|Quarren Jedi student]]<ref name="Union 2" />
+<!--22 ABY, JJK Lyric's World-->*[[Sannah]]<ref name="Lyric's World" />
+<!--23 ABY, YJK Jedi Under Siege-->*a [[Unidentified tree-like Jedi|tree-like Jedi]]<ref name="Jedi Under Siege" />
+<!--24 ABY, YJK Crisis at Crystal Reef-->*[[Zekk]]<ref name="Crisis on Crystal Reef" />
+<!--24 ABY, The Crystal-->*[[Anakin Solo]]<ref name="NEGTC" />
+<!--24 ABY, The Crystal-->*[[Darth Caedus|Jacen Solo]]<ref name="NEGTC" />
+<!--25 ABY, Invasion 2-->*[[Finn Galfridian]]<ref name="Invasion 2">[[Invasion 2|''Invasion'' 2]]</ref>
+<!--25 ABY, NJO Jedi Eclipse-->*[[Kenth Hamner]]<ref name="Jedi Eclipse">''[[The New Jedi Order: Agents of Chaos II: Jedi Eclipse]]''</ref>
+<!--40 ABY, LotF Fury-->*Ben Skywalker<ref name="Fury">''[[Legacy of the Force: Fury]]''</ref>
+<!--44 ABY, FotJ Ascension-->*[[Vestara Khai]]<ref name="Ascension">''[[Fate of the Jedi: Ascension]]''</ref>
+}}
+{{Quote|I am a Jedi, like my father before me.|Luke Skywalker|audio=IAmAJediLikeMyFatherBeforeMe.flac|<ref name="Episode VI" />}}
+'''Luke Skywalker''' was a renowned [[Force-sensitive/Legends|Force-sensitive]] [[Human/Legends|Human]] [[Gender/Legends|male]] who helped defeat the [[Galactic Empire/Legends|Galactic Empire]] in the [[Galactic Civil War/Legends|Galactic Civil War]] and helped found the [[New Republic/Legends|New Republic]], as well as the [[New Jedi Order]].
+
+Born in [[19 BBY/Legends|19 BBY]] as the son of the fallen [[Jedi Knight/Legends|Jedi Knight]] [[Anakin Skywalker/Legends|Anakin Skywalker]] and the [[Queen/Legends|Queen]] and [[Senator/Legends|Senator]] of [[Naboo/Legends|Naboo]], [[Padmé Amidala/Legends|Padmé Amidala]], Luke was raised on [[Tatooine/Legends|Tatooine]] and hidden from [[Galactic Emperor/Legends|Emperor]] [[Palpatine/Legends|Palpatine]] and his [[Parent/Legends|father]], who had recently become [[Darth/Legends|Darth]] Vader, [[Dark Lord of the Sith/Legends|Dark Lord of the Sith]]. In [[0 BBY/Legends|0 BBY]], Skywalker's life changed forever. A chance purchase of two [[Droid/Legends|droids]], [[R2-D2/Legends|R2-D2]] and [[C-3PO/Legends|C-3PO]], led to him to receive [[Jedi training/Legends|training]] in the ways of [[The Force/Legends|the Force]] from [[Jedi Master/Legends|Jedi Master]] [[Obi-Wan Kenobi/Legends|Obi-Wan Kenobi]] and to meet [[Han Solo/Legends|Han Solo]], and [[Princess/Legends|Princess]] [[Leia Organa Solo/Legends|Leia Organa]], who was, unbeknownst to him, his [[Twin/Legends|twin]] sister. Skywalker then [[Battle of Yavin/Legends|destroyed]] the [[DS-1 Orbital Battle Station/Legends|first]] [[Death Star/Legends|Death Star]] and joined the [[Alliance to Restore the Republic/Legends|Rebel Alliance]].
+
+Over the next few [[Standard year/Legends|years]], he fought in many of the most important battles of the Galactic Civil War, helping to found [[Rogue Squadron/Legends|Rogue Squadron]] and fighting Imperial forces across [[The galaxy/Legends|the galaxy]]. In [[3 ABY/Legends|3 ABY]], Skywalker received Jedi training from [[Yoda/Legends|Yoda]], and learned from Vader that the [[Sith Lord/Legends|Sith Lord]] was his father. [[4 ABY/Legends|One year later]], he fought in the [[Battle of Endor/Legends|Battle of Endor]], and succeeded in turning his father back to the [[Light side of the Force/Legends|light]]. Thanks to Skywalker, [[Palpatine/Legends|Palpatine]] was [[Death/Legends|killed]], and the Empire was dealt a crippling blow. One year later, the New Republic was formed.
+
+Throughout the succeeding decades, Skywalker helped keep peace throughout the galaxy as the New Republic slowly defeated [[Imperial Remnant|remnants of the Empire]]. When Palpatine returned in the form of several [[Cloning/Legends|clone]] bodies, Skywalker in an attempt to bring the [[Dark Empire]] from winning, temporarily fell to the [[Dark side of the Force/Legends|dark side]] and became the reborn [[Emperor/Legends|Emperor's]] [[Dark side adept/Legends|acolyte]], known as '''Lord Skywalker'''. He was later redeemed with the help of his friends, and continued with his goal of reviving the Jedi Order. In [[11 ABY/Legends|11 ABY]], he founded the New Jedi Order, and began teaching Force-sensitives about the ways of [[The Force/Legends|the Force]] at the [[Jedi Praxeum]], fulfilling his destiny as the first of the new Jedi. In the midst of this rebirth came numerous challenges for Skywalker and his [[Padawan/Legends|apprentices]], including the [[Black Fleet Crisis]], the [[Almanian Uprising]], and the lure of [[Waru]], but Skywalker, aided by fellow Jedi and his friends, was able to overcome each trial. Meanwhile, after a long series of failed relationships, Luke [[Wedding of Luke Skywalker and Mara Jade|married]] fellow Jedi and former [[Emperor's Hand/Legends|Emperor's Hand]] [[Mara Jade Skywalker|Mara Jade]] in [[19 ABY/Legends|19 ABY]].
+
+Several years after the conclusion of the Galactic Civil War, Skywalker found himself, yet again, on the front lines. Skywalker served as the leader of the New Jedi Order, during the [[Yuuzhan Vong War]], an invasion by the [[Extragalactic/Legends|extra-galactic]] [[Yuuzhan Vong]] [[Species/Legends|species]]. During the war, Skywalker's wife gave birth to a son, who they named [[Ben Skywalker|Ben]], in memory of his first mentor of [[The Force/Legends|the Force]]: [[Obi-Wan Kenobi/Legends|Ben Kenobi]]. Skywalker endured countless battles as the New Republic was first pushed back, including the [[Battle of Coruscant (Yuuzhan Vong War)|fall]] of his home on [[Coruscant/Legends|Coruscant]]. However, the newly reformed government, labeling itself the [[Galactic Federation of Free Alliances]], regrouped and helped push back the [[Alien/Legends|alien]] invaders. In the final stages of the war, Skywalker sought out the living [[Planet/Legends|world]] of [[Zonama Sekot/Legends|Zonama Sekot]], convincing the planet to join the Galactic Alliance in a final [[Battle of Yuuzhan'tar|battle]] on Coruscant, in which Skywalker personally led the assault on [[Supreme Overlord]] [[Shimrra Jamaane]]'s [[Shimrra's Citadel|citadel]] and slew Jamaane. Combined with the fact that his nephew, [[Darth Caedus|Jacen Solo]], would soon after kill Jamaane's puppet master, [[Onimi]], the Yuuzhan Vong were defeated and the war was ended.
+
+After the Yuuzhan Vong War, Skywalker maintained a prominent role among the Jedi into the [[Dark Nest Crisis]], which saw him call a [[Conclave on Ossus|Jedi convocation]] to deal with strife within the Order. Faced with disunity, Skywalker assumed the title of [[Grand Master/Legends|Grand Master]] and direct control over the reestablished [[Jedi High Council (New Jedi Order)|Jedi Council]]. Despite the successful handling of the Dark Nest Crisis and the [[Swarm War]], lasting peace was yet to be achieved, as the [[Second Galactic Civil War]] broke out a few [[Standard year/Legends|years]] later. Skywalker was plunged into a dark [[Time/Legends|time]] as his nephew, Jacen Solo, became a [[Sith apprentice/Legends|Sith apprentice]] under his old adversary [[Lumiya]] and [[Skirmish on Kavan|slew]] his beloved Mara. His grief was further compounded by his son's treading near the dark side as well, but he continued to lead the Jedi, forming the [[Jedi Coalition]] to oppose the rule of the Alliance by his nephew, now a [[Sith Lord/Legends|Sith Lord]] by the name of Darth Caedus. With Skywalker's aid, Caedus was [[Battle of Uroro Station|killed]] by his twin sister [[Jaina Solo Fel|Jaina]], ending the war and restoring peace to the galaxy.
+
+In the aftermath of the war, [[Natasi Daala]] ascended to the position of [[Chief of State (Galactic Alliance)|Chief of State]] and fostered a wide spread [[Anti-Jedi sentiment/Legends|anti-Jedi sentiment]] resulting in tensions between the Jedi Order and her government. Daala ultimately had Skywalker [[The Galactic Federation of Free Alliances versus Luke Skywalker|arrested]] for dereliction of duty, and in exchange for his freedom, he was [[Exile (punishment)/Legends|exiled]] and forbidden from involving himself in the affairs of the Jedi Order. Skywalker and his son embarked on an odyssey across the galaxy in order to discover the causes of Jacen Solo's fall to the dark side. During their journey, the Skywalkers encountered the [[Lost Tribe of Sith]], as well as a malevolent dark side entity known as [[Abeloth]]. With the help of his son and the rest of the Jedi, Skywalker returned to his position as Grand Master. Skywalker and his allies then repelled the Sith threat, and with the help of an [[Darth Krayt|unlikely Sith ally]], defeated Abeloth, preventing another disaster that could endanger the galaxy; during that time, Skywalker had a vision of the future in which his grand-niece, [[Allana Djo Solo|Allana Solo]], sat on the [[Throne of Balance]] surrounded by Jedi.
+
+Wishing to ensure Abeloth's destruction, Grand Master Skywalker launched a [[hunt for Mortis]], in the process discovering a [[Unidentified monolith|Force monolith]] and defeating the [[Craitheus Qreph|Qreph]] [[Marvid Qreph|brothers]] before finally retiring in [[45 ABY]], deciding that the Jedi Order was in good hands with its new generation. He eventually passed away and became [[Force ghost/Legends|one]] with the Force.
+

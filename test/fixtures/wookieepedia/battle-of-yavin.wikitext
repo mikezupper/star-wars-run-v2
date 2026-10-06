@@ -1,0 +1,77 @@
+{{Top}}
+{{Otheruses|Battle of Yavin 4}}
+{{MultipleIssues|expand|updatecontent=[[From a Certain Point of View]], [[Battlefront II: Inferno Squad]], [[From a Certain Point of View: The Empire Strikes Back]], [[Star Wars: The Rebel Files]], [[Star Wars (2020) 8]], [[Star Wars (2020) 21]], [[Star Wars (2020) 23]], [[Star Wars (2020) 24]], [[Dark Droids 1]], [[The Veteran]], [[The Princess and the Scoundrel]], [[Star Wars: Battles that Changed the Galaxy]], [[Star Wars: The Rise and Fall of the Galactic Empire]]}}
+{{Conflicting|{{StoryCite|story=Sparks (short story)|book=From a Certain Point of View}}|{{StoryCite|story=Grounded|book=From a Certain Point of View}}}}
+{{Battle
+|prev=*[[Rescue of Princess Leia]]<ref name="ANH">{{Film|IV}}</ref>
+*[[Alderaan vigil rioting]]<ref name="OTLD">{{InsiderCite|151|One Thousand Levels Down}}</ref>
+|conc=[[Battle on Vir Aphshire]]<ref name="Twlight">''[[Battlefront: Twilight Company]]''</ref>
+|next=*[[Royal Award Ceremony]]<ref name="Leia 1">[[Princess Leia 1|''Princess Leia'' 1]]</ref>
+*[[Ambush on Taanab]]<ref name="Smuggler's Run">''[[Smuggler's Run: A Han Solo & Chewbacca Adventure]]''</ref>
+|image=[[File:Battle_of_Yavin_OFL.png]]
+|name=Battle of Yavin
+|conflict=[[Galactic Civil War]]<ref name="Battles">''[[Star Wars: Battles that Changed the Galaxy]]''</ref>
+|date=
+|place=[[Yavin system]]<ref name="ANH" />
+|result=*Decisive [[Alliance to Restore the Republic|Rebel Alliance]] victory<ref name="ANH" />
+**Destruction of the [[DS-1 Orbital Battle Station|First Death Star]]<ref name="ANH" />
+**[[Death]] of [[Grand Moff]] [[Wilhuff Tarkin]]<ref name="ANH" />
+|side1=*[[Galactic Empire]]<ref name="ANH" />
+*[[Sith]]<ref name="ANH" />
+|side2=Alliance to Restore the Republic<ref name="ANH" />
+|side3=
+|side4=
+|commanders1=*Grand [[Moff]] Wilhuff Tarkin&dagger;<ref name="ANH" />
+*[[Dark Lord of the Sith]] [[Anakin Skywalker|Darth Vader]]<ref name="ANH" />
+*[[Chief of the Imperial Navy]] [[Admiral]] [[Conan Antonio Motti]]&dagger;<ref name="ANH" />
+|commanders2=*[[General]] [[Jan Dodonna]]<ref name="SWE-General Dodonna">{{SWE|characters|general-dodonna|General Dodonna}}</ref>
+*[[Red Leader]] [[Commander]]<ref name="Rebel Files">''[[Star Wars: The Rebel Files]]''</ref> [[Garven Dreis]]&dagger;<ref name="ANH" />
+*[[Gold Leader]] [[Captain]] [[Jon Vander]]&dagger;<ref name="ANH" />
+*[[Red Five]] [[Luke Skywalker]]<ref name="ANH" />
+|commanders3=
+|commanders4=
+|unit1=[[Black Squadron (Galactic Empire)|Black Squadron]]<ref name="On the Front Lines">''[[Star Wars: On the Front Lines]]''</ref>
+|unit2=*[[Gold Squadron (Rebel Alliance)|Gold Squadron]]<ref name="ANH" />
+*[[Green Squadron (Rebel Alliance)|Green Squadron]]&dagger;<ref name="Sparks">{{StoryCite|story=Sparks (short story)|book=From a Certain Point of View}}</ref>
+*[[Red Squadron (Rebel Alliance)|Red Squadron]]<ref name="ANH" />
+|unit3=
+|unit4=
+|forces1=*Several [[starfighter]]s<ref name="ANH" />
+**At least 12 [[TIE/ln space superiority starfighter]]s<ref name="TIE fighter destruction">In {{Film|IV}} the ''[[Millennium Falcon]]'' destroys two [[TIE/ln space superiority starfighter]]. Additionaly, "[[Duty Roster]]" states [[Wedge Antilles]] destroyed 6 [[TIE series|TIE fighters]]. As "[[Desert Son]]" states [[Luke Skywalker]] destroyed at least two and [[Biggs Darklighter]] destroyed at least one before Skywalker and Biggs destroy a "[[squadron]]" together, and a "squadron" can be assumed to be at least two fighters, at least 11 TIE fighters where destroyed at the Battle of Yavin. As ''[[Battlefront II: Inferno Squad]]'' establishes that [[Iden Versio]] flew a TIE fighter at the battle, at least 12 TIE/ln fighters where present.</ref>
+**[[Darth Vader's TIE Advanced]]<ref name="ANH" /><ref name="SWE-Darth Vader">{{SWE|characters|darthvader|Darth Vader}}</ref>
+*Several [[pilot]]s<ref name="ANH" />
+**[[Black Two]] [[Mithel]]&dagger;<ref name="X-wing 2">{{FFGXW2|set=TIE/ln Fighter Expansion Pack|cardname="Mauler" Mithel}}</ref>
+**[[Black Eleven]] [["Wampa"|Wampa]]<ref name="X-wing2">{{FFGXW2|set=TIE/ln Fighter Expansion Pack|cardname="Wampa"}}</ref>
+**[[Sigma Three]] [[Iden Versio]]<ref name="Inferno Squad" />
+**[["Backstabber"|Backstabber]]&dagger;<ref name="ANH" />
+*[[Death Star]]&dagger;<ref name="ANH" /> {{C|thousands of weapon emplacements}}<ref name="Death Star SWE">{{SWE|technology|deathstar|Death Star}}</ref>
+*1 [[Imperial-class Star Destroyer|''Imperial''-class Star Destroyer]]<ref name="Star Wars 3">[[Star Wars (2020) 3|''Star Wars'' (2020) 3]]</ref> {{C|Held in reserve}}<ref name="On the Front Lines" />
+**''[[Tarkin's Will|Fortitude]]''<ref name="Star Wars 3" /> {{C|Held in reserve}}<ref name="On the Front Lines" />
+|forces2=
+*30 starfighters<ref name="Grounded">{{StoryCite|story=Grounded|book=From a Certain Point of View}}</ref>
+**22 [[T-65B X-wing starfighter]]s<ref name="Duty Roster" />
+**8 [[BTL-A4 Y-wing assault starfighter/bomber]]s<ref name="Grounded" />
+*30 pilots<ref name="Duty Roster">{{StoryCite|story=Duty Roster|book=From a Certain Point of View}}</ref><ref name="ANH" />
+*Several [[astromech droid]]s<ref name="Hasbro">{{HasbroCite|set=Star Wars: The Black Series|pack=R2-A3, R5-K6, & R2-F2|altlink=https://www.rebelscum.com/R2-A3-R5-K6-R2-F2-The-Black-Series-6-Inch-Hasbro-Star-Wars.asp}}</ref><ref name="ANH" />
+*1 [[YT-1300 light freighter]]<ref name="ANH" />
+|forces3=
+|forces4=
+|casual1=*Death Star<ref name="ANH" /> and most Imperials<ref name="LS">''[[Lost Stars]]''</ref><ref name="Inferno Squad">''[[Battlefront II: Inferno Squad]]''</ref>
+**No known survivors other than Darth Vader,<ref name="On the Front Lines" /> Iden Versio<ref name="Inferno Squad" /> and Ellian Zahra<ref name="Star Wars 7">[[Star Wars (2020) 7|''Star Wars'' (2020) 7]]</ref>
+*At least 11 TIE fighters<ref name="TIE fighter destruction" />
+**Black Two Mithel<ref name="X-wing 2" />
+**Backstabber<ref name="ANH" />
+*''Fortitude'' damaged<ref name="Star Wars 3" />
+|casual2=*20 X-wings<ref name="ANH" />
+**Red One<ref name="Grounded" />
+**Red Six<ref name="Grounded" />
+*7 Y-wings<ref name="ANH" />
+**''Gold One''<ref name="ROUVG">''[[Star Wars: Rogue One: The Ultimate Visual Guide]]''</ref>
+*All squadron pilots and their droids except Luke Skywalker, Wedge Antilles, and Evaan Verlaine<ref name="Battles" />
+|casual3=
+|casual4=
+|civilian=
+}}
+{{Quote|This will be a day long remembered. It has seen the end of Kenobi; it will soon see the end of the rebellion.|Darth Vader, to Wilhuff Tarkin before the battle|<ref name="ANH" />|audio=ThisWillBeADayLongRemembered.flac}}
+The '''Battle of Yavin''', also known as the '''Battle of the Death Star''' or the '''Miracle of Yavin''', was a major and decisive battle of the [[Galactic Civil War]], in which the [[Alliance to Restore the Republic|Rebel Alliance]] was able to destroy the [[DS-1 Orbital Battle Station|Death Star]] and was seen as one of the first major victories over the [[Galactic Empire]].
+
