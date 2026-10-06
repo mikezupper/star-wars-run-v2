@@ -49,6 +49,31 @@ Wookieepedia snapshot holds 227,272 articles, and 257 of swapi's 259 records mat
    from the real snapshot, so it stays a few minutes long. `pnpm build` builds everything.
    Measuring and tuning the full build is `swr-7f1.6`.
 
+## Numbers from infobox text (`swr-7f1.14`)
+
+`src/domain/quantities.ts` reads numbers from the cleaned field text at build time, not at
+ingest, so changing a rule needs no re-ingest. A value is read only when its shape is clear: the
+first number, an optional multiplier word (million, billion…), and a unit the quantity accepts.
+Length and mass need a unit; counts and credits don't. Qualifiers ("nearly", "approx.") set
+`approx`; ranges ("20 to 30 meters", "6 or 7") keep `max`. Values are in one base unit per
+column (`height_m`, `mass_kg`, `diameter_km`, `max_speed_kph`…). Pages still show the text.
+
+Parse rates on the 2026-08-01 snapshot (first item of each field):
+
+| Field      | Parsed              | Field      | Parsed          |
+| ---------- | ------------------- | ---------- | --------------- |
+| height     | 6,485 / 6,959 (93%) | max speed  | 945 / 971 (97%) |
+| length     | 3,795 / 4,055 (94%) | weight     | 678 / 798 (85%) |
+| cost       | 3,485 / 3,873 (90%) | mass       | 636 / 671 (95%) |
+| crew       | 3,211 / 3,685 (87%) | lengthday  | 546 / 563 (97%) |
+| passengers | 1,793 / 2,313 (78%) | mglt       | 371 / 380 (98%) |
+| hyperdrive | 1,184 / 1,682 (70%) | diameter   | 261 / 284 (92%) |
+| population | 977 / 1,240 (79%)   | lengthyear | 194 / 583 (33%) |
+
+The misses are mostly not numbers ("Equipped", "Stationary", "Tall", "Over twenty million").
+`lengthyear` stays low on purpose: most years are given in **local** days, which aren't
+comparable to standard days, so they're left out rather than mixed in.
+
 ## Consequences
 
 - Every machine that builds the site needs the dump (ADR 0007 decision 7), and `pnpm check`
