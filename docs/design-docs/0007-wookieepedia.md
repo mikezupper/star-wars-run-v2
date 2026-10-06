@@ -129,6 +129,32 @@ numbers. That's a change from swapi.info's typed fields.
    (0.1.0): the chrome is about 2.5 KB raw, 1.1 KB gzipped, against 2.1 KB of content. Each
    page keeps its own copy; that's what makes it complete without JavaScript.
 
+7. **The snapshot is never stored** (not in git, Git LFS or a release). Every machine that
+   builds the site rebuilds it from the dump. The ingest hashes the dump first and keeps a
+   snapshot built from the same dump by the same code, so an unchanged dump costs about a
+   second. Wiring this into `pnpm build`, Docker and CI is `swr-7f1.12`.
+
+## What the ingest measured (`swr-7f1.2`, `swr-7f1.3`)
+
+On the 2026-08-01 dump, 12 cores:
+
+| Measure         | Value                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| Articles        | 227,272: 110,469 canon (incl. real-world), 116,803 Legends                                     |
+| Redirects       | 79,736                                                                                         |
+| Parse failures  | 0                                                                                              |
+| Commonest kinds | no infobox 58,376; `Character` 44,162; `System` 11,613; `Person` 10,591; `CelestialBody` 8,585 |
+| Time            | 6 min 34 s (titles pass 45 s; parsing 5.5 min on 11 workers)                                   |
+| Peak memory     | 6.5 GB with 11 workers (`--workers N` trades time for memory)                                  |
+| Snapshot        | 50 MB gzipped, 278 MB raw: 12 JSON Lines shards + redirects                                    |
+| Determinism     | two runs byte-identical                                                                        |
+
+- **Parser:** wikiparser-node, not wtf_wikipedia, which flattened fields to strings (losing links)
+  and dropped `{{C|…}}` text. About 28 ms per long article, nearly all inside the parser.
+- **Format:** gzipped JSON Lines, sorted by title. Parquet for the Explore page will be derived
+  from it (`swr-7f1.7`), so DuckDB isn't needed until then.
+- **Decompression:** the 7-Zip binary from the `7zip-bin` package; no system install.
+
 ## Implementation (epic `swr-7f1`)
 
 | Bead         | Work                                                          | Needs      |

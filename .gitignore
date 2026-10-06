@@ -11,3 +11,6 @@ coverage/
 
 .DS_Store
 .smoke/
+
+# The Wookieepedia snapshot is rebuilt from the dump, never stored (ADR 0007).
+data/wookieepedia/
