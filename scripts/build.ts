@@ -6,10 +6,16 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
 import * as pagefind from 'pagefind';
-import { loadDataset } from '../src/data/load.js';
+import { loadSiteData } from '../src/data/archive.js';
 import { createSite, sitemap } from '../src/render/site.js';
 import { buildServiceWorker } from './build-sw.js';
 import { ORIGIN } from '../src/site.js';
+
+/** `SITE_SAMPLE=20 pnpm build`: a quick build of a sample (ADR 0008); unset builds everything. */
+const sampleOption = (): { sample?: number } => {
+  const n = Number(process.env['SITE_SAMPLE']);
+  return Number.isInteger(n) && n > 0 ? { sample: n } : {};
+};
 
 export async function buildSite(dist: string): Promise<readonly string[]> {
   const manifest = join(dist, '.vite', 'manifest.json');
@@ -19,7 +25,7 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
       clientEntry: await clientEntryFromManifest(manifest, 'src/entry-client.ts'),
       page: await clientEntryFromManifest(manifest, 'src/page.ts'),
     },
-    await loadDataset(),
+    await loadSiteData(sampleOption()),
   );
   const pages = await prerender({ app: site, paths: site.paths, outDir: dist, origin: ORIGIN });
   await writeFile(join(dist, '404.html'), await site.notFound());

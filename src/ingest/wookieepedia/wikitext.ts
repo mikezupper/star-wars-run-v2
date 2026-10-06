@@ -7,26 +7,9 @@
 // plain text of its first positional argument.
 import Parser from 'wikiparser-node';
 
-/** A run of text, or a run of text linking to another article by its title. */
-export type Run = { readonly text: string } | { readonly text: string; readonly link: string };
+import type { Field, ParsedArticle, Rich, Run } from '../../domain/article.js';
 
-/** Text with links. */
-export type Rich = readonly Run[];
-
-/** One infobox field: one item, or several when the source lists them. */
-export interface Field {
-  readonly name: string;
-  readonly items: readonly Rich[];
-}
-
-export interface ParsedArticle {
-  readonly era: 'canon' | 'legends';
-  /** The infobox template's name, e.g. `Character`, `CelestialBody`; absent without one. */
-  readonly kind?: string;
-  readonly fields: readonly Field[];
-  /** The paragraphs before the first heading. */
-  readonly lead: readonly Rich[];
-}
+export type { Field, ParsedArticle, Rich, Run } from '../../domain/article.js';
 
 /** The slice of wikiparser-node's syntax tree this module reads. */
 interface Node {

@@ -4,19 +4,23 @@ Data comes in once, at ingest time. Every page is rendered once, at build time. 
 server only hands out files.
 
 ```
-swapi.info ──► src/ingest (fetch, parse, slug, link) ──► data/*.json   (committed snapshot)
+dump.7z (local file) ──► src/ingest/wookieepedia (stream, parse, link) ──► data/wookieepedia/
+                                                     (rebuilt from the dump, never committed)
+data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (sections, slugs, URLs)
+                                     └──► src/render (route table, templates) ──► Response
                                                               │
-data/*.json ──► src/data (load) ──► src/render (route table, templates) ──► Response
-                                                              │
-                         scripts/dev.ts: per request ◄────────┤
+                         scripts/dev.ts: per request ◄────────┤  (archive loaded once at start)
                          scripts/build.ts: prerender every path → dist/
 src/islands/*.ts ──► vite build ──► dist/assets/   (hydrated in the browser)
 src/styles/site.css ──► vite build ──► dist/assets/
 public/ ──► copied to dist/
 ```
 
-`pnpm ingest` is the only step that touches the network. `pnpm build` reads `data/` and
-nothing else, so a build is reproducible and works offline.
+Pages come from the Wookieepedia snapshot (ADR 0008). `pnpm ingest:wookieepedia` reads the
+dump; `pnpm build` reads the snapshot and nothing else, so a build is reproducible and works
+offline once the snapshot exists. `pnpm build:sample` (what `pnpm check` runs) builds the first
+20 articles of each section plus a few well-known ones. The swapi.info code in `src/ingest/` and
+`data/*.json` is no longer used and goes away with `swr-7f1.15`.
 
 ## Layers
 

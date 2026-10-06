@@ -20,15 +20,15 @@ describe('search results', () => {
   it('reads the title and the kind filter of a result', () => {
     expect(
       toHit({
-        url: '/people/luke-skywalker/',
+        url: '/characters/luke-skywalker/',
         excerpt: '<mark>Luke</mark>',
         meta: { title: 'Luke Skywalker' },
-        filters: { kind: ['people'] },
+        filters: { kind: ['characters'] },
       }),
     ).toEqual({
-      url: '/people/luke-skywalker/',
+      url: '/characters/luke-skywalker/',
       title: 'Luke Skywalker',
-      kind: 'people',
+      kind: 'characters',
       excerpt: [{ text: 'Luke', mark: true }],
     });
   });

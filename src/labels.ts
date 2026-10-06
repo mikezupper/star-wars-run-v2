@@ -3,6 +3,7 @@
 // field names stay plain; the voice lives in intros, blurbs, and empty and error states.
 // Facts about records come from the data, never from here.
 import type { AnyRecord, Kind } from './domain/records.js';
+import type { Section } from './domain/sections.js';
 
 export const KIND_LABELS: Readonly<
   Record<Kind, { readonly plural: string; readonly one: string }>
@@ -14,6 +15,158 @@ export const KIND_LABELS: Readonly<
   vehicles: { plural: 'Vehicles', one: 'vehicle' },
   starships: { plural: 'Starships', one: 'starship' },
 };
+
+/** The archive's sections (ADR 0008): name, one item, and a line in the site's voice. */
+export const SECTION_LABELS: Readonly<
+  Record<Section, { readonly plural: string; readonly one: string; readonly blurb: string }>
+> = {
+  characters: {
+    plural: 'Characters',
+    one: 'character',
+    blurb:
+      'Jedi, Sith, smugglers, senators, droids, and tens of thousands of people whose names you missed.',
+  },
+  species: {
+    plural: 'Species',
+    one: 'species',
+    blurb: 'Wookiees, Hutts, Gungans, Ewoks and thousands more. Humans are here too.',
+  },
+  planets: {
+    plural: 'Planets',
+    one: 'planet',
+    blurb: 'Desert worlds, ice worlds, city worlds, and at least one swamp you should avoid.',
+  },
+  places: {
+    plural: 'Places',
+    one: 'place',
+    blurb: 'Cities, cantinas, temples and bases: where things happened.',
+  },
+  galaxy: {
+    plural: 'Galaxy',
+    one: 'region',
+    blurb: 'Systems, sectors, nebulae and hyperspace routes: the map between the planets.',
+  },
+  starships: {
+    plural: 'Starships',
+    one: 'starship',
+    blurb: 'Anything with a hyperdrive, from the Millennium Falcon to the Death Star.',
+  },
+  vehicles: {
+    plural: 'Vehicles',
+    one: 'vehicle',
+    blurb: 'Speeders, walkers and sail barges: everything that stays close to the ground.',
+  },
+  organizations: {
+    plural: 'Organizations',
+    one: 'organization',
+    blurb: 'Empires, rebellions, guilds, orders and the occasional crime syndicate.',
+  },
+  events: {
+    plural: 'Events',
+    one: 'event',
+    blurb: 'Battles, wars, duels and missions, in roughly the order they went wrong.',
+  },
+  technology: {
+    plural: 'Technology',
+    one: 'item',
+    blurb: 'Blasters, lightsabers, armor, droid models and other things that hum.',
+  },
+  lore: {
+    plural: 'Lore',
+    one: 'topic',
+    blurb: 'The Force, languages, titles, calendars, and what everyone was eating.',
+  },
+  media: {
+    plural: 'Media',
+    one: 'work',
+    blurb: 'Films, series, books, comics, games and magazines: where the stories are told.',
+  },
+  'real-world': {
+    plural: 'Real world',
+    one: 'entry',
+    blurb: 'The people, companies and products behind the saga, on this side of the screen.',
+  },
+  other: {
+    plural: 'Everything else',
+    one: 'article',
+    blurb: 'Articles that fit no shelf: stubs, lists and the occasional oddity.',
+  },
+};
+
+/** Labels for common infobox fields; others are made readable by fieldLabel(). */
+const FIELD_NAMES: Readonly<Record<string, string>> = {
+  homeworld: 'Homeworld',
+  birth: 'Born',
+  death: 'Died',
+  species: 'Species',
+  gender: 'Gender',
+  pronouns: 'Pronouns',
+  height: 'Height',
+  mass: 'Mass',
+  hair: 'Hair',
+  eyes: 'Eyes',
+  skin: 'Skin',
+  cyber: 'Cybernetics',
+  affiliation: 'Affiliations',
+  masters: 'Masters',
+  apprentices: 'Apprentices',
+  haircolor: 'Hair colors',
+  eyecolor: 'Eye colors',
+  skincolor: 'Skin colors',
+  designation: 'Designation',
+  lifespan: 'Lifespan',
+  language: 'Language',
+  region: 'Region',
+  sector: 'Sector',
+  system: 'System',
+  suns: 'Suns',
+  moons: 'Moons',
+  coordinates: 'Grid coordinates',
+  routes: 'Trade routes',
+  population: 'Population',
+  climate: 'Climate',
+  terrain: 'Terrain',
+  manufacturer: 'Manufacturer',
+  model: 'Model',
+  class: 'Class',
+  length: 'Length',
+  mglt: 'Speed (MGLT)',
+  crew: 'Crew',
+  passengers: 'Passengers',
+  armament: 'Armament',
+  owners: 'Owners',
+  director: 'Director',
+  producer: 'Producers',
+  writer: 'Writers',
+  starring: 'Starring',
+  music: 'Music',
+  'release date': 'Released',
+  runtime: 'Runtime',
+  conflict: 'Conflict',
+  place: 'Place',
+  outcome: 'Outcome',
+  side1: 'Side 1',
+  side2: 'Side 2',
+  commanders1: 'Commanders (side 1)',
+  commanders2: 'Commanders (side 2)',
+  founder: 'Founded by',
+  leader: 'Leaders',
+  headquarters: 'Headquarters',
+};
+
+/** `max speed` → `Max speed`; `commanders1` keeps its known label. */
+export const fieldLabel = (name: string): string =>
+  FIELD_NAMES[name] ?? name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' ');
+
+/** A page's description for search results: what kind of thing it is, in which section. */
+export const articleDescription = (title: string, section: Section, legends: boolean): string =>
+  `${title}${legends ? ' (Legends)' : ''}: a ${SECTION_LABELS[section].one} in the Star Wars archive, with its facts, its story and links to everything related.`;
+
+export const sectionDescription = (section: Section, count: number): string =>
+  `${SECTION_LABELS[section].blurb} ${count.toLocaleString('en-US')} ${SECTION_LABELS[section].plural.toLowerCase()} in the Star Wars archive.`;
+
+export const letterTitle = (section: Section, letter: string): string =>
+  `${SECTION_LABELS[section].plural}: ${letter === '0' ? '0–9 and symbols' : letter.toUpperCase()}`;
 
 /** One line under each section's heading, and on its list page. Checked against data/. */
 export const KIND_BLURBS: Readonly<Record<Kind, string>> = {
@@ -145,10 +298,17 @@ export const TEXT = {
     `${String(n)} ${n === 1 ? 'match' : 'matches'} for “${query}”.`,
   eraNote:
     'Birth years count from the Battle of Yavin, when the first Death Star was destroyed: 19BBY means 19 years before it.',
+  legends: 'Legends',
+  legendsNote:
+    'This article is part of Legends: the expanded-universe stories that Lucasfilm set apart from canon in 2014.',
+  letters: 'Browse by letter',
+  inSection: (n: number): string => `${n.toLocaleString('en-US')} articles`,
   offlineTitle: 'You’re offline',
   offlineBody:
     'This page hasn’t been saved for the journey yet, and there’s no signal out here. Pages you’ve already visited still work, and so does search.',
-  dataCredit: 'Data from',
+  dataCredit: 'Text and facts from',
+  dataLicense: 'licensed under',
+  dataPerPage: 'Each page credits its source article.',
   fanProject:
     'An unofficial fan project. Star Wars and its characters are trademarks of Lucasfilm Ltd.',
 };

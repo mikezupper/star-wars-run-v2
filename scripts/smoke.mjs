@@ -46,10 +46,17 @@ const paths = [
 const unlisted = ['/search/', '/offline/'];
 /** Each query must list every expected page in its first five results. */
 const SEARCHES = [
-  ['sky', ['/people/luke-skywalker/', '/people/anakin-skywalker/', '/people/shmi-skywalker/']],
+  [
+    'sky',
+    [
+      '/characters/luke-skywalker/',
+      '/characters/anakin-skywalker/',
+      '/characters/shmi-skywalker-lars/',
+    ],
+  ],
   ['tatooine', ['/planets/tatooine/']],
   ['falcon', ['/starships/millennium-falcon/']],
-  ['padme', ['/people/padme-amidala/']],
+  ['padme', ['/characters/padme-amidala-naberrie/']],
 ];
 
 const CONCURRENCY = 6;
@@ -169,7 +176,7 @@ async function checkSearch() {
     watch(page, where);
     for (const [query, expected] of SEARCHES) {
       // Start from a record page, as a reader would: `/` focuses the header box.
-      await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+      await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
       await page.keyboard.press('/');
       const focused = await page.evaluate(() => document.activeElement?.id);
       if (focused !== 'site-search-q') fail(where, `"/" focused "${String(focused)}"`);
@@ -234,8 +241,8 @@ async function checkWithoutJavaScript() {
   try {
     const page = await context.newPage();
     await page.goto(`${base}/search/?q=sky`);
-    const fallback = await page.locator('swr-site-search a[href="/people/"]').count();
-    if (fallback !== 1) fail(where, 'no fallback link to /people/');
+    const fallback = await page.locator('swr-site-search a[href="/characters/"]').count();
+    if (fallback !== 1) fail(where, 'no fallback link to /characters/');
   } finally {
     await context.close();
   }
@@ -256,7 +263,7 @@ async function checkOffline() {
   try {
     const page = await context.newPage();
     page.on('pageerror', (e) => fail(where, `page error: ${e.message}`));
-    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
     // Wait for install (the precache) and for the worker to take control of this page.
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;
@@ -267,10 +274,10 @@ async function checkOffline() {
       }
     });
     // A visit through the worker saves the page.
-    await page.goto(`${base}/people/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
     await context.setOffline(true);
 
-    await page.goto(`${base}/people/luke-skywalker/`);
+    await page.goto(`${base}/characters/luke-skywalker/`);
     const h1 = await page.locator('h1').textContent();
     if (h1 !== 'Luke Skywalker') fail(where, `visited page shows "${String(h1)}" offline`);
 
@@ -281,7 +288,7 @@ async function checkOffline() {
       fail(where, 'search found nothing offline');
     }
 
-    await page.goto(`${base}/people/yoda/`);
+    await page.goto(`${base}/species/wookiee/`);
     const offline = await page.locator('h1').textContent();
     if (!/offline/i.test(offline ?? '')) {
       fail(where, `unvisited page shows "${String(offline)}" offline, not the offline page`);
@@ -309,12 +316,15 @@ async function checkDevServer() {
   const dev = spawn(
     new URL('../node_modules/.bin/tsx', import.meta.url).pathname,
     ['scripts/dev.ts'],
-    { env: { ...process.env, PORT: String(port), HMR_PORT: String(hmr) }, stdio: 'pipe' },
+    {
+      env: { ...process.env, PORT: String(port), HMR_PORT: String(hmr), SITE_SAMPLE: '20' },
+      stdio: 'pipe',
+    },
   );
   let log = '';
   try {
     await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`didn't start in 30s: ${log}`)), 30_000);
+      const timer = setTimeout(() => reject(new Error(`didn't start in 120s: ${log}`)), 120_000);
       const read = (chunk) => {
         log += String(chunk);
         if (log.includes(`localhost:${String(port)}`)) {
@@ -331,7 +341,7 @@ async function checkDevServer() {
     try {
       const page = await context.newPage();
       watch(page, where);
-      for (const path of ['/', '/people/luke-skywalker/']) {
+      for (const path of ['/', '/characters/luke-skywalker/']) {
         const response = await page.goto(devBase + path, { waitUntil: 'networkidle' });
         if (response?.status() !== 200)
           fail(where, `${path}: status ${String(response?.status())}`);

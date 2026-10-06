@@ -9,7 +9,7 @@ import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer as createViteServer } from 'vite';
-import type * as LoadModule from '../src/data/load.js';
+import { loadSiteData } from '../src/data/archive.js';
 import type * as SiteModule from '../src/render/site.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
@@ -17,6 +17,16 @@ const vite = await createViteServer({
   server: { middlewareMode: true, ws: { port: Number(process.env['HMR_PORT'] ?? 24800) } },
   appType: 'custom',
 });
+
+// The archive is loaded once, here, not per request: the full snapshot takes seconds and GBs.
+// SITE_SAMPLE=N loads a sample instead, for a quicker start.
+const sample = Number(process.env['SITE_SAMPLE']);
+console.log('starwars.run: loading the archive…');
+const started = Date.now();
+const data = await loadSiteData(Number.isInteger(sample) && sample > 0 ? { sample } : {});
+console.log(
+  `starwars.run: ${String(data.archive.byTitle.size)} articles loaded in ${String(Math.round((Date.now() - started) / 1000))}s`,
+);
 
 const DEV_ASSETS = {
   stylesheet: '/src/styles/site.css',
@@ -46,13 +56,21 @@ async function servePagefind(pathname: string, res: http.ServerResponse): Promis
   }
 }
 
+const sites = new WeakMap<object, SiteModule.Site>();
+
 async function render(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   try {
     const mod = (await vite.ssrLoadModule('/src/render/site.ts')) as typeof SiteModule;
-    const load = (await vite.ssrLoadModule('/src/data/load.ts')) as typeof LoadModule;
-    const response = await mod
-      .createSite(DEV_ASSETS, await load.loadDataset())
-      .fetch(new Request(new URL(req.url ?? '/', `http://localhost:${String(port)}`)));
+    // The route table has an entry per article: build it once per version of the module
+    // (Vite hands back a new module object after an edit), not on every request.
+    let site = sites.get(mod);
+    if (site === undefined) {
+      site = mod.createSite(DEV_ASSETS, data);
+      sites.set(mod, site);
+    }
+    const response = await site.fetch(
+      new Request(new URL(req.url ?? '/', `http://localhost:${String(port)}`)),
+    );
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(await response.text());
   } catch (error) {

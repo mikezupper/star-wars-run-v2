@@ -4,15 +4,15 @@
 // you type, and keeps the address bar in step. Keys: arrows move between the box and the
 // results, Escape clears. Adapted from gyral.dev's src/islands/site-search.ts.
 import { css, define, focus, html, nothing, type Command } from '@gyral/core';
-import { kindPath } from '../domain/paths.js';
-import { KINDS, type Kind } from '../domain/records.js';
-import { KIND_LABELS, TEXT } from '../labels.js';
+import { sectionPath } from '../domain/archive.js';
+import { SECTIONS, type Section } from '../domain/sections.js';
+import { SECTION_LABELS, TEXT } from '../labels.js';
 import { readQuery, search, writeQuery, type Hit, type Query } from './pagefind.js';
 
 export type Msg =
   | { readonly _tag: 'Started'; readonly query: Query }
   | { readonly _tag: 'Typed'; readonly text: string }
-  | { readonly _tag: 'Filtered'; readonly kind: Kind | undefined }
+  | { readonly _tag: 'Filtered'; readonly kind: Section | undefined }
   | { readonly _tag: 'Submitted' }
   | {
       readonly _tag: 'Key';
@@ -69,7 +69,7 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
   init: () => ({ _tag: 'Static' }),
   intent: {
     Typed: ({ value }) => ({ _tag: 'Typed', text: value ?? '' }),
-    Filtered: ({ value }) => ({ _tag: 'Filtered', kind: KINDS.find((k) => k === value) }),
+    Filtered: ({ value }) => ({ _tag: 'Filtered', kind: SECTIONS.find((k) => k === value) }),
     Submitted: () => ({ _tag: 'Submitted' }),
     Key: ({ key, event }) => {
       if (key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Escape') return undefined;
@@ -107,7 +107,7 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
     s._tag === 'Static'
       ? html`<p>${TEXT.searchNoScript}</p>
           <ul>
-            ${KINDS.map((k) => html`<li><a href=${kindPath(k)}>${KIND_LABELS[k].plural}</a></li>`)}
+            ${SECTIONS.map((k) => html`<li><a href=${sectionPath(k)}>${SECTION_LABELS[k].plural}</a></li>`)}
           </ul>`
       : html`
           <search data-intent=${i.Key} data-intent-on="keydown">
@@ -131,10 +131,10 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
                   <option value="" ?selected=${s.query.kind === undefined}>
                     ${TEXT.searchAllKinds}
                   </option>
-                  ${KINDS.map(
+                  ${SECTIONS.map(
                     (k) =>
                       html`<option value=${k} ?selected=${s.query.kind === k}>
-                        ${KIND_LABELS[k].plural}
+                        ${SECTION_LABELS[k].plural}
                       </option>`,
                   )}
                 </select>
@@ -280,7 +280,7 @@ const results = (hits: readonly Hit[]) =>
           (hit, n) =>
             html`<li>
               <a id=${`hit-${String(n)}`} href=${hit.url}>
-                ${hit.kind === undefined ? nothing : html`<small>${KIND_LABELS[hit.kind].one}</small>`}
+                ${hit.kind === undefined ? nothing : html`<small>${SECTION_LABELS[hit.kind].one}</small>`}
                 <strong>${hit.title}</strong>
                 <span
                   >${hit.excerpt.map((run) => (run.mark ? html`<mark>${run.text}</mark>` : run.text))}</span

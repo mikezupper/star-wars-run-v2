@@ -255,7 +255,8 @@
 
     & nav a {
       display: inline-block;
-      padding: 0.4rem 0.7rem;
+      padding: 0.3rem 0.55rem;
+      font-size: var(--step--1);
       border-radius: 999px;
       color: var(--text-muted);
       text-decoration: none;
@@ -339,16 +340,29 @@
     }
   }
 
-  /* Record page: facts card, opening crawl, a grid of relationship cards. */
+  /*
+   * Article page: the lead reads as one column of prose; the facts sit beside it on wide
+   * screens, like a wiki infobox, and after it on narrow ones (DOM order).
+   */
   article {
     display: grid;
     gap: var(--gap);
-    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
     align-items: start;
     container-type: inline-size;
 
-    & > h1 {
+    & > h1,
+    & > p {
       grid-column: 1 / -1;
+    }
+
+    & > div {
+      display: grid;
+      gap: 1em;
+      max-inline-size: var(--measure);
+
+      & > p:last-child {
+        color: var(--text-muted);
+      }
     }
 
     & > section {
@@ -363,48 +377,61 @@
       }
     }
 
-    /* Facts and the crawl span the full width; relationship cards share rows. */
-    & > section:has(dl),
-    & > section:has(blockquote) {
-      grid-column: 1 / -1;
-    }
+    @media (width > 60rem) {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
 
-    & section ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      padding: 0;
-      list-style: none;
-    }
-
-    & section li a {
-      display: inline-block;
-      padding: 0.3rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      text-decoration: none;
-
-      &:hover {
-        border-color: var(--accent);
+      /* No inner scrolling: a scrollable box would need keyboard focus (axe). */
+      & > section {
+        grid-column: 2;
+        grid-row: span 2;
       }
     }
   }
 
   dl {
     display: grid;
-    grid-template-columns: minmax(8rem, max-content) 1fr;
-    gap: 0.5rem 1.5rem;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.35rem 1rem;
 
     & dt {
+      grid-column: 1;
       color: var(--text-muted);
     }
 
     & dd {
+      grid-column: 2;
       font-weight: 600;
     }
+  }
 
-    @container (inline-size > 44rem) {
-      grid-template-columns: repeat(2, minmax(8rem, max-content) 1fr);
+  /* A section's letters: chips with their counts. */
+  nav[aria-label='Browse by letter'] ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+    }
+
+    & a {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    & data {
+      color: var(--text-muted);
+      font-size: var(--step--1);
     }
   }
 
