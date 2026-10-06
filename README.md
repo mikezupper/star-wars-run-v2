@@ -64,4 +64,6 @@ unofficial fan project, not affiliated with or endorsed by Lucasfilm.
 
 ## License
 
-MIT, for the code. © 2026 Mike Zupper.
+- **Code:** MIT, © 2026 Mike Zupper. See [LICENSE](LICENSE).
+- **Text and data from Wookieepedia:** CC BY-SA 3.0, credited on every page that uses them.
+  See [CONTENT-LICENSE.md](CONTENT-LICENSE.md).

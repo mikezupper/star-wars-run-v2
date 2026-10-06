@@ -87,6 +87,18 @@ export const ERAS = {
   ABY: 'After the Battle of Yavin',
 } as const;
 
+/**
+ * The credit line on every page built from a Wookieepedia article (CC BY-SA 3.0 requires it).
+ * Plain on purpose: this is the license notice, not the place for the site's voice.
+ */
+export const CREDIT = {
+  before: 'Text and facts from the',
+  article: (title: string): string => `“${title}” article on Wookieepedia`,
+  licensed: 'licensed under',
+  license: 'CC BY-SA 3.0',
+  modified: 'Modified for this site.',
+} as const;
+
 export const UNITS = {
   cm: 'cm',
   kg: 'kg',
