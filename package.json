@@ -26,7 +26,8 @@
     "caddyfile": "tsx scripts/caddyfile.ts",
     "docker:build": "docker build -t starwars-run .",
     "docker:run": "docker run --rm -p 8080:8080 starwars-run",
-    "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml"
+    "ci:local": "gh act workflow_dispatch -W .github/workflows/ci.yml",
+    "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts"
   },
   "dependencies": {
     "@gyral/core": "^0.2.0",
@@ -36,6 +37,7 @@
     "lit": "3.3.3"
   },
   "devDependencies": {
+    "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
     "@gyral/testing": "^0.2.0",
@@ -48,6 +50,7 @@
     "pagefind": "1.5.2",
     "playwright": "1.63.0",
     "prettier": "3.9.9",
+    "saxes": "^6.0.0",
     "stylelint": "17.16.0",
     "stylelint-plugin-use-baseline": "1.4.6",
     "tsx": "4.23.15",

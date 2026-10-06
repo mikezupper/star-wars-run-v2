@@ -17,17 +17,18 @@ disagree, the doc wins; fix this file.
 
 ## Commands
 
-| Command           | What it does                                                                       |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| `pnpm install`    | Install. `@gyral/*` comes from npm                                                 |
-| `pnpm check`      | **The gate.** typecheck · lint · format · invariants · tests (80%) · build · smoke |
-| `pnpm invariants` | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)        |
-| `pnpm dev`        | Dev server on http://localhost:5500. Search uses the last `pnpm build`'s index     |
-| `pnpm build`      | `vite build`, then prerender every page to `dist/`                                 |
-| `pnpm preview`    | Serve `dist/` with production URL rules on http://localhost:5501                   |
-| `pnpm test`       | Vitest with coverage; fails below 80% on any metric                                |
-| `pnpm format`     | Prettier, in place                                                                 |
-| `pnpm ingest`     | Fetch swapi.info, parse, check, rewrite `data/`. The only network step             |
+| Command                              | What it does                                                                       |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| `pnpm install`                       | Install. `@gyral/*` comes from npm                                                 |
+| `pnpm check`                         | **The gate.** typecheck · lint · format · invariants · tests (80%) · build · smoke |
+| `pnpm invariants`                    | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)        |
+| `pnpm dev`                           | Dev server on http://localhost:5500. Search uses the last `pnpm build`'s index     |
+| `pnpm build`                         | `vite build`, then prerender every page to `dist/`                                 |
+| `pnpm preview`                       | Serve `dist/` with production URL rules on http://localhost:5501                   |
+| `pnpm test`                          | Vitest with coverage; fails below 80% on any metric                                |
+| `pnpm format`                        | Prettier, in place                                                                 |
+| `pnpm ingest`                        | Fetch swapi.info, parse, check, rewrite `data/`. The only network step             |
+| `pnpm ingest:wookieepedia [dump.7z]` | Wookieepedia dump → `data/wookieepedia/` (~6.5 min, `--workers N` to save memory)  |
 
 | `pnpm smoke` | Built site in Chromium: status, console, axe, 360px, links, search, offline, dev server |
 | `pnpm icons` | Render `public/icons/icon.svg` to the PNG sizes; commit the result |

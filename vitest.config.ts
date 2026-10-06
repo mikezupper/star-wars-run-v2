@@ -11,8 +11,9 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      // Runs only inside a service worker; `pnpm smoke` checks it offline in Chromium.
-      exclude: ['src/offline/sw.ts'],
+      // sw.ts runs only inside a service worker (`pnpm smoke` checks it offline in Chromium).
+      // worker.ts runs only in a worker thread; the ingest's in-process mode tests the same parseOne().
+      exclude: ['src/offline/sw.ts', 'src/ingest/wookieepedia/worker.ts'],
       reporter: ['text-summary', 'text'],
       thresholds: { lines: 80, branches: 80, functions: 80, statements: 80 },
     },
