@@ -4,6 +4,7 @@
 // Adapted from gyral.dev's src/islands/pagefind.ts.
 import { command, defineDriver, type Command } from '@gyral/core';
 import { SECTIONS, type Section } from '../domain/sections.js';
+import { titleHits, type TitleHit } from './titles.js';
 
 /** One search result, ready for the view. */
 export interface Hit {
@@ -80,6 +81,18 @@ const kindOf = (d: PagefindResult): Section | undefined => {
   return SECTIONS.find((kind) => kind === value);
 };
 
+/**
+ * Title matches first, then Pagefind's results without the pages already listed (swr-357):
+ * Pagefind ranks by text, which at 227k pages buries the page a title search is looking for.
+ */
+export const mergeHits = (titles: readonly TitleHit[], found: readonly Hit[]): Hit[] => {
+  const seen = new Set(titles.map((t) => t.url));
+  return [
+    ...titles.map((t): Hit => ({ ...t, excerpt: [] })),
+    ...found.filter((h) => !seen.has(h.url)),
+  ].slice(0, MAX_HITS);
+};
+
 export const toHit = (d: PagefindResult): Hit => ({
   url: d.url,
   title: d.meta.title ?? d.url,
@@ -105,6 +118,7 @@ const pagefind = defineDriver<Query, readonly Hit[], string>({
   concurrency: 'switch',
   run: async (query, { signal }) => {
     await wait(DEBOUNCE_MS, signal);
+    const titles = titleHits(query.text, query.kind);
     const pf = await loadPagefind();
     const found = await pf.search(
       query.text,
@@ -113,7 +127,7 @@ const pagefind = defineDriver<Query, readonly Hit[], string>({
     const data = await Promise.all(
       (found?.results ?? []).slice(0, MAX_HITS).map((result) => result.data()),
     );
-    return data.map(toHit);
+    return mergeHits(await titles, data.map(toHit));
   },
   toError: () => 'failed',
 });

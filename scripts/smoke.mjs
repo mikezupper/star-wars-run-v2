@@ -53,14 +53,10 @@ const listed = locs('sitemap.xml').flatMap((part) => locs(part.slice(1)));
 const unlisted = ['/search/', '/offline/'];
 /** Each query must list every expected page in its first five results. */
 const SEARCHES = [
-  [
-    'sky',
-    [
-      '/characters/luke-skywalker/',
-      '/characters/anakin-skywalker/',
-      '/characters/shmi-skywalker-lars/',
-    ],
-  ],
+  ['sky', ['/characters/luke-skywalker/', '/characters/anakin-skywalker/']],
+  ['luke', ['/characters/luke-skywalker/']],
+  // A redirect: there's no article called Vader (swr-357).
+  ['vader', ['/characters/anakin-skywalker/']],
   ['tatooine', ['/planets/tatooine/']],
   ['falcon', ['/starships/millennium-falcon/']],
   ['padme', ['/characters/padme-amidala-naberrie/']],

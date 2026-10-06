@@ -90,3 +90,17 @@ Each entry has four parts:
   file.
 - **Guard:** `test/offline/precache.test.ts` checks that index chunks and fragments aren't
   precached, and the build logs the precache count and the size of `sw.js` on every run.
+
+## Search buried the obvious answer at full size (2026-10-06)
+
+- **Symptom:** On the full archive, "tatooine" listed Tatooine/3 and Tatooine wine but not the
+  planet in its top five; "luke" listed stunt performers named Luke. The same searches passed
+  on the sample build, so `pnpm check` stayed green.
+- **Cause:** Pagefind ranks by text: how often and how densely a page uses the words. With
+  227,000 pages there are hundreds of short pages dense with "Tatooine", and nothing tells
+  Pagefind which page matters most. The sample had too few pages to show it.
+- **Fix:** a title index (`src/domain/titles.ts`, swr-357) ranks title and redirect matches by
+  how many articles link to each, and the search island lists its best five above Pagefind's.
+- **Guard:** `SMOKE_PAGES=1000 pnpm smoke` against a full build runs the same search checks
+  (`SEARCHES` in `scripts/smoke.mjs`). Run it after changing search; the gate's sample can't
+  catch ranking at scale.

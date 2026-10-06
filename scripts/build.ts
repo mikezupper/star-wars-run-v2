@@ -10,6 +10,7 @@ import * as pagefind from 'pagefind';
 import { loadSiteData } from '../src/data/archive.js';
 import { createSite, sitemaps } from '../src/render/site.js';
 import { exploreRows } from '../src/domain/rows.js';
+import { inboundLinks, titleShards } from '../src/domain/titles.js';
 import { buildDatabase } from './build-database.js';
 import { buildServiceWorker } from './build-sw.js';
 import { ORIGIN } from '../src/site.js';
@@ -57,6 +58,7 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
   );
   await copyDuckDb(dist);
   await stage('search index', () => indexForSearch(dist));
+  await stage('title index', () => writeTitleIndex(dist, data));
   // Last: the service worker's precache list covers everything written above.
   const sw = await stage('service worker', () => buildServiceWorker(dist));
   console.log(`service worker: ${String(sw.entries)} precached files, sw.js ${sw.kb} KB`);
@@ -75,6 +77,29 @@ async function checkPageBudget(dist: string, paths: readonly string[]): Promise<
       `pages over the ${String(PAGE_BUDGET_BYTES / 1024)} KB budget: ${over.join(', ')}`,
     );
   }
+}
+
+/**
+ * The search title index (swr-357, src/domain/titles.ts): dist/search-titles/<key>.json, one
+ * per three- or four-letter word start, and index.json listing the shards and the keys split
+ * by four letters.
+ */
+async function writeTitleIndex(
+  dist: string,
+  data: Awaited<ReturnType<typeof loadSiteData>>,
+): Promise<void> {
+  const { files, split } = titleShards(
+    data.archive,
+    inboundLinks(data.articles.values()),
+    data.redirects,
+  );
+  const out = join(dist, 'search-titles');
+  await mkdir(out, { recursive: true });
+  // `keys` lets the island skip words no title has, rather than fetch a shard that 404s.
+  const keys = [...files.keys()].map((f) => f.replace(/\.json$/, '')).sort();
+  await writeFile(join(out, 'index.json'), JSON.stringify({ split, keys }));
+  for (const [file, rows] of files) await writeFile(join(out, file), JSON.stringify(rows));
+  console.log(`title index: ${String(files.size)} shards`);
 }
 
 /**

@@ -195,9 +195,9 @@ Decisions:
   checks expect, and an even spread of articles: 1,002 pages, plus every link on them (which,
   through the letter pages, is every article). It took 23 minutes under load. The gate keeps
   the 20-per-section sample build and checks all of it.
-- **Search ranking breaks at this size,** and the sample hides it: "tatooine" doesn't list the
-  planet in its top five, nor "luke" Luke Skywalker. That's `swr-357`; the full smoke run's
-  only failures are those search checks.
+- **Search ranking breaks at this size,** and the sample hides it: "tatooine" didn't list the
+  planet in its top five, nor "luke" Luke Skywalker. `swr-357` fixed it with a title index
+  ranked by incoming links ([search.md](../product-specs/search.md)).
 - **Not measured here:** the Docker image. It needs the dump in the build first (`swr-7f1.12`);
   `dist/` plus Caddy's image (about 50 MB) puts it near 1.8 GB.
 - **Loading** read and parsed the snapshot three times. It now reads each line's title, era
