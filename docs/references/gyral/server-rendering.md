@@ -1,8 +1,8 @@
 ---
 title: Server rendering
-description: Render pages on the server with Declarative Shadow DOM, hydrate them in place, prerender static pages, and ship a production build.
+description: Render pages on the server with Declarative Shadow DOM, hydrate them in place, and ship a production build.
 section: Guides
-order: 10
+order: 11
 ---
 
 # Server rendering
@@ -146,49 +146,10 @@ CSS styles it. See [Styling](/docs/styling/#light-dom-components).
 
 ## Static generation
 
-Pages that are the same for everyone can be rendered once, at build time. `@gyral/ssr/static`
-(Node only) sends a real request for each path to the same app that serves dynamic pages and
-writes the HTML:
-
-```ts
-// scripts/prerender.ts
-import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
-import { createApp } from '../server/create-app.js';
-
-const clientEntry = await clientEntryFromManifest(
-  'dist/client/.vite/manifest.json',
-  'src/entry-client.ts',
-);
-const pages = await prerender({
-  app: createApp({ clientEntry }),
-  paths: ['/', '/about/'],
-  outDir: 'dist/static',
-  origin: 'https://example.com',
-});
-console.log(`prerendered ${String(pages.length)} pages`);
-```
-
-```ts
-// server/create-app.ts
-import { Hono } from 'hono';
-import { html } from 'lit';
-import { renderPage } from '@gyral/ssr';
-
-export const createApp = ({ clientEntry }: { readonly clientEntry: string }): Hono => {
-  const app = new Hono();
-  app.get('*', () =>
-    renderPage({ title: 'Home', body: html`<my-counter></my-counter>`, scripts: [clientEntry] }),
-  );
-  return app;
-};
-```
-
-A path that doesn't answer `200` fails the build. Prerendered pages hydrate exactly like
-server-rendered ones; they are the same HTML. This website is built this way: every page is
-prerendered, and only the home page's counter ships JavaScript.
-
-`productionServer({ distDir, createApp })` serves a build: hashed assets with a one-year cache,
-prerendered pages from disk, and everything else through your app.
+Pages that are the same for everyone can be rendered once, at build time, by the same app.
+That has its own page: [Static sites and prerendering](/docs/static-sites/). To choose between
+static, per-request and client-only rendering, see [Rendering modes](/docs/rendering-modes/);
+to ship either, see [Deploying](/docs/deploying/).
 
 ## Production checklist
 
