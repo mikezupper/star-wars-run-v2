@@ -2,7 +2,8 @@
 // (written by scripts/build.ts from src/domain/titles.ts), ranked, as hits. Pagefind's
 // results follow them. Shards are fetched once per page; a shard that won't load (offline,
 // say) gives no title hits, and search carries on with Pagefind alone.
-import { rankTitles, shardFor, type TitleRow } from '../domain/titles.js';
+import type { Resolved } from '../domain/ask.js';
+import { rankTitles, shardFor, titleOfRow, type TitleRow } from '../domain/titles.js';
 import type { Section } from '../domain/sections.js';
 import { TEXT } from '../labels.js';
 
@@ -65,4 +66,36 @@ export async function titleHits(text: string, kind: Section | undefined): Promis
   } catch {
     return [];
   }
+}
+
+/** How many titles a name may resolve to (canon and Legends, usually). */
+const NAME_TITLES = 2;
+
+/**
+ * The archive's titles for names from a question (Ask the archive, swr-ei6): "the Rebel
+ * Alliance" → "Alliance to Restore the Republic", through titles and redirects, best first.
+ * A name the index can't reach resolves to no titles.
+ */
+export async function resolveNames(names: readonly string[]): Promise<Resolved[]> {
+  return Promise.all(
+    names.map(async (asked): Promise<Resolved> => {
+      try {
+        index ??= getJson<{ split: string[]; keys: string[] }>(`${BASE}index.json`).then((i) => ({
+          split: new Set(i.split),
+          keys: new Set(i.keys),
+        }));
+        const { split, keys } = await index;
+        const file = shardFor(asked, split);
+        if (file === undefined || !keys.has(file.replace(/\.json$/, '')))
+          return { asked, titles: [] };
+        const rows = await load(shards, file, () => getJson<TitleRow[]>(BASE + file));
+        const titles = rankTitles(asked, rows)
+          .slice(0, NAME_TITLES)
+          .map((r) => ({ title: titleOfRow(r), section: r[2] }));
+        return { asked, titles };
+      } catch {
+        return { asked, titles: [] };
+      }
+    }),
+  );
 }

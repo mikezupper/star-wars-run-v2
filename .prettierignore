@@ -12,3 +12,5 @@ docs/references/gyral/*.md
 
 # Gyral release files, copied as published (vendor/README.md).
 vendor/
+
+.sample/

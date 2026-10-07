@@ -13,6 +13,7 @@ data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (secti
                          scripts/build.ts: prerender every path → dist/
 articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist/data/archive.duckdb (Explore)
 articles ──► src/domain/titles ──► dist/search-titles/ (search: title matches first)
+browser ──► /api/ask (Caddy, or dev/preview) ──► the model's endpoint, with the server's key (Ask)
 src/islands/*.ts ──► vite build ──► dist/assets/   (hydrated in the browser)
 src/styles/site.css ──► vite build ──► dist/assets/
 public/ ──► copied to dist/
@@ -41,7 +42,7 @@ saying what to do instead. Change the table and the lint rules together.
 | `src/render/`   | Node, build time                      | Route table, page templates (`html`), layout, sitemap     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
 | `src/islands/`  | browser (and server)                  | Interactive Gyral components hydrated on a page (search)  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
 | `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)      | Workbox                                                                                    |
-| `src/hosting/`  | build and preview                     | Response headers policy; renders the `Caddyfile`          | nothing                                                                                    |
+| `src/hosting/`  | build and preview                     | Headers policy, the `Caddyfile`, the /api/ask route       | nothing                                                                                    |
 | `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks     | anything                                                                                   |
 
 **Status today:** every layer exists.

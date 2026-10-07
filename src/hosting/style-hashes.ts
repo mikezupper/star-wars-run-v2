@@ -2,6 +2,6 @@
 // The CSP allows these <style> elements (each island's declarative shadow root) by hash, so
 // style-src needs no 'unsafe-inline' (src/hosting/headers.ts).
 export const STYLE_HASHES: readonly string[] = [
-  "'sha256-5PfGPnhOw8VA7zWs3NJZnbhMb+GQYGClX4nj9HIzcgo='",
   "'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw='",
+  "'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='",
 ];

@@ -2,6 +2,7 @@
 // - scripts/preview.ts applies headersFor(), so `pnpm smoke` runs the site under the real CSP;
 // - caddyfile() renders the same policy for production; `pnpm caddyfile` writes it to
 //   Caddyfile, and a test fails if the committed file drifts from this code.
+import { ASK_PATH, MAX_BODY_BYTES, UPSTREAM_PATH } from './ask.js';
 import { STYLE_HASHES } from './style-hashes.js';
 
 /**
@@ -50,6 +51,8 @@ export const CACHE = {
   pages: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
   /** The 404 page: short, so a page that appears after a deploy isn't hidden for long. */
   notFound: 'public, max-age=60',
+  /** Ask the archive's answers (/api/): each one is for one visitor, once. */
+  api: 'no-store',
 } as const;
 
 /** Paths whose file names are content hashes: Vite's output and Pagefind's index parts. */
@@ -61,6 +64,7 @@ export const HASHED_PATHS = [
 ] as const;
 
 export function cacheControl(path: string, status: number): string {
+  if (path.startsWith('/api/')) return CACHE.api;
   if (status === 404) return CACHE.notFound;
   if (HASHED_PATHS.some((p) => path.startsWith(p))) return CACHE.assets;
   if (path.startsWith('/icons/')) return CACHE.icons;
@@ -105,8 +109,27 @@ ${security('\t')}
 \theader @icons Cache-Control ${quote(CACHE.icons)}
 \t@sw path /sw.js
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
-\t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js
+\t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js /api/*
 \theader @pages Cache-Control ${quote(CACHE.pages)}
+\theader /api/* Cache-Control ${quote(CACHE.api)}
+
+\t# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
+\t# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
+\t@ask {
+\t\tmethod POST
+\t\tpath ${ASK_PATH}
+\t}
+\thandle @ask {
+\t\trequest_body {
+\t\t\tmax_size ${String(MAX_BODY_BYTES / 1024)}KB
+\t\t}
+\t\trewrite * ${UPSTREAM_PATH}
+\t\treverse_proxy {$ASK_ORIGIN:http://127.0.0.1:9} {
+\t\t\theader_up Host {upstream_hostport}
+\t\t\theader_up Authorization "Bearer {$ASK_KEY}"
+\t\t\tflush_interval -1
+\t\t}
+\t}
 
 \tfile_server
 

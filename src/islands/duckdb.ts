@@ -78,23 +78,26 @@ const connect = (origin: string): Promise<Connection> => {
   return connected;
 };
 
+/** Runs SQL against the archive (starting DuckDB the first time): up to MAX_ROWS plain rows. */
+export async function queryRows(sql: string): Promise<QueryResult> {
+  const conn = await connect(window.location.origin);
+  const started = performance.now();
+  const table = await conn.query(sql);
+  const columns = table.schema.fields.map((f) => f.name);
+  const rows = table
+    .toArray()
+    .slice(0, MAX_ROWS)
+    .map((row) => {
+      const json = row.toJSON();
+      return columns.map((c) => plainValue(json[c]));
+    });
+  return { columns, rows, truncated: table.numRows > MAX_ROWS, ms: performance.now() - started };
+}
+
 const duckdbDriver = defineDriver<string, QueryResult, string>({
   name: 'duckdb',
   concurrency: 'switch',
-  run: async (sql) => {
-    const conn = await connect(window.location.origin);
-    const started = performance.now();
-    const table = await conn.query(sql);
-    const columns = table.schema.fields.map((f) => f.name);
-    const rows = table
-      .toArray()
-      .slice(0, MAX_ROWS)
-      .map((row) => {
-        const json = row.toJSON();
-        return columns.map((c) => plainValue(json[c]));
-      });
-    return { columns, rows, truncated: table.numRows > MAX_ROWS, ms: performance.now() - started };
-  },
+  run: queryRows,
   toError: (cause) => (cause instanceof Error ? cause.message : String(cause)),
 });
 

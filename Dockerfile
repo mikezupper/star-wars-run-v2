@@ -15,6 +15,9 @@ COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG DUMP_FILE=starwars_pages_current.xml.7z
+# Ask the archive's model name, built into the islands; its key is given at `docker run`.
+ARG ASK_MODEL=Qwen3.8-27B
+ENV ASK_MODEL=${ASK_MODEL}
 # Each ingest worker needs about 0.5 GB; the prerender after it peaks near 10 GB.
 ARG WOOKIEEPEDIA_WORKERS=4
 RUN --mount=type=bind,from=dump,target=/dump \

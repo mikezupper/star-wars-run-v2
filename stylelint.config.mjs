@@ -6,5 +6,5 @@ export default {
   rules: {
     'plugin/use-baseline': [true, { available: 'newly' }],
   },
-  ignoreFiles: ['**/node_modules/**', 'dist/**', 'coverage/**'],
+  ignoreFiles: ['**/node_modules/**', 'dist/**', '.sample/**', 'coverage/**'],
 };

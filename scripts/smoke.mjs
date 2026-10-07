@@ -15,7 +15,8 @@
 //   once the service worker controls the page, a visited page, a search made before, and the offline
 //   page for an unvisited record all work with the network off;
 // - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
-//   archive's database, with names linking to their pages;
+//   archive's database, with names linking to their pages; Ask the archive (swr-ei6) answers a
+//   question with the model stubbed, passes axe, and says so when the model is down;
 // - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
 //   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
 //   SMOKE_BASE_URL points at another server.
@@ -29,7 +30,8 @@ import { tsImport } from 'tsx/esm/api';
 
 // SMOKE_BASE_URL=http://localhost:8080 runs every check against another server instead, such
 // as the Docker image (`pnpm docker:run`). The page list still comes from the local dist/.
-const dist = new URL('../dist/', import.meta.url).pathname;
+// DIST_DIR: the build to check (the gate's sample is in .sample/; see scripts/build.ts).
+const dist = new URL(`../${process.env.DIST_DIR ?? 'dist'}/`, import.meta.url).pathname;
 const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
 const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
 
@@ -106,6 +108,7 @@ try {
   await checkWithoutJavaScript();
   await checkOffline();
   await checkExplore();
+  await checkAsk();
   if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
@@ -132,8 +135,9 @@ async function pool(items, size, work) {
 
 function watch(page, where, status = 200) {
   page.on('console', (m) => {
-    // The browser logs the 404 response itself as an error; that one is expected.
-    if (m.type() === 'error' && !(status === 404 && /404/.test(m.text())))
+    // The browser logs an expected error status itself (a 404 page, a stubbed 503); that one is
+    // expected.
+    if (m.type() === 'error' && !(status !== 200 && m.text().includes(String(status))))
       fail(where, `console: ${m.text()}`);
   });
   page.on('pageerror', (e) => fail(where, `page error: ${e.message}`));
@@ -341,7 +345,9 @@ async function checkExplore() {
     await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
     const explore = page.locator('swr-explore');
     const status = () =>
-      explore.evaluate((el) => el.shadowRoot?.querySelector('[role=status]')?.textContent ?? '');
+      explore.evaluate((el) => el.shadowRoot?.querySelector('#status')?.textContent ?? '');
+    // The SQL editor and its ready-made questions are under "Write SQL yourself".
+    await explore.locator('details.advanced > summary').click();
     for (const [question, expected] of [
       ['Who comes from Tatooine?', '/characters/luke-skywalker/'],
       ['Articles per section', null],
@@ -351,7 +357,7 @@ async function checkExplore() {
         await page.waitForFunction(
           () =>
             /rows? in|didn't run/.test(
-              document.querySelector('swr-explore')?.shadowRoot?.querySelector('[role=status]')
+              document.querySelector('swr-explore')?.shadowRoot?.querySelector('#status')
                 ?.textContent ?? '',
             ),
           undefined,
@@ -371,6 +377,87 @@ async function checkExplore() {
         );
         if (!links.includes(expected)) fail(where, `"${question}" has no link to ${expected}`);
       }
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+/**
+ * Ask the archive (swr-ei6) with the model stubbed: the page's calls to /api/ask are answered
+ * here, by step (plan, query, then a streamed summary), so the check is fast, free and the same
+ * every run. The query is real SQL, run by DuckDB on the built database. Then the model "down":
+ * the page must say so.
+ */
+async function checkAsk() {
+  const where = '/explore/ (ask)';
+  const context = await browser.newContext();
+  const sql =
+    "SELECT a.name, a.path, a.era FROM archive a WHERE a.section = 'characters' AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'homeworld' AND f.link IN ('Tatooine', 'Tatooine/Legends')) ORDER BY a.name";
+  const reply = (content) => ({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ choices: [{ index: 0, message: { role: 'assistant', content } }] }),
+  });
+  try {
+    const page = await context.newPage();
+    watch(page, where);
+    await page.route('**/api/ask/chat/completions', (route) => {
+      const body = route.request().postDataJSON();
+      const step = body.response_format?.json_schema?.name;
+      if (step === 'plan') return route.fulfill(reply('{"names":["Tatooine"]}'));
+      if (step === 'query')
+        return route.fulfill(reply(JSON.stringify({ sql, looksFor: 'people from Tatooine' })));
+      const chunk = (text) =>
+        `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: text } }] })}\n\n`;
+      return route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: `${chunk('Luke Skywalker ')}${chunk('comes from Tatooine.')}data: [DONE]\n\n`,
+      });
+    });
+    await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    const explore = page.locator('swr-explore');
+    await explore.locator('#question').fill('Who comes from Tatooine?');
+    await explore.locator('.ask button[type=submit]').click();
+    try {
+      await explore
+        .locator('.ask .summary')
+        .getByText('comes from Tatooine.')
+        .waitFor({ timeout: 60_000 });
+    } catch {
+      fail(where, `no answer: ${await explore.locator('.ask').innerText()}`);
+      return;
+    }
+    const links = await explore.evaluate((el) =>
+      [...(el.shadowRoot?.querySelectorAll('.ask tbody a') ?? [])].map((a) =>
+        a.getAttribute('href'),
+      ),
+    );
+    if (!links.includes('/characters/luke-skywalker/'))
+      fail(where, 'the answer has no link to Luke Skywalker');
+    await axe(page, where);
+
+    const down = await context.newPage();
+    watch(down, where, 503);
+    await down.route('**/api/ask/chat/completions', (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: '{"error":{"message":"down"}}',
+      }),
+    );
+    await down.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    const downExplore = down.locator('swr-explore');
+    await downExplore.locator('#question').fill('Who comes from Hoth?');
+    await downExplore.locator('.ask button[type=submit]').click();
+    try {
+      await downExplore
+        .locator('.ask [role=status]')
+        .getByText('isn’t answering')
+        .waitFor({ timeout: 30_000 });
+    } catch {
+      fail(where, 'with the model down, the page doesn’t say so');
     }
   } finally {
     await context.close();

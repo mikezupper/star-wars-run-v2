@@ -5,6 +5,7 @@
 // results, Escape clears. Adapted from gyral.dev's src/islands/site-search.ts.
 import { css, define, focus, html, nothing, type Command } from '@gyral/core';
 import { sectionPath } from '../domain/archive.js';
+import { askPath, looksLikeQuestion } from '../domain/ask.js';
 import { SECTIONS, type Section } from '../domain/sections.js';
 import { SECTION_LABELS, TEXT } from '../labels.js';
 import { readQuery, search, writeQuery, type Hit, type Query } from './pagefind.js';
@@ -141,6 +142,11 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
               </label>
             </form>
             <p id="search-status" role="status">${statusText(s)}</p>
+            ${
+              looksLikeQuestion(s.query.text)
+                ? html`<p><a href=${askPath(s.query.text)}>${TEXT.askInstead}</a></p>`
+                : nothing
+            }
             ${results(hitsOf(s))}
           </search>
         `,

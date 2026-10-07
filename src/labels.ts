@@ -201,13 +201,53 @@ export const SABACC_TEXT = {
 } as const;
 
 /** The Explore page (swr-7f1.7): questions answered with SQL in the browser. */
+/** Ask the archive (swr-ei6): a question in plain words, answered from Explore's tables. */
+export const ASK_TEXT = {
+  heading: 'Ask the archive',
+  label: 'Your question',
+  followUpLabel: 'Ask a follow-up, or a new question',
+  ask: 'Ask',
+  newQuestion: 'Start over',
+  examplesLabel: 'Try',
+  examples: [
+    'Which Wookiees fought for the Rebel Alliance?',
+    'Which films does Boba Fett appear in?',
+    'Who trained Obi-Wan Kenobi?',
+    'What is the most populous planet?',
+    'Which droids appear in A New Hope?',
+  ],
+  note: 'Your question goes to an AI service, which turns it into a search of the archive.',
+  reading: 'Reading your question…',
+  matched: (pairs: readonly string[]): string =>
+    pairs.length === 0 ? 'No names to look up.' : `Looked up ${pairs.join('; ')}.`,
+  noMatch: (asked: string): string => `“${asked}” (no article by that name)`,
+  match: (asked: string, title: string): string => `“${asked}” → ${title}`,
+  searching: (looksFor: string): string =>
+    looksFor.trim() === '' ? 'Searching the archive…' : `Searching the archive for ${looksFor}…`,
+  found: (n: number, truncated: boolean): string =>
+    truncated
+      ? `Found more than ${n.toLocaleString('en-US')}; showing the first ${n.toLocaleString('en-US')}.`
+      : n === 0
+        ? 'Found nothing.'
+        : `Found ${n.toLocaleString('en-US')}.`,
+  writing: 'Writing the answer…',
+  asked: (question: string): string => `You asked: “${question}”`,
+  howAnswered: 'How I answered',
+  editSql: 'Open this query in the SQL editor',
+  unavailable:
+    'The AI that reads questions isn’t answering right now. Try again in a moment, or write SQL yourself below.',
+  unanswerable:
+    'I couldn’t turn that into a search of the archive. Try asking it another way: name the people, places or ships you mean.',
+  advanced: 'Write SQL yourself',
+} as const;
+
 export const EXPLORE_TEXT = {
   nav: 'Explore',
   title: 'Explore the archive',
   description:
-    'Ask the Star Wars archive questions with SQL, right in your browser: the tallest characters, the most crowded planets, the fastest starships, and anything else you can write.',
+    'Ask the Star Wars archive anything in plain words: who comes from Tatooine, which films Boba Fett appears in, the biggest starships. Or query its tables with SQL, right in your browser.',
   intro:
-    'Every article, as three tables you can query with SQL. It all runs in your browser: pick a question below, or write your own.',
+    'Ask a question in plain words, and the archive searches all 227,000 articles for the answer. You see what it found, every result links to its page, and you can check how it searched.',
   noScript:
     'Exploring runs a database in your browser, and it needs JavaScript. Without it, browse the sections instead:',
   questions: 'Try a question',
@@ -317,6 +357,7 @@ export const TEXT = {
     'Search runs in your browser, and it needs JavaScript. Without it, browse a section instead:',
   searchFailed: 'The search index didn’t load. Check your connection and try again.',
   searchResults: 'Search results',
+  askInstead: 'That sounds like a question. Ask the archive instead →',
   noResults: (query: string): string =>
     `Nothing in the archive matches “${query}”. Check the spelling, or try fewer letters.`,
   resultCount: (n: number, query: string): string =>

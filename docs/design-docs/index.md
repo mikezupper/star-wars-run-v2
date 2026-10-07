@@ -13,3 +13,4 @@ file and update its status line, or add a new ADR that supersedes it.
 | [0006-workflow.md](0006-workflow.md)                   | Beads for work, `docs/` for knowledge, commit rules, local-only CI                             |
 | [0007-wookieepedia.md](0007-wookieepedia.md)           | Wookieepedia via the XML dump: all ~227k articles, prose, DuckDB Explore, Gyral 0.2.0          |
 | [0008-wookieepedia-only.md](0008-wookieepedia-only.md) | Wookieepedia replaces swapi.info; sections and URLs; pages on 0.2.0; sample builds in the gate |
+| [0009-ask.md](0009-ask.md)                             | Ask the archive: an AI model writes SQL; the browser runs it; the key stays on the server      |

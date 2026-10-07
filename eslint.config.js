@@ -49,6 +49,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist/',
+      '.sample/',
       'coverage/',
       '.smoke/',
       '.claude/',

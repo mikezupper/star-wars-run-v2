@@ -11,3 +11,9 @@ coverage
 
 # The snapshot is rebuilt from the dump inside the image build (ADR 0007), never copied in.
 data/wookieepedia
+
+# Local settings and keys: the key reaches the container at run time, never the image.
+.env
+.env.*
+
+.sample

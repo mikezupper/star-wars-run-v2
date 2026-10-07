@@ -9,7 +9,7 @@
 	encode zstd gzip
 
 	header {
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-5PfGPnhOw8VA7zWs3NJZnbhMb+GQYGClX4nj9HIzcgo=' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 		Strict-Transport-Security "max-age=63072000"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -24,15 +24,34 @@
 	header @icons Cache-Control "public, max-age=86400"
 	@sw path /sw.js
 	header @sw Cache-Control "no-cache"
-	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js
+	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js /api/*
 	header @pages Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+	header /api/* Cache-Control "no-store"
+
+	# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
+	# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
+	@ask {
+		method POST
+		path /api/ask/chat/completions
+	}
+	handle @ask {
+		request_body {
+			max_size 64KB
+		}
+		rewrite * /v1/chat/completions
+		reverse_proxy {$ASK_ORIGIN:http://127.0.0.1:9} {
+			header_up Host {upstream_hostport}
+			header_up Authorization "Bearer {$ASK_KEY}"
+			flush_interval -1
+		}
+	}
 
 	file_server
 
 	handle_errors {
 		rewrite * /404.html
 		header {
-			Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-5PfGPnhOw8VA7zWs3NJZnbhMb+GQYGClX4nj9HIzcgo=' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+			Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 			Strict-Transport-Security "max-age=63072000"
 			X-Content-Type-Options "nosniff"
 			Referrer-Policy "strict-origin-when-cross-origin"
