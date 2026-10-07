@@ -33,8 +33,10 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   Rule for the site that makes responses eligible for cache and respects origin headers.
 
 - **Security headers on every response, the 404 included:** a Content Security Policy (`'self'`
-  only; `'unsafe-inline'` styles for Declarative Shadow DOM; `'wasm-unsafe-eval'` for Pagefind's
-  WebAssembly, which does not allow `eval()`), HSTS without `includeSubDomains`, `nosniff`, a
+  only; the islands' Declarative Shadow DOM `<style>` elements allowed by hash, with no
+  `'unsafe-inline'`, since Gyral 0.3; `'wasm-unsafe-eval'` for Pagefind's and DuckDB's
+  WebAssembly, which does not allow `eval()`). `pnpm caddyfile` regenerates the hashes, and a
+  test fails when an island's styles change without them, HSTS without `includeSubDomains`, `nosniff`, a
   referrer policy, a permissions policy, and `Cross-Origin-Opener-Policy`. Caddy's `Server`
   header is removed.
 - `pnpm preview` and Caddy share the URL rules: a slash added with a 308 redirect, and

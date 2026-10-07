@@ -1,6 +1,6 @@
 // A section's pages (ADR 0008): `/characters/` lists the letters with counts; `/characters/l/`
 // lists that letter's articles. One page of 48,000 characters would be unusable.
-import { serverHtml } from '@gyral/ssr';
+import { html } from '@gyral/core';
 import { displayTitle, letterPath, sectionPath, type Entry } from '../domain/archive.js';
 import type { Section } from '../domain/sections.js';
 import { letterTitle, sectionDescription, SECTION_LABELS, TEXT } from '../labels.js';
@@ -23,17 +23,20 @@ export const sectionMeta = (section: Section, count: number): PageMeta => ({
 export const sectionBody = (
   section: Section,
   letters: ReadonlyMap<string, readonly Entry[]>,
-) => serverHtml`
+) => html`
   ${breadcrumb([{ href: '/', label: TEXT.home }], SECTION_LABELS[section].plural)}
   <h1>${SECTION_LABELS[section].plural}</h1>
   <p>${SECTION_LABELS[section].blurb}</p>
   <nav aria-label=${TEXT.letters}>
     <ul>
       ${[...letters].map(
-        ([letter, entries]) => serverHtml`<li>
-          <a href=${letterPath(section, letter)}>${letter === '0' ? '0–9' : letter.toUpperCase()}</a>
-          <data value=${String(entries.length)}>${entries.length.toLocaleString('en-US')}</data>
-        </li>`,
+        ([letter, entries]) =>
+          html`<li>
+            <a href=${letterPath(section, letter)}
+              >${letter === '0' ? '0–9' : letter.toUpperCase()}</a
+            >
+            <data value=${String(entries.length)}>${entries.length.toLocaleString('en-US')}</data>
+          </li>`,
       )}
     </ul>
   </nav>
@@ -46,11 +49,7 @@ export const letterMeta = (section: Section, letter: string, count: number): Pag
   section,
 });
 
-export const letterBody = (
-  section: Section,
-  letter: string,
-  entries: readonly Entry[],
-) => serverHtml`
+export const letterBody = (section: Section, letter: string, entries: readonly Entry[]) => html`
   ${breadcrumb(
     [
       { href: '/', label: TEXT.home },
@@ -62,9 +61,13 @@ export const letterBody = (
   <ul>
     ${entries.map(
       (e) =>
-        serverHtml`<li><a href=${e.path}>${displayTitle(e.title)}${
-          e.era === 'legends' ? serverHtml` <small>${TEXT.legends}</small>` : ''
-        }</a></li>`,
+        html`<li>
+          <a href=${e.path}
+            >${displayTitle(e.title)}${
+              e.era === 'legends' ? html` <small>${TEXT.legends}</small>` : ''
+            }</a
+          >
+        </li>`,
     )}
   </ul>
 `;

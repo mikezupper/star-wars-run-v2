@@ -137,7 +137,7 @@ On the server, match the request with the same table, choose the status, and ren
 ```ts
 // server/app.ts
 import { Hono } from 'hono';
-import { html } from 'lit';
+import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import { app as routes } from '../src/routes.js';
 import { pageTitle } from '../src/shell.js';

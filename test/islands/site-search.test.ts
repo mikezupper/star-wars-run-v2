@@ -1,5 +1,5 @@
+import { html } from '@gyral/core';
 import { renderToString } from '@gyral/ssr';
-import { html } from 'lit';
 import { inputsFor, resolve, run, step } from '@gyral/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { drivers, type Hit } from '../../src/islands/pagefind.js';

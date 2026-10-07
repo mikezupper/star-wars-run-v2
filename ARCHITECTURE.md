@@ -31,18 +31,18 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer           | Runs                                  | Contains                                                    | May import                                                                         |
-| --------------- | ------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description              | nothing                                                                            |
-| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)             | `src/domain/` (types)                                                              |
-| `src/domain/`   | server and browser                    | Article types, sections, slugs, URLs. Pure functions only   | `src/site.ts`                                                                      |
-| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot    | `src/domain/`, Node built-ins                                                      |
-| `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles     | `src/domain/`, Node built-ins                                                      |
-| `src/render/`   | Node, build time                      | Route table, page templates (`serverHtml`), layout, sitemap | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/ssr`, `lit` |
-| `src/islands/`  | browser (and server)                  | Interactive Gyral components hydrated on a page (search)    | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                       |
-| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)        | Workbox                                                                            |
-| `src/hosting/`  | build and preview                     | Response headers policy; renders the `Caddyfile`            | nothing                                                                            |
-| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks       | anything                                                                           |
+| Layer           | Runs                                  | Contains                                                  | May import                                                                                 |
+| --------------- | ------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description            | nothing                                                                                    |
+| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)           | `src/domain/` (types)                                                                      |
+| `src/domain/`   | server and browser                    | Article types, sections, slugs, URLs. Pure functions only | `src/site.ts`                                                                              |
+| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot  | `src/domain/`, Node built-ins                                                              |
+| `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles   | `src/domain/`, Node built-ins                                                              |
+| `src/render/`   | Node, build time                      | Route table, page templates (`html`), layout, sitemap     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/islands/`  | browser (and server)                  | Interactive Gyral components hydrated on a page (search)  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)      | Workbox                                                                                    |
+| `src/hosting/`  | build and preview                     | Response headers policy; renders the `Caddyfile`          | nothing                                                                                    |
+| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks     | anything                                                                                   |
 
 **Status today:** every layer exists.
 
@@ -63,11 +63,12 @@ references and markup are the parser's problem and nobody else's.
 that serves every page. The dev server calls it once per request; the build calls Gyral's
 `prerender()` with every path and writes `dist/<path>/index.html`.
 
-Page templates use `serverHtml` and are never hydrated, so a page without islands ships
-**no framework JavaScript**: only `src/page.ts`, a few hundred bytes for the `/` search
-key. Interactive parts are islands: `define()` components rendered with Declarative Shadow DOM
-and hydrated in place by `src/entry-client.ts`, which loads only on pages that set
-`islands: true` (today, `/search/`). See
+Page templates use `html` from `@gyral/core`, rendered on the server and never hydrated, so a
+page without islands ships **no framework JavaScript**: only `src/page.ts`, a few hundred bytes
+for the `/` search key. Interactive parts are islands: `define()` components rendered with
+Declarative Shadow DOM. `src/entry-client.ts` imports them, and Gyral hydrates each one in
+place, loading its hydration code lazily. The entry loads only on pages that set
+`islands: true` (today, `/search/` and `/explore/`). See
 [docs/references/gyral/server-rendering.md](docs/references/gyral/server-rendering.md).
 
 Search: after prerendering, `scripts/build.ts` runs Pagefind over the article pages (the ones

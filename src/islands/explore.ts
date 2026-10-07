@@ -111,9 +111,9 @@ export const Explore = define<State, Msg>('swr-explore', {
                 rows="8"
                 spellcheck="false"
                 aria-describedby="hint status"
-                .value=${s.sql}
                 data-intent=${i.Typed}
-              ></textarea>
+              >
+${s.sql}</textarea>
             </div>
             <p id="hint">${EXPLORE_TEXT.runHint}</p>
             <button type="submit">${EXPLORE_TEXT.run}</button>

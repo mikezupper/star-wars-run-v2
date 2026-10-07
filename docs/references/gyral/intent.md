@@ -46,7 +46,7 @@ export const SearchBox = define<State, Msg>('my-search-box', {
     <search data-intent=${i.Clear} data-intent-on="keydown">
       <form data-intent=${i.Search}>
         <label for="q">Search</label>
-        <input id="q" name="q" type="search" .value=${s.query} data-intent=${i.Typed} />
+        <input id="q" name="q" type="search" value=${s.query} data-intent=${i.Typed} />
         <button>Search</button>
       </form>
     </search>
@@ -78,9 +78,12 @@ Each element has a natural event, so you rarely say which one:
 | a custom element (a child component)     | its outputs                             |
 | anything else (`<button>`, …)            | `click`                                 |
 
-Override it with `data-intent-on`. These also work there: `keydown`, `keyup`, `focusin`,
-`focusout`, `toggle` (popovers and `<details>`) and `command` (invoker commands, below). To use
-another event, list it in the spec: `events: ['pointerdown']`.
+Override it with `data-intent-on`, such as `data-intent-on="keydown"`. Any event type works
+there: `keyup`, `focusin`, `focusout`, `toggle` (popovers and `<details>`), `command` (invoker
+commands, below), `pointerdown` or a third-party element's own event. A component listens only
+for the events its templates name, so a component without keyboard intents never runs intent
+lookup on a keystroke. If the value itself is bound, `data-intent-on=${…}`, list the event types
+it can produce in the spec: `events: ['pointerdown']`.
 
 An element carries one `data-intent`. To give a control a second intent, put it on an
 ancestor, as the example does: the `keydown` intent sits on `<search>` around the input whose
@@ -138,13 +141,15 @@ aimed at it, from buttons anywhere in the component:
 
 ```ts
 // src/shopping-list.ts
-import { define, html, repeat } from '@gyral/core';
+import { define, each, html } from '@gyral/core';
 
 export interface State {
   readonly items: readonly string[];
 }
 
 export type Msg = { readonly _tag: 'Command'; readonly command: '--add' | '--clear' };
+
+const Item = (item: string) => html`<li>${item}</li>`;
 
 export const ShoppingList = define<State, Msg>('my-shopping-list', {
   init: () => ({ items: [] }),
@@ -164,11 +169,7 @@ export const ShoppingList = define<State, Msg>('my-shopping-list', {
     <button type="button" commandfor="list" command="--add">Add item</button>
     <button type="button" commandfor="list" command="--clear">Clear</button>
     <ul id="list" data-intent=${i.Command} data-intent-on="command">
-      ${repeat(
-        s.items,
-        (item) => item,
-        (item) => html`<li>${item}</li>`,
-      )}
+      ${each(s.items, (item) => item, Item)}
     </ul>
   `,
 });

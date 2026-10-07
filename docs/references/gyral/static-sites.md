@@ -41,13 +41,18 @@ export const Counter = define<{ readonly count: number }, Msg>('my-counter', {
 ```ts
 // server/create-app.ts
 import { Hono } from 'hono';
-import { html } from 'lit';
+import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import '../src/counter.js';
 
-export const createApp = ({ clientEntry }: { readonly clientEntry: string }): Hono => {
+export interface ClientAssets {
+  readonly clientEntry: string;
+  readonly modulepreload: readonly string[];
+}
+
+export const createApp = ({ clientEntry, modulepreload }: ClientAssets): Hono => {
   const app = new Hono();
-  // A page with a live component loads the client entry...
+  // A page with a live component loads the client entry, and preloads what it needs...
   app.get('/', () =>
     renderPage({
       title: 'Home',
@@ -56,6 +61,7 @@ export const createApp = ({ clientEntry }: { readonly clientEntry: string }): Ho
         <my-counter></my-counter>
       </main>`,
       scripts: [clientEntry],
+      modulepreload,
     }),
   );
   // ...and a page without one ships no JavaScript at all.
@@ -70,15 +76,12 @@ After `vite build`, a script renders every path into the same folder:
 
 ```ts
 // scripts/prerender.ts
-import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
+import { clientAssetsFromManifest, prerender } from '@gyral/ssr/static';
 import { createApp } from '../server/create-app.js';
 
-const clientEntry = await clientEntryFromManifest(
-  'dist/.vite/manifest.json',
-  'src/entry-client.ts',
-);
+const client = await clientAssetsFromManifest('dist/.vite/manifest.json', 'src/entry-client.ts');
 const pages = await prerender({
-  app: createApp({ clientEntry }),
+  app: createApp({ clientEntry: client.entry, modulepreload: client.modulepreload }),
   paths: ['/', '/about/'],
   outDir: 'dist',
   origin: 'https://example.com',
@@ -96,7 +99,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    manifest: true, // clientEntryFromManifest reads it
+    manifest: true, // clientAssetsFromManifest reads it
     rollupOptions: { input: 'src/entry-client.ts' },
   },
 });
@@ -106,10 +109,15 @@ export default defineConfig({
   A path that doesn't answer `200` fails the build, so an error page can't ship by accident.
 - **`origin`** is the URL the requests are made with. Set it to your real site, so absolute
   URLs your pages build from the request (canonical links, Open Graph tags) come out right.
-- **`clientEntryFromManifest(manifest, entry)`** returns the hashed URL of your client entry,
-  for example `/assets/entry-client-Ab12.js`, from Vite's manifest.
+- **`clientAssetsFromManifest(manifest, entry)`** reads Vite's manifest and returns the hashed
+  URL of your client entry (`entry`, for example `/assets/entry-client-Ab12.js`) and the chunks
+  it needs (`modulepreload`): its static imports and Gyral's hydration chunk.
+  `renderPage({ modulepreload })` writes a `<link rel="modulepreload">` for each, so the browser
+  fetches them alongside the entry instead of a round trip later. A third argument lists
+  modules a page imports lazily, by source path (`['src/routes/product.ts']`); they are
+  preloaded too, each with its static imports.
 - The client entry is the one from [Server rendering](/docs/server-rendering/#hydration-and-the-client-entry):
-  `@gyral/ssr/hydrate` first, then your components.
+  it imports your components, and each one hydrates on its own.
 - `@gyral/ssr/static` reads and writes files, so it runs in Node at build time. Your pages
   don't need Node: the output is plain files.
 
@@ -127,6 +135,32 @@ That makes "should this page have JavaScript?" a per-page decision. On this webs
 pages have none, and the home page loads one small entry for its counter. To delay even that,
 see [lazy hydration](/docs/server-rendering/#lazy-hydration) and
 [Code-splitting](/docs/code-splitting/).
+
+## Headers and CSP
+
+A static host can't compute headers per request, but most read a headers file from the output:
+Cloudflare Pages and Netlify read `_headers`. Where a server renders per request,
+`renderPage({ csp })` builds the policy as the page renders; here, build it ahead of time with
+`contentSecurityPolicy()` from `@gyral/ssr` in the same build step and write it there. Its
+`style-src` lists the hash of each component's Declarative Shadow DOM `<style>`, so it needs no
+`'unsafe-inline'`:
+
+```ts
+// scripts/headers.ts
+import { writeFile } from 'node:fs/promises';
+import { contentSecurityPolicy } from '@gyral/ssr';
+import '../src/counter.js'; // registers the components whose styles get hashed
+
+const csp = await contentSecurityPolicy({
+  directives: { 'default-src': "'self'", 'script-src': "'self'", 'object-src': "'none'" },
+});
+await writeFile('dist/_headers', `/*\n  Content-Security-Policy: ${csp}\n`);
+```
+
+The hashes change when a component's CSS changes, so write the file in every build, never by
+hand. Inline `style="…"` attributes in your own templates aren't covered: give them a class
+instead. This site works this way; its code blocks are coloured by classes rather than the
+inline styles a highlighter writes by default.
 
 ## Mixing static and per-request pages
 

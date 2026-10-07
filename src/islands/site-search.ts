@@ -121,7 +121,7 @@ export const SiteSearch = define<State, Msg>('swr-site-search', {
                   autocomplete="off"
                   spellcheck="false"
                   aria-describedby="search-status"
-                  .value=${s.query.text}
+                  value=${s.query.text}
                   data-intent=${i.Typed}
                 />
               </label>

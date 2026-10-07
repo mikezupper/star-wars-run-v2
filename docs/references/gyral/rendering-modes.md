@@ -22,8 +22,8 @@ so you can move a page from one mode to the other without touching its component
 
 ## Mixing modes
 
-Most real sites mix them. This website prerenders every page and runs one live component, the
-counter on the home page. [gyral-shop](https://github.com/gyraljs/gyral-shop) renders product
+Most real sites mix them. This website prerenders every page and runs two live components: the
+counter on the home page and the search box on the search page. [gyral-shop](https://github.com/gyraljs/gyral-shop) renders product
 listings and the cart per request, because they change with every visitor.
 
 Keep the decision next to your routes, so there is one place to read it:

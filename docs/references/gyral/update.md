@@ -14,7 +14,7 @@ state. Nothing else changes state, so every change is visible to tests and to
 
 ```ts
 // src/todo.ts
-import { define, html, repeat } from '@gyral/core';
+import { define, each, html, intents } from '@gyral/core';
 
 export interface Todo {
   readonly id: number;
@@ -31,6 +31,15 @@ export type Msg =
   | { readonly _tag: 'Add'; readonly text: string }
   | { readonly _tag: 'Toggle'; readonly id: number }
   | { readonly _tag: 'ClearDone' };
+
+const i = intents<Msg>();
+
+const Item = (t: Todo) =>
+  html`<li>
+    <button type="button" value=${t.id} aria-pressed=${t.done} data-intent=${i.Toggle}>
+      ${t.text}
+    </button>
+  </li>`;
 
 export const TodoList = define<State, Msg>('my-todo-list', {
   init: () => ({ todos: [], nextId: 1 }),
@@ -55,28 +64,14 @@ export const TodoList = define<State, Msg>('my-todo-list', {
     }),
     ClearDone: (s) => ({ ...s, todos: s.todos.filter((t) => !t.done) }),
   },
-  view: (s, i) => html`
+  view: (s) => html`
     <form data-intent=${i.Add}>
       <label for="text">New todo</label>
       <input id="text" name="text" required />
       <button>Add</button>
     </form>
     <ul>
-      ${repeat(
-        s.todos,
-        (t) => t.id,
-        (t) =>
-          html`<li>
-            <button
-              type="button"
-              value=${t.id}
-              aria-pressed=${t.done ? 'true' : 'false'}
-              data-intent=${i.Toggle}
-            >
-              ${t.text}
-            </button>
-          </li>`,
-      )}
+      ${each(s.todos, (t) => t.id, Item)}
     </ul>
     <button type="button" data-intent=${i.ClearDone}>Clear done</button>
   `,
@@ -97,6 +92,11 @@ objects. No `Date`, `Map` or class instances. Three things depend on it:
 
 Model what can happen with unions rather than flags. `{ _tag: 'Loading' } | { _tag: 'Found';
 repos } | { _tag: 'Failed'; message }` can't be loading and failed at once; two booleans can.
+
+`i` here is `intents<Msg>()`: the same typed intent names the view receives, as a module
+constant, so the list's `Item` row can name an intent and stay a pure function of its todo
+([Lists](/docs/views/#lists)). `aria-pressed=${t.done}` writes `"true"` or `"false"`, the way
+ARIA expects.
 
 ## One reducer per message
 
@@ -177,7 +177,7 @@ render a form with the errors from a rejected submission through the component's
 Two optional spec fields read the model, so the model stays the one source of truth:
 
 - **`states: (s) => ({ loading: s.results._tag === 'Loading' })`** mirrors boolean facts onto the
-  element's [custom states](/docs/styling/#model-state-as-state), for CSS:
+  element's [custom states](/docs/styling/#custom-states), for CSS:
   `:host(:state(loading))`.
 - **`viewTransition: (prev, next, msg) => boolean`** renders a state change inside
   `document.startViewTransition`, for route changes and list reorders. It is skipped where the

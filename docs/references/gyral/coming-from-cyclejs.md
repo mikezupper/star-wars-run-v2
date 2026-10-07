@@ -9,7 +9,8 @@ order: 1
 
 Gyral is inspired by [Cycle.js](https://cycle.js.org), by André Staltz and the Cycle.js core
 team. If you know Cycle.js, most of Gyral's ideas will be familiar. What's new is what they're
-built on: custom elements, Shadow DOM, Lit templates and plain messages instead of streams.
+built on: custom elements, Shadow DOM, a small template layer of its own and plain messages
+instead of streams.
 
 ## What stays: the loop and effects as data
 
@@ -30,9 +31,9 @@ built on: custom elements, Shadow DOM, Lit templates and plain messages instead 
 | xstream, RxJS and most.js adapters      | Three times the API surface                    | No stream library                             |
 | `DOM.select('.cls').events('click')`    | Stringly typed, fragile, heavy delegation code | Typed `data-intent` names, parsed intents     |
 | `isolate()` scopes                      | The most complex part of the codebase          | Shadow DOM                                    |
-| Snabbdom virtual DOM                    | Diffing on every render                        | Lit templates that update only changed parts  |
+| Snabbdom virtual DOM                    | Diffing on every render                        | Templates that update only changed parts      |
 | Sink proxies in `run()`                 | Circular wiring that was hard to follow        | Each element owns its loop                    |
-| `@cycle/state` lenses, `makeCollection` | Awkward lists                                  | Child elements and `repeat()`                 |
+| `@cycle/state` lenses, `makeCollection` | Awkward lists                                  | Child elements and `each()`                   |
 | `@cycle/html`                           | Little server-rendering story                  | Declarative Shadow DOM that hydrates in place |
 | Cycle-only components                   | No interop                                     | Standard custom elements                      |
 
@@ -114,7 +115,7 @@ The differences, line by line:
 | `isolate(Component)`                     | Shadow DOM, automatically                                                             |
 | Props stream into a child                | [Props](/docs/components/#props) and `PropsChanged`                                   |
 | Child sinks merged into the parent       | [Outputs](/docs/components/#child-components-and-outputs) with `emit()` and `child()` |
-| `makeCollection`                         | `repeat(items, key, template)` with child elements                                    |
+| `makeCollection`                         | `each(items, key, row)` with child elements                                           |
 | `@cycle/state`                           | Component state, plus [stores](/docs/stores/) for shared state                        |
 | `@cycle/history`                         | [`@gyral/router`](/docs/routing/)                                                     |
 | `@cycle/time`                            | `@gyral/time`, and `virtualTime()` in tests                                           |

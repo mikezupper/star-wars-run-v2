@@ -19,11 +19,16 @@ This picker takes a label, a maximum and a list of items, and reports which one 
 
 ```ts
 // src/picker.ts
-import { define, emit, html } from '@gyral/core';
+import { define, each, emit, html, intents, prop } from '@gyral/core';
+import * as v from 'valibot';
 
 export type PickerOutput = { readonly _tag: 'Picked'; readonly id: string };
 
 type Msg = { readonly _tag: 'Pick'; readonly id: string };
+
+const i = intents<Msg>();
+const Item = (id: string) =>
+  html`<li><button type="button" value=${id} data-intent=${i.Pick}>${id}</button></li>`;
 
 export interface PickerProps {
   readonly label: string;
@@ -35,21 +40,19 @@ export const Picker = define<{ readonly picks: number }, Msg, PickerProps, Picke
   'my-picker',
   {
     props: {
-      label: { type: String, default: 'Pick one' },
-      max: { type: Number, default: 0 },
-      items: { attribute: false, default: [] },
+      label: prop.string({ default: 'Pick one' }),
+      max: prop.number({ default: 0 }),
+      items: prop.value(v.array(v.string()), { default: [] }),
     },
     init: () => ({ picks: 0 }),
     intent: { Pick: ({ value }) => (value ? { _tag: 'Pick', id: value } : undefined) },
     update: {
       Pick: (s, m) => [{ picks: s.picks + 1 }, [emit({ _tag: 'Picked', id: m.id })]],
     },
-    view: (_s, i, { props }) => html`
+    view: (_s, _i, { props }) => html`
       <p>${props.label} (up to ${props.max})</p>
       <ul>
-        ${props.items.map(
-          (id) => html`<li><button value=${id} data-intent=${i.Pick}>${id}</button></li>`,
-        )}
+        ${each(props.items, (id) => id, Item)}
       </ul>
     `,
   },
@@ -64,14 +67,17 @@ declare global {
 
 ## Props: attributes or properties
 
-A prop declared with a `type` (`String`, `Number`, `Boolean`) can be set either way:
+A prop declared with `prop.string`, `prop.number`, `prop.boolean` or `prop.json` can be set
+either way:
 
-- as an **attribute**, a string in HTML: `<my-picker label="Choose" max="2">`. Gyral converts
-  it by the prop's type, so `max` arrives as the number `2`;
+- as an **attribute**, a string in HTML: `<my-picker label="Choose" max="2">`. Gyral parses it
+  with the prop's builder and validates it, so `max` arrives as the number `2`, and `max="lots"`
+  is logged and ignored. Attribute names are the kebab-case of the prop name: a `maxItems` prop
+  reads `max-items`;
 - as a **property**, any JavaScript value: `picker.max = 2`.
 
-A prop declared with `attribute: false`, like `items`, is a property only. Use that for arrays,
-objects and anything else that doesn't fit in a string.
+A prop declared with `prop.value(schema)`, like `items`, is a property only. Use that for arrays,
+objects and anything else that doesn't fit in a string. Props never write attributes back.
 
 ## Outputs: the gyral-output event
 
@@ -103,7 +109,7 @@ hear it. That is what keeps a Gyral parent's children private, and why the eleme
 the reliable place to listen.
 
 These rules are checked: this website's build mounts a component like this one in a plain page
-and verifies that attribute props convert, property props render, the output reaches the
+and verifies that attribute props are parsed, property props render, the output reaches the
 element and the document, and it doesn't leave an enclosing shadow root.
 
 ## TypeScript
@@ -177,7 +183,7 @@ component's module before the markup renders. For outputs, listen on the element
 
 ## Server rendering in another framework
 
-Gyral's server renderer runs through Lit's (`@lit-labs/ssr`), which knows nothing about
-React's or Vue's server renderers. Inside another framework's server render, a Gyral element is
-written as its tag and attributes only, and renders in the browser once its module loads. For server-rendered
-Gyral components, render those pages with [`@gyral/ssr`](/docs/server-rendering/).
+Gyral's server renderer knows nothing about React's or Vue's. Inside another framework's server
+render, a Gyral element is written as its tag and attributes only, and renders in the browser
+once its module loads. For server-rendered Gyral components, render those pages with
+[`@gyral/ssr`](/docs/server-rendering/).

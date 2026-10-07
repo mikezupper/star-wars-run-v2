@@ -1,8 +1,8 @@
 // The document shell every page shares: head, banner with the section nav, footer. Server-only:
-// written with serverHtml, so none of it is hydrated and pages without islands ship no
+// written with html, so none of it is hydrated and pages without islands ship no
 // JavaScript.
-import { nothing } from 'lit';
-import { page, serverHtml } from '@gyral/ssr';
+import { html, nothing, type ChildValue } from '@gyral/core';
+import { page } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';
 import { CC_BY_SA_3 } from '../domain/attribution.js';
 import { SECTIONS, type Section } from '../domain/sections.js';
@@ -39,57 +39,71 @@ export interface PageMeta {
 export const fullTitle = (meta: Pick<PageMeta, 'path' | 'title'>): string =>
   meta.path === '/' ? meta.title : `${meta.title} · ${SITE_NAME}`;
 
-const head = (meta: PageMeta, assets: Assets) => serverHtml`
+const head = (meta: PageMeta, assets: Assets) => html`
   ${
     meta.noindex === true
-      ? serverHtml`<meta name="robots" content="noindex">`
-      : serverHtml`<link rel="canonical" href=${absolute(meta.path)}>`
+      ? html`<meta name="robots" content="noindex" />`
+      : html`<link rel="canonical" href=${absolute(meta.path)} />`
   }
-  <meta name="color-scheme" content="light dark">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content=${SITE_NAME}>
-  <meta property="og:title" content=${fullTitle(meta)}>
-  <meta property="og:description" content=${meta.description}>
-  <meta property="og:url" content=${absolute(meta.path)}>
-  <meta name="theme-color" content="#212731">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/icons/favicon.ico" sizes="32x32">
-  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="stylesheet" href=${assets.stylesheet}>
+  <meta name="color-scheme" content="light dark" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content=${SITE_NAME} />
+  <meta property="og:title" content=${fullTitle(meta)} />
+  <meta property="og:description" content=${meta.description} />
+  <meta property="og:url" content=${absolute(meta.path)} />
+  <meta name="theme-color" content="#212731" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href=${assets.stylesheet} />
 `;
 
-const banner = (meta: PageMeta) => serverHtml`
+const banner = (meta: PageMeta) => html`
   <a href="#main">${TEXT.skipLink}</a>
   <header>
-    <p><a href="/" aria-current=${meta.path === '/' ? 'page' : nothing}>${SITE_NAME}</a></p>
+    <p><a href="/" aria-current=${meta.path === '/' ? 'page' : undefined}>${SITE_NAME}</a></p>
     <p>
-      <a href="/explore/" aria-current=${meta.path === '/explore/' ? 'page' : nothing}>${EXPLORE_TEXT.nav}</a>
-      <a href="/sabacc/" aria-current=${meta.path === '/sabacc/' ? 'page' : nothing}>${SABACC_TEXT.nav}</a>
+      <a href="/explore/" aria-current=${meta.path === '/explore/' ? 'page' : undefined}
+        >${EXPLORE_TEXT.nav}</a
+      >
+      <a href="/sabacc/" aria-current=${meta.path === '/sabacc/' ? 'page' : undefined}
+        >${SABACC_TEXT.nav}</a
+      >
     </p>
     <nav aria-label=${TEXT.primaryNav}>
       <ul>
         ${SECTIONS.map(
-          (section) => serverHtml`<li>
-            <a href=${sectionPath(section)} aria-current=${
-              meta.path === sectionPath(section)
-                ? 'page'
-                : meta.section === section
-                  ? 'true'
-                  : nothing
-            }>${SECTION_LABELS[section].plural}</a>
-          </li>`,
+          (section) =>
+            html`<li>
+              <a
+                href=${sectionPath(section)}
+                aria-current=${
+                  meta.path === sectionPath(section)
+                    ? 'page'
+                    : meta.section === section
+                      ? 'true'
+                      : undefined
+                }
+                >${SECTION_LABELS[section].plural}</a
+              >
+            </li>`,
         )}
       </ul>
     </nav>
     ${
       meta.path === '/search/'
         ? nothing
-        : serverHtml`<search>
+        : html`<search>
             <form action="/search/" method="get">
               <label for="site-search-q">${TEXT.searchLabel}</label>
-              <input id="site-search-q" name="q" type="search" autocomplete="off"
-                aria-keyshortcuts="/ Control+K Meta+K">
+              <input
+                id="site-search-q"
+                name="q"
+                type="search"
+                autocomplete="off"
+                aria-keyshortcuts="/ Control+K Meta+K"
+              />
               <button type="submit">${TEXT.searchLabel}</button>
             </form>
           </search>`
@@ -97,7 +111,7 @@ const banner = (meta: PageMeta) => serverHtml`
   </header>
 `;
 
-const footer = () => serverHtml`
+const footer = () => html`
   <footer>
     <p>
       ${TEXT.dataCredit} <a href=${WOOKIEEPEDIA_HOME} rel="external">Wookieepedia</a>,
@@ -109,17 +123,21 @@ const footer = () => serverHtml`
 `;
 
 /** A complete HTML document for one page. */
-export function layout(meta: PageMeta, body: unknown, assets: Assets): unknown {
+export function layout(meta: PageMeta, body: ChildValue, assets: Assets): ChildValue {
   return page({
     title: fullTitle(meta),
     description: meta.description,
     head: head(meta, assets),
     scripts: meta.islands === true ? [assets.page, assets.clientEntry] : [assets.page],
-    body: serverHtml`${banner(meta)}<main
+    body: html`${banner(meta)}
+      <main
         id="main"
-        data-pagefind-body=${meta.searchKind === undefined ? nothing : ''}
-        data-pagefind-filter=${meta.searchKind === undefined ? nothing : `kind:${meta.searchKind}`}
-      >${body}</main>${footer()}`,
+        data-pagefind-body=${meta.searchKind === undefined ? undefined : ''}
+        data-pagefind-filter=${meta.searchKind === undefined ? undefined : `kind:${meta.searchKind}`}
+      >
+        ${body}
+      </main>
+      ${footer()}`,
   });
 }
 
@@ -128,9 +146,9 @@ export const breadcrumb = (
   trail: readonly { readonly href: string; readonly label: string }[],
   current: string,
 ) =>
-  serverHtml`<nav aria-label=${TEXT.breadcrumb}>
+  html`<nav aria-label=${TEXT.breadcrumb}>
     <ol>
-      ${trail.map((crumb) => serverHtml`<li><a href=${crumb.href}>${crumb.label}</a></li>`)}
+      ${trail.map((crumb) => html`<li><a href=${crumb.href}>${crumb.label}</a></li>`)}
       <li aria-current="page">${current}</li>
     </ol>
   </nav>`;

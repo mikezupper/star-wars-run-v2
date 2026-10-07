@@ -10,6 +10,8 @@ FROM node:24-slim AS build
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
+# Gyral 0.3.0 installs from vendor/ until it's on npm (vendor/README.md).
+COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG DUMP_FILE=starwars_pages_current.xml.7z

@@ -17,10 +17,10 @@ custom states for reacting to the model.
 
 ```ts
 // src/tag.ts
-import { css, define, html, type Stateless } from '@gyral/core';
+import { css, define, html, prop, type Stateless } from '@gyral/core';
 
 export const Tag = define<Stateless, never, { readonly label: string }>('my-tag', {
-  props: { label: { type: String, required: true } },
+  props: { label: prop.string({ required: true }) },
   intent: {},
   update: {},
   view: (_s, _i, { props }) => html`<span part="label">${props.label}</span>`,
@@ -39,15 +39,46 @@ export const Tag = define<Stateless, never, { readonly label: string }>('my-tag'
 });
 ```
 
-`styles` accepts a `css` template, a plain CSS string, a `CSSStyleSheet`, or an array of them.
-Strings let one stylesheet module serve both the document and shadow roots; they must be your
-own trusted CSS, never user input. A constructed `CSSStyleSheet` is adopted as-is, so many
-components can share one instance.
+`styles` accepts a `css` template, a plain CSS string (such as
+`import base from './base.css?inline'`) or an array of them, nested freely. Strings let one
+stylesheet module serve both the document and shadow roots. Either way, it must be your own
+trusted CSS, never user input.
+
+A `${…}` inside `css` inserts a string or number as written, and another `css` value as its
+text, so constants and shared pieces compose:
+
+```ts
+// src/letters-styles.ts
+import { css } from '@gyral/core';
+
+export const TRANSITION_MS = 600;
+
+const tokens = css`
+  :host {
+    --accent: oklch(55% 0.18 260);
+  }
+`;
+
+export const lettersStyles = css`
+  ${tokens}
+  @layer component {
+    li {
+      color: var(--accent);
+      transition: font-size ${TRANSITION_MS}ms ease-out;
+    }
+  }
+`;
+```
+
+Each `css` value becomes one shared `CSSStyleSheet` in the browser, adopted by every shadow root
+that uses it, so a thousand instances cost one sheet.
 
 Styles in a shadow root don't leak out, and page styles don't leak in. Rendered on the server,
-they travel inside the component's Declarative Shadow DOM, so they apply before any JavaScript
-runs. That is also why a strict Content Security Policy needs `style-src 'unsafe-inline'` (or
-hashes) for server-rendered pages.
+they travel inside the component's Declarative Shadow DOM as one `<style>` element, so they
+apply before any JavaScript runs. When the component hydrates, Gyral swaps that element for the
+shared sheet in the same step, so nothing flashes. A strict Content Security Policy doesn't need
+`'unsafe-inline'` for them: `renderPage({ csp })` and `contentSecurityPolicy()` from `@gyral/ssr`
+list each component's `<style>` by its hash (see [Server rendering](/docs/server-rendering/#content-security-policy)).
 
 ## Theming with custom properties
 
@@ -69,7 +100,7 @@ Document the custom properties a component reads, and treat renaming one as a br
 For pieces a theme may want to restyle completely, expose them as parts (`part="label"`) so the
 page can write `my-tag::part(label) { … }`.
 
-## Model state as :state()
+## Custom states
 
 To style by what the model says, mirror boolean facts onto the element's custom states with
 `states`. CSS then reads them with `:state()`, inside and outside the component:
@@ -90,7 +121,7 @@ export const Upload = define<State, Msg>('my-upload', {
   update: { Retry: () => ({ phase: 'uploading' }) },
   states: (s) => ({ busy: s.phase === 'uploading', failed: s.phase === 'failed' }),
   view: (s, i) => html`
-    <p aria-busy=${s.phase === 'uploading' ? 'true' : 'false'}>${s.phase}</p>
+    <p aria-busy=${s.phase === 'uploading'}>${s.phase}</p>
     <button type="button" data-intent=${i.Retry}>Retry</button>
   `,
   styles: css`
@@ -124,13 +155,13 @@ those, `shadow: false` renders the view as the element's own children:
 
 ```ts
 // src/article-page.ts
-import { define, html, type Stateless } from '@gyral/core';
+import { define, html, prop, type Stateless } from '@gyral/core';
 
 export const ArticlePage = define<Stateless, never, { readonly heading: string }>(
   'my-article-page',
   {
     shadow: false,
-    props: { heading: { type: String, required: true } },
+    props: { heading: prop.string({ required: true }) },
     intent: {},
     update: {},
     view: (_s, _i, { props }) => html`
@@ -145,8 +176,9 @@ export const ArticlePage = define<Stateless, never, { readonly heading: string }
 - Document CSS applies directly, so the page's stylesheet and theme can lay it out.
 - On the server it renders as plain HTML, with no `<template shadowrootmode>`, which every
   crawler and reader mode understands.
-- It has no `styles` and no `<slot>`s: it owns all its children. Scope its CSS with `@scope
-(my-article-page) { … }` or by tag name.
+- It has no `styles` and no `<slot>`s: it owns all its children. Don't write children inside
+  its tag; pass data as props (the server throws on children it would have to drop). Scope its
+  CSS with `@scope (my-article-page) { … }` or by tag name.
 - Intent isolation still holds: a light component's intents stop at the next Gyral component
   inside it.
 

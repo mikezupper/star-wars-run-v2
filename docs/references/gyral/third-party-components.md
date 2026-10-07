@@ -14,11 +14,9 @@ the hooks they expose.
 
 ## Their events as intents
 
-A library element fires its own events, such as `wa-change` or `sl-change`. Two things route
-one into your component:
-
-1. **`events`** in the spec adds the event type to the ones Gyral listens for.
-2. **`data-intent-on`** on the element says which event fires its intent.
+A library element fires its own events, such as `wa-change` or `sl-change`. Put
+**`data-intent-on`** on the element to say which event fires its intent. A component listens for
+every event its templates name there, so nothing else is needed.
 
 ```ts
 // src/size-field.ts
@@ -35,7 +33,6 @@ const valueOf = (el: Element): string | undefined =>
   'value' in el && typeof el.value === 'string' ? el.value : undefined;
 
 export const SizeField = define<State, Msg>('my-size-field', {
-  events: ['sl-change'],
   init: () => ({ size: 'M' }),
   intent: {
     SizeChanged: ({ target }) => {
@@ -60,9 +57,10 @@ export const SizeField = define<State, Msg>('my-size-field', {
 });
 ```
 
-Both are required. **Without `data-intent-on`**, Gyral treats any custom element with a
-`data-intent` as a child component and waits for its `gyral-output` event, which a library
-element never sends. **Without `events`**, Gyral never listens for `sl-change` at all.
+**Without `data-intent-on`**, Gyral treats any custom element with a `data-intent` as a child
+component and waits for its `gyral-output` event, which a library element never sends. Only
+when the event name itself is bound, `data-intent-on=${…}`, list the types it can produce in
+the spec's `events`, such as `events: ['sl-change']`.
 
 ## What the parser gets
 
@@ -76,8 +74,8 @@ Keep the parser the place where library specifics live: the message it returns i
 so `update` and your tests never know which library you used.
 
 This website's build checks this path: a Gyral component hosts a non-Gyral custom element,
-receives its custom event through `events` and `data-intent-on`, and reads both `detail` and
-the element.
+receives its custom event through `data-intent-on` alone, and reads both `detail` and the
+element.
 
 ## Styling them
 
@@ -97,9 +95,10 @@ mechanisms, so one set of design tokens can drive your components and the librar
 
 - Load the library in the browser, the way its docs say (usually one import per component, or
   a loader script). Its elements upgrade when their definitions arrive.
-- On the server, don't import browser-only libraries. Lit's server renderer writes an element it
-  doesn't know as its tag, attributes and child elements, so `<sl-select>` and its
-  `<sl-option>` children arrive as plain HTML and the library upgrades them in the browser.
+- On the server, don't import browser-only libraries. Gyral's server renderer writes a custom
+  element that isn't a Gyral component as a plain element, with its attributes and children, so
+  `<sl-select>` and its `<sl-option>` children arrive as plain HTML and the library upgrades
+  them in the browser. Hydration leaves whatever the library renders inside it alone.
   Property bindings such as `.value=${…}` are applied in the browser only; pass anything the
   first paint needs as an attribute.
 - Until the library loads, its elements aren't interactive. For anything that must work

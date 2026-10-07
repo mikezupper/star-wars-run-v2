@@ -41,7 +41,7 @@ export const SignupForm = defineForm(
 
 ```ts
 // src/signup.ts
-import { define, fieldErrors, form, html, invalid, nothing, redirectedTo } from '@gyral/core';
+import { define, fieldErrors, form, html, invalid, redirectedTo } from '@gyral/core';
 import { submitForm } from '@gyral/http';
 import { SignupForm } from './signup-form.js';
 
@@ -95,7 +95,6 @@ export const Signup = define<State, Msg>('my-signup', {
         required
         value=${s.email}
         aria-describedby="email-error"
-        aria-invalid=${s.errors['email'] === undefined ? nothing : 'true'}
         ${invalid(s.errors['email'])}
       />
       <span id="email-error">${s.errors['email']?.join(' ') ?? ''}</span>
@@ -109,7 +108,6 @@ export const Signup = define<State, Msg>('my-signup', {
         minlength="8"
         required
         aria-describedby="password-error"
-        aria-invalid=${s.errors['password'] === undefined ? nothing : 'true'}
         ${invalid(s.errors['password'])}
       />
       <span id="password-error">${s.errors['password']?.join(' ') ?? ''}</span>
@@ -132,11 +130,13 @@ What happens on submit:
   `name`.
 - **Errors live in state.** `fieldErrors(issues)` groups them by field. Keep the result in
   state: it is data, so tests can see it.
-- **`invalid(errors)`** mirrors a field's errors into native validity: it calls
-  `setCustomValidity` and sets `aria-invalid`, so `:user-invalid` styling, the browser's error
-  bubble and your model agree. It clears the error when the user edits the field.
-- **`aria-invalid` and `aria-describedby` are also plain attributes**, because element
-  directives don't run on the server. The no-JavaScript page announces errors too.
+- **`invalid(errors)`** is an [element hook](/docs/views/#element-hooks) that mirrors a field's
+  errors into native validity: it calls `setCustomValidity` and sets `aria-invalid`, so
+  `:user-invalid` styling, the browser's error bubble and your model agree. It clears the error
+  when the user edits the field.
+- **The server writes `aria-invalid="true"` too**: the hook has a server half that adds it to the
+  rendered start tag, so the no-JavaScript page announces errors. `aria-describedby` points at
+  the message, which is plain text in the view.
 
 `field(schema, toMsg)` does the same for a single control. Pair it with
 `data-intent-on="input"` to check while the user types.
@@ -162,9 +162,8 @@ both paths:
 ```ts
 // server/app.ts
 import { Hono } from 'hono';
-import { html } from 'lit';
+import { html, type IntentRejected } from '@gyral/core';
 import { formAction, rejectWith, renderPage, seeOther } from '@gyral/ssr';
-import type { IntentRejected } from '@gyral/core';
 import { SignupForm } from '../src/signup-form.js';
 
 const taken = new Set(['ada@example.com']);
