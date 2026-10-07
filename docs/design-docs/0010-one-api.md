@@ -60,7 +60,8 @@ browser ──► Caddy ──► static files: pages, search (Pagefind), title 
      database is attached: `enable_external_access = false` (no files, no network, no
      extensions), `lock_configuration = true`, a memory limit and a statement time limit.
    - **The question log:** `questions.duckdb` on a volume, in a separate DuckDB instance that
-     visitors' SQL can't reach. Mining it can join the archive: `ATTACH` both in the DuckDB CLI.
+     visitors' SQL can't reach. The API opens it only to write a row, so the DuckDB CLI can read it
+     while the API runs; mining it can join the archive: `ATTACH` both.
      SQLite and `node:sqlite` go; so does DuckDB-WASM (and its 8 MB engine in `dist/duckdb/`).
 3. **The database leaves the public site.** The build writes it next to `dist/`, not in it;
    the API image carries it with the title index and Ask's schema. Caddy serves no `.duckdb`.

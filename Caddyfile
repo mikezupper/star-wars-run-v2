@@ -26,10 +26,9 @@
 	header @sw Cache-Control "no-cache"
 	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js /api/*
 	header @pages Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
-	header /api/* Cache-Control "no-store"
+	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
+	header /api/* >Cache-Control "no-store"
 
-	# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
-	# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
 	# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
 	# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
 	handle /api/* {

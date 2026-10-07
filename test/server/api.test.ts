@@ -41,7 +41,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   archive.close();
-  log.close();
+  await log.close();
   vi.unstubAllGlobals();
   await rm(dir, { recursive: true, force: true });
 });
@@ -94,8 +94,8 @@ describe('the API', () => {
     const file = join(dir, `log-${String(Math.random()).slice(2)}.duckdb`);
     const own = await openQuestionLog(file);
     const steps = await events(await api(own)(post(ASK_PATH, { question, history: [] })));
-    await new Promise((r) => setTimeout(r, 100)); // the row is written after the answer is sent
-    own.close();
+    await own.close(); // the row is written after the answer is sent
+
     const db = await DuckDBInstance.create(file);
     const c = await db.connect();
     const logged = (
@@ -219,6 +219,36 @@ describe('the API', () => {
 });
 
 describe('the question log', () => {
+  it('lets go of its file between rows, and waits for a reader to let go', async () => {
+    const file = join(dir, 'log-locked.duckdb');
+    const own = await openQuestionLog(file);
+    const row = {
+      question: 'Who is Yoda?',
+      outcome: 'answered',
+      names: ['Yoda'],
+      sql: null,
+      rows: 1,
+      seconds: 1,
+      model: 'm',
+      followUp: false,
+    } as const;
+    await own.add(row);
+    // Someone mining the log holds the file; the next row waits for them.
+    const reader = await DuckDBInstance.create(file, { access_mode: 'READ_ONLY' });
+    const later = own.add({ ...row, question: 'And Dooku?' });
+    await new Promise((r) => setTimeout(r, 400));
+    reader.closeSync();
+    await later;
+    await own.close();
+    const db = await DuckDBInstance.create(file);
+    const c = await db.connect();
+    expect(
+      (await c.runAndReadAll('SELECT question FROM questions ORDER BY id')).getRows().flat(),
+    ).toEqual(['Who is Yoda?', 'And Dooku?']);
+    c.closeSync();
+    db.closeSync();
+  });
+
   it('writes one row per question, names as a list', async () => {
     const file = join(dir, 'log-test.duckdb');
     const own = await openQuestionLog(file);
@@ -232,7 +262,7 @@ describe('the question log', () => {
       model: 'm',
       followUp: true,
     });
-    own.close();
+    await own.close();
     const db = await DuckDBInstance.create(file);
     const c = await db.connect();
     const rows: unknown = (

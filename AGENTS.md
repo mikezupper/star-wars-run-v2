@@ -1,7 +1,7 @@
 # AGENTS.md — starwars.run
 
 A Star Wars content site: a page for every Wookieepedia article, canon and Legends (~227k),
-linked to each other, with search, SQL in the browser (Explore), and usable offline. Built with Gyral and
+linked to each other, with search, questions in plain words or SQL (Explore), and usable offline. Built with Gyral and
 prerendered to static files; served from a Docker image behind Cloudflare.
 
 This file is a **map**. The linked docs are the system of record. If this file and a doc

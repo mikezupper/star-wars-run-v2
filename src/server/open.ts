@@ -27,7 +27,7 @@ export async function openApi(
   report?: (problem: string, cause: unknown) => void,
 ): Promise<{
   readonly handle: (request: Request) => Promise<Response>;
-  readonly close: () => void;
+  readonly close: () => Promise<void>;
 }> {
   const archive = await openArchive(join(files.dataDir, 'archive.duckdb'));
   const log = files.logFile === undefined ? undefined : await openQuestionLog(files.logFile);
@@ -49,9 +49,9 @@ export async function openApi(
   });
   return {
     handle,
-    close: () => {
+    close: async () => {
+      await log?.close();
       archive.close();
-      log?.close();
     },
   };
 }

@@ -191,3 +191,15 @@ Each entry has four parts:
 - **Guard:** ADR 0010 asks for changes to the questions side to be measured on the full build
   before they merge; `src/server/` has no browser bytes to grow. The lock-down has its own tests
   (`test/server/api.test.ts`).
+
+## The question log couldn't be read while the API ran (2026-10-07)
+
+- **Symptom:** In the Docker stack, opening `/data/questions.duckdb` read-only from a second
+  process failed: "Could not set lock on file … Conflicting lock is held in node (PID 1)". The
+  ADR said to mine the log with the DuckDB CLI, which couldn't open it either.
+- **Cause:** DuckDB lets one process at a time open a database file, readers included. The API
+  opened the log at start and held it for its whole life.
+- **Fix:** the log opens its file only to write a row, one write at a time, and closes it. A
+  write that finds a reader holding the file waits and retries for up to 30 seconds.
+- **Guard:** a test in `test/server/api.test.ts` holds the file open read-only while a row is
+  added, then checks both rows landed.

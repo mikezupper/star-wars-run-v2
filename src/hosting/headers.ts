@@ -110,10 +110,9 @@ ${security('\t')}
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
 \t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js /api/*
 \theader @pages Cache-Control ${quote(CACHE.pages)}
-\theader /api/* Cache-Control ${quote(CACHE.api)}
+\t# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
+\theader /api/* >Cache-Control ${quote(CACHE.api)}
 
-\t# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
-\t# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
 \t# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
 \t# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
 \thandle /api/* {

@@ -57,7 +57,6 @@ http
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => {
-    api.close();
-    process.exit(0);
+    void api.close().finally(() => process.exit(0));
   });
 }
