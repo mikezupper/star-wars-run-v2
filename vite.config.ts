@@ -14,7 +14,8 @@ export default defineConfig(({ mode }) => {
     ...gyralVitePreset(),
     define: { __ASK_MODEL__: JSON.stringify(model ?? '') },
     build: {
-      outDir: 'dist',
+      // DIST_DIR: the gate's sample build goes to .sample/ (scripts/build.ts).
+      outDir: process.env['DIST_DIR'] ?? 'dist',
       emptyOutDir: true,
       manifest: true,
       rollupOptions: { input: ['src/entry-client.ts', 'src/page.ts', 'src/styles/site.css'] },

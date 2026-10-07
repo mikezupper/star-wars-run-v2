@@ -145,7 +145,11 @@ async function indexForSearch(dist: string): Promise<void> {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const paths = await buildSite(fileURLToPath(new URL('../dist', import.meta.url)));
+  // DIST_DIR: where the site goes. The gate's sample build uses .sample/, so it never replaces
+  // the full build in dist/ that `pnpm dev` serves search and Explore from (lessons-learned).
+  const paths = await buildSite(
+    fileURLToPath(new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url)),
+  );
   console.log(`built ${String(paths.length)} pages`);
 }
 

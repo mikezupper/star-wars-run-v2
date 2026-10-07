@@ -133,3 +133,21 @@ Each entry has four parts:
   process.
 - **Guard:** none automatic yet: the smoke test stubs the model. Ask two questions in a row on
   `pnpm dev` after touching the proxy.
+
+## Explore answered from a 393-article database in dev (2026-10-07)
+
+- **Symptom:** On `pnpm dev`, Ask the archive found nothing for most questions: "Han Solo
+  (no article by that name)", "Obi-Wan Kenobi (no article…)". The same questions had worked an
+  hour earlier.
+- **Cause:** the dev server renders pages from the full archive, but serves search, the title
+  index and Explore's database from the last build in `dist/`. `pnpm check` runs
+  `pnpm build:sample`, which wrote its 20-per-section sample into the same `dist/`, so every
+  gate run silently swapped the full build for the sample. It had bitten before (Explore's
+  database), each time fixed by rebuilding.
+- **Fix:** builds write to `DIST_DIR` (default `dist`); `pnpm build:sample` and the gate's smoke
+  use `.sample/`, so the gate never touches the full build. Making that change exposed a second
+  bug: Vite's watcher skips only its output folder, so with `.sample/` as the output it crawled
+  `dist/`'s 456k files and the dev server took two minutes to start. `scripts/dev.ts` now ignores
+  every generated folder explicitly.
+- **Guard:** the gate leaves `dist/` alone by construction; the dev server's start time is in the
+  smoke test (it fails after 120 s).

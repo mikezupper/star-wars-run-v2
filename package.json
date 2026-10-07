@@ -13,7 +13,7 @@
     "dev": "tsx scripts/dev.ts",
     "build": "vite build && tsx scripts/build.ts",
     "preview": "tsx scripts/preview.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:sample && pnpm smoke",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:sample && DIST_DIR=.sample pnpm smoke",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
@@ -27,7 +27,7 @@
     "docker:run": "docker run --rm -p 8080:8080 $([ -f .env ] && echo --env-file .env) starwars-run",
     "ci:local": "tsx scripts/ci-local.ts",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
-    "build:sample": "SITE_SAMPLE=20 pnpm build",
+    "build:sample": "SITE_SAMPLE=20 DIST_DIR=.sample pnpm build",
     "build:explore": "tsx scripts/build-explore.ts"
   },
   "dependencies": {

@@ -18,3 +18,6 @@ data/wookieepedia/
 # Local settings, including keys. Never committed.
 .env
 .env.*
+
+# The gate's sample build (pnpm build:sample); the full build stays in dist/.
+.sample/

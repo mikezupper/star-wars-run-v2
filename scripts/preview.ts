@@ -70,7 +70,9 @@ export function createPreview(dist: string): http.Server {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env['PORT'] ?? 5501);
-  const dist = fileURLToPath(new URL('../dist', import.meta.url));
+  const dist = fileURLToPath(
+    new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url),
+  ).replace(/\/$/, '');
   createPreview(dist).listen(port, () => {
     console.log(`starwars.run preview (dist/): http://localhost:${String(port)}`);
   });

@@ -30,7 +30,8 @@ import { tsImport } from 'tsx/esm/api';
 
 // SMOKE_BASE_URL=http://localhost:8080 runs every check against another server instead, such
 // as the Docker image (`pnpm docker:run`). The page list still comes from the local dist/.
-const dist = new URL('../dist/', import.meta.url).pathname;
+// DIST_DIR: the build to check (the gate's sample is in .sample/; see scripts/build.ts).
+const dist = new URL(`../${process.env.DIST_DIR ?? 'dist'}/`, import.meta.url).pathname;
 const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
 const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
 

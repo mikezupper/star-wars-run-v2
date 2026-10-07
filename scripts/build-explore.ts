@@ -11,7 +11,7 @@ import { exploreRows } from '../src/domain/rows.js';
 import { copyDuckDb } from './build.js';
 import { buildDatabase } from './build-database.js';
 
-const dist = fileURLToPath(new URL('../dist', import.meta.url));
+const dist = fileURLToPath(new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url));
 const started = Date.now();
 const data = await loadSiteData();
 const rows = exploreRows(data.archive, data.articles);

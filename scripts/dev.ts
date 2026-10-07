@@ -16,7 +16,15 @@ import { ranged } from './lib/range.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
 const vite = await createViteServer({
-  server: { middlewareMode: true, ws: { port: Number(process.env['HMR_PORT'] ?? 24800) } },
+  server: {
+    middlewareMode: true,
+    ws: { port: Number(process.env['HMR_PORT'] ?? 24800) },
+    // Generated folders, whatever DIST_DIR says: the full build alone is 456k files, and
+    // watching them stalled startup for minutes (docs/lessons-learned.md).
+    watch: {
+      ignored: ['**/dist/**', '**/.sample/**', '**/data/**', '**/coverage/**', '**/.smoke/**'],
+    },
+  },
   appType: 'custom',
 });
 
@@ -36,7 +44,9 @@ const DEV_ASSETS = {
   page: '/src/page.ts',
 };
 
-const DIST = fileURLToPath(new URL('../dist', import.meta.url));
+const DIST = fileURLToPath(
+  new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url),
+).replace(/\/$/, '');
 /** Build outputs the dev server serves from dist/: the search indexes, Explore's data and engine. */
 const FROM_BUILD = ['/pagefind/', '/search-titles/', '/data/', '/duckdb/'];
 
