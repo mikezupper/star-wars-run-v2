@@ -42,3 +42,22 @@ repo follows.
 - Prerendering means no server code in production and pages that work before JavaScript
   loads. Anything that needs per-request data would need a server; nothing does yet.
 - Logic must live in `src/` for coverage to count it. `scripts/` stay thin.
+
+## Gyral 0.2 to 0.3 (`swr-7f1.11`, 2026-10-07)
+
+0.3.0 replaces Lit with Gyral's own view layer. The migration was small: imports
+(`serverHtml` → `html` from `@gyral/core`), two `.value=` bindings the template rules now
+reject, and tests that read the server's development markers. Measured on the full archive on
+the same machine (0.2.0 on 2026-10-06, 0.3.0 on 2026-10-07):
+
+| Measure                           | 0.2.0      | 0.3.0                       |
+| --------------------------------- | ---------- | --------------------------- |
+| `entry-client.js` (islands), gzip | 61.9 KB    | 18.7 KB, plus 2.8 KB lazily |
+| Full build (227,657 pages)        | 7 min 22 s | 2 min 55 s                  |
+| Prerendering alone                | 297 s      | 58 s                        |
+| Peak memory                       | 10.3 GB    | 10.1 GB                     |
+
+The lazy 2.8 KB is the hydration chunk, fetched only by pages with islands. Prerendering is 5
+times faster because 0.3 renders synchronously, with no DOM shim. 0.3 also made a strict style
+policy possible: the islands' `<style>` elements are allowed by hash, and `style-src` has no
+`'unsafe-inline'` ([0003-hosting.md](0003-hosting.md)).
