@@ -9,3 +9,6 @@ docs/references/gyral/*.md
 !docs/references/gyral/README.md
 .smoke/
 **/__snapshots__/
+
+# Gyral release files, copied as published (vendor/README.md).
+vendor/
