@@ -2,7 +2,7 @@
 title: Testing
 description: Test models without a DOM, components in a real browser with fake drivers and virtual time, and server-rendered pages through hydration.
 section: Guides
-order: 15
+order: 16
 ---
 
 # Testing
@@ -23,7 +23,7 @@ server.
 // src/lookup.ts
 import { define, html } from '@gyral/core';
 import { get } from '@gyral/http';
-import { debounce } from '@gyral/time';
+import { debounce } from '@gyral/time/delay';
 import * as v from 'valibot';
 
 const Result = v.object({ name: v.string() });
@@ -129,8 +129,20 @@ For rendering, events and focus, test the real element in a real browser. Gyral'
 Gyral renders on a schedule: reducers run as soon as a message arrives, and the DOM updates in a
 microtask, once for every message that arrived together. **`await settled()`** from
 `@gyral/core` waits until every component on the page has rendered its latest state, including
-view transitions, focus commands and lazily loaded code. Await it before you look at the DOM;
-there's nothing to poll.
+view transitions, focus commands and lazily loaded code, and until messages have stopped
+arriving. Await it before you look at the DOM; there's nothing to poll.
+
+- **It waits for chains of messages**: a driver that answers at once, a store that notifies in a
+  microtask, a stream that re-arms in one, a reducer that answers with the next command. Each
+  message restarts its quiet window, so you need no `await Promise.resolve()` loops before it.
+- **It doesn't wait for commands that never end**, such as a store watch or a socket, only for
+  the messages they deliver.
+- **It never waits for timers or the network.** Answer fake drivers and advance virtual time
+  first, then `await settled()`.
+
+Because it waits for the whole chain, a fake that answers at once runs to the end before
+`settled()` resolves. To see an in-between state such as "Loading…", use a fake that waits for
+the test (`fakeDriver(name)` without `impl`), assert, then answer it with `resolveNext`.
 
 ```ts
 // src/lookup.browser.test.ts
@@ -186,8 +198,12 @@ Substitute drivers by name, as the app would ([Effects](/docs/effects/#substitut
   `fetch`, so response schemas, status errors and JSON parsing behave as in production.
   `respondNext({ status, body })`, `reply(422, problem)` and `failNext()` answer requests.
 
-Removing an element cancels its commands on a later tick, so yield (`await time.advance(0)`)
-before asserting that a request was aborted.
+Removing an element interrupts its commands synchronously: when `el.remove()` returns, every
+running command's `signal.aborted` is `true` and its `abort` listeners have run, and no later
+result is dispatched. Assert right after `remove()`, with no need to yield. Only cleanup a
+driver runs after an `await` (a `finally` once its promise settles) happens later; yield with
+`await Promise.resolve()` (or `await clock.advance(0)` under `virtualTime()`) if you need to
+observe that.
 
 ## Virtual time
 

@@ -130,4 +130,4 @@ Comparing an example in each is the fastest way to see the mapping in practice. 
 [examples](/examples/).
 
 Gyral is a new implementation. Where ideas, APIs or example programs are adapted from Cycle.js,
-the `NOTICE` file in Gyral's repository credits them under Cycle.js's MIT licence.
+the `NOTICE` file in Gyral's repository credits them under Cycle.js's MIT license.

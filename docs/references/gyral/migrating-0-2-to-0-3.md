@@ -2,7 +2,7 @@
 title: Migrating from 0.2 to 0.3
 description: Move a Gyral 0.2 app to 0.3 and its own view layer - dependencies, imports, props, lists, form state, tests and server rendering, step by step.
 section: Reference
-order: 3
+order: 4
 ---
 
 # Migrating from 0.2 to 0.3
@@ -15,7 +15,8 @@ props, styles, server rendering and hydration.
 Most apps migrate in this order: dependencies, imports, the build checks (the compiler and the
 ESLint rules list every template that needs a change), props, lists, tests, server. This page
 follows that order. The 0.2 snippets are plain text; every 0.3 snippet with a file name
-compiles against the 0.3 packages.
+compiles against the 0.3 packages. Going on to 0.3.1? Read
+[Migrating from 0.3.0 to 0.3.1](/docs/migrating-0-3-0-to-0-3-1/) next.
 
 ## Dependencies
 
@@ -39,7 +40,7 @@ Everything a view needs comes from `@gyral/core`:
 | `repeat`, `keyed`                                                | `each(items, key, row, pick?)`                    |
 | `live`, `liveBoolean`, `textarea()`, `textareaMarkup`            | plain bindings (see [Form state](#form-state))    |
 | `classMap`, `styleMap`                                           | strings: `class=${…}`, `style="--w: ${w}px"`      |
-| `svg` templates                                                  | inline `<svg>` inside `html`                      |
+| `svg` templates                                                  | inline `<svg>` in `html`; `svg` is back in 0.3.1  |
 | `unsafeHTML` (from `lit/directives`)                             | `raw(markup)`, for trusted markup only            |
 | `directive`, `ElementDirective`                                  | `defineHook({ client, server? })`                 |
 | `serverHtml` (`@gyral/ssr`)                                      | `html` from `@gyral/core`                         |
@@ -294,7 +295,8 @@ their `<slot>`s.
 
 `await settled()` from `@gyral/core` waits until every component has rendered, view transitions
 and lazily loaded code included. It replaces `await el.updateComplete`, and loops over several
-elements.
+elements. Since 0.3.1 it also waits until messages stop arriving, so drop any
+`await Promise.resolve()` loops before it.
 
 ```ts
 // src/click-and-wait.ts
@@ -373,18 +375,18 @@ export function home(): Response {
 Gzip, production builds with the preset. "First load" is the entry chunk and its static imports,
 what a page loads before any `import()`:
 
-| Bundle                   | 0.2.0    | 0.3: first load | 0.3: all chunks |
-| ------------------------ | -------- | --------------- | --------------- |
-| hello-world              | 12.2 KiB | 8.9 KiB         | 11.3 KiB        |
-| isomorphic (SSR)         | 17.3 KiB | 13.0 KiB        | 15.6 KiB        |
-| no-js-first (SSR, forms) | 18.7 KiB | 16.8 KiB        | 19.3 KiB        |
+| Bundle                   | 0.2.0    | 0.3.0: first load | 0.3.0: all chunks |
+| ------------------------ | -------- | ----------------- | ----------------- |
+| hello-world              | 12.2 KiB | 8.9 KiB           | 11.2 KiB          |
+| isomorphic (SSR)         | 17.3 KiB | 12.9 KiB          | 15.4 KiB          |
+| no-js-first (SSR, forms) | 18.7 KiB | 16.6 KiB          | 19.0 KiB          |
 
 Features load with the API that uses them (`each`, `raw`, hooks, `command()`, stores, prop
 builders), so small apps shed the most. If you keep a size budget, budget the first load: the
 lazy hydration chunk (about 2.8 KiB) only loads on server-rendered pages.
 
 This site moved too. Its two islands, the home page counter and the search box, shipped as one
-17.2 KiB chunk on 0.2.0 (gzip at level 9). On 0.3 the entry is 13.7 KiB, and the hydration
+17.2 KiB chunk on 0.2.0 (gzip at level 9). On 0.3.0 the entry is 13.7 KiB, and the hydration
 chunk, 2.8 KiB, is preloaded alongside it on the two pages that have islands. Docs pages still
 ship no framework JavaScript at all.
 

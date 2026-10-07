@@ -2,7 +2,7 @@
 title: Using Gyral in other frameworks
 description: Gyral components are standard custom elements. Use them in plain HTML, React, Vue or Svelte - set their props and listen to their outputs.
 section: Guides
-order: 17
+order: 18
 ---
 
 # Using Gyral in other frameworks
@@ -19,10 +19,12 @@ This picker takes a label, a maximum and a list of items, and reports which one 
 
 ```ts
 // src/picker.ts
-import { define, each, emit, html, intents, prop } from '@gyral/core';
+import { define, each, html, intents, outputs, prop } from '@gyral/core';
 import * as v from 'valibot';
 
 export type PickerOutput = { readonly _tag: 'Picked'; readonly id: string };
+
+const emit = outputs<PickerOutput>();
 
 type Msg = { readonly _tag: 'Pick'; readonly id: string };
 
@@ -82,22 +84,25 @@ objects and anything else that doesn't fit in a string. Props never write attrib
 ## Outputs: the gyral-output event
 
 A component's outputs (whatever it passes to `emit()`) are dispatched from its element as a
-`gyral-output` event, with the output in `event.detail`. The event **bubbles but isn't
-composed**: it travels up the tree the element is in, and stops at the edge of a shadow root.
+`gyral-output` event, with the output in `event.detail`. `@gyral/core` exports the name as
+`OUTPUT_EVENT`, and the types `OutputEvent<O>` and `OutputsOf<typeof Component>` to read it. The
+event **bubbles but isn't composed**: it travels up the tree the element is in, and stops at the
+edge of a shadow root.
 
 So listen on the element itself, or on any ancestor in the same tree:
 
 ```ts
 // src/main.ts
-import './picker.js';
-import type { PickerOutput } from './picker.js';
+import { OUTPUT_EVENT, type OutputEvent, type OutputsOf } from '@gyral/core';
+import './picker.js'; // defines <my-picker>
+import type { Picker } from './picker.js';
 
 const picker = document.createElement('my-picker');
 picker.setAttribute('label', 'Choose a size');
 picker.items = ['S', 'M', 'L'];
 
-picker.addEventListener('gyral-output', (event) => {
-  const output = (event as CustomEvent<PickerOutput>).detail;
+picker.addEventListener(OUTPUT_EVENT, (event) => {
+  const output = (event as OutputEvent<OutputsOf<typeof Picker>>).detail;
   console.log(`picked ${output.id}`);
 });
 
@@ -108,9 +113,15 @@ If you put the element inside another shadow root, listeners outside that shadow
 hear it. That is what keeps a Gyral parent's children private, and why the element itself is
 the reliable place to listen.
 
+The other direction works too: any custom element talks to a Gyral parent by dispatching
+`new CustomEvent(OUTPUT_EVENT, { detail: { _tag: 'Picked', id }, bubbles: true })` on itself.
+The parent names it with `data-intent`, as it would a Gyral child, and reads the output from the
+parser's `detail`.
+
 These rules are checked: this website's build mounts a component like this one in a plain page
 and verifies that attribute props are parsed, property props render, the output reaches the
-element and the document, and it doesn't leave an enclosing shadow root.
+element and the document, it doesn't leave an enclosing shadow root, and a plain custom element
+reaches a Gyral parent with `OUTPUT_EVENT`.
 
 ## TypeScript
 

@@ -13,6 +13,30 @@ Each entry has four parts:
 
 ---
 
+## The Ask smoke query hid Luke beyond the displayed rows (2026-10-07)
+
+- **Symptom:** the full-archive smoke test failed its Luke Skywalker link assertion for
+  "Who comes from Tatooine?". The sample test and the live question passed.
+- **Cause:** the stubbed SQL sorted 670 matching characters alphabetically. Luke was 348th,
+  beyond Ask's 200-row display cap, so his row never reached the page.
+- **Fix:** the smoke query puts the asserted article first, then sorts the rest by name
+  (`swr-uvj`). It still searches the real database and keeps the link assertion.
+- **Guard:** `checkAsk()` in `scripts/smoke.mjs` checks the link, accessibility and the model
+  being unavailable. Run it against a full build as well as the gate's sample.
+
+## Gyral's template locations counted as uncovered branches (2026-10-07)
+
+- **Symptom:** upgrading to Gyral 0.3.1-next.1 left all 223 unit tests passing, but branch
+  coverage fell to 77.42%. Several fully exercised page templates reported 50% branch coverage.
+- **Cause:** the new `gyral:template-locations` plugin rewrites each template tag as
+  `html.at?.("file:line:column") ?? html`. Its source map attributes those generated fallback
+  branches to the application's template, and V8 counts the unused fallback as uncovered.
+- **Fix:** `vitest.config.ts` omits that diagnostic plugin from Node tests and keeps the rest
+  of the Gyral preset (`swr-72v`). Tests exercise the original tags. The dev server still uses
+  the full preset and reports template source locations.
+- **Guard:** the 80% coverage gate stays in place. `pnpm smoke` checks both production
+  hydration and the dev server with the full preset.
+
 ## A decimal comma made a clone 183 meters tall (2026-10-06)
 
 - **Symptom:** Explore's "Tallest characters" listed an unidentified clone navigation officer at

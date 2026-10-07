@@ -17,7 +17,8 @@ from the side") and write to it with messages.
 Reach for a store when distant components need the same data and threading it through every
 level in between would couple unrelated components. Keep everything else in component state:
 a store is shared and global to its scope, so it's harder to reason about than a component's own
-model.
+model. If the state already lives outside Gyral, in signals, Redux or a socket, keep it there
+and read it with a subscription: see [State Gyral doesn't own](/docs/outside-state/).
 
 ## Defining a store
 

@@ -2,7 +2,7 @@
 title: Devtools
 description: Watch every message, state change and command in your app with an in-page panel that costs nothing in production builds.
 section: Guides
-order: 16
+order: 17
 ---
 
 # Devtools
@@ -42,10 +42,10 @@ Alt+Shift to toggle it; default `KeyD`).
 ## What it shows
 
 - **Timeline.** Every event, newest first: components connecting, disconnecting and
-  hydrating; each message with the state before and after; each command as it's issued,
-  dropped (`exhaust`), interrupted (`switch`, disconnect), settled with the driver's output, or
-  failed with its error; and store messages. Filter by text or by kind. The last 500 events are
-  kept.
+  hydrating, and hydration mismatches; each message with the state before and after; each
+  command as it's issued, dropped (`exhaust`), interrupted (`switch`, disconnect), settled with
+  the driver's output, or failed with its error; and store messages. Filter by text or by kind.
+  The last 500 events are kept.
 - **Components.** The live instances, with a preview of each one's current state. Components that
   connected before the panel loaded are listed too.
 - **Command lanes.** Each lane's owner, policy, last phase and how many commands are in flight,
@@ -60,7 +60,7 @@ The instrumentation lives in `@gyral/core`, behind a package-internal import wit
 `development` condition. Vite resolves that condition in the dev server and in Vitest, and the
 production one in `vite build`, where every call site is guarded by a constant `false`. The
 bundler drops the call sites and the module: a production build contains neither the hook nor
-its event code. Measured across Gyral's examples, the largest size change was 0.1 KiB.
+its event code.
 
 With other bundlers, set the `development` resolve condition in development builds to get events.
 Without it you get the safe default: no events.

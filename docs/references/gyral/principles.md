@@ -24,7 +24,7 @@ Transitions, Gyral uses it as an enhancement rather than building its own.
 ## Pure core, effects at the edges
 
 `update` and `view` are pure functions. Side effects are described as data, as commands, and
-carried out by drivers. This is the idea Gyral inherits from Cycle.js.
+carried out by drivers.
 
 It's what makes a component testable without a browser, renderable on a server, and observable
 in [devtools](/docs/devtools/): every change is a message, every effect a value.
@@ -67,8 +67,9 @@ hydration of real server output against production builds.
 ## Enforce invariants, not intentions
 
 Rules that matter become checks with error messages that explain the fix. In Gyral's own repo,
-`@gyral/core` is checked to have no runtime dependencies, views can't attach closures (the
-template compiler and the ESLint rules reject them), and every decision record is indexed. This site follows the same rule: every code sample on it compiles
+`@gyral/core` is checked to have no runtime dependencies, views can't bind event handlers (the
+template compiler and the ESLint rules reject `@event` bindings), and every decision record is
+indexed. This site follows the same rule: every code sample on it compiles
 against the real packages, and every page passes accessibility checks in light and dark mode.
 
 ## Measure, then budget

@@ -2,7 +2,7 @@
 title: Routing
 description: Typed route tables that work on the server and in the browser, navigation as commands, and the current URL streamed into your model.
 section: Guides
-order: 9
+order: 10
 ---
 
 # Routing
@@ -157,10 +157,11 @@ server.get('*', (c) => {
 });
 ```
 
-The server doesn't run `listen()` (commands never run on the server). In the browser,
-`listen()` starts after hydration and delivers the same URL, so nothing re-renders. Pass the
-request path as a prop if the first render must show the route, as Gyral's
-[isomorphic example](/examples/#isomorphic) does.
+The server doesn't run `listen()` (commands never run on the server), so the shell above is
+server-rendered with no route and gets one only after hydration, when `listen()` delivers the
+URL. Pass the request path as a prop and start from it in `init` if the first render must show
+the route, as Gyral's [isomorphic example](/examples/#isomorphic) does: then `listen()` delivers
+the same URL and nothing changes.
 
 ## Memory history
 

@@ -26,7 +26,9 @@ npm run dev
 There are two templates:
 
 - **`basic`**: a client-rendered app. The page loads and your components render in the
-  browser.
+  browser. It builds [client-only](/docs/rendering-modes/#client-only-builds), without
+  hydration code; remove `clientOnly: true` from `vite.config.ts` before you render any page
+  on a server.
 - **`ssr`**: the same component rendered on the server first, so the page works before any
   JavaScript loads, then [hydrated](/docs/server-rendering/) in place.
 
@@ -210,4 +212,5 @@ rendering, hydration and virtual time. See [Testing](/docs/testing/).
 - See a whole application in [gyral-shop](https://github.com/gyraljs/gyral-shop).
 - Before you ship, read [Deploying](/docs/deploying/) and the
   [known issues](/docs/packages/#known-issues).
-- Coming from Gyral 0.2? Read [Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/).
+- Coming from Gyral 0.2? Read [Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/). From
+  0.3.0? Read [Migrating from 0.3.0 to 0.3.1](/docs/migrating-0-3-0-to-0-3-1/).

@@ -61,8 +61,8 @@ A few more optional fields cover rarer needs: `events` (event types a bound
 change inside a View Transition, see [Views](/docs/views/#view-transitions)) and `renderOnFrame`
 (message tags from bursty sources, such as pointer moves, that render once per animation frame).
 
-The type parameters are the contract. `State` is a plain JSON record, `Msg` a union of tagged
-objects, and TypeScript checks that `update` has a reducer for every tag and that the view
+The type parameters are the contract. `State` is a plain data record (JSON, when the component
+is [server-rendered](/docs/server-rendering/#hydration-and-the-client-entry)), `Msg` a union of tagged objects, and TypeScript checks that `update` has a reducer for every tag and that the view
 only names intents that exist.
 
 `define()` returns the element class. Its `spec` property is the object you passed in, which is
@@ -110,13 +110,13 @@ export const Badge = define<Stateless, never, Props>('my-badge', {
 
 ### Builders and attributes
 
-| Builder                     | The attribute is parsed with                 | Attribute name         |
-| --------------------------- | -------------------------------------------- | ---------------------- |
-| `prop.string(opts?)`        | nothing: the string as is                    | kebab-case of the prop |
-| `prop.number(opts?)`        | `Number(v)`; empty or `NaN` is invalid       | kebab-case             |
-| `prop.boolean(opts?)`       | presence: there is `true`, absent is `false` | kebab-case             |
-| `prop.json(schema, opts?)`  | `JSON.parse`, then the schema                | kebab-case             |
-| `prop.value(schema, opts?)` | no attribute: set it as a property           | none                   |
+| Builder                     | The attribute is parsed with           | Attribute name         |
+| --------------------------- | -------------------------------------- | ---------------------- |
+| `prop.string(opts?)`        | nothing: the string as is              | kebab-case of the prop |
+| `prop.number(opts?)`        | `Number(v)`; empty or `NaN` is invalid | kebab-case             |
+| `prop.boolean(opts?)`       | present is `true`, absent is `false`   | kebab-case             |
+| `prop.json(schema, opts?)`  | `JSON.parse`, then the schema          | kebab-case             |
+| `prop.value(schema, opts?)` | no attribute: set it as a property     | none                   |
 
 A prop named `maxValue` reads the attribute `max-value`; pass `attribute: 'name'` to choose
 another, or `attribute: false` for a property only. The options are `required`, `default`,
@@ -132,6 +132,72 @@ value is logged with the tag, the prop and the schema's issues, then treated as 
 `default` applies. Property sets come from typed code and are validated in development only.
 Props never write attributes back; state that CSS needs goes through
 [custom states](/docs/styling/#custom-states).
+
+### Objects, type guards and identity
+
+Objects and arrays travel as properties, declared with `prop.value`. Its check can be a
+Standard Schema or a plain type guard:
+
+```ts
+// src/seat-picker.ts
+import * as v from 'valibot';
+import { define, html, prop, type PropsOf, type Stateless } from '@gyral/core';
+
+export interface Seat {
+  readonly row: number;
+  readonly label: string;
+}
+
+/** A type guard: the simplest check for a property. */
+const isSeat = (u: unknown): u is Seat =>
+  typeof u === 'object' &&
+  u !== null &&
+  'row' in u &&
+  typeof u.row === 'number' &&
+  'label' in u &&
+  typeof u.label === 'string';
+
+/** Declared once and passed by name, so production builds can leave it out. */
+const Seats = v.array(v.object({ row: v.number(), label: v.string() }));
+
+const props = {
+  seats: prop.value(Seats, { default: [] }),
+  chosen: prop.value(isSeat),
+  /** `null` means "nobody"; leaving it unset means the default. */
+  holder: prop.value(v.nullable(v.string()), { default: 'Box office' }),
+};
+
+export const SeatPicker = define<Stateless, never, PropsOf<typeof props>>('my-seat-picker', {
+  props,
+  intent: {},
+  update: {},
+  view: (_s, _i, { props: p }) => html`
+    <p>${p.seats.length} seats, held by ${p.holder ?? 'nobody'}</p>
+    ${p.chosen === undefined ? '' : html`<p>Chosen: ${p.chosen.label}</p>`}
+  `,
+});
+```
+
+- **A type guard** `(u: unknown) => u is T` works in `prop.value()` and `prop.json()`, and the
+  prop's type is its `T`. A guard that returns `false` is reported like a schema issue, with the
+  guard's name.
+- **A property keeps the object it was given**: after `el.seats = seats`, `el.seats === seats`.
+  Development checks the value and keeps the input, not the schema's output; production skips
+  the check. So a schema for a property should **check, not decode**: turning strings into
+  `Date`s, filling in defaults or stripping keys would happen only to attributes, whose value is
+  the parse's output.
+- **Declare a schema once and pass it by name.** Production client builds never run a
+  `prop.value` check, and the Vite preset removes it when it is a name (`prop.value(Seats)`,
+  `schemas.seat`) or an inline function, so the schema's code can leave the bundle. A call
+  written in place, such as `prop.value(v.array(Seat))`, stays, because evaluating it could have
+  effects. `prop.json` keeps its check: attributes are always parsed.
+- **Whether the schema really leaves is up to the bundler.** Vite 8.3 (Rolldown) keeps schema
+  code in a lazily loaded chunk once the schema library sits in a chunk shared with the entry,
+  even when its builders are marked free of side effects. So the saving shows in single-chunk
+  builds, and for schemas whose library isn't shared across chunks.
+- **`null` for an explicit "nobody".** A `default` replaces only `undefined`: setting a prop to
+  `undefined`, or removing its attribute, brings the default back. Make the schema nullable and
+  pass `.holder=${null}` (or the attribute `holder="null"` with `prop.json`).
 
 ### Reacting to prop changes
 
@@ -171,15 +237,20 @@ the new user.
 ## Child components and outputs
 
 A parent sets a child's props in its view, as attributes (`step="5"`) or as properties
-(`.step=${5}`, the way objects and arrays travel), and listens to the child's **outputs**. A child reports up by returning `emit(output)` from a reducer. `emit` is a
-command like any other, so the child stays pure and testable.
+(`.step=${5}`, the way objects and arrays travel), and listens to the child's **outputs**. A
+child reports up by returning `emit(output)` from a reducer. `emit` is a command like any
+other, so the child stays pure and testable. Build it with `outputs<Out>()`, a module constant
+like `intents<Msg>()`: it is the same `emit`, typed by the output union, so an output of the
+wrong shape fails to compile in the child.
 
 ```ts
 // src/stepper.ts
-import { define, emit, html, prop, type Stateless } from '@gyral/core';
+import { define, html, outputs, prop, type Stateless } from '@gyral/core';
 
 /** What the stepper tells its parent. */
 export type StepperOutput = { readonly _tag: 'Stepped'; readonly by: number };
+
+const emit = outputs<StepperOutput>();
 
 type Msg = { readonly _tag: 'Step'; readonly by: number };
 
@@ -232,17 +303,41 @@ export const Total = define<State, Msg>('my-total', {
 
 - Outputs are delivered as a `gyral-output` event from the child's host. It doesn't cross the
   parent's shadow root, so a grandchild's outputs never reach the grandparent.
+- Leave the mapper's return type off, as above. Annotating it with the whole union,
+  `(out): Msg => …`, fails with a long `IntentParser<…>` error, because each intent produces its
+  own variant (see [Intent](/docs/intent/#typing-parsers)).
 - The mapper also receives the child element, typed with its props, which is how an item in a
   list says which item it is: `child(Item, (out, el) => ({ _tag: 'Item', id: el.itemId, out }))`.
 - For lists, render children with `each(items, key, row)`. Keys keep each child, and its state,
   attached to its item when the list reorders (see [Views](/docs/views/#lists)).
 - A component that contains itself (a folder tree) passes a function, `child(() => Folder, …)`,
   so the class can refer to itself.
-- Any custom element can talk to a Gyral parent by dispatching `gyral-output` with a tagged
-  `detail`, so children don't have to be Gyral components.
 
-This replaces Cycle.js's `isolate()` and collections: Shadow DOM does the isolating, and `each`
-does the list.
+Shadow DOM does the isolating, and `each` does the list.
+
+### Outputs and other code
+
+A parent that isn't a Gyral component, such as page script or an element from another library,
+hears a Gyral child's outputs as events. `OUTPUT_EVENT` (`'gyral-output'`) names the event, its
+`detail` is the output, and `OutputEvent<OutputsOf<typeof Child>>` types it:
+
+```ts
+// src/reviews.ts
+import { OUTPUT_EVENT, type OutputEvent, type OutputsOf } from '@gyral/core';
+import { Stepper } from './stepper.js';
+
+// Listen on the child or on an ancestor in the same tree.
+document.querySelector('#reviews')?.addEventListener(OUTPUT_EVENT, (event) => {
+  const { detail } = event as OutputEvent<OutputsOf<typeof Stepper>>;
+  console.log(`Stepped by ${String(detail.by)}`, event.target);
+});
+```
+
+The event bubbles but isn't composed, so it stays in the tree the child sits in. The other
+direction works too: any custom element talks to a Gyral parent by dispatching
+`new CustomEvent(OUTPUT_EVENT, { detail: { _tag: 'Picked' }, bubbles: true })` on itself, so
+children don't have to be Gyral components. [Using Gyral in other
+frameworks](/docs/other-frameworks/#outputs-the-gyral-output-event) has recipes.
 
 ## Escape hatches
 
