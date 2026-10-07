@@ -12,6 +12,10 @@ const live = (sql = 'SELECT 1', started = false): Extract<State, { _tag: 'Live' 
   sql,
   result: { _tag: 'Idle' },
   started,
+  question: '',
+  ask: { _tag: 'Idle' },
+  history: [],
+  advanced: false,
 });
 const result: QueryResult = {
   columns: ['name', 'path', 'height_m'],
@@ -30,7 +34,8 @@ describe('explore', () => {
   it('starts static, then ready with the first question, without loading the engine', () => {
     const hydrated = step(spec, { _tag: 'Static' }, { _tag: 'Hydrated' } as unknown as Msg);
     expect(hydrated.state).toEqual(live(EXPLORE_TEXT.presets[0].sql));
-    expect(hydrated.commands).toEqual([]);
+    // Only ?ask= is read: nothing loads until someone asks or runs a query.
+    expect(hydrated.commands.map((c) => c.driver.name)).toEqual(['ask-location']);
   });
 
   it('runs the SQL; the first run also starts the engine', () => {

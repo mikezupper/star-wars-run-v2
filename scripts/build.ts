@@ -12,6 +12,7 @@ import { loadSiteData } from '../src/data/archive.js';
 import { WOOKIEEPEDIA_DIR } from '../src/data/wookieepedia.js';
 import { dumpPath, prepareSnapshot, workersFrom } from '../src/ingest/wookieepedia/source.js';
 import { createSite, sitemaps } from '../src/render/site.js';
+import { askSchema } from '../src/domain/ask.js';
 import { exploreRows } from '../src/domain/rows.js';
 import { inboundLinks, titleShards } from '../src/domain/titles.js';
 import { buildDatabase } from './build-database.js';
@@ -69,8 +70,12 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
   await rm(join(dist, '.vite'), { recursive: true, force: true });
   // The Explore page's data and engine (swr-7f1.7): a DuckDB database and DuckDB-WASM,
   // self-hosted because the CSP allows only this origin.
-  await stage('explore database', () =>
-    buildDatabase(dist, exploreRows(data.archive, data.articles)),
+  const rows = exploreRows(data.archive, data.articles);
+  await stage('explore database', () => buildDatabase(dist, rows));
+  // What Ask the archive tells the model each section holds (src/domain/ask.ts).
+  await writeFile(
+    join(dist, 'data', 'ask-schema.json'),
+    JSON.stringify(askSchema(rows.archive, rows.facts)),
   );
   await copyDuckDb(dist);
   await stage('search index', () => indexForSearch(dist));

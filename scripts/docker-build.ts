@@ -30,6 +30,10 @@ try {
   copyFileSync(dump, join(context, basename(dump))); // another filesystem: copy instead
 }
 const workers = process.env[WORKERS_ENV];
+// The model name only: the key never goes into the build (it's given at `docker run`).
+const envFile = fileURLToPath(new URL('../.env', import.meta.url));
+if (existsSync(envFile)) process.loadEnvFile(envFile);
+const model = process.env['ASK_MODEL'];
 const args = [
   'build',
   '--build-context',
@@ -37,6 +41,7 @@ const args = [
   '--build-arg',
   `DUMP_FILE=${basename(dump)}`,
   ...(workers === undefined ? [] : ['--build-arg', `${WORKERS_ENV}=${workers}`]),
+  ...(model === undefined ? [] : ['--build-arg', `ASK_MODEL=${model}`]),
   '-t',
   'starwars-run',
   '.',

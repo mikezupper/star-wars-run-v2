@@ -119,3 +119,17 @@ Each entry has four parts:
   its folder, for the same reason.
 - **Guard:** the build log shows the transfer size; it should match the dump's. Never pass a
   personal folder as a Docker context or volume.
+
+## The dev server crashed after every answer from /api/ask (2026-10-07)
+
+- **Symptom:** The first question on Explore got its answer; the dev server then died with
+  `Unhandled 'error' event … AbortError`, so the follow-up never came back.
+- **Cause:** `scripts/lib/ask.ts` aborted the upstream request on the response's `close` event,
+  meaning to catch a visitor leaving mid-answer. But Node fires `close` after a response ends
+  normally too, and the streamed body piped with `.pipe()` then emitted an AbortError that
+  nothing handled.
+- **Fix:** abort only when `!res.writableFinished`, and stream with `pipeline()` from
+  `node:stream/promises`, whose errors are caught, so a broken stream ends one response, not the
+  process.
+- **Guard:** none automatic yet: the smoke test stubs the model. Ask two questions in a row on
+  `pnpm dev` after touching the proxy.

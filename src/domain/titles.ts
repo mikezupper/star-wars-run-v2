@@ -195,3 +195,11 @@ export function rankTitles(
     .sort((a, b) => b[1] - a[1] || a[0][0].length - b[0][0].length)
     .map(([row]) => row);
 }
+
+/**
+ * A row's exact article title, for matching in Explore's tables: the name shown, plus
+ * "/Legends" when the row is the Legends article of a title that canon also has (its path
+ * ends in -legends; a Legends-only article keeps its plain title).
+ */
+export const titleOfRow = (row: TitleRow): string =>
+  row[4] === 1 && row[1].endsWith('-legends/') ? `${row[0]}/Legends` : row[0];

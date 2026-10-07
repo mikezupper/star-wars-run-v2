@@ -14,3 +14,7 @@ coverage/
 
 # The Wookieepedia snapshot is rebuilt from the dump, never stored (ADR 0007).
 data/wookieepedia/
+
+# Local settings, including keys. Never committed.
+.env
+.env.*

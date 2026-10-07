@@ -22,7 +22,7 @@ disagree, the doc wins; fix this file.
 | `pnpm install`                         | Install. `@gyral/*` 0.3.0 comes from `vendor/` until it's on npm (vendor/README.md)                                          |
 | `pnpm check`                           | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke                                    |
 | `pnpm invariants`                      | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                                                  |
-| `pnpm dev`                             | Dev server on http://localhost:5500; loads the whole archive (~15 s; `SITE_SAMPLE=N` for less)                               |
+| `pnpm dev`                             | Dev server on http://localhost:5500 (~15 s; `SITE_SAMPLE=N` for less). Ask reads `.env` (ADR 0009)                           |
 | `pnpm build`                           | Ingest the dump if the snapshot is stale, then prerender all ~227k pages (about 3 min, 10 GB); `build:sample` for the gate's |
 | `pnpm preview`                         | Serve `dist/` with production URL rules on http://localhost:5501                                                             |
 | `pnpm test`                            | Vitest with coverage; fails below 80% on any metric                                                                          |

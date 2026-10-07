@@ -7,6 +7,7 @@ import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { headersFor } from '../src/hosting/headers.js';
+import { handleAsk, isAsk } from './lib/ask.js';
 import { ranged } from './lib/range.js';
 
 const TYPES: Record<string, string> = {
@@ -35,6 +36,10 @@ export function createPreview(dist: string): http.Server {
   return http.createServer((req, res) => {
     void (async () => {
       const url = new URL(req.url ?? '/', 'http://localhost');
+      if (isAsk(url.pathname)) {
+        await handleAsk(req, res);
+        return;
+      }
       const path = decodeURIComponent(url.pathname);
       const local = normalize(join(dist, path));
       const send = async (file: string, status: number) => {

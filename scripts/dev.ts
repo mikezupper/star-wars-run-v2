@@ -9,6 +9,7 @@ import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer as createViteServer } from 'vite';
+import { handleAsk, isAsk } from './lib/ask.js';
 import { loadSiteData } from '../src/data/archive.js';
 import type * as SiteModule from '../src/render/site.js';
 import { ranged } from './lib/range.js';
@@ -99,6 +100,10 @@ async function render(req: http.IncomingMessage, res: http.ServerResponse): Prom
 http
   .createServer((req, res) => {
     const { pathname } = new URL(req.url ?? '/', 'http://localhost');
+    if (isAsk(pathname)) {
+      void handleAsk(req, res);
+      return;
+    }
     if (FROM_BUILD.some((prefix) => pathname.startsWith(prefix))) {
       void serveFromBuild(pathname, res, req.headers.range, req.method === 'HEAD');
       return;
