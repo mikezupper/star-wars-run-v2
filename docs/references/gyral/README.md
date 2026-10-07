@@ -1,10 +1,10 @@
 # Gyral docs (vendored)
 
-Gyral is new (0.3.0, October 2026), so no model has seen it in training. Read these pages
+Gyral is new (0.3.1 prerelease, October 2026), so no model has seen it in training. Read these pages
 before writing or changing Gyral code. Don't guess the API from Lit or Cycle.js.
 
 **Source:** `content/docs/` in the gyral.dev repo (`../../gyral.dev` next to this checkout),
-commit `92871c2` (the 0.3.0 docs), copied 2026-10-07. **Don't edit these files.** To refresh them, copy the
+commit `4d72706` (the 0.3.1 docs), copied 2026-10-07. **Don't edit these files.** To refresh them, copy the
 directory again and update the commit here.
 
 Links inside the pages are gyral.dev site paths (`/docs/views/`), not repo paths. The page
@@ -21,6 +21,7 @@ type declarations instead: `node_modules/@gyral/<package>/dist/*.d.ts`.
 | Templates, `data-intent`                                            | [views.md](views.md), [intent.md](intent.md)                                                           |
 | Pure updates, commands, effects                                     | [update.md](update.md), [effects.md](effects.md)                                                       |
 | Shared state                                                        | [stores.md](stores.md)                                                                                 |
+| State outside Gyral                                                 | [outside-state.md](outside-state.md)                                                                   |
 | `html` on the server, `page()`, `prerender()`, hydration            | [server-rendering.md](server-rendering.md)                                                             |
 | Prerendering, static output, which mode when                        | [static-sites.md](static-sites.md), [rendering-modes.md](rendering-modes.md)                           |
 | Production builds and hosting                                       | [deploying.md](deploying.md)                                                                           |
@@ -31,3 +32,4 @@ type declarations instead: `node_modules/@gyral/<package>/dist/*.d.ts`.
 | Routing, forms, devtools, package list                              | [routing.md](routing.md), [forms.md](forms.md), [devtools.md](devtools.md), [packages.md](packages.md) |
 | Mapping from this repo's old Cycle.js code                          | [coming-from-cyclejs.md](coming-from-cyclejs.md)                                                       |
 | Upgrading from 0.2 (what changed, before and after)                 | [migrating-0-2-to-0-3.md](migrating-0-2-to-0-3.md)                                                     |
+| Upgrading from 0.3.0                                                | [migrating-0-3-0-to-0-3-1.md](migrating-0-3-0-to-0-3-1.md)                                             |

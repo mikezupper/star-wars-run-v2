@@ -3,5 +3,5 @@
 // style-src needs no 'unsafe-inline' (src/hosting/headers.ts).
 export const STYLE_HASHES: readonly string[] = [
   "'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw='",
-  "'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='",
+  "'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='",
 ];

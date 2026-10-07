@@ -1,7 +1,7 @@
 # Architecture
 
-Data comes in once, at ingest time. Every page is rendered once, at build time. The production
-server only hands out files.
+Data comes in once, at ingest time. Every page is rendered once, at build time. In production,
+Caddy hands out those files, and one API service answers Explore's questions (ADR 0010).
 
 ```
 dump.7z (local file) ──► src/ingest/wookieepedia (stream, parse, link) ──► data/wookieepedia/
@@ -11,9 +11,12 @@ data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (secti
                                                               │
                          scripts/dev.ts: per request ◄────────┤  (archive loaded once at start)
                          scripts/build.ts: prerender every path → dist/
-articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist/data/archive.duckdb (Explore)
-articles ──► src/domain/titles ──► dist/search-titles/ (search: title matches first)
-browser ──► /api/ask (Caddy, or dev/preview) ──► the model's endpoint, with the server's key (Ask)
+articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist-api/archive.duckdb (not public)
+articles ──► src/domain/titles ──► dist/search-titles/ (search: title matches first; Ask's names)
+browser ──► /api/* (Caddy, or dev/preview in-process) ──► src/server (the API):
+              /api/ask   ──► the model (key from the environment) + DuckDB, read-only, locked down
+              /api/query ──► DuckDB, the same instance
+              every question ──► DuckDB: questions.duckdb (the log, its own instance)
 src/islands/*.ts ──► vite build ──► dist/assets/   (hydrated in the browser)
 src/styles/site.css ──► vite build ──► dist/assets/
 public/ ──► copied to dist/
@@ -32,18 +35,19 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer           | Runs                                  | Contains                                                  | May import                                                                                 |
-| --------------- | ------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description            | nothing                                                                                    |
-| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)           | `src/domain/` (types)                                                                      |
-| `src/domain/`   | server and browser                    | Article types, sections, slugs, URLs. Pure functions only | `src/site.ts`                                                                              |
-| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot  | `src/domain/`, Node built-ins                                                              |
-| `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles   | `src/domain/`, Node built-ins                                                              |
-| `src/render/`   | Node, build time                      | Route table, page templates (`html`), layout, sitemap     | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`  | browser (and server)                  | Interactive Gyral components hydrated on a page (search)  | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
-| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)      | Workbox                                                                                    |
-| `src/hosting/`  | build and preview                     | Headers policy, the `Caddyfile`, the /api/ask route       | nothing                                                                                    |
-| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks     | anything                                                                                   |
+| Layer           | Runs                                    | Contains                                                                    | May import                                                                                 |
+| --------------- | --------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/site.ts`   | server and browser                      | Site-wide constants: origin, name, description                              | nothing                                                                                    |
+| `src/labels.ts` | server and browser                      | Every user-facing string (copy lives here only)                             | `src/domain/` (types)                                                                      |
+| `src/domain/`   | server and browser                      | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only | `src/site.ts`                                                                              |
+| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`        | Read the dump, parse at the boundary, write the snapshot                    | `src/domain/`, Node built-ins                                                              |
+| `src/data/`     | Node, build time                        | Read the snapshot in `data/wookieepedia/` into articles                     | `src/domain/`, Node built-ins                                                              |
+| `src/render/`   | Node, build time                        | Route table, page templates (`html`), layout, sitemap                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/islands/`  | browser (and server)                    | Interactive Gyral components: search, Explore (a client of the API)         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/offline/`  | build (precache list); service worker   | What to precache (pure); the worker itself (`sw.ts`)                        | Workbox                                                                                    |
+| `src/hosting/`  | build and preview                       | Headers policy, the `Caddyfile`                                             | `src/domain/`                                                                              |
+| `src/server/`   | Node, the API service (and dev/preview) | `/api/ask`, `/api/query`, the question log; DuckDB, the model               | `src/hosting/`, Node built-ins                                                             |
+| `scripts/`      | Node                                    | Thin CLIs: dev server, build, preview, ingest, checks                       | anything                                                                                   |
 
 **Status today:** every layer exists.
 

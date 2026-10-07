@@ -84,8 +84,8 @@ Keep state a record of JSON values: strings, numbers, booleans, `null`, arrays a
 objects. No `Date`, `Map` or class instances. Three things depend on it:
 
 - **Server rendering** writes each component's state into the page as JSON, and the browser
-  resumes from it. A `Date` would come back as a string. The server warns when a seed won't
-  survive the trip.
+  resumes from it. A `Date` would come back as a string. In development, the server warns when
+  a seed won't survive the trip.
 - **Devtools** and tests can print and compare state.
 - **Reducers return new objects.** State is never mutated, so "did it change?" is a reference
   check.

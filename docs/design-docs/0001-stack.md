@@ -22,8 +22,9 @@ repo follows.
 - **TypeScript** in strict mode, with `exactOptionalPropertyTypes` and
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
-- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on 0.3.0 (2026-10-07),
-  installed from `vendor/` until it's on npm on 2026-10-10 ([vendor/README.md](../../vendor/README.md);
+- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on the 0.3.1-next.1
+  prerelease (2026-10-07), installed from `vendor/` until 0.3.1 is on npm
+  ([vendor/README.md](../../vendor/README.md);
   `swr-7f1.11.7` switches to npm and removes the tarballs from history). The `lit-html` 3.3.0
   pin that 0.2 needed went with Lit.
 - **One gate, `pnpm check`:** typecheck, lint, format, tests with coverage, build. A change
@@ -61,3 +62,13 @@ The lazy 2.8 KB is the hydration chunk, fetched only by pages with islands. Prer
 times faster because 0.3 renders synchronously, with no DOM shim. 0.3 also made a strict style
 policy possible: the islands' `<style>` elements are allowed by hash, and `style-src` has no
 `'unsafe-inline'` ([0003-hosting.md](0003-hosting.md)).
+
+## Gyral 0.3.1 prerelease (`swr-7f1.11.8`, 2026-10-07)
+
+Core, ssr and testing use 0.3.1-next.1 from the release bundle at commit `bd2acc9`.
+The site's templates and APIs need no migration; the obsolete
+`useDefineForClassFields: false` setting was removed. The Vite preset keeps hydration
+enabled because pages are prerendered. The copied docs include the
+[0.3.0 to 0.3.1 upgrade guide](../references/gyral/migrating-0-3-0-to-0-3-1.md).
+Node tests omit the new template-location plugin because its generated fallback branches
+distort V8 coverage; the dev server keeps it ([lessons learned](../lessons-learned.md)).

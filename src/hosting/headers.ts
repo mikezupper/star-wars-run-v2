@@ -2,7 +2,6 @@
 // - scripts/preview.ts applies headersFor(), so `pnpm smoke` runs the site under the real CSP;
 // - caddyfile() renders the same policy for production; `pnpm caddyfile` writes it to
 //   Caddyfile, and a test fails if the committed file drifts from this code.
-import { ASK_PATH, MAX_BODY_BYTES, UPSTREAM_PATH } from './ask.js';
 import { STYLE_HASHES } from './style-hashes.js';
 
 /**
@@ -111,22 +110,16 @@ ${security('\t')}
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
 \t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js /api/*
 \theader @pages Cache-Control ${quote(CACHE.pages)}
-\theader /api/* Cache-Control ${quote(CACHE.api)}
+\t# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
+\theader /api/* >Cache-Control ${quote(CACHE.api)}
 
-\t# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
-\t# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
-\t@ask {
-\t\tmethod POST
-\t\tpath ${ASK_PATH}
-\t}
-\thandle @ask {
+\t# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
+\t# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
+\thandle /api/* {
 \t\trequest_body {
-\t\t\tmax_size ${String(MAX_BODY_BYTES / 1024)}KB
+\t\t\tmax_size 64KB
 \t\t}
-\t\trewrite * ${UPSTREAM_PATH}
-\t\treverse_proxy {$ASK_ORIGIN:http://127.0.0.1:9} {
-\t\t\theader_up Host {upstream_hostport}
-\t\t\theader_up Authorization "Bearer {$ASK_KEY}"
+\t\treverse_proxy {$API:http://127.0.0.1:9} {
 \t\t\tflush_interval -1
 \t\t}
 \t}

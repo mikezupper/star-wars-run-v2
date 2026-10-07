@@ -9,8 +9,8 @@ order: 7
 
 Reducers can't fetch, wait or write to storage, because they're pure. Instead they return
 **commands**: plain objects that describe a side effect and say which message the outcome
-becomes. A **driver** runs the command and answers with that message. This is the idea Gyral
-keeps from [Cycle.js](https://cycle.js.org): effects are data, and they happen at the edges.
+becomes. A **driver** runs the command and answers with that message. Effects are data, and
+they happen at the edges.
 
 ## Commands as data
 
@@ -99,7 +99,8 @@ export const search = <M>(query: string, toMsg: (body: unknown) => M): Command<M
 ```
 
 A cancelled command's `AbortSignal` aborts (so `fetch` stops), and its result is never
-delivered. When a component disconnects, all its commands are cancelled the same way.
+delivered. When a component disconnects, all its commands are cancelled the same way, before
+`remove()` returns.
 
 ## Built-in drivers
 
@@ -116,7 +117,11 @@ msg)` writes to a [store](/docs/stores/), and `focus(selector)` moves
 [focus](/docs/views/#focus-is-a-command) after the next render.
 
 Debounce is a delay under `switch`: each keystroke's `debounce(300, msg)` cancels the pending
-one. Randomness is a command too, so models stay pure and tests can fix the numbers.
+one. An app that only needs delays imports `delay` and `debounce` from **`@gyral/time/delay`**:
+the same commands over a delay-only driver, which leaves periodic ticks and animation frames out
+of the bundle (about 0.15 KiB gzip). That driver is also named `time` and takes the same input,
+so substitution and virtual time work unchanged. Randomness is a command too, so models stay pure
+and tests can fix the numbers.
 
 ## Writing a driver
 
@@ -179,7 +184,9 @@ export const watchOnline = <M>(toMsg: (online: boolean) => M): Command<M> =>
   command(online, undefined, { onSuccess: toMsg, concurrency: 'switch' });
 ```
 
-Start a stream from `init`, and it lives as long as the component.
+Start a stream from `init`, and it lives as long as the component. For a source Gyral doesn't
+own, such as signals, a Redux-style store or a socket, `subscription()` from `@gyral/core` writes
+this plumbing for you: see [State Gyral doesn't own](/docs/outside-state/).
 
 ## Substituting drivers
 

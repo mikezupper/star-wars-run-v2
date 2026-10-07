@@ -14,9 +14,9 @@ number, are ES modules with TypeScript types, and are published from GitHub Acti
 
 ## Core
 
-| Package       | What it gives you                                                                                                                                                                                                                         |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@gyral/core` | `define()`, intents, update and commands, stores, forms, and the view layer: `html`, `css`, `each`, `raw`, hooks. `@gyral/core/server` renders on the server, `/vite` has the preset and template compiler, `/eslint` the template rules. |
+| Package       | What it gives you                                                                                                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `@gyral/core` | `define()`, intents, update and commands, stores, forms, `subscription()`, and the view layer: `html`, `svg`, `css`, `each`, `raw`, hooks. `@gyral/core/server` renders on the server, `/vite` has the preset and template compiler, `/eslint` the template rules. |
 
 ```sh
 npm install @gyral/core
@@ -24,14 +24,14 @@ npm install @gyral/core
 
 ## Optional packages
 
-| Package           | What it gives you                                                                                                                             |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                       |
-| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setTitle`, browser and memory history.                                                             |
-| `@gyral/time`     | `delay`, `debounce`, `periodic` and `animationFrames` as commands.                                                                            |
-| `@gyral/ssr`      | Server rendering: `renderPage`, `page`, `contentSecurityPolicy`, `formAction`. `@gyral/ssr/static` prerenders and serves builds (Node).       |
-| `@gyral/testing`  | `step`, `run`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/arbitraries` turns schemas into fast-check arbitraries. |
-| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                           |
+| Package           | What it gives you                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                        |
+| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setTitle`, browser and memory history.                                                              |
+| `@gyral/time`     | `delay`, `debounce`, `periodic` and `animationFrames` as commands. `@gyral/time/delay` has `delay` and `debounce` alone, for a smaller bundle. |
+| `@gyral/ssr`      | Server rendering: `renderPage`, `page`, `contentSecurityPolicy`, `formAction`. `@gyral/ssr/static` prerenders and serves builds (Node).        |
+| `@gyral/testing`  | `step`, `run`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/arbitraries` turns schemas into fast-check arbitraries.  |
+| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                            |
 
 ```sh
 npm install @gyral/http @gyral/router @gyral/time
@@ -41,8 +41,8 @@ npm install -D @gyral/testing @gyral/devtools
 
 ## Optional peer dependencies
 
-No Gyral package needs another library at runtime. The build tools Gyral plugs into are optional
-peer dependencies: install the ones you use.
+No Gyral package asks you to install another library at runtime. The build tools Gyral plugs
+into are optional peer dependencies: install the ones you use.
 
 | Package          | Optional peers                                                                            |
 | ---------------- | ----------------------------------------------------------------------------------------- |
@@ -55,7 +55,8 @@ Validation in `@gyral/core`, `@gyral/http` and `@gyral/ssr` accepts any
 Gyral 0.2 rendered with Lit and asked your app to install it. 0.3 has its own view layer, so
 Lit is gone from the dependency tree. Any custom element still works next to Gyral components,
 including ones built with Lit; install that library yourself if you use it. Upgrading? See
-[Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/).
+[Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/) and
+[from 0.3.0 to 0.3.1](/docs/migrating-0-3-0-to-0-3-1/).
 
 ## The Vite preset
 
@@ -71,15 +72,21 @@ export default defineConfig({
 });
 ```
 
-- **`plugins`**: the template compiler. In `vite build` it checks every `html` template,
-  dependencies included, fails the build with a code frame on a rule violation, and replaces each
-  template with a precompiled object, so the bundle doesn't carry the runtime template preparer.
-  The dev server and Vitest keep the runtime path, which checks the same rules on first render.
-  With `parse5` installed, the build also compares each template with a full HTML parser's
-  result. If your config has plugins of its own, list both:
-  `plugins: [...gyralVitePreset().plugins, mine()]`.
+- **`plugins`**: the template compiler, a template-locations plugin and a dev-server plugin. In
+  `vite build` the compiler checks every `html` and `svg` template, dependencies included, fails
+  the build with a code frame on a rule violation, and replaces each template with a precompiled
+  object, so the bundle doesn't carry the runtime template preparer. The dev server and Vitest
+  keep the runtime path, which checks the same rules on first render; there the
+  template-locations plugin tells the runtime where each template is written, so its errors and
+  hydration mismatches name your file, line and column. With `parse5` installed, the build also
+  compares each template with a full HTML parser's result. The dev-server plugin makes Vite, not
+  Node, load `@gyral/*` (and your dependencies that use them) in server code under `vite dev`, so
+  server rendering there gets development output and shares one copy of `@gyral/core`. If your
+  config has plugins of its own, list them all: `plugins: [...gyralVitePreset().plugins, mine()]`.
 - **`optimizeDeps.include`**: empty by default. If Vite discovers a dependency during the first
   browser test run and reloads the page, list it: `gyralVitePreset({ optimize: ['some-dep'] })`.
+- **`clientOnly: true`**, for apps no server renders, leaves the hydration code out of the
+  browser bundle. See [Client-only builds](/docs/rendering-modes/#client-only-builds).
 
 Import `html` from `@gyral/core` wherever you write templates. The compiler follows that import,
 and refuses an alias (`const h = html`) it can't follow. For Vitest browser tests, spread the
@@ -88,7 +95,8 @@ preset into each browser project's config too.
 ## The ESLint plugin
 
 `@gyral/core/eslint` shows the compiler's template errors in your editor, with the same
-messages, and checks that `each` rows read only their arguments:
+messages, checks that `each` rows read only their arguments, and finds intent parsers no
+template names:
 
 ```js
 // eslint.config.js
@@ -97,8 +105,8 @@ import gyral from '@gyral/core/eslint';
 export default [{ files: ['src/**/*.ts'], ...gyral.configs.recommended }];
 ```
 
-`recommended` turns on `gyral/template` and `gyral/each-row-purity` as errors. It works without
-Vite. See [Views](/docs/views/#checked-before-it-runs) for what the rules catch.
+`recommended` turns on `gyral/template` and `gyral/each-row-purity` as errors and
+`gyral/unused-intent` as a warning. It works without Vite. See [Views](/docs/views/#checked-before-it-runs) for what the rules catch.
 
 ## What's inside
 
@@ -110,17 +118,24 @@ cancellation, concurrency lanes and retries.
 Apps ship only the features they use. `each`, `raw`, hooks, commands, stores and the prop builders
 register themselves when your code first calls them, so an app that never calls one doesn't
 bundle it, and the hydration code is a separate chunk that only server-rendered pages fetch.
-Measured on Gyral's examples (gzip, production builds with the preset):
+Measured on Gyral's examples (KiB gzip, production builds with the preset):
 
-| App                      | 0.2.0    | 0.3: first load | 0.3: all chunks |
-| ------------------------ | -------- | --------------- | --------------- |
-| hello-world              | 12.2 KiB | 8.9 KiB         | 11.3 KiB        |
-| isomorphic (SSR)         | 17.3 KiB | 13.0 KiB        | 15.6 KiB        |
-| no-js-first (SSR, forms) | 18.7 KiB | 16.8 KiB        | 19.3 KiB        |
+| App                      | 0.2.0 | 0.3.1: first load | 0.3.1: all chunks |
+| ------------------------ | ----- | ----------------- | ----------------- |
+| hello-world              | 12.2  | 8.4               | 10.8              |
+| hello-world, client-only | —     | 7.4               | 7.4               |
+| isomorphic (SSR)         | 17.3  | 12.4              | 14.9              |
+| no-js-first (SSR, forms) | 18.7  | 15.8              | 18.3              |
 
 "First load" is the entry chunk and what it imports statically: what a page downloads before any
-lazy `import()`. The [migration guide](/docs/migrating-0-2-to-0-3/#size) has this site's own
-numbers before and after.
+lazy `import()`. On 0.3.0 the same first loads were 8.9, 12.9 and 16.6 KiB. 0.3.1 leaves out
+view transitions, the frame lane and custom states unless a module names their spec field (the
+build reads your code and the packages that depend on Gyral; see [what the build
+reads](/docs/rendering-modes/#what-the-build-reads)), and its production builds print short
+[error codes](/errors/) instead of messages. The client-only
+row is the same app built with [`clientOnly: true`](/docs/rendering-modes/#client-only-builds).
+The migration guides have this site's own numbers: [before and after
+0.3.0](/docs/migrating-0-2-to-0-3/#size), and [after 0.3.1](/docs/migrating-0-3-0-to-0-3-1/#new-in-031).
 
 Browser code targets [Baseline](https://web.dev/baseline) "widely available" features. Newer
 APIs, such as the Navigation API, URLPattern, invoker commands and View Transitions, are

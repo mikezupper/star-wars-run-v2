@@ -12,7 +12,6 @@
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "useDefineForClassFields": false,
     "skipLibCheck": true,
     "noEmit": true
   },

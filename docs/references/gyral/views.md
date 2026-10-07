@@ -53,8 +53,8 @@ export const Profile = define<State, Msg>('my-profile', {
 
 ## Templates
 
-Everything a view needs comes from `@gyral/core`: `html`, `css`, `nothing`, `each`, `raw` and
-`defineHook`. Gyral renders with its own small view layer, built for this one job: no virtual
+Everything a view needs comes from `@gyral/core`: `html`, `svg`, `css`, `nothing`, `each`,
+`raw`, `defineHook` and `defineDisposableHook`. Gyral renders with its own small view layer, built for this one job: no virtual
 DOM, no runtime dependencies. A template is prepared once per call site. After that a render
 only compares each `${…}` with the value it wrote last time and touches the DOM where they
 differ.
@@ -65,19 +65,74 @@ differ.
 | `attr=${value}`             | An attribute; `null`, `undefined` and `nothing` remove it                |
 | `class="card ${s.kind}"`    | An attribute built from several pieces (quote it)                        |
 | `?attr=${bool}`             | A boolean attribute, present or absent                                   |
-| `.prop=${value}`            | A property: props of a child Gyral component, such as objects and arrays |
+| `.prop=${value}`            | A property: data for a child Gyral component, such as objects and arrays |
 | `<input ${hook(…)}>`        | An [element hook](#element-hooks) on that element                        |
 | `<textarea>${v}</textarea>` | The textarea's value (see [Form state](#form-state))                     |
 
 In a text position, `false`, `null`, `undefined` and `nothing` render nothing, so
 ``${s.open && html`…`}`` works. Classes and inline styles are plain strings:
-`class=${s.done ? 'done' : ''}`. Inline `<svg>` works inside `html`, so icons need nothing
-special.
+`class=${s.done ? 'done' : ''}`. Inline `<svg>` works inside `html`, so icons and charts need
+nothing special; an SVG fragment that is a template of its own uses [`svg`](#svg-fragments).
+Property bindings carry data, never functions: events are [intents](#no-event-handlers), and
+behaviour on an element is a [hook](#element-hooks).
 
 Whitespace is normalized once per template, the same way on the server and in the browser:
 indentation between block-level tags disappears, and a run of whitespace between inline
 elements becomes one space. `<pre>` and `<textarea>` keep theirs. Exact whitespace belongs in
 `<pre>` or in a value.
+
+## SVG fragments
+
+Write a whole graphic, `<svg>` included, in `html`. When part of it is a template of its own, a
+mark shown only in some states or one shape per list item, write that part with `svg`:
+
+```ts
+// src/hand.ts
+import { define, each, html, nothing, svg } from '@gyral/core';
+
+export interface Card {
+  readonly id: number;
+  readonly suit: 'circle' | 'square' | undefined;
+  readonly name: string;
+}
+
+// Fragments are plain functions that return svg templates.
+const mark = (suit: 'circle' | 'square') =>
+  suit === 'circle'
+    ? svg`<circle cx="5" cy="5" r="3" />`
+    : svg`<rect x="2" y="2" width="6" height="6" />`;
+
+// A list row: it reads only its card, so it stays pure.
+const face = (c: Card) => svg`<g transform="translate(${(c.id - 1) * 12} 0)">
+  ${c.suit === undefined ? nothing : mark(c.suit)}
+  <text x="1" y="13">${c.name}</text>
+</g>`;
+
+export const Hand = define<{ readonly cards: readonly Card[] }, never>('my-hand', {
+  init: () => ({ cards: [{ id: 1, suit: 'circle', name: 'Ada' }] }),
+  intent: {},
+  update: {},
+  view: (s) =>
+    html`<svg viewBox="0 0 ${s.cards.length * 12} 14" role="img" aria-label="Hand">
+      ${each(s.cards, (c) => c.id, face)}
+    </svg>`,
+});
+```
+
+An `svg` template is `html` for SVG content:
+
+- **Its top level is SVG**, as if it stood inside an `<svg>`: `<path />` and `<g>` are SVG
+  elements, self-closing tags are fine, and camelCase names such as `clipPath` and `viewBox`
+  keep their case.
+- **It renders only inside SVG content**: in a hole of an `<svg>` or of another SVG element. At
+  a view's root or inside an HTML element, the browser's parser would build HTML elements from
+  the server's markup, so it is an error in development, on the server and in the browser.
+- **HTML at its top level is a template error.** HTML inside a graphic goes in a
+  `<foreignObject>`, written with `html`.
+- Bind `href=${…}`, not `xlink:href=${…}`: SVG 2's plain `href` is the one a binding can set.
+  Static `xlink:href="#a"` is fine.
+
+Only apps that use `svg` carry its code, about 0.2 KB minified.
 
 ## No event handlers
 
@@ -96,7 +151,9 @@ rules runs in three places, with the same messages:
   prepares templates at runtime out of your bundle. With the optional `parse5` package
   installed, the compiler also compares each template with what a full HTML parser builds.
 - **The development runtime** (the dev server and tests) checks each template the first time it
-  renders and throws with the same message.
+  renders and throws with the same message, naming where the template is written:
+  `at src/cart.ts:12:5`. Under Vite the preset gives the exact file, line and column; elsewhere
+  they come from the stack trace. Hydration mismatches name it too.
 - **ESLint**, in your editor, with `@gyral/core/eslint`:
 
 ```js
@@ -112,8 +169,21 @@ export default [
 The rules catch what would otherwise break quietly: an event binding, a `.value=` on a form
 control, a self-closing `<my-el />` (HTML ignores the slash, so the element swallows what
 follows it), an unquoted `class=a${b}`, markup the browser would repair (a `<tr>` directly in a
-`<table>`, a `<div>` inside a `<p>`), a `${…}` inside `<script>` or `<style>`, and a list row
-that reads the view's variables. Each message says what to write instead.
+`<table>`, a `<div>` inside a `<p>`), an HTML element such as `<button>` inside an `<svg>` (it
+would become an unknown SVG element that renders nothing), a bound `xlink:href=${…}`, a
+`${…}` inside `<script>` or `<style>`, and a list row that reads the view's variables. Each
+message says what to write instead.
+
+The ESLint config also reports a function written in a hole (`${() => …}`), which is never
+right in a view, and warns, with `gyral/unused-intent`, about an intent parser that no template
+in the module names with `data-intent`: a renamed intent or dead code. That rule is static, so
+intents rendered only in some states count as used, and it skips components whose intent names
+may be used in another module.
+
+In development, Gyral also warns once when a property binding gets a function: `.onclick=${fn}`
+on a built-in element (use `data-intent`), or a function prop on a Gyral component (props are
+data, and they travel to the browser in hydration seeds). Other custom elements don't warn,
+since a third-party widget's API may take a callback.
 
 ## Use the right element
 
@@ -263,7 +333,8 @@ Core ships two:
 Write your own with `defineHook`. `client(el, args, prev)` runs after the render whenever the
 arguments change (`prev` is `undefined` the first time). An optional `server(args)` returns
 attributes for the server-rendered start tag, so the page is right before scripts run. A hook
-acts only on its own element:
+acts only on its own element, and listeners it adds there go away with the element, so most
+hooks need no teardown:
 
 ```ts
 // src/steps.ts
@@ -300,6 +371,110 @@ export const Steps = define<State, Msg>('my-steps', {
   `,
 });
 ```
+
+## Widgets with a lifecycle
+
+Something with setup and teardown, such as a WebGL stage, a chart or map library, an observer or
+a connection, has a native home: **a custom element of its own**. Give it one property for its
+input, keep its state inside, set up in `connectedCallback` and tear down in
+`disconnectedCallback`. The browser then tells it about every connect, disconnect and move, the
+view stays a description of data, and the widget can be tested on its own:
+
+```ts
+// src/game.ts
+import { define, html } from '@gyral/core';
+
+interface Scene {
+  readonly cubes: number;
+}
+
+/** The widget: one property in, its own lifecycle. */
+class StageElement extends HTMLElement {
+  #scene: Scene = { cubes: 0 };
+  #frame = 0;
+
+  set view(scene: Scene) {
+    this.#scene = scene;
+    this.#schedule();
+  }
+
+  connectedCallback(): void {
+    this.#schedule(); // set up the renderer, canvas and observers here
+  }
+
+  disconnectedCallback(): void {
+    cancelAnimationFrame(this.#frame); // dispose the renderer and listeners here
+  }
+
+  #schedule(): void {
+    cancelAnimationFrame(this.#frame);
+    this.#frame = requestAnimationFrame(() => {
+      this.textContent = `${String(this.#scene.cubes)} cubes`;
+    });
+  }
+}
+customElements.define('my-stage', StageElement);
+
+interface State {
+  readonly scene: Scene;
+}
+
+type Msg = { readonly _tag: 'Add' };
+
+export const Game = define<State, Msg>('my-game', {
+  init: () => ({ scene: { cubes: 1 } }),
+  intent: { Add: () => ({ _tag: 'Add' }) },
+  update: { Add: (s) => ({ scene: { cubes: s.scene.cubes + 1 } }) },
+  view: (s, i) => html`
+    <my-stage .view=${s.scene}></my-stage>
+    <button type="button" data-intent=${i.Add}>Add a cube</button>
+  `,
+});
+```
+
+The widget reports back with events: it dispatches
+`new CustomEvent(OUTPUT_EVENT, { detail: { _tag: 'Picked' }, bubbles: true })` on itself, and the
+parent parses that like a [child component's output](/docs/components/#outputs-and-other-code).
+When the widget has a model of its own, make it a Gyral component (`prop.value` for its input,
+`outputs<Out>()` for its events).
+
+For a **small imperative behaviour** on an element of the view, such as a timer, a
+`ResizeObserver` or a third-party enhancer on one input, a hook with a teardown is lighter:
+`defineDisposableHook` takes `dispose(el, args)` next to `client`.
+
+```ts
+// src/flash.ts
+import { defineDisposableHook } from '@gyral/core';
+
+const timers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
+
+/** Highlights the element for a moment whenever `value` changes. */
+export const flash = defineDisposableHook<[value: unknown]>({
+  client: (el, _args, prev) => {
+    if (prev === undefined) return; // not on the first render
+    el.classList.add('flash');
+    clearTimeout(timers.get(el));
+    timers.set(
+      el,
+      setTimeout(() => {
+        el.classList.remove('flash');
+      }, 600),
+    );
+  },
+  dispose: (el) => {
+    clearTimeout(timers.get(el));
+  },
+});
+```
+
+- `dispose` runs when Gyral removes the element (its part cleared, its template replaced, its
+  list row removed), when the position stops holding the hook, and when the component
+  disconnects. It never runs for moves: rows reordered in a list, or a component moved with
+  `moveBefore()`.
+- After a component disconnects and reconnects, `client` runs again with `prev` undefined.
+- `defineHook` takes no `dispose` (a type error, and an error in development), so apps whose
+  hooks need no teardown don't bundle the tracking; `defineDisposableHook` adds about 0.25 KiB
+  gzip.
 
 ## Trusted markup with raw()
 
@@ -352,7 +527,8 @@ visitor asked for reduced motion, and the animation itself is CSS.
 
 Reducers run as soon as a message arrives; the DOM updates in a microtask, once for all the
 messages that arrived together, parents before children. In a test, `await settled()` waits
-until every component has rendered. See [Testing](/docs/testing/).
+until every component has rendered and messages have stopped arriving. See
+[Testing](/docs/testing/).
 
 ## Pure means repeatable
 

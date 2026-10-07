@@ -13,6 +13,30 @@ Each entry has four parts:
 
 ---
 
+## The Ask smoke query hid Luke beyond the displayed rows (2026-10-07)
+
+- **Symptom:** the full-archive smoke test failed its Luke Skywalker link assertion for
+  "Who comes from Tatooine?". The sample test and the live question passed.
+- **Cause:** the stubbed SQL sorted 670 matching characters alphabetically. Luke was 348th,
+  beyond Ask's 200-row display cap, so his row never reached the page.
+- **Fix:** the smoke query puts the asserted article first, then sorts the rest by name
+  (`swr-uvj`). It still searches the real database and keeps the link assertion.
+- **Guard:** `checkAsk()` in `scripts/smoke.mjs` checks the link, accessibility and the model
+  being unavailable. Run it against a full build as well as the gate's sample.
+
+## Gyral's template locations counted as uncovered branches (2026-10-07)
+
+- **Symptom:** upgrading to Gyral 0.3.1-next.1 left all 223 unit tests passing, but branch
+  coverage fell to 77.42%. Several fully exercised page templates reported 50% branch coverage.
+- **Cause:** the new `gyral:template-locations` plugin rewrites each template tag as
+  `html.at?.("file:line:column") ?? html`. Its source map attributes those generated fallback
+  branches to the application's template, and V8 counts the unused fallback as uncovered.
+- **Fix:** `vitest.config.ts` omits that diagnostic plugin from Node tests and keeps the rest
+  of the Gyral preset (`swr-72v`). Tests exercise the original tags. The dev server still uses
+  the full preset and reports template source locations.
+- **Guard:** the 80% coverage gate stays in place. `pnpm smoke` checks both production
+  hydration and the dev server with the full preset.
+
 ## A decimal comma made a clone 183 meters tall (2026-10-06)
 
 - **Symptom:** Explore's "Tallest characters" listed an unidentified clone navigation officer at
@@ -151,3 +175,31 @@ Each entry has four parts:
   every generated folder explicitly.
 - **Guard:** the gate leaves `dist/` alone by construction; the dev server's start time is in the
   smoke test (it fails after 120 s).
+
+## Explore downloaded 96 MB before its first answer (2026-10-07)
+
+- **Symptom:** On the full build, the first question in Explore took most of a minute on a fast
+  connection, and the network panel showed one 88 MB request for `archive.duckdb` plus 8 MB of
+  DuckDB-WASM. The gate's smoke test, on the sample, ran the same question in a second.
+- **Cause:** ADR 0008 assumed DuckDB-WASM reads a database file with HTTP range requests, block
+  by block. It doesn't: it fetches the whole file before opening it, and refuses to open it when
+  whole-file reads are turned off. The sample's database is 1.3 MB, so nothing the gate measured
+  showed it.
+- **Fix:** ADR 0010. The database left the public site; the API runs every query on the server,
+  with DuckDB opened read-only and locked down. The browser sends a question and reads a stream
+  of events.
+- **Guard:** ADR 0010 asks for changes to the questions side to be measured on the full build
+  before they merge; `src/server/` has no browser bytes to grow. The lock-down has its own tests
+  (`test/server/api.test.ts`).
+
+## The question log couldn't be read while the API ran (2026-10-07)
+
+- **Symptom:** In the Docker stack, opening `/data/questions.duckdb` read-only from a second
+  process failed: "Could not set lock on file … Conflicting lock is held in node (PID 1)". The
+  ADR said to mine the log with the DuckDB CLI, which couldn't open it either.
+- **Cause:** DuckDB lets one process at a time open a database file, readers included. The API
+  opened the log at start and held it for its whole life.
+- **Fix:** the log opens its file only to write a row, one write at a time, and closes it. A
+  write that finds a reader holding the file waits and retries for up to 30 seconds.
+- **Guard:** a test in `test/server/api.test.ts` holds the file open read-only while a row is
+  added, then checks both rows landed.

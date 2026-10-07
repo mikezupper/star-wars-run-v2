@@ -2,7 +2,7 @@
 title: Code-splitting and lazy loading
 description: Load each component's code only on the pages that use it, delay hydration until it's needed, and see what each page downloads.
 section: Guides
-order: 13
+order: 14
 ---
 
 # Code-splitting and lazy loading
@@ -80,10 +80,10 @@ its module loads, a server-rendered `<my-gallery>` is the server's HTML, already
 first state; when the module defines the element, it hydrates in place, with no flash.
 
 A page that you know needs a lazy chunk can preload it with the entry instead of finding it
-only after the entry has run. `clientAssetsFromManifest(manifest, entry, also)` from
-`@gyral/ssr/static` takes the source paths of those modules (`['src/widgets.ts']`) and adds
-them, with their static imports, to `modulepreload`; on a server, `productionServer` hands your
-app a `preload(modules)` that does the same per page (see
+only after the entry has run. `clientAssetsFromManifest(manifestPath, entry, also)` from
+`@gyral/ssr/static` reads Vite's build manifest; `also` takes the source paths of those modules
+(`['src/widgets.ts']`) and adds them, with their static imports, to `modulepreload`. On a
+server, `productionServer` hands your app a `preload(modules)` that does the same per page (see
 [Deploying](/docs/deploying/#node)).
 
 [gyral-shop](https://github.com/gyraljs/gyral-shop/blob/main/src/client/lazy.ts) uses this

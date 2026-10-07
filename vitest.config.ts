@@ -1,10 +1,15 @@
 import { defineConfig } from 'vitest/config';
 import { gyralVitePreset } from '@gyral/core/vite';
 
+const preset = gyralVitePreset();
+
 // Node tests for everything under src/. Coverage below 80% on any metric fails `pnpm test`,
 // and so `pnpm check`: that is the project's quality bar, not a target to game.
 export default defineConfig({
-  ...gyralVitePreset(),
+  ...preset,
+  // The locator adds `html.at?.(...) ?? html` at each template, which V8 counts as
+  // application branches. Node tests use the original tags; dev keeps source locations.
+  plugins: preset.plugins.filter((plugin) => plugin.name !== 'gyral:template-locations'),
   test: {
     include: ['test/**/*.test.ts'],
     environment: 'node',

@@ -1,3 +1,4 @@
+import { plainValue } from '../../src/domain/query.js';
 import { describe, expect, it } from 'vitest';
 import {
   asPlan,
@@ -5,6 +6,8 @@ import {
   askPath,
   askSchema,
   checkSql,
+  deltaText,
+  readSse,
   looksLikeQuestion,
   MAX_ROWS,
   parseJson,
@@ -101,9 +104,18 @@ describe('what the model is told', () => {
       [['Luke', '/characters/luke/', 3n]],
       true,
     );
-    expect(user?.content).toContain('Results: more than 1.');
+    expect(user?.content).toContain('Rows: more than 1.');
     expect(user?.content).toContain('{"name":"Luke","count":3}');
     expect(user?.content).not.toContain('/characters/luke/');
+    const [system, withQuery] = summaryMessages(
+      'Who is Han Solo\u2019s wife?',
+      ['name'],
+      [],
+      false,
+      'SELECT … partners',
+    );
+    expect(withQuery?.content).toContain('Query: SELECT … partners');
+    expect(system?.content).toContain('count names, not rows');
   });
 });
 
@@ -122,5 +134,36 @@ describe('handing a search to Ask', () => {
 
   it('links to Explore with the question', () => {
     expect(askPath(' Who is Yoda? ')).toBe('/explore/?ask=Who%20is%20Yoda%3F');
+  });
+});
+
+describe('reading a streamed summary', () => {
+  const chunk = (text: string) =>
+    `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: text } }] })}\n\n`;
+
+  it('returns whole events and keeps a partial one for the next chunk', () => {
+    const { data, rest } = readSse(`${chunk('Five ')}${chunk('Wookiees')}data: {"cho`);
+    expect(data.map(deltaText)).toEqual(['Five ', 'Wookiees']);
+    expect(rest).toBe('data: {"cho');
+  });
+
+  it('skips [DONE], blank lines and chunks without text', () => {
+    const { data } = readSse(
+      `: keep-alive\n\ndata: {"choices":[{"delta":{}}]}\n\ndata: [DONE]\n\n`,
+    );
+    expect(data.map(deltaText)).toEqual(['']);
+    expect(deltaText('not json')).toBe('');
+    expect(deltaText('{"choices":[]}')).toBe('');
+  });
+});
+
+describe('plain values from DuckDB', () => {
+  it('turns counts, objects and missing values into JSON', () => {
+    expect(plainValue(5n)).toBe(5);
+    expect(plainValue(2n ** 70n)).toBe((2n ** 70n).toString());
+    expect(plainValue(undefined)).toBeNull();
+    expect(plainValue({ a: 1 })).toBe('{"a":1}');
+    expect(plainValue(true)).toBe(true);
+    expect(plainValue({ items: [1n, 'a'] })).toBe('{"items":[1,"a"]}');
   });
 });

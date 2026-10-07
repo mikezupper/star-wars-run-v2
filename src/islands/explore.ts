@@ -9,8 +9,9 @@ import type { Turn } from '../domain/ask.js';
 import { sectionPath } from '../domain/archive.js';
 import { SECTIONS } from '../domain/sections.js';
 import { ASK_TEXT, EXPLORE_TEXT, SECTION_LABELS } from '../labels.js';
-import { askQuestion, type Answer, type AskEvent, type AskFailure } from './ask.js';
-import { runQuery, type QueryResult } from './duckdb.js';
+import type { Answer, AskEvent, AskFailure } from '../domain/ask-pipeline.js';
+import type { QueryResult } from '../domain/query.js';
+import { askQuestion, runQuery } from './api.js';
 import { statusText, styles, table, type Result } from './explore-view.js';
 
 export type { Result } from './explore-view.js';
@@ -322,10 +323,7 @@ ${s.sql}</textarea>
  * "How I answered". */
 function askStatus(a: AskState) {
   if (a._tag === 'Idle' || a._tag === 'Answered') return nothing;
-  const failure =
-    a._tag === 'Failed'
-      ? html`<p>${a.reason === 'unavailable' ? ASK_TEXT.unavailable : ASK_TEXT.unanswerable}</p>`
-      : nothing;
+  const failure = a._tag === 'Failed' ? html`<p>${ASK_TEXT[a.reason]}</p>` : nothing;
   return html`<ol class="steps">
       ${a.steps.map((step) => html`<li>${step}</li>`)}
     </ol>

@@ -50,6 +50,9 @@ export default tseslint.config(
     ignores: [
       'dist/',
       '.sample/',
+      '.server/',
+      'dist-api/',
+      '.sample-api/',
       'coverage/',
       '.smoke/',
       '.claude/',
@@ -127,6 +130,11 @@ export default tseslint.config(
   {
     files: ['src/data/**/*.ts'],
     rules: forbid(INGEST, RENDER, ISLANDS, GYRAL),
+  },
+  {
+    // The API service (ADR 0010): Node and DuckDB, behind Caddy. No pages, no islands.
+    files: ['src/server/**/*.ts'],
+    rules: forbid(INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
     files: ['src/render/**/*.ts'],

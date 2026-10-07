@@ -4,6 +4,7 @@ import { sectionPath, type Archive } from '../domain/archive.js';
 import { SECTIONS } from '../domain/sections.js';
 import { DESCRIPTION, SITE_NAME } from '../site.js';
 import { SECTION_LABELS, TEXT } from '../labels.js';
+import { exploreMeta } from './explore.js';
 import type { PageMeta } from './layout.js';
 
 export const homeMeta: PageMeta = {
@@ -15,6 +16,7 @@ export const homeMeta: PageMeta = {
 export const homeBody = (archive: Archive) => html`
   <h1>${SITE_NAME}</h1>
   <p>${TEXT.homeIntro(archive.byTitle.size)}</p>
+  <p><a href=${exploreMeta.path}>${TEXT.homeAsk}</a></p>
   <ul>
     ${SECTIONS.map((section) => {
       const count = archive.bySection.get(section)?.length ?? 0;

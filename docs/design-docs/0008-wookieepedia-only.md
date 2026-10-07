@@ -77,13 +77,13 @@ decimal comma ("1,83 meters"): read as a thousands separator, they came out 100 
 
 ## Explore: SQL in the browser (`swr-7f1.7`)
 
-`/explore/` runs DuckDB-WASM in the visitor's browser. No server is involved.
+`/explore/` runs DuckDB-WASM in the visitor's browser. No server is involved. (Superseded by
+[0010-one-api.md](0010-one-api.md): queries run on the server; see the correction below.)
 
 - **Data:** the build writes `dist/data/archive.duckdb` with three tables: `archive` (one row per
   article: title, name, path, section, kind, era, and the number columns above), `facts` (one
   row per infobox value: title, field, item, text, link) and `appearances` (below). The full
-  archive is 90 MB (41 MB gzipped); it was 37 MB before `appearances`. DuckDB attaches it read-only and fetches only the blocks a query needs, through
-  HTTP range requests.
+  archive is 90 MB (41 MB gzipped); it was 37 MB before `appearances`. DuckDB attaches it read-only. **Corrected 2026-10-07:** this said DuckDB-WASM fetches only the blocks a query needs, over HTTP ranges. It doesn't: for a DuckDB file it downloads all 88 MB before the first query, and won't open the file without the whole of it. The sample build's 1.3 MB database hid this. [0010-one-api.md](0010-one-api.md) moves queries to the server.
 - **Why a DuckDB file, not Parquet:** reading Parquet makes DuckDB-WASM download its parquet
   extension from `extensions.duckdb.org`. The CSP allows only this origin, and should keep doing
   so; DuckDB's own file format needs no extension. In testing, the `eh` build also failed with

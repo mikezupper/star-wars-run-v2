@@ -2,7 +2,7 @@
 title: Static sites and prerendering
 description: Render pages to HTML files at build time with @gyral/ssr/static, ship zero JavaScript where nothing is interactive, and host them anywhere.
 section: Guides
-order: 12
+order: 13
 ---
 
 # Static sites and prerendering
@@ -109,9 +109,10 @@ export default defineConfig({
   A path that doesn't answer `200` fails the build, so an error page can't ship by accident.
 - **`origin`** is the URL the requests are made with. Set it to your real site, so absolute
   URLs your pages build from the request (canonical links, Open Graph tags) come out right.
-- **`clientAssetsFromManifest(manifest, entry)`** reads Vite's manifest and returns the hashed
-  URL of your client entry (`entry`, for example `/assets/entry-client-Ab12.js`) and the chunks
-  it needs (`modulepreload`): its static imports and Gyral's hydration chunk.
+- **`clientAssetsFromManifest(manifestPath, entry)`** reads Vite's manifest and returns the
+  hashed URL of your client entry (`entry`, for example `/assets/entry-client-Ab12.js`) and the
+  chunks to preload with it (`modulepreload`): the entry itself, its static imports and Gyral's
+  hydration chunk.
   `renderPage({ modulepreload })` writes a `<link rel="modulepreload">` for each, so the browser
   fetches them alongside the entry instead of a round trip later. A third argument lists
   modules a page imports lazily, by source path (`['src/routes/product.ts']`); they are

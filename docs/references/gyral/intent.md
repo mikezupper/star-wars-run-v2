@@ -82,8 +82,9 @@ Override it with `data-intent-on`, such as `data-intent-on="keydown"`. Any event
 there: `keyup`, `focusin`, `focusout`, `toggle` (popovers and `<details>`), `command` (invoker
 commands, below), `pointerdown` or a third-party element's own event. A component listens only
 for the events its templates name, so a component without keyboard intents never runs intent
-lookup on a keystroke. If the value itself is bound, `data-intent-on=${…}`, list the event types
-it can produce in the spec: `events: ['pointerdown']`.
+lookup on a keystroke. If the value itself is bound, `data-intent-on=${…}`, the component listens
+for `keydown`, `keyup`, `focusin`, `focusout`, `toggle` and `command` as well; list any other
+event type it can produce in the spec: `events: ['pointerdown']`.
 
 An element carries one `data-intent`. To give a control a second intent, put it on an
 ancestor, as the example does: the `keydown` intent sits on `<search>` around the input whose
@@ -120,6 +121,32 @@ A parser returns one of three things:
 Parsers may return a promise, because schema validation can be async. They must not do side
 effects. The one exception is `event.preventDefault()`, for example to stop arrow keys moving
 the caret.
+
+## Typing parsers
+
+Each key in `intent` produces its own variant: the `Search` parser above returns a
+`{ _tag: 'Search'; … }`. Inside the spec, leave the return type off, and the key types it.
+
+Don't annotate a parser with the whole union. `(): Msg => …` widens it, and TypeScript answers
+with a long error that ends in "`IntentParser<Msg>` is not assignable to …". A parser written
+outside the spec returns its variant:
+
+```ts
+// src/search-parser.ts
+import type { IntentInput } from '@gyral/core';
+import type { Msg } from './search-box.js';
+
+/** The variant, not the union; `undefined` ignores the event. */
+export const parseSearch = ({
+  formData,
+}: IntentInput): Extract<Msg, { _tag: 'Search' }> | undefined => {
+  const q = formData?.get('q');
+  return typeof q === 'string' && q.trim() !== '' ? { _tag: 'Search', query: q.trim() } : undefined;
+};
+```
+
+`_tag: 'Search' as const` in the returned object works too. The same holds for the mappers of
+`child()`, `form()` and `field()`.
 
 ## Buttons carry their own data
 
@@ -183,5 +210,4 @@ everywhere. Built-in commands such as `show-modal` are left to the browser.
 
 Only `data-intent` elements in the component's own render root count. A click inside a child
 component belongs to the child, never to the parent, because the child's shadow root is a
-boundary. Light-DOM components keep the same rule by stopping at the next Gyral host. This is
-what Cycle.js needed `isolate()` for.
+boundary. Light-DOM components keep the same rule by stopping at the next Gyral host.

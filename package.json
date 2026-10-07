@@ -24,24 +24,24 @@
     "icons": "node scripts/render-icons.mjs",
     "caddyfile": "tsx scripts/caddyfile.ts",
     "docker:build": "tsx scripts/docker-build.ts",
-    "docker:run": "docker run --rm -p 8080:8080 $([ -f .env ] && echo --env-file .env) starwars-run",
+    "docker:run": "docker compose up",
     "ci:local": "tsx scripts/ci-local.ts",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
     "build:sample": "SITE_SAMPLE=20 DIST_DIR=.sample pnpm build",
-    "build:explore": "tsx scripts/build-explore.ts"
+    "build:explore": "tsx scripts/build-explore.ts",
+    "build:api": "tsx scripts/build-api.ts",
+    "ask:eval": "tsx scripts/ask-eval.ts"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
-    "@gyral/core": "file:./vendor/gyral-core-0.3.0.tgz",
-    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.0.tgz",
-    "openai": "7.30.0"
+    "@duckdb/node-api": "1.5.6-r.1",
+    "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.1.tgz",
+    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.1.tgz"
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
-    "@duckdb/node-api": "1.5.6-r.1",
     "@eslint/js": "10.0.1",
-    "@gyral/testing": "file:./vendor/gyral-testing-0.3.0.tgz",
+    "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.1.tgz",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
@@ -68,9 +68,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@gyral/core": "file:./vendor/gyral-core-0.3.0.tgz",
-      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.0.tgz",
-      "@gyral/testing": "file:./vendor/gyral-testing-0.3.0.tgz"
+      "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.1.tgz",
+      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.1.tgz",
+      "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.1.tgz"
     }
   }
 }

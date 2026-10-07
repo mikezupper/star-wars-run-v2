@@ -2,7 +2,7 @@
 title: Server rendering
 description: Render pages on the server with Declarative Shadow DOM, hydrate them in place, keep a strict CSP, and ship a production build.
 section: Guides
-order: 11
+order: 12
 ---
 
 # Server rendering
@@ -135,11 +135,13 @@ Every client-side instance then gets the `Hydrated` message once. Use it for pro
 enhancement: render the no-JavaScript version on the server and in the first client render, then
 switch to the enhanced one.
 
-The seed carries state as JSON, so keep state and props JSON-serializable. The server warns,
-with the exact path, when a value won't survive the trip (a `Date`, a `Map`, `NaN`). State that
-equals `init(props)` isn't written twice. Form controls keep what the user typed before scripts
-ran: hydration never overwrites it, and a control is written again only when the model's value
-for it changes.
+The seed carries state as JSON, so keep the state and props of server-rendered components, and
+seeded store state, JSON-serializable. In development the server warns, with the exact path,
+when a value won't survive the trip (a `Date`, a `Map`, `NaN`). Components that only render in
+the browser have no seed, so their state may hold other values; plain data still keeps tests,
+devtools and a later move to server rendering simple. State that equals `init(props)` isn't written twice. Form controls keep what the user
+typed before scripts ran: hydration never overwrites it, and a control is written again only
+when the model's value for it changes.
 
 ## Mismatches
 
@@ -151,8 +153,9 @@ the clock or a random number, or a browser extension edited the page before scri
   line, the DOM path, and what it expected and found. The component keeps the server's DOM.
   Development output carries `<!--gyral:ID-->` markers, so the browser also checks that each
   template is the one it expects.
-- **In production**, the component logs a warning and renders itself fresh. Only that component:
-  the rest of the page stays hydrated.
+- **In production**, the component logs a warning that describes the mismatch and links to
+  [its entry on the errors page](/errors/#G0062), then renders itself fresh. Only that
+  component: the rest of the page stays hydrated.
 
 ## Lazy hydration
 

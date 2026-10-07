@@ -23,6 +23,7 @@
 // Report: .smoke/report.md. Exit 1 on any failure. Adapted from gyral.dev's scripts/smoke.mjs.
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createServer as createHttpServer } from 'node:http';
 import { createServer } from 'node:net';
 import { AxeBuilder } from '@axe-core/playwright';
 import { chromium } from 'playwright';
@@ -32,6 +33,12 @@ import { tsImport } from 'tsx/esm/api';
 // as the Docker image (`pnpm docker:run`). The page list still comes from the local dist/.
 // DIST_DIR: the build to check (the gate's sample is in .sample/; see scripts/build.ts).
 const dist = new URL(`../${process.env.DIST_DIR ?? 'dist'}/`, import.meta.url).pathname;
+// The questions smoke asks go to a log of their own, not the local one (data/questions/).
+process.env.QUESTIONS_DB ??= new URL('../.smoke/questions.duckdb', import.meta.url).pathname;
+// The API asks a fake model (fakeModel below), not the real one: fast, free, the same every run.
+const model = await fakeModel();
+process.env.ASK_ORIGIN = `http://localhost:${String(model.address().port)}`;
+process.env.ASK_KEY = 'smoke';
 const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
 const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
 
@@ -113,6 +120,7 @@ try {
 } finally {
   await browser.close();
   server?.close();
+  model.close();
 }
 
 /** Home, list pages, search, 404, and the first two records of each kind. */
@@ -384,38 +392,51 @@ async function checkExplore() {
 }
 
 /**
- * Ask the archive (swr-ei6) with the model stubbed: the page's calls to /api/ask are answered
- * here, by step (plan, query, then a streamed summary), so the check is fast, free and the same
- * every run. The query is real SQL, run by DuckDB on the built database. Then the model "down":
- * the page must say so.
+ * A stand-in for the model's endpoint (ADR 0010: the API calls it, the browser never does). It
+ * answers by step: the names in the question, a real query over the built database, then a
+ * streamed sentence. Any question about Hoth gets a 503, to check the page says the AI is down.
+ */
+async function fakeModel() {
+  const sql =
+    "SELECT a.name, a.path, a.era FROM archive a WHERE a.section = 'characters' AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'homeworld' AND f.link IN ('Tatooine', 'Tatooine/Legends')) ORDER BY a.links DESC, a.name";
+  const reply = (res, content) => {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ choices: [{ index: 0, message: { role: 'assistant', content } }] }));
+  };
+  const fake = createHttpServer();
+  fake.on('request', (req, res) => {
+    let body = '';
+    req.on('data', (chunk) => (body += chunk));
+    req.on('end', () => {
+      const request = JSON.parse(body);
+      if (JSON.stringify(request.messages).includes('Hoth')) {
+        res.writeHead(503).end();
+        return;
+      }
+      const step = request.response_format?.json_schema?.name;
+      if (step === 'plan') return reply(res, '{"names":["Tatooine"]}');
+      if (step === 'query')
+        return reply(res, JSON.stringify({ sql, looksFor: 'people from Tatooine' }));
+      const chunk = (text) =>
+        `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: text } }] })}\n\n`;
+      res.writeHead(200, { 'content-type': 'text/event-stream' });
+      res.end(`${chunk('Luke Skywalker ')}${chunk('comes from Tatooine.')}data: [DONE]\n\n`);
+    });
+  });
+  await new Promise((resolve) => fake.listen(0, resolve));
+  return fake;
+}
+
+/**
+ * Ask the archive (ADR 0009, 0010), end to end through the API with the fake model: the page
+ * shows the answer, links Luke Skywalker, passes axe, and says so when the model is down.
  */
 async function checkAsk() {
   const where = '/explore/ (ask)';
   const context = await browser.newContext();
-  const sql =
-    "SELECT a.name, a.path, a.era FROM archive a WHERE a.section = 'characters' AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'homeworld' AND f.link IN ('Tatooine', 'Tatooine/Legends')) ORDER BY a.name";
-  const reply = (content) => ({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({ choices: [{ index: 0, message: { role: 'assistant', content } }] }),
-  });
   try {
     const page = await context.newPage();
     watch(page, where);
-    await page.route('**/api/ask/chat/completions', (route) => {
-      const body = route.request().postDataJSON();
-      const step = body.response_format?.json_schema?.name;
-      if (step === 'plan') return route.fulfill(reply('{"names":["Tatooine"]}'));
-      if (step === 'query')
-        return route.fulfill(reply(JSON.stringify({ sql, looksFor: 'people from Tatooine' })));
-      const chunk = (text) =>
-        `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: text } }] })}\n\n`;
-      return route.fulfill({
-        status: 200,
-        contentType: 'text/event-stream',
-        body: `${chunk('Luke Skywalker ')}${chunk('comes from Tatooine.')}data: [DONE]\n\n`,
-      });
-    });
     await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
     const explore = page.locator('swr-explore');
     await explore.locator('#question').fill('Who comes from Tatooine?');
@@ -438,21 +459,10 @@ async function checkAsk() {
       fail(where, 'the answer has no link to Luke Skywalker');
     await axe(page, where);
 
-    const down = await context.newPage();
-    watch(down, where, 503);
-    await down.route('**/api/ask/chat/completions', (route) =>
-      route.fulfill({
-        status: 503,
-        contentType: 'application/json',
-        body: '{"error":{"message":"down"}}',
-      }),
-    );
-    await down.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
-    const downExplore = down.locator('swr-explore');
-    await downExplore.locator('#question').fill('Who comes from Hoth?');
-    await downExplore.locator('.ask button[type=submit]').click();
+    await explore.locator('#question').fill('Who comes from Hoth?');
+    await explore.locator('.ask button[type=submit]').click();
     try {
-      await downExplore
+      await explore
         .locator('.ask [role=status]')
         .getByText('isn’t answering')
         .waitFor({ timeout: 30_000 });

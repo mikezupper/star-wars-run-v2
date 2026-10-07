@@ -17,3 +17,8 @@ data/wookieepedia
 .env.*
 
 .sample
+
+.server
+
+dist-api
+.sample-api
