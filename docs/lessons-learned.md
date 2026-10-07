@@ -104,3 +104,18 @@ Each entry has four parts:
 - **Guard:** `SMOKE_PAGES=1000 pnpm smoke` against a full build runs the same search checks
   (`SEARCHES` in `scripts/smoke.mjs`). Run it after changing search; the gate's sample can't
   catch ranking at scale.
+
+## The Docker build sent all of ~/Downloads to the daemon (2026-10-06)
+
+- **Symptom:** The first `pnpm docker:build` with the dump (`swr-7f1.12`) spent 25 seconds
+  "transferring dump: 4.87GB", for a 262 MB file.
+- **Cause:** the dump's folder, `~/Downloads`, was the `dump` build context. BuildKit sends a
+  local context folder whole, whatever the Dockerfile reads from it.
+- **Fix:** `scripts/docker-build.ts` hard-links the dump into a folder of its own,
+  `node_modules/.cache/swr-docker-dump/`, and uses that as the context: 275 MB sent. It's on
+  the checkout's filesystem because `/tmp` here is another disk, where a link fails and the
+  dump gets copied; and it's one fixed folder, reset each run, because an interrupted build
+  skipped the cleanup of a temporary one. `scripts/ci-local.ts` mounts the dump file alone, not
+  its folder, for the same reason.
+- **Guard:** the build log shows the transfer size; it should match the dump's. Never pass a
+  personal folder as a Docker context or volume.

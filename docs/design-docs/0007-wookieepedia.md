@@ -134,7 +134,11 @@ numbers. That's a change from swapi.info's typed fields.
 7. **The snapshot is never stored** (not in git, Git LFS or a release). Every machine that
    builds the site rebuilds it from the dump. The ingest hashes the dump first and keeps a
    snapshot built from the same dump by the same code, so an unchanged dump costs about a
-   second. Wiring this into `pnpm build`, Docker and CI is `swr-7f1.12`.
+   second. `pnpm build` runs that ingest first (`src/ingest/wookieepedia/source.ts`,
+   `swr-7f1.12`). The dump is `$WOOKIEEPEDIA_DUMP`, else `~/Downloads`. Without it, an existing
+   snapshot is used with a warning; without either, the build fails saying where to get the
+   dump. The Docker build mounts the dump for its build step only, and `pnpm ci:local` mounts
+   it into the job.
 
 ## What the ingest measured (`swr-7f1.2`, `swr-7f1.3`)
 
@@ -198,8 +202,8 @@ Decisions:
 - **Search ranking breaks at this size,** and the sample hides it: "tatooine" didn't list the
   planet in its top five, nor "luke" Luke Skywalker. `swr-357` fixed it with a title index
   ranked by incoming links ([search.md](../product-specs/search.md)).
-- **Not measured here:** the Docker image. It needs the dump in the build first (`swr-7f1.12`);
-  `dist/` plus Caddy's image (about 50 MB) puts it near 1.8 GB.
+- **The Docker image** (`swr-7f1.12`, built from the dump alone): 1.92 GB. Its build took
+  19 min 18 s: the ingest 9 min with 4 workers, prerendering 5 min, Pagefind 1.5 min.
 - **Loading** read and parsed the snapshot three times. It now reads each line's title, era
   and kind without parsing the article, and parses only the articles it renders: a sample
   build's load fell from 33 s to 6 s.
