@@ -46,14 +46,19 @@ pnpm build
 pnpm preview    # http://localhost:5501
 ```
 
-To build and run the production image (Caddy serving the static site). The image builds from
-the dump alone, ingesting it inside the build, so it takes about 15 minutes and 10 GB of memory.
+To build and run the production images: the site (Caddy serving the static files) and the
+question log (a small service writing to SQLite). The site builds from the dump alone,
+ingesting it inside the build, so it takes about 15 minutes and 10 GB of memory.
 `WOOKIEEPEDIA_WORKERS` (default 4 in Docker) trades ingest time for memory:
 
 ```sh
 pnpm docker:build
-pnpm docker:run   # http://localhost:8080
+pnpm docker:run   # docker compose up: http://localhost:8080
 ```
+
+On the server, the same `compose.yaml` runs both: put Ask the archive's settings in an `.env`
+next to it (`ASK_ORIGIN`, `ASK_KEY`, `ASK_MODEL`; see ADR 0009), then `docker compose up -d`. The
+question log's database lives in the `questions` volume.
 
 Before committing, run the full check: typecheck, lint, formatting, docs checks, tests (80%
 coverage minimum), build, and browser smoke tests. The first run needs

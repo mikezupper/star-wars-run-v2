@@ -21,3 +21,8 @@ data/wookieepedia/
 
 # The gate's sample build (pnpm build:sample); the full build stays in dist/.
 .sample/
+
+# The question log written by the dev and preview servers (src/server/question-log.ts).
+data/questions/
+
+.server/

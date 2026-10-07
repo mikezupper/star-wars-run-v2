@@ -7,6 +7,7 @@
 import type { ArticleRecord } from './article.js';
 import { displayTitle, type Archive } from './archive.js';
 import { QUANTITY_FIELDS, quantities } from './quantities.js';
+import { inboundLinks } from './titles.js';
 
 /** The numeric columns, in a fixed order (every row has all of them, null when unknown). */
 export const NUMBER_COLUMNS = [...new Set(Object.values(QUANTITY_FIELDS).map((f) => f.key))].sort();
@@ -18,6 +19,8 @@ export type ArchiveRow = Readonly<Record<string, string | number | null>> & {
   readonly section: string;
   readonly kind: string | null;
   readonly era: string;
+  /** How many articles link to this one: how well known it is (src/domain/titles.ts). */
+  readonly links: number;
 };
 
 export interface FactRow {
@@ -55,6 +58,7 @@ export function exploreRows(
   const facts: FactRow[] = [];
   const appearances: AppearanceRow[] = [];
   const titles = [...archive.byTitle.keys()].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const links = inboundLinks(articles.values());
   for (const title of titles) {
     const entry = archive.byTitle.get(title);
     const record = articles.get(title);
@@ -67,6 +71,7 @@ export function exploreRows(
       section: entry.section,
       kind: record.kind ?? null,
       era: record.era,
+      links: links.get(title) ?? 0,
       ...Object.fromEntries(NUMBER_COLUMNS.map((c) => [c, numbers[c]?.value ?? null])),
     });
     for (const field of record.fields) {

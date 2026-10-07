@@ -5,6 +5,8 @@
 import { command, defineDriver, type Command } from '@gyral/core';
 import {
   checkSql,
+  deltaText,
+  readSse,
   MAX_ROWS,
   asPlan,
   asQuery,
@@ -18,6 +20,7 @@ import {
   type Resolved,
   type Turn,
 } from '../domain/ask.js';
+import { QUESTIONS_PATH, type Outcome, type QuestionRecord } from '../domain/question-log.js';
 import { queryRows, type QueryResult } from './duckdb.js';
 import { resolveNames } from './titles.js';
 
@@ -53,8 +56,9 @@ export type AskEvent =
   | { readonly _tag: 'Writing'; readonly text: string }
   | { readonly _tag: 'Answered'; readonly answer: Answer };
 
-/** Why a question got no answer: the model can't be reached, or no query would run. */
-export type AskFailure = 'unavailable' | 'unanswerable';
+/** Why a question got no answer: the model can't be reached, no query would run, or it took
+ * too long. */
+export type AskFailure = 'unavailable' | 'unanswerable' | 'slow';
 
 /** The outside world, as functions: the real ones below, fakes in tests. */
 export interface AskDeps {
@@ -115,7 +119,7 @@ export async function ask(
     emit({ _tag: 'Found', count: rows.length, truncated });
     // Without a summary, the rows still answer the question.
     const summary = await deps
-      .stream(summaryMessages(question, result.columns, rows, truncated), (text) => {
+      .stream(summaryMessages(question, result.columns, rows, truncated, query.sql), (text) => {
         emit({ _tag: 'Writing', text });
       })
       .catch(() => '');
@@ -132,44 +136,52 @@ export async function ask(
   throw new Error('unanswerable');
 }
 
-/** The real outside world: the SDK through /api/ask, the title index, DuckDB, the schema. */
-function browserDeps(): AskDeps {
-  const client = import('openai').then(
-    ({ default: OpenAI }) =>
-      new OpenAI({
-        baseURL: new URL('/api/ask', window.location.origin).href,
-        apiKey: 'set-by-the-server', // /api/ask replaces it with the real key
-        dangerouslyAllowBrowser: true,
-        maxRetries: 1,
-      }),
-  );
-  let schema: Promise<AskSchema> | undefined;
+/** A question that takes longer than this is stopped, with its own message. */
+export const TIME_LIMIT_MS = 45_000;
+
+const ASK_URL = '/api/ask/chat/completions';
+
+async function complete(body: object, signal: AbortSignal): Promise<Response> {
+  const response = await fetch(ASK_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, temperature: 0, ...body }),
+    signal,
+  });
+  if (!response.ok) throw new Error(`/api/ask: ${String(response.status)}`);
+  return response;
+}
+
+let schema: Promise<AskSchema> | undefined;
+
+/** The real outside world: the model through /api/ask, the title index, DuckDB, the schema. */
+function browserDeps(signal: AbortSignal): AskDeps {
   return {
     chat: async (messages, json) => {
-      const response = await (
-        await client
-      ).chat.completions.create({
-        model: MODEL,
-        messages,
-        temperature: 0,
-        ...(json === undefined
-          ? {}
-          : { response_format: { type: 'json_schema', json_schema: json as never } }),
-      });
-      return response.choices[0]?.message.content ?? '';
+      const response = await complete(
+        {
+          messages,
+          ...(json === undefined
+            ? {}
+            : { response_format: { type: 'json_schema', json_schema: json } }),
+        },
+        signal,
+      );
+      const body = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+      return body.choices?.[0]?.message?.content ?? '';
     },
     stream: async (messages, onText) => {
-      const stream = await (
-        await client
-      ).chat.completions.create({
-        model: MODEL,
-        messages,
-        temperature: 0,
-        stream: true,
-      });
+      const response = await complete({ messages, stream: true }, signal);
+      if (response.body === null) return '';
+      const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+      let buffer = '';
       let text = '';
-      for await (const chunk of stream) {
-        text += chunk.choices[0]?.delta.content ?? '';
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const { data, rest } = readSse(buffer + value);
+        buffer = rest;
+        for (const payload of data) text += deltaText(payload);
         onText(text);
       }
       return text;
@@ -184,16 +196,73 @@ function browserDeps(): AskDeps {
   };
 }
 
-let deps: AskDeps | undefined;
+/** Thrown when a question runs past TIME_LIMIT_MS. */
+class Slow extends Error {}
+const SLOW = 'slow';
+
+const failureOf = (cause: unknown): AskFailure =>
+  cause instanceof Slow ? 'slow' : cause instanceof Unavailable ? 'unavailable' : 'unanswerable';
+
+/**
+ * Posts how a question went to the question log (swr-ca3.3), fire and forget: a failed post
+ * never touches the answer. Nothing identifies the visitor.
+ */
+function record(entry: Omit<QuestionRecord, 'model'>): void {
+  void fetch(QUESTIONS_PATH, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ...entry, model: MODEL }),
+    keepalive: true,
+  }).catch(() => undefined);
+}
 
 const askDriver = defineDriver<AskInput, AskEvent, AskFailure>({
   name: 'ask',
   concurrency: 'switch',
-  run: async (input, { emit }) => {
-    deps ??= browserDeps();
-    return { _tag: 'Answered', answer: await ask(input, deps, emit) };
+  run: async (input, { emit, signal }) => {
+    // One signal for both ways a question ends early: a newer question, or the time limit.
+    const stop = new AbortController();
+    const onAbort = () => {
+      stop.abort();
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+    const timer = setTimeout(() => {
+      stop.abort(SLOW);
+    }, TIME_LIMIT_MS);
+    const started = performance.now();
+    let names: string[] = [];
+    const log = (outcome: Outcome, sql: string | null, rows: number | null) => {
+      // A question replaced by a newer one isn't logged: the newer one is what was meant.
+      if (signal.aborted) return;
+      const seconds = (performance.now() - started) / 1000;
+      record({
+        question: input.question,
+        outcome,
+        names,
+        sql,
+        rows,
+        seconds,
+        followUp: input.history.length > 0,
+      });
+    };
+    try {
+      const answer = await ask(input, browserDeps(stop.signal), (event) => {
+        if (event._tag === 'Matched') names = event.resolved.map((r) => r.asked);
+        emit(event);
+      });
+      const rows = answer.result.rows.length;
+      log(rows === 0 ? 'empty' : 'answered', answer.sql, rows);
+      return { _tag: 'Answered', answer };
+    } catch (cause) {
+      const error = stop.signal.reason === SLOW ? new Slow() : cause;
+      log(failureOf(error), null, null);
+      throw error;
+    } finally {
+      clearTimeout(timer);
+      signal.removeEventListener('abort', onAbort);
+    }
   },
-  toError: (cause) => (cause instanceof Unavailable ? 'unavailable' : 'unanswerable'),
+  toError: failureOf,
 });
 
 /** Asks a question; every event becomes a message, and a newer question cancels this one. */

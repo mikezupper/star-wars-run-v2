@@ -322,10 +322,7 @@ ${s.sql}</textarea>
  * "How I answered". */
 function askStatus(a: AskState) {
   if (a._tag === 'Idle' || a._tag === 'Answered') return nothing;
-  const failure =
-    a._tag === 'Failed'
-      ? html`<p>${a.reason === 'unavailable' ? ASK_TEXT.unavailable : ASK_TEXT.unanswerable}</p>`
-      : nothing;
+  const failure = a._tag === 'Failed' ? html`<p>${ASK_TEXT[a.reason]}</p>` : nothing;
   return html`<ol class="steps">
       ${a.steps.map((step) => html`<li>${step}</li>`)}
     </ol>

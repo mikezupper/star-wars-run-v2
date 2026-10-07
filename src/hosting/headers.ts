@@ -2,6 +2,7 @@
 // - scripts/preview.ts applies headersFor(), so `pnpm smoke` runs the site under the real CSP;
 // - caddyfile() renders the same policy for production; `pnpm caddyfile` writes it to
 //   Caddyfile, and a test fails if the committed file drifts from this code.
+import { MAX_RECORD_BYTES, QUESTIONS_PATH } from '../domain/question-log.js';
 import { ASK_PATH, MAX_BODY_BYTES, UPSTREAM_PATH } from './ask.js';
 import { STYLE_HASHES } from './style-hashes.js';
 
@@ -115,6 +116,18 @@ ${security('\t')}
 
 \t# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
 \t# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
+\t# The question log (src/server/question-log.ts): its own service, at ASK_LOG.
+\t@questions {
+\t\tmethod POST
+\t\tpath ${QUESTIONS_PATH}
+\t}
+\thandle @questions {
+\t\trequest_body {
+\t\t\tmax_size ${String(MAX_RECORD_BYTES / 1024)}KB
+\t\t}
+\t\treverse_proxy {$ASK_LOG:http://127.0.0.1:9}
+\t}
+
 \t@ask {
 \t\tmethod POST
 \t\tpath ${ASK_PATH}

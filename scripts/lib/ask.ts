@@ -7,11 +7,26 @@ import type http from 'node:http';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { ASK_PATH, proxyAsk } from '../../src/hosting/ask.js';
+import { QUESTIONS_PATH } from '../../src/domain/question-log.js';
+import {
+  handleQuestionLog,
+  openQuestionLog,
+  type QuestionLog,
+} from '../../src/server/question-log.js';
 
 const env = new URL('../../.env', import.meta.url);
 if (existsSync(env)) process.loadEnvFile(env);
 
-export const isAsk = (pathname: string): boolean => pathname === ASK_PATH;
+export const isAsk = (pathname: string): boolean =>
+  pathname === ASK_PATH || pathname === QUESTIONS_PATH;
+
+/** Locally, questions go to data/questions/questions.db (gitignored), opened on first use. */
+let log: QuestionLog | undefined;
+const localLog = (): QuestionLog =>
+  (log ??= openQuestionLog(
+    process.env['QUESTIONS_DB'] ??
+      new URL('../../data/questions/questions.db', import.meta.url).pathname,
+  ));
 
 export async function handleAsk(
   req: http.IncomingMessage,
@@ -19,6 +34,17 @@ export async function handleAsk(
 ): Promise<void> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
+  if (new URL(req.url ?? '/', 'http://localhost').pathname === QUESTIONS_PATH) {
+    const response = await handleQuestionLog(
+      new Request('http://localhost' + QUESTIONS_PATH, {
+        method: req.method ?? 'GET',
+        ...(req.method === 'POST' ? { body: Buffer.concat(chunks) } : {}),
+      }),
+      localLog(),
+    );
+    res.writeHead(response.status, Object.fromEntries(response.headers)).end();
+    return;
+  }
   const abort = new AbortController();
   // 'close' also fires after a response finishes normally; only a dropped connection aborts.
   res.on('close', () => {

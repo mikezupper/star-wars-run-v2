@@ -1,0 +1,126 @@
+[
+  {
+    "question": "Which Wookiees fought for the Rebel Alliance?",
+    "includes": ["Chewbacca"]
+  },
+  {
+    "question": "Who comes from Tatooine?",
+    "includes": ["Luke Skywalker"],
+    "top10": ["Luke Skywalker"]
+  },
+  {
+    "question": "Which films does Boba Fett appear in?",
+    "includes": ["Star Wars: Episode V The Empire Strikes Back"]
+  },
+  {
+    "question": "Who trained Obi-Wan Kenobi?",
+    "includes": ["Qui-Gon Jinn", "Yoda"]
+  },
+  {
+    "question": "What is the most populous planet?",
+    "includes": ["Coruscant"]
+  },
+  {
+    "question": "Which droids appear in A New Hope?",
+    "includes": ["C-3PO", "R2-D2"]
+  },
+  {
+    "question": "Who are Anakin Skywalker's children?",
+    "includes": ["Luke Skywalker"]
+  },
+  {
+    "question": "Which books did Timothy Zahn write?",
+    "includes": ["Heir to the Empire"]
+  },
+  {
+    "question": "Which battles took place on Hoth?",
+    "includes": ["Battle of Hoth"]
+  },
+  {
+    "question": "What species is Yoda?",
+    "includes": ["Yoda's species"]
+  },
+  {
+    "question": "Who are the tallest characters?",
+    "atLeast": 10
+  },
+  {
+    "question": "How many works does Darth Vader appear in?",
+    "countAtLeast": 1000
+  },
+  {
+    "question": "Which planets are in the Outer Rim Territories?",
+    "includes": ["Tatooine"],
+    "top10": ["Tatooine"]
+  },
+  {
+    "question": "Which members of the Galactic Empire came from Coruscant?",
+    "includes": ["Alexsandr Kallus"]
+  },
+  {
+    "question": "List the Sith in Legends",
+    "atLeast": 20
+  },
+  {
+    "question": "Which characters are Mandalorians?",
+    "includes": ["Jango Fett"],
+    "top10": ["Jango Fett"]
+  },
+  {
+    "question": "Which comics feature Darth Vader?",
+    "atLeast": 50
+  },
+  {
+    "question": "Who flew the Millennium Falcon?",
+    "includes": ["Han Solo"]
+  },
+  {
+    "question": "Which planets have more than a billion people?",
+    "includes": ["Coruscant"]
+  },
+  {
+    "question": "Who is Han Solo's wife?",
+    "includes": ["Leia Skywalker Organa Solo"]
+  },
+  {
+    "question": "What is the biggest starship?",
+    "includes": ["Centerpoint Station"]
+  },
+  {
+    "question": "Who are Luke Skywalker's parents?",
+    "includes": ["Anakin Skywalker", "Padmé Amidala Naberrie"]
+  },
+  {
+    "question": "Which species come from Kashyyyk?",
+    "includes": ["Wookiee"]
+  },
+  {
+    "question": "What is Chewbacca's homeworld?",
+    "includes": ["Kashyyyk"]
+  },
+  {
+    "question": "Who appears in The Empire Strikes Back?",
+    "includes": ["Yoda"],
+    "top10": ["Luke Skywalker"]
+  },
+  {
+    "question": "Which characters belonged to the Jedi Order?",
+    "atLeast": 50
+  },
+  {
+    "question": "Who were Darth Sidious's apprentices?",
+    "includes": ["Maul"]
+  },
+  {
+    "question": "Which starships did Kuat Drive Yards build?",
+    "atLeast": 50
+  },
+  {
+    "question": "How many planets are in the archive?",
+    "countAtLeast": 5000
+  },
+  {
+    "question": "Which films does Darth Vader appear in?",
+    "includes": ["Star Wars: Episode IV A New Hope"]
+  }
+]

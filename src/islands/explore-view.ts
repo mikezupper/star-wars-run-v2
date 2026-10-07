@@ -1,7 +1,7 @@
 // What the /explore/ island shows besides its own markup: the results table, the status line
 // of a SQL run, and the styles (swr-7f1.7, swr-ei6). Pure view helpers, shared by the SQL editor
 // and Ask the archive.
-import { css, html } from '@gyral/core';
+import { css, html, nothing } from '@gyral/core';
 import { EXPLORE_TEXT } from '../labels.js';
 import type { QueryResult } from './duckdb.js';
 
@@ -54,7 +54,99 @@ const ERAS: Readonly<Record<string, string>> = { canon: 'Canon', legends: 'Legen
  * The results; `name` links to `path` when both are columns, and `path` itself is hidden.
  * `readable` (Ask the archive) labels columns for readers instead of showing their SQL names.
  */
+type Value = string | number | boolean | null;
+
+/** One row of Ask's table: its cells (no path, no era), where its name links, and its eras. */
+export interface MergedRow {
+  readonly cells: readonly Value[];
+  readonly path: string | null;
+  readonly eras: readonly { readonly era: string; readonly path: string | null }[];
+}
+
+/**
+ * Ask's rows with canon and Legends folded together (swr-ca3.1): rows equal in everything but
+ * era and path become one, whose name links to the canon page, with a badge per era linking
+ * to each. Rows that differ (heights that disagree, say) stay apart, each with its own badge.
+ * Without an era column, rows pass through as they are.
+ */
+export function mergeEras(r: QueryResult): {
+  readonly columns: readonly string[];
+  readonly rows: readonly MergedRow[];
+} {
+  const pathAt = r.columns.indexOf('path');
+  const eraAt = r.columns.indexOf('era');
+  const keep = r.columns.map((_, n) => n).filter((n) => n !== pathAt && n !== eraAt);
+  const columns = keep.map((n) => r.columns[n] ?? '');
+  const pathOf = (row: readonly Value[]) => {
+    const p = pathAt >= 0 ? row[pathAt] : null;
+    return typeof p === 'string' ? p : null;
+  };
+  const groups = new Map<
+    string,
+    { cells: Value[]; eras: { era: string; path: string | null }[] }
+  >();
+  for (const row of r.rows) {
+    const cells = keep.map((n) => row[n] ?? null);
+    const era = eraAt >= 0 ? row[eraAt] : null;
+    const key = JSON.stringify(cells);
+    const group = groups.get(key) ?? { cells, eras: [] };
+    if (typeof era === 'string') group.eras.push({ era, path: pathOf(row) });
+    else if (group.eras.length === 0) group.eras.push({ era: '', path: pathOf(row) });
+    groups.set(key, group);
+  }
+  const rows = [...groups.values()].map(({ cells, eras }) => {
+    const ordered = [...eras].sort((a, b) => (a.era === 'canon' ? -1 : b.era === 'canon' ? 1 : 0));
+    return { cells, path: ordered[0]?.path ?? null, eras: ordered.filter((e) => e.era !== '') };
+  });
+  return { columns, rows };
+}
+
+/** Ask's results: one row per name, labelled for readers, with Canon and Legends badges. */
+function readableTable(r: QueryResult) {
+  const { columns, rows } = mergeEras(r);
+  const nameAt = columns.indexOf('name');
+  const hasEras = r.columns.includes('era');
+  return html`<div class="table" role="region" aria-label=${EXPLORE_TEXT.results} tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          ${columns.map((c) => html`<th scope="col">${columnLabel(c)}</th>`)}
+          ${hasEras ? html`<th scope="col">${columnLabel('era')}</th>` : nothing}
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(
+          (row) =>
+            html`<tr>
+              ${row.cells.map((value, n) =>
+                n === nameAt && row.path !== null
+                  ? html`<td><a href=${row.path}>${cell(value)}</a></td>`
+                  : html`<td>${cell(value)}</td>`,
+              )}
+              ${
+                hasEras
+                  ? html`<td class="eras">
+                      ${row.eras.map((e) =>
+                        e.path === null
+                          ? html`<span class="badge">${ERAS[e.era] ?? e.era}</span>`
+                          : html`<a class="badge" href=${e.path}>${ERAS[e.era] ?? e.era}</a>`,
+                      )}
+                    </td>`
+                  : nothing
+              }
+            </tr>`,
+        )}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+/**
+ * The results; `name` links to `path` when both are columns, and `path` itself is hidden.
+ * `readable` (Ask the archive) labels columns for readers and folds canon and Legends together.
+ */
 export function table(r: QueryResult, readable = false) {
+  if (readable) return readableTable(r);
   const pathAt = r.columns.indexOf('path');
   const nameAt = r.columns.indexOf('name');
   const shown = r.columns.map((c, n) => [c, n] as const).filter(([, n]) => n !== pathAt);
@@ -62,7 +154,7 @@ export function table(r: QueryResult, readable = false) {
     <table>
       <thead>
         <tr>
-          ${shown.map(([c]) => html`<th scope="col">${readable ? columnLabel(c) : c}</th>`)}
+          ${shown.map(([c]) => html`<th scope="col">${c}</th>`)}
         </tr>
       </thead>
       <tbody>
@@ -70,11 +162,7 @@ export function table(r: QueryResult, readable = false) {
           (row) =>
             html`<tr>
               ${shown.map(([, n]) => {
-                const raw = row[n] ?? null;
-                const value =
-                  readable && r.columns[n] === 'era' && typeof raw === 'string'
-                    ? (ERAS[raw] ?? raw)
-                    : raw;
+                const value = row[n] ?? null;
                 const path = pathAt >= 0 ? row[pathAt] : null;
                 return n === nameAt && typeof path === 'string'
                   ? html`<td><a href=${path}>${cell(value)}</a></td>`
@@ -179,6 +267,24 @@ export const styles = css`
     .ask {
       display: grid;
       gap: 1rem;
+    }
+    .eras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.55rem;
+      border: 1px solid var(--border, currentColor);
+      border-radius: 999px;
+      font-size: 0.85em;
+      text-decoration: none;
+      color: var(--text, inherit);
+    }
+    a.badge:hover {
+      border-color: var(--link, LinkText);
+      color: var(--link, LinkText);
     }
     .ask form > div {
       display: flex;

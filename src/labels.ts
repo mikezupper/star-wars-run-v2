@@ -216,7 +216,7 @@ export const ASK_TEXT = {
     'What is the most populous planet?',
     'Which droids appear in A New Hope?',
   ],
-  note: 'Your question goes to an AI service, which turns it into a search of the archive.',
+  note: 'Your question goes to an AI service, which turns it into a search of the archive. Questions are kept, without who asked, to make the answers better.',
   reading: 'Reading your question…',
   matched: (pairs: readonly string[]): string =>
     pairs.length === 0 ? 'No names to look up.' : `Looked up ${pairs.join('; ')}.`,
@@ -236,13 +236,14 @@ export const ASK_TEXT = {
   editSql: 'Open this query in the SQL editor',
   unavailable:
     'The AI that reads questions isn’t answering right now. Try again in a moment, or write SQL yourself below.',
+  slow: 'That took too long, so I stopped. The AI service may be busy: try again in a moment.',
   unanswerable:
     'I couldn’t turn that into a search of the archive. Try asking it another way: name the people, places or ships you mean.',
   advanced: 'Write SQL yourself',
 } as const;
 
 export const EXPLORE_TEXT = {
-  nav: 'Explore',
+  nav: 'Ask',
   title: 'Explore the archive',
   description:
     'Ask the Star Wars archive anything in plain words: who comes from Tatooine, which films Boba Fett appears in, the biggest starships. Or query its tables with SQL, right in your browser.',
@@ -262,7 +263,7 @@ export const EXPLORE_TEXT = {
   failed: (reason: string): string => `The query didn't run: ${reason}`,
   tablesHeading: 'The tables',
   archiveTable:
-    'archive: one row per article. title, name, path, section, kind, era, and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
+    'archive: one row per article. title, name, path, section, kind, era, links (how many articles link to it), and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
   factsTable:
     'facts: one row per infobox value. title, field, item (0 for the first), text, and link: the article it points to (homeworld → Tatooine).',
   appearancesTable:
@@ -339,6 +340,7 @@ export const TEXT = {
   facts: 'Facts',
   homeIntro: (articles: number): string =>
     `The galaxy, far, far away, in ${articles.toLocaleString('en-US')} articles from Wookieepedia: canon and Legends, from Jedi Masters to junk dealers to moons nobody remembers. Every page links to everything it mentions. Pick a section, search the archive, or ask it a question on the Explore page.`,
+  homeAsk: 'Ask the archive a question in plain words →',
   notFoundTitle: 'Page not found',
   notFoundBody:
     'These aren’t the droids you’re looking for. There’s no page at this address: it may have moved, or it never existed.',

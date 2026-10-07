@@ -114,6 +114,7 @@ describe('the ask pipeline', () => {
     );
     expect(drivers.ask.toError?.(error)).toBe('unavailable');
     expect(drivers.ask.toError?.(new Error('unanswerable'))).toBe('unanswerable');
+    expect(ASK_TEXT.slow).toMatch(/too long/);
   });
 });
 

@@ -14,8 +14,10 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   `caddy:2-alpine` serves `dist/` on port 8080. No Node process runs in production. The build
   ingests the Wookieepedia dump, mounted from a build context that holds only the dump, so the
   dump never lands in a layer ([0007-wookieepedia.md](0007-wookieepedia.md)). With all 227k
-  pages the image is 1.92 GB and takes about 20 minutes to build. `pnpm docker:build` and
-  `pnpm docker:run` build and run it locally.
+  pages the image is 1.92 GB and takes about 20 minutes to build. A second, small image runs
+  the question log (Ask the archive, ADR 0009); `compose.yaml` runs both, with Ask's settings
+  from an `.env` beside it and the log in a volume. `pnpm docker:build` builds both images and
+  `pnpm docker:run` starts the stack locally.
 - **Headers have one source:** `src/hosting/headers.ts`. The preview server applies it, so
   `pnpm smoke` runs under the production CSP, and `pnpm caddyfile` renders it to the committed
   `Caddyfile`. A test fails if the two drift.

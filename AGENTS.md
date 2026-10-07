@@ -29,9 +29,10 @@ disagree, the doc wins; fix this file.
 | `pnpm format`                          | Prettier, in place                                                                                                                            |
 | `pnpm ingest:wookieepedia [dump.7z]`   | Dump → `data/wookieepedia/` (~6.5 min). The dump is `$WOOKIEEPEDIA_DUMP`, else `~/Downloads`; `--force` rebuilds                              |
 | `pnpm smoke`                           | Built site in Chromium: axe, links, search, offline, Explore. `SMOKE_PAGES=1000` for a full build                                             |
+| `pnpm ask:eval`                        | 30 questions through Ask against the real model and the full build; prints a score. On request only                                           |
 | `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                                                                            |
 | `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                                                                       |
-| `pnpm docker:build`, `pnpm docker:run` | Build the production image from the dump (~15 min); serve it on http://localhost:8080                                                         |
+| `pnpm docker:build`, `pnpm docker:run` | Build the site and question-log images (~15 min); run them with compose on http://localhost:8080                                              |
 | `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**                                                           |
 
 First run needs `pnpm exec playwright install chromium`.

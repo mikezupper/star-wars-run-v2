@@ -151,12 +151,13 @@ export function planMessages(question: string, history: readonly Turn[] = []): M
 }
 
 const TABLES = `Tables (DuckDB SQL):
-- archive(title, name, path, section, kind, era, height_m, mass_kg, length_m, wingspan_m,
+- archive(title, name, path, section, kind, era, links, height_m, mass_kg, length_m, wingspan_m,
   depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt,
   hyperdrive_class, day_hours, year_days). One row per article. title is the exact article
   title ("Luke Skywalker/Legends" for the Legends article); name is the display name; path is
   its page; kind is its infobox type (Droid, Movie, Battle…: see "Kinds"); era is 'canon' or
-  'legends'; the number columns are NULL when unknown (metric units).
+  'legends'; links is how many articles link to it (how well known it is); the number columns
+  are NULL when unknown (metric units).
 - facts(title, field, item, text, link). One row per infobox value: field is the infobox field
   (species, affiliation, homeworld…), item its position from 0, text the value as written,
   link the exact title of the article it links to (NULL if none).
@@ -178,9 +179,13 @@ const RULES = `Rules:
 - An article's own facts (Anakin's children, the Falcon's owners): FROM facts f JOIN archive a
   ON a.title = f.link WHERE f.title IN (…) AND f.field = '…'.
 - Kinds of thing (droids, films, battles) are archive.kind values, not facts.
+- "Who…" asks about people: list characters (a.section = 'characters') unless the question
+  names something else (ships, planets).
+- Works by a person (written, drawn, directed, published by): media whose author, writer,
+  artist, director or publisher fact links to that person.
 - Include canon and Legends unless the question names one (era = 'canon' / 'legends').
 - To count, return one column named count. For "tallest", "biggest" and the like, skip NULLs
-  and ORDER BY the number DESC. Otherwise ORDER BY a.name.
+  and ORDER BY the number DESC. Otherwise ORDER BY a.links DESC, a.name (best known first).
 - No LIMIT unless the question asks for a number of results ("the 10 biggest", "the most").
 - Earlier questions in the conversation matter only for a follow-up ("only canon", "and their
   homeworlds?"). A question that stands on its own starts fresh: drop the earlier conditions.
@@ -191,28 +196,37 @@ Names: Wookiee → "Wookiee" (species); Rebel Alliance → "Alliance to Restore 
 SQL: SELECT a.name, a.path, a.era FROM archive a WHERE a.section = 'characters'
 AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'species' AND f.link = 'Wookiee')
 AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'affiliation' AND f.link = 'Alliance to Restore the Republic')
-ORDER BY a.name
+ORDER BY a.links DESC, a.name
 
 Example. Question: "Who are Anakin Skywalker's children?"
 Names: Anakin Skywalker → "Anakin Skywalker" (characters) or "Anakin Skywalker/Legends" (characters).
 SQL: SELECT a.name, a.path, a.era FROM facts f JOIN archive a ON a.title = f.link
 WHERE f.title IN ('Anakin Skywalker', 'Anakin Skywalker/Legends') AND f.field = 'children'
-ORDER BY a.name
+ORDER BY a.links DESC, a.name
 
 Example. Question: "Which droids appear in A New Hope?"
 Names: A New Hope → "Star Wars: Episode IV A New Hope" (media).
 SQL: SELECT DISTINCT a.name, a.path, a.era FROM appearances ap JOIN archive a ON a.title = ap.link
 WHERE ap.title = 'Star Wars: Episode IV A New Hope' AND a.kind = 'Droid' AND NOT ap.noncanon
-ORDER BY a.name
+ORDER BY a.links DESC, a.name
 
 Example. Question: "Which TV episodes does Ahsoka Tano appear in?"
 Names: Ahsoka Tano → "Ahsoka Tano" (characters) or "Ahsoka Tano/Legends" (characters).
 SQL: SELECT DISTINCT a.name, a.path, a.era FROM appearances ap JOIN archive a ON a.title = ap.link
 WHERE ap.title IN ('Ahsoka Tano', 'Ahsoka Tano/Legends') AND a.kind = 'TelevisionEpisode'
-ORDER BY a.name
+ORDER BY a.links DESC, a.name
 
-The direction matters: appearances.title is the article whose list it is, appearances.link the
-entry in that list.`;
+Example. Question: "Which starships did Sienar Fleet Systems make?"
+Names: Sienar Fleet Systems → "Sienar Fleet Systems" (organizations).
+SQL: SELECT a.name, a.path, a.era FROM archive a WHERE a.section = 'starships'
+AND EXISTS (SELECT 1 FROM facts f WHERE f.title = a.title AND f.field = 'manufacturer'
+AND f.link IN ('Sienar Fleet Systems'))
+ORDER BY a.links DESC, a.name
+
+The direction matters. facts.title is the article the fact is on; facts.link is what it points
+at. "Sienar's ships" are ships whose manufacturer fact points at Sienar, not Sienar's own facts;
+"Anakin's children" are Anakin's own children fact. Likewise appearances.title is the article
+whose list it is, appearances.link the entry in that list.`;
 
 const bySection = (lists: AskSchema['fields']): string =>
   Object.entries(lists)
@@ -283,14 +297,19 @@ const SUMMARY_SYSTEM = `You answer questions about Star Wars from the rows of a 
 over Wookieepedia. The rows are the answer: say what they show. A value is the answer even when
 it reads oddly ("Yoda's species" is the name of Yoda's species).
 Write one or two short, plain sentences. Use only the rows: never add facts, names or numbers
-that aren't in them. Give the number of results when there are several, and name at most three.
-If there are no rows, say nothing matched. No lists, no markdown, no remarks about the query.`;
+that aren't in them. Name at most three. If there are no rows, say nothing matched.
+The same name in canon and in Legends is one result: count names, not rows.
+The query shows which fact matched. When that fact's word is broader than the question's (the
+question says "wife", the query matched "partners"), use the fact's word: "Han Solo's
+partners", not "his wives".
+No lists, no markdown, no remarks about the query or the database.`;
 
 export function summaryMessages(
   question: string,
   columns: readonly string[],
   rows: readonly (readonly unknown[])[],
   truncated: boolean,
+  sql = '',
 ): Message[] {
   const shown = rows
     .slice(0, SUMMARY_ROWS)
@@ -304,7 +323,7 @@ export function summaryMessages(
     { role: 'system', content: SUMMARY_SYSTEM },
     {
       role: 'user',
-      content: `Question: ${question}\nResults: ${count}.\nRows:\n${JSON.stringify(shown)}`,
+      content: `Question: ${question}\n${sql === '' ? '' : `Query: ${sql}\n`}Rows: ${count}.\n${JSON.stringify(shown)}`,
     },
   ];
 }
@@ -338,4 +357,29 @@ export function asQuery(content: string): Query | undefined {
   const v = parseJson(content);
   if (!isRecord(v) || typeof v['sql'] !== 'string') return undefined;
   return { sql: v['sql'], looksFor: typeof v['looksFor'] === 'string' ? v['looksFor'] : '' };
+}
+
+/**
+ * Server-sent events from a streamed completion: the complete `data:` payloads in `buffer`, and
+ * what's left over for the next chunk. `[DONE]` ends the stream and isn't returned.
+ */
+export function readSse(buffer: string): { readonly data: string[]; readonly rest: string } {
+  const events = buffer.split(/\r?\n\r?\n/);
+  const rest = events.pop() ?? '';
+  const data = events
+    .flatMap((event) => event.split(/\r?\n/))
+    .filter((line) => line.startsWith('data:'))
+    .map((line) => line.slice(5).trim())
+    .filter((payload) => payload !== '' && payload !== '[DONE]');
+  return { data, rest };
+}
+
+/** The text a streamed chunk adds, or '' for a chunk without any (or one that won't parse). */
+export function deltaText(payload: string): string {
+  const v = parseJson(payload);
+  if (!isRecord(v) || !Array.isArray(v['choices'])) return '';
+  const first: unknown = v['choices'][0];
+  if (!isRecord(first) || !isRecord(first['delta'])) return '';
+  const content = first['delta']['content'];
+  return typeof content === 'string' ? content : '';
 }

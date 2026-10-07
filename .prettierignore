@@ -14,3 +14,5 @@ docs/references/gyral/*.md
 vendor/
 
 .sample/
+
+.server/

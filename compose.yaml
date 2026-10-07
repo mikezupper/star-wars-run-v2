@@ -1,0 +1,23 @@
+# The production stack (ADR 0009): the site (Caddy) and the question log. Build the images with
+# `pnpm docker:build`, then `docker compose up -d` next to an .env that holds Ask the archive's
+# settings (ASK_ORIGIN, ASK_KEY, ASK_MODEL). The log's database lives in the `questions` volume.
+services:
+  site:
+    image: starwars-run
+    ports:
+      - '8080:8080'
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      ASK_LOG: http://questions:8090
+    depends_on:
+      - questions
+    restart: unless-stopped
+  questions:
+    image: starwars-run-questions
+    volumes:
+      - questions:/data
+    restart: unless-stopped
+volumes:
+  questions:

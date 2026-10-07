@@ -9,7 +9,7 @@
 	encode zstd gzip
 
 	header {
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 		Strict-Transport-Security "max-age=63072000"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -30,6 +30,18 @@
 
 	# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
 	# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
+	# The question log (src/server/question-log.ts): its own service, at ASK_LOG.
+	@questions {
+		method POST
+		path /api/ask/log
+	}
+	handle @questions {
+		request_body {
+			max_size 16KB
+		}
+		reverse_proxy {$ASK_LOG:http://127.0.0.1:9}
+	}
+
 	@ask {
 		method POST
 		path /api/ask/chat/completions
@@ -51,7 +63,7 @@
 	handle_errors {
 		rewrite * /404.html
 		header {
-			Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-rrvG+4woc2LkGCEMeVyec35HBB/0swAlMk9ou1rLZMQ='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+			Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 			Strict-Transport-Security "max-age=63072000"
 			X-Content-Type-Options "nosniff"
 			Referrer-Policy "strict-origin-when-cross-origin"

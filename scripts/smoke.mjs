@@ -32,6 +32,8 @@ import { tsImport } from 'tsx/esm/api';
 // as the Docker image (`pnpm docker:run`). The page list still comes from the local dist/.
 // DIST_DIR: the build to check (the gate's sample is in .sample/; see scripts/build.ts).
 const dist = new URL(`../${process.env.DIST_DIR ?? 'dist'}/`, import.meta.url).pathname;
+// The questions smoke asks go to a log of their own, not the local one (data/questions/).
+process.env.QUESTIONS_DB ??= new URL('../.smoke/questions.db', import.meta.url).pathname;
 const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
 const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
 
