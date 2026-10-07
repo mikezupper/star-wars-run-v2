@@ -1,3 +1,4 @@
+import { plainValue } from '../../src/domain/query.js';
 import { describe, expect, it } from 'vitest';
 import {
   asPlan,
@@ -153,5 +154,16 @@ describe('reading a streamed summary', () => {
     expect(data.map(deltaText)).toEqual(['']);
     expect(deltaText('not json')).toBe('');
     expect(deltaText('{"choices":[]}')).toBe('');
+  });
+});
+
+describe('plain values from DuckDB', () => {
+  it('turns counts, objects and missing values into JSON', () => {
+    expect(plainValue(5n)).toBe(5);
+    expect(plainValue(2n ** 70n)).toBe((2n ** 70n).toString());
+    expect(plainValue(undefined)).toBeNull();
+    expect(plainValue({ a: 1 })).toBe('{"a":1}');
+    expect(plainValue(true)).toBe(true);
+    expect(plainValue({ items: [1n, 'a'] })).toBe('{"items":[1,"a"]}');
   });
 });

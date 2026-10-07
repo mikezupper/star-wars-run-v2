@@ -254,8 +254,9 @@ export const EXPLORE_TEXT = {
   questions: 'Try a question',
   sqlLabel: 'SQL',
   run: 'Run query',
-  runHint: 'Ctrl+Enter runs the query. The first run downloads the query engine (about 8 MB).',
-  starting: 'Starting the query engine…',
+  runHint:
+    'Ctrl+Enter runs the query. It runs on the archive’s server, read-only, for up to 10 seconds.',
+  starting: 'Running…',
   running: 'Running…',
   results: 'Results',
   rows: (n: number, ms: number, truncated: boolean): string =>

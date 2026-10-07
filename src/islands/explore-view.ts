@@ -3,7 +3,7 @@
 // and Ask the archive.
 import { css, html, nothing } from '@gyral/core';
 import { EXPLORE_TEXT } from '../labels.js';
-import type { QueryResult } from './duckdb.js';
+import type { QueryResult, Value } from '../domain/query.js';
 
 /** Where a SQL run is. */
 export type Result =
@@ -54,7 +54,6 @@ const ERAS: Readonly<Record<string, string>> = { canon: 'Canon', legends: 'Legen
  * The results; `name` links to `path` when both are columns, and `path` itself is hidden.
  * `readable` (Ask the archive) labels columns for readers instead of showing their SQL names.
  */
-type Value = string | number | boolean | null;
 
 /** One row of Ask's table: its cells (no path, no era), where its name links, and its eras. */
 export interface MergedRow {

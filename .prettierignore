@@ -16,3 +16,6 @@ vendor/
 .sample/
 
 .server/
+
+dist-api/
+.sample-api/

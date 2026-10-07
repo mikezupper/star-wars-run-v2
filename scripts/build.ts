@@ -1,9 +1,8 @@
 /// <reference types="node" />
 // `pnpm build`, after `vite build`: renders every page to dist/ as static HTML, plus 404.html
 // and the sitemaps. dist/ is then exactly what the Docker image serves.
-import { copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clientEntryFromManifest, prerender } from '@gyral/ssr/static';
 import * as pagefind from 'pagefind';
@@ -24,6 +23,9 @@ const sampleOption = (): { sample?: number } => {
   const n = Number(process.env['SITE_SAMPLE']);
   return Number.isInteger(n) && n > 0 ? { sample: n } : {};
 };
+
+/** Where the API's data goes for a build in `dist`: beside it, in <dist>-api/. */
+export const apiDir = (dist: string): string => `${dist.replace(/\/+$/, '')}-api`;
 
 /** No page may be bigger than this (swr-7f1.6). The largest in the full archive is 808 KB. */
 export const PAGE_BUDGET_BYTES = 1024 * 1024;
@@ -68,16 +70,15 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
   for (const [file, xml] of sitemaps(site.sitemapPaths)) await writeFile(join(dist, file), xml);
   // The manifest is build metadata, not a page asset: don't publish it.
   await rm(join(dist, '.vite'), { recursive: true, force: true });
-  // The Explore page's data and engine (swr-7f1.7): a DuckDB database and DuckDB-WASM,
-  // self-hosted because the CSP allows only this origin.
+  // The API's data (ADR 0010): Explore's database and what Ask tells the model each section
+  // holds, beside the public site (<dist>-api/), not in it: Caddy never serves them.
+  const api = apiDir(dist);
   const rows = exploreRows(data.archive, data.articles);
-  await stage('explore database', () => buildDatabase(dist, rows));
-  // What Ask the archive tells the model each section holds (src/domain/ask.ts).
+  await stage('explore database', () => buildDatabase(api, rows));
   await writeFile(
-    join(dist, 'data', 'ask-schema.json'),
+    join(api, 'ask-schema.json'),
     JSON.stringify(askSchema(rows.archive, rows.facts)),
   );
-  await copyDuckDb(dist);
   await stage('search index', () => indexForSearch(dist));
   await stage('title index', () => writeTitleIndex(dist, data));
   // Last: the service worker's precache list covers everything written above.
@@ -151,14 +152,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     fileURLToPath(new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url)),
   );
   console.log(`built ${String(paths.length)} pages`);
-}
-
-/** DuckDB-WASM's engine and worker (the `eh` build: WebAssembly exceptions, Baseline). */
-export async function copyDuckDb(dist: string): Promise<void> {
-  // The package doesn't export package.json; its main entry sits in dist/ beside the engine.
-  const from = dirname(createRequire(import.meta.url).resolve('@duckdb/duckdb-wasm'));
-  await mkdir(join(dist, 'duckdb'), { recursive: true });
-  for (const file of ['duckdb-eh.wasm', 'duckdb-browser-eh.worker.js']) {
-    await copyFile(join(from, file), join(dist, 'duckdb', file));
-  }
 }

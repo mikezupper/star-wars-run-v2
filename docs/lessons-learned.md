@@ -175,3 +175,19 @@ Each entry has four parts:
   every generated folder explicitly.
 - **Guard:** the gate leaves `dist/` alone by construction; the dev server's start time is in the
   smoke test (it fails after 120 s).
+
+## Explore downloaded 96 MB before its first answer (2026-10-07)
+
+- **Symptom:** On the full build, the first question in Explore took most of a minute on a fast
+  connection, and the network panel showed one 88 MB request for `archive.duckdb` plus 8 MB of
+  DuckDB-WASM. The gate's smoke test, on the sample, ran the same question in a second.
+- **Cause:** ADR 0008 assumed DuckDB-WASM reads a database file with HTTP range requests, block
+  by block. It doesn't: it fetches the whole file before opening it, and refuses to open it when
+  whole-file reads are turned off. The sample's database is 1.3 MB, so nothing the gate measured
+  showed it.
+- **Fix:** ADR 0010. The database left the public site; the API runs every query on the server,
+  with DuckDB opened read-only and locked down. The browser sends a question and reads a stream
+  of events.
+- **Guard:** ADR 0010 asks for changes to the questions side to be measured on the full build
+  before they merge; `src/server/` has no browser bytes to grow. The lock-down has its own tests
+  (`test/server/api.test.ts`).

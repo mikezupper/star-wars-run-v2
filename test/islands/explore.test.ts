@@ -2,7 +2,8 @@ import { html } from '@gyral/core';
 import { renderToString } from '@gyral/ssr';
 import { inputsFor, resolve, step } from '@gyral/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { drivers, plainValue, type QueryResult } from '../../src/islands/duckdb.js';
+import type { QueryResult } from '../../src/domain/query.js';
+import { drivers, QUERY_UNAVAILABLE } from '../../src/islands/api.js';
 import { Explore, type Msg, type State } from '../../src/islands/explore.js';
 import { EXPLORE_TEXT } from '../../src/labels.js';
 
@@ -26,7 +27,6 @@ const result: QueryResult = {
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  vi.doUnmock('@duckdb/duckdb-wasm');
   vi.resetModules();
 });
 
@@ -41,14 +41,14 @@ describe('explore', () => {
   it('runs the SQL; the first run also starts the engine', () => {
     const first = step(spec, live(), { _tag: 'Run' });
     expect(first.state).toMatchObject({ result: { _tag: 'Running', first: true }, started: true });
-    expect(inputsFor(first.commands, drivers.duckdb)).toEqual(['SELECT 1']);
+    expect(inputsFor(first.commands, drivers.query)).toEqual(['SELECT 1']);
     const later = step(spec, live('SELECT 2', true), { _tag: 'Run' });
     expect(later.state).toMatchObject({ result: { _tag: 'Running', first: false } });
   });
 
   it('runs a preset question, and ignores blank SQL and unknown presets', () => {
     const preset = step(spec, live(), { _tag: 'Preset', index: 1 });
-    expect(inputsFor(preset.commands, drivers.duckdb)).toEqual([EXPLORE_TEXT.presets[1].sql]);
+    expect(inputsFor(preset.commands, drivers.query)).toEqual([EXPLORE_TEXT.presets[1].sql]);
     expect(step(spec, live('  '), { _tag: 'Run' }).commands).toEqual([]);
     expect(step(spec, live(), { _tag: 'Preset', index: 99 }).commands).toEqual([]);
   });
@@ -128,90 +128,76 @@ describe('explore view', () => {
   });
 });
 
-describe('DuckDB driver', () => {
-  it('turns DuckDB values into plain ones', () => {
-    expect(plainValue(5n)).toBe(5);
-    expect(plainValue(2n ** 70n)).toBe((2n ** 70n).toString());
-    expect(plainValue(undefined)).toBeNull();
-    expect(plainValue({ a: 1 })).toBe('{"a":1}');
-    expect(plainValue(true)).toBe(true);
+describe('the API drivers', () => {
+  const ctx = (emit: (e: unknown) => void = () => undefined) => ({
+    signal: new AbortController().signal,
+    emit,
+  });
+  const sse = (...events: unknown[]) =>
+    new Response(events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(''), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  const answer = {
+    question: 'q',
+    looksFor: 'x',
+    sql: 'SELECT 1',
+    resolved: [],
+    result: { columns: ['n'], rows: [[1]], truncated: false, ms: 1 },
+    summary: 'One.',
+  };
+
+  it('post SQL to /api/query and return its rows, or its error', async () => {
+    const fetch = vi.fn(() => Promise.resolve(Response.json(result)));
+    vi.stubGlobal('fetch', fetch);
+    expect(await drivers.query.run('SELECT 1', ctx())).toEqual(result);
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/query',
+      expect.objectContaining({ method: 'POST', body: '{"sql":"SELECT 1"}' }),
+    );
+    vi.stubGlobal('fetch', () =>
+      Promise.resolve(Response.json({ error: 'Binder Error: no' }, { status: 400 })),
+    );
+    await expect(drivers.query.run('SELECT nope', ctx())).rejects.toThrow('Binder Error: no');
+    vi.stubGlobal('fetch', () => Promise.reject(new TypeError('offline')));
+    await expect(drivers.query.run('SELECT 1', ctx())).rejects.toThrow(QUERY_UNAVAILABLE);
   });
 
-  it('starts the engine once, attaches the archive read-only and returns rows', async () => {
-    const queries: string[] = [];
-    const registerFileURL = vi.fn(() => Promise.resolve());
-    const instantiate = vi.fn(() => Promise.resolve());
-    const conn = {
-      query: (sql: string) => {
-        queries.push(sql);
-        return Promise.resolve({
-          schema: { fields: [{ name: 'n' }] },
-          numRows: 1,
-          toArray: () => [{ toJSON: () => ({ n: 42n }) }],
-        });
-      },
-    };
-    vi.doMock('@duckdb/duckdb-wasm', () => ({
-      AsyncDuckDB: class {
-        instantiate = instantiate;
-        registerFileURL = registerFileURL;
-        connect = () => Promise.resolve(conn);
-      },
-      VoidLogger: class {
-        readonly stub = true;
-      },
-      DuckDBDataProtocol: { HTTP: 4 },
-    }));
-    vi.stubGlobal(
-      'Worker',
-      class {
-        addEventListener = vi.fn();
-      },
+  it('read Ask\u2019s steps from the stream and finish with the answer', async () => {
+    vi.stubGlobal('fetch', () =>
+      Promise.resolve(
+        sse(
+          { _tag: 'Reading' },
+          { _tag: 'Found', count: 1, truncated: false },
+          { _tag: 'Answered', answer },
+        ),
+      ),
     );
-    vi.stubGlobal('window', { location: { origin: 'https://starwars.run' } });
-    const fresh = await import('../../src/islands/duckdb.js');
-    const ctx = { signal: new AbortController().signal, emit: () => undefined };
-    const answer = await fresh.drivers.duckdb.run('SELECT 42 AS n', ctx);
-    await fresh.drivers.duckdb.run('SELECT 1', ctx);
-    expect(answer).toMatchObject({ columns: ['n'], rows: [[42]], truncated: false });
-    expect(instantiate).toHaveBeenCalledTimes(1);
-    expect(registerFileURL).toHaveBeenCalledWith(
-      'archive.duckdb',
-      'https://starwars.run/data/archive.duckdb',
-      4,
-      false,
+    const steps: unknown[] = [];
+    const done = await drivers.ask.run(
+      { question: 'q', history: [] },
+      ctx((e) => steps.push(e)),
     );
-    expect(queries.slice(0, 2)).toEqual([
-      "ATTACH 'archive.duckdb' AS archive_db (READ_ONLY)",
-      'USE archive_db',
-    ]);
+    expect(steps).toEqual([{ _tag: 'Reading' }, { _tag: 'Found', count: 1, truncated: false }]);
+    expect(done).toEqual({ _tag: 'Answered', answer });
   });
 
-  it('fails with a clear message when the engine worker cannot load', async () => {
-    vi.doMock('@duckdb/duckdb-wasm', () => ({
-      AsyncDuckDB: class {
-        instantiate = () => new Promise(() => undefined); // never settles, as in a real failure
-      },
-      VoidLogger: class {
-        readonly stub = true;
-      },
-      DuckDBDataProtocol: { HTTP: 4 },
-    }));
-    vi.stubGlobal(
-      'Worker',
-      class {
-        addEventListener(_type: string, listener: () => void) {
-          setTimeout(listener, 0);
-        }
-      },
+  it('give the server\u2019s reason when there\u2019s no answer, and unavailable when it can\u2019t say', async () => {
+    vi.stubGlobal('fetch', () =>
+      Promise.resolve(sse({ _tag: 'Reading' }, { _tag: 'Failed', reason: 'slow' })),
     );
-    vi.stubGlobal('window', { location: { origin: 'https://starwars.run' } });
-    const fresh = await import('../../src/islands/duckdb.js');
-    await expect(
-      fresh.drivers.duckdb.run('SELECT 1', {
-        signal: new AbortController().signal,
-        emit: () => undefined,
-      }),
-    ).rejects.toThrow(fresh.ENGINE_UNAVAILABLE);
+    const slow = await Promise.resolve(
+      drivers.ask.run({ question: 'q', history: [] }, ctx()),
+    ).catch((e: unknown) => e);
+    expect(drivers.ask.toError?.(slow)).toBe('slow');
+    vi.stubGlobal('fetch', () => Promise.resolve(new Response('down', { status: 502 })));
+    const down = await Promise.resolve(
+      drivers.ask.run({ question: 'q', history: [] }, ctx()),
+    ).catch((e: unknown) => e);
+    expect(drivers.ask.toError?.(down)).toBe('unavailable');
+    vi.stubGlobal('fetch', () => Promise.resolve(sse({ _tag: 'Reading' })));
+    const cut = await Promise.resolve(drivers.ask.run({ question: 'q', history: [] }, ctx())).catch(
+      (e: unknown) => e,
+    );
+    expect(drivers.ask.toError?.(cut)).toBe('unavailable');
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { QueryResult } from '../../src/islands/duckdb.js';
+import type { QueryResult } from '../../src/domain/query.js';
 import { columnLabel, mergeEras } from '../../src/islands/explore-view.js';
 
 const result = (columns: string[], rows: (string | number | null)[][]): QueryResult => ({

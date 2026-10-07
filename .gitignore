@@ -26,3 +26,6 @@ data/wookieepedia/
 data/questions/
 
 .server/
+
+dist-api/
+.sample-api/

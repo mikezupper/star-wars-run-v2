@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// `pnpm docker:build`: builds the production images (the site, and the question log) from this
+// `pnpm docker:build`: builds the production images (the site, and the API) from this
 // checkout plus the Wookieepedia dump
 // ($WOOKIEEPEDIA_DUMP, else ~/Downloads). The dump goes in as the `dump` build context, mounted
 // only for the build step (see Dockerfile), so it never lands in an image layer. The context is
@@ -50,7 +50,7 @@ const args = [
 console.log(`docker ${args.join(' ')}`);
 const site = spawnSync('docker', args, { stdio: 'inherit' }).status ?? 1;
 if (site !== 0) process.exit(site);
-// The question log's image: a few seconds, reusing the site build's install steps.
-const questions = ['build', '--target', 'questions', '-t', 'starwars-run-questions', '.'];
-console.log(`docker ${questions.join(' ')}`);
-process.exit(spawnSync('docker', questions, { stdio: 'inherit' }).status ?? 1);
+// The API's image: the same build stage (cached), then its own small stage.
+const api = [...args.slice(0, -3), '--target', 'api', '-t', 'starwars-run-api', '.'];
+console.log(`docker ${api.join(' ')}`);
+process.exit(spawnSync('docker', api, { stdio: 'inherit' }).status ?? 1);

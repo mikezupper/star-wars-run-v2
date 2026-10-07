@@ -277,7 +277,10 @@ export function sqlMessages(
  * The query, checked and capped: one SELECT or WITH, at most MAX_ROWS rows. The database is
  * read-only anyway; this keeps a confused answer from running something pointless or huge.
  */
-export function checkSql(sql: string): { readonly sql: string } | { readonly error: string } {
+export function checkSql(
+  sql: string,
+  limit = MAX_ROWS + 1,
+): { readonly sql: string } | { readonly error: string } {
   const body = sql.trim().replace(/;\s*$/, '');
   if (!/^(select|with)\b/i.test(body))
     return { error: 'The query must start with SELECT or WITH.' };
@@ -290,7 +293,7 @@ export function checkSql(sql: string): { readonly sql: string } | { readonly err
     if (depth < 0) break;
   }
   if (depth !== 0) return { error: 'The parentheses are unbalanced.' };
-  return { sql: `SELECT * FROM (${body}) AS answer LIMIT ${String(MAX_ROWS + 1)}` };
+  return { sql: `SELECT * FROM (${body}) AS answer LIMIT ${String(limit)}` };
 }
 
 const SUMMARY_SYSTEM = `You answer questions about Star Wars from the rows of a database query
@@ -302,7 +305,8 @@ The same name in canon and in Legends is one result: count names, not rows.
 The query shows which fact matched. When that fact's word is broader than the question's (the
 question says "wife", the query matched "partners"), use the fact's word: "Han Solo's
 partners", not "his wives".
-No lists, no markdown, no remarks about the query or the database.`;
+No lists, no markdown. Say what the answer is, not where it came from: never begin with "The
+query", "The rows" or "The results".`;
 
 export function summaryMessages(
   question: string,

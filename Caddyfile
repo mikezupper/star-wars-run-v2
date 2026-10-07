@@ -30,30 +30,13 @@
 
 	# Ask the archive (src/hosting/ask.ts): the browser's one call to the model's endpoint, with the
 	# key added here from the container's environment (ASK_ORIGIN, ASK_KEY). Unset, it goes nowhere.
-	# The question log (src/server/question-log.ts): its own service, at ASK_LOG.
-	@questions {
-		method POST
-		path /api/ask/log
-	}
-	handle @questions {
-		request_body {
-			max_size 16KB
-		}
-		reverse_proxy {$ASK_LOG:http://127.0.0.1:9}
-	}
-
-	@ask {
-		method POST
-		path /api/ask/chat/completions
-	}
-	handle @ask {
+	# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
+	# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
+	handle /api/* {
 		request_body {
 			max_size 64KB
 		}
-		rewrite * /v1/chat/completions
-		reverse_proxy {$ASK_ORIGIN:http://127.0.0.1:9} {
-			header_up Host {upstream_hostport}
-			header_up Authorization "Bearer {$ASK_KEY}"
+		reverse_proxy {$API:http://127.0.0.1:9} {
 			flush_interval -1
 		}
 	}

@@ -65,7 +65,7 @@ describe('the Explore database', () => {
     await buildDatabase(dir, rows);
     const db = await DuckDBInstance.create(':memory:');
     const c = await db.connect();
-    await c.run(`ATTACH '${join(dir, 'data', 'archive.duckdb')}' AS a (READ_ONLY)`);
+    await c.run(`ATTACH '${join(dir, 'archive.duckdb')}' AS a (READ_ONLY)`);
     await c.run('USE a');
     const tatooine = await c.runAndReadAll(
       "SELECT a.name FROM facts f JOIN archive a USING (title) WHERE f.field = 'homeworld' AND f.link = 'Tatooine' ORDER BY 1",

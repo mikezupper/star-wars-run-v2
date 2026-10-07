@@ -1,6 +1,6 @@
 # ADR 0010 — Static content, one API: Ask, SQL and the question log on the server
 
-Status: **proposed** (2026-10-07). Supersedes parts of
+Status: **accepted** (2026-10-07). Epic `swr-ys4`. Supersedes parts of
 [0008-wookieepedia-only.md](0008-wookieepedia-only.md) ("Explore") and
 [0009-ask.md](0009-ask.md) (where Ask's steps run, the question log's store).
 
@@ -89,3 +89,10 @@ feature that lets visitors write data would need an application database and its
   check that `read_csv('/etc/passwd')`, `ATTACH`, `INSTALL`, `COPY` and writes all fail.
 - The gate tests the sample; scale problems hide there (search ranking, the 96 MB download).
   Changes to the questions side are also measured on the full build before they merge.
+
+## Measured (2026-10-07, the full archive)
+
+- Before: a first answer downloaded 88 MB of database and 8 MB of engine. After: no database
+  bytes reach the browser; Explore's JavaScript is part of the 21 KB (gzip) entry bundle.
+- A ready-made SQL question runs in 6 ms on the server; Ask answers in about 7 seconds, nearly
+  all of it the model.

@@ -1,8 +1,9 @@
 import { inputsFor, step } from '@gyral/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { MAX_ROWS } from '../../src/domain/ask.js';
-import { ask, drivers, type AskDeps, type AskEvent } from '../../src/islands/ask.js';
-import type { QueryResult } from '../../src/islands/duckdb.js';
+import { ask, Unavailable, type AskDeps, type AskEvent } from '../../src/domain/ask-pipeline.js';
+import { drivers } from '../../src/islands/api.js';
+import type { QueryResult } from '../../src/domain/query.js';
 import { Explore, type State } from '../../src/islands/explore.js';
 import { ASK_TEXT } from '../../src/labels.js';
 
@@ -104,7 +105,7 @@ describe('the ask pipeline', () => {
     expect(answer.summary).toBe('');
   });
 
-  it('reports an unreachable model as unavailable', async () => {
+  it('reports an unreachable model as Unavailable, and a hopeless question otherwise', async () => {
     const deps = {
       ...fakes([], () => Promise.resolve(rows(1))),
       chat: () => Promise.reject(new Error('503')),
@@ -112,8 +113,7 @@ describe('the ask pipeline', () => {
     const error = await ask({ question: 'q', history: [] }, deps, () => undefined).catch(
       (e: unknown) => e,
     );
-    expect(drivers.ask.toError?.(error)).toBe('unavailable');
-    expect(drivers.ask.toError?.(new Error('unanswerable'))).toBe('unanswerable');
+    expect(error).toBeInstanceOf(Unavailable);
     expect(ASK_TEXT.slow).toMatch(/too long/);
   });
 });

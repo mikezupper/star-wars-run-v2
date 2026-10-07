@@ -19,3 +19,6 @@ data/wookieepedia
 .sample
 
 .server
+
+dist-api
+.sample-api

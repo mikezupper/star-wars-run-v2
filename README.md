@@ -46,8 +46,8 @@ pnpm build
 pnpm preview    # http://localhost:5501
 ```
 
-To build and run the production images: the site (Caddy serving the static files) and the
-question log (a small service writing to SQLite). The site builds from the dump alone,
+To build and run the production images: the site (Caddy serving the static files) and the API
+(Node and DuckDB, answering Explore's questions; ADR 0010). The site builds from the dump alone,
 ingesting it inside the build, so it takes about 15 minutes and 10 GB of memory.
 `WOOKIEEPEDIA_WORKERS` (default 4 in Docker) trades ingest time for memory:
 
@@ -57,8 +57,8 @@ pnpm docker:run   # docker compose up: http://localhost:8080
 ```
 
 On the server, the same `compose.yaml` runs both: put Ask the archive's settings in an `.env`
-next to it (`ASK_ORIGIN`, `ASK_KEY`, `ASK_MODEL`; see ADR 0009), then `docker compose up -d`. The
-question log's database lives in the `questions` volume.
+next to it (`ASK_ORIGIN`, `ASK_KEY`, `ASK_MODEL`; see ADR 0009), then `docker compose up -d`. Only
+the API container reads them. The question log's database lives in the `questions` volume.
 
 Before committing, run the full check: typecheck, lint, formatting, docs checks, tests (80%
 coverage minimum), build, and browser smoke tests. The first run needs

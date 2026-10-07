@@ -9,8 +9,9 @@ import type { Turn } from '../domain/ask.js';
 import { sectionPath } from '../domain/archive.js';
 import { SECTIONS } from '../domain/sections.js';
 import { ASK_TEXT, EXPLORE_TEXT, SECTION_LABELS } from '../labels.js';
-import { askQuestion, type Answer, type AskEvent, type AskFailure } from './ask.js';
-import { runQuery, type QueryResult } from './duckdb.js';
+import type { Answer, AskEvent, AskFailure } from '../domain/ask-pipeline.js';
+import type { QueryResult } from '../domain/query.js';
+import { askQuestion, runQuery } from './api.js';
 import { statusText, styles, table, type Result } from './explore-view.js';
 
 export type { Result } from './explore-view.js';

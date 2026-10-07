@@ -1,8 +1,6 @@
 /// <reference types="node" />
-// Writes the Explore page's tables (src/domain/rows.ts) to dist/data/archive.duckdb. The browser
-// attaches the file read-only with DuckDB-WASM and reads only the blocks a query needs, over HTTP
-// range requests. A native DuckDB file, not Parquet: reading Parquet makes DuckDB-WASM download
-// its parquet extension from extensions.duckdb.org, which the CSP (rightly) blocks.
+// Writes Explore's tables (src/domain/rows.ts) to archive.duckdb, for the API (ADR 0010), which
+// opens it read-only on the server. It's written beside the public site, not in it.
 // Rows go through a temporary JSON Lines file so column types come from an explicit schema.
 import { mkdir, mkdtemp, open, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -14,9 +12,6 @@ import {
   type ArchiveRow,
   type FactRow,
 } from '../src/domain/rows.js';
-
-/** The browser's DuckDB (1.5.4 in duckdb-wasm 1.33) must read what Node's (1.5.6) writes. */
-const STORAGE_VERSION = 'v1.2.0';
 
 const sqlString = (s: string): string => `'${s.replaceAll("'", "''")}'`;
 
@@ -52,23 +47,21 @@ async function createTable(
 }
 
 export async function buildDatabase(
-  dist: string,
+  outDir: string,
   tables: {
     readonly archive: readonly ArchiveRow[];
     readonly facts: readonly FactRow[];
     readonly appearances: readonly AppearanceRow[];
   },
 ): Promise<void> {
-  const out = join(dist, 'data', 'archive.duckdb');
-  await mkdir(join(dist, 'data'), { recursive: true });
+  const out = join(outDir, 'archive.duckdb');
+  await mkdir(outDir, { recursive: true });
   await rm(out, { force: true });
   const tmp = await mkdtemp(join(tmpdir(), 'swr-explore-'));
   const db = await DuckDBInstance.create(':memory:', { threads: '1' });
   const connection = await db.connect();
   try {
-    await connection.run(
-      `ATTACH ${sqlString(out)} AS explore (STORAGE_VERSION '${STORAGE_VERSION}')`,
-    );
+    await connection.run(`ATTACH ${sqlString(out)} AS explore`);
     await createTable(
       connection,
       tmp,

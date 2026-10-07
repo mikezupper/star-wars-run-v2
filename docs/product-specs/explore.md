@@ -2,7 +2,7 @@
 
 Beads: `swr-7f1.7` (SQL), epic `swr-ei6` (Ask the archive). How:
 [0008-wookieepedia-only.md](../design-docs/0008-wookieepedia-only.md) ("Explore") and
-[0009-ask.md](../design-docs/0009-ask.md).
+[0009-ask.md](../design-docs/0009-ask.md), [0010-one-api.md](../design-docs/0010-one-api.md).
 
 ## Ask the archive
 
@@ -24,14 +24,15 @@ Beads: `swr-7f1.7` (SQL), epic `swr-ei6` (Ask the archive). How:
 ## SQL
 
 - "Write SQL yourself" opens a few ready-made questions and a box for any SQL query.
-- Queries run in the visitor's browser. Nothing is sent to a server, and the query engine
-  downloads only on the first run.
+- Queries run on the site's server, on a read-only copy of the archive that can't reach files,
+  the network or anything else. A query is stopped after 10 seconds. Nothing heavy downloads:
+  a first answer costs one request.
 - Results show as a table, with names linking to their pages, the row count and how long the
   query took. At most 500 rows are shown, and the page says when there were more.
 - The page describes its three tables: `archive` (one row per article, with numbers parsed from
   its facts), `facts` (one row per infobox value) and `appearances`.
-- A query that fails says why, in plain words. If the engine can't load (offline, or blocked),
-  the page says so instead of waiting forever.
+- A query that fails says why, in plain words. If the server can't be reached (offline, or
+  down), the page says so instead of waiting forever.
 
 Without JavaScript, the page says Explore needs it and links to the sections.
 
