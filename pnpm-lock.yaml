@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@gyral/core': file:./vendor/gyral-core-0.3.0.tgz
-  '@gyral/ssr': file:./vendor/gyral-ssr-0.3.0.tgz
-  '@gyral/testing': file:./vendor/gyral-testing-0.3.0.tgz
+  '@gyral/core': file:./vendor/gyral-core-0.3.1-next.1.tgz
+  '@gyral/ssr': file:./vendor/gyral-ssr-0.3.1-next.1.tgz
+  '@gyral/testing': file:./vendor/gyral-testing-0.3.1-next.1.tgz
 
 importers:
 
@@ -17,11 +17,11 @@ importers:
         specifier: 1.33.1-dev57.0
         version: 1.33.1-dev57.0
       '@gyral/core':
-        specifier: file:vendor/gyral-core-0.3.0.tgz
-        version: file:vendor/gyral-core-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-core-0.3.1-next.1.tgz
+        version: file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@gyral/ssr':
-        specifier: file:vendor/gyral-ssr-0.3.0.tgz
-        version: file:vendor/gyral-ssr-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-ssr-0.3.1-next.1.tgz
+        version: file:vendor/gyral-ssr-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
     devDependencies:
       7zip-bin:
         specifier: ^5.2.0
@@ -36,8 +36,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@10.12.0)
       '@gyral/testing':
-        specifier: file:vendor/gyral-testing-0.3.0.tgz
-        version: file:vendor/gyral-testing-0.3.0.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-testing-0.3.1-next.1.tgz
+        version: file:vendor/gyral-testing-0.3.1-next.1.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@types/node':
         specifier: 24.19.1
         version: 24.19.1
@@ -475,9 +475,9 @@ packages:
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@gyral/core@file:vendor/gyral-core-0.3.0.tgz':
-    resolution: {integrity: sha512-MMHIrpOR5r7DAa3dwSmQwMHziiXv7P5alKpqI9xQObD+SL0Gb2/Sm7ADAIz3ja48I1TlqDfh0x0pmky+5UiSFQ==, tarball: file:vendor/gyral-core-0.3.0.tgz}
-    version: 0.3.0
+  '@gyral/core@file:vendor/gyral-core-0.3.1-next.1.tgz':
+    resolution: {integrity: sha512-CuroWcW8o1QaiXicbExDtV/I6zqwW9yfi2fQCukDhs7SxS9/kC8HXH2Qq2QMKgzjiENOidzzUL6pgKMf0mBZUw==, tarball: file:vendor/gyral-core-0.3.1-next.1.tgz}
+    version: 0.3.1-next.1
     peerDependencies:
       eslint: ^9.0.0 || ^10.0.0
       parse5: ^7.0.0 || ^8.0.0
@@ -490,13 +490,13 @@ packages:
       vite:
         optional: true
 
-  '@gyral/ssr@file:vendor/gyral-ssr-0.3.0.tgz':
-    resolution: {integrity: sha512-2XmupMLl4KY/6xRalvu09kigu4DOd6kbv7ESKfAn6LfmKCD36WMAuiSPfLNi+ido7a3k2wstWWsaCWI+jO04/g==, tarball: file:vendor/gyral-ssr-0.3.0.tgz}
-    version: 0.3.0
+  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.1.tgz':
+    resolution: {integrity: sha512-0RkOlP4q8Eo6zUR3puRk4+Z+zgVgPnPFjXnU3RcwotkOF8VGsDweHg+NWwFICMrXyEFfj+e0P8muWn5K8W8/Gw==, tarball: file:vendor/gyral-ssr-0.3.1-next.1.tgz}
+    version: 0.3.1-next.1
 
-  '@gyral/testing@file:vendor/gyral-testing-0.3.0.tgz':
-    resolution: {integrity: sha512-TtBcrrGU1AsK8FpeMBXJK2LOaIcUWFMQddxn2TDdZmDnl+IE+A0KzRCFC2oP6hQXnxsZETXJa5KBFJYQHThCHQ==, tarball: file:vendor/gyral-testing-0.3.0.tgz}
-    version: 0.3.0
+  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.1.tgz':
+    resolution: {integrity: sha512-BpBBy+N2rtkDFFdJjnWszGA/oy93Ej/XoCRAXeODVh8u+2v60bq3aAJ8+TC4tH48PvMsXQvngEL0O9ShMQyFwg==, tarball: file:vendor/gyral-testing-0.3.1-next.1.tgz}
+    version: 0.3.1-next.1
     peerDependencies:
       fast-check: ^4.0.0
     peerDependenciesMeta:
@@ -2224,7 +2224,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@gyral/core@file:vendor/gyral-core-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/core@file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
     dependencies:
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
@@ -2232,18 +2232,18 @@ snapshots:
       parse5: 7.3.0
       vite: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)
 
-  '@gyral/ssr@file:vendor/gyral-ssr-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
     dependencies:
-      '@gyral/core': file:vendor/gyral-core-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+      '@gyral/core': file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@standard-schema/spec': 1.1.0
     transitivePeerDependencies:
       - eslint
       - parse5
       - vite
 
-  '@gyral/testing@file:vendor/gyral-testing-0.3.0.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.1.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
     dependencies:
-      '@gyral/core': file:vendor/gyral-core-0.3.0.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+      '@gyral/core': file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@sinonjs/fake-timers': 15.4.0
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
