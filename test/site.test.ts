@@ -4,6 +4,7 @@ import { fullTitle } from '../src/render/layout.js';
 import { createSite, normalise, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 import { FIXTURE_TITLES, fixtureSiteData } from './fixtures/archive.js';
+import { links, linkTo } from './fixtures/html.js';
 
 const data = fixtureSiteData();
 const site = createSite(
@@ -12,7 +13,14 @@ const site = createSite(
 );
 const UNLISTED = ['/search/', '/offline/'];
 const get = (path: string) => site.fetch(new Request(new URL(path, ORIGIN)));
-const html = async (path: string) => (await get(path)).text();
+/**
+ * Gyral 0.3 renders development output under Vitest: `<!--gyral:ID-->` and `<!---->` markers
+ * around template parts, for hydration. Production output (`pnpm build`) has none, so the page
+ * is checked without them; any other comment would still show.
+ */
+const DEV_MARKERS = /<!--(?:gyral:[a-z0-9]+)?-->/g;
+const html = async (path: string) =>
+  (await get(path)).text().then((t) => t.replace(DEV_MARKERS, ''));
 const pages = new Map(
   await Promise.all(site.paths.map(async (path) => [path, await html(path)] as const)),
 );
@@ -93,7 +101,7 @@ describe('every page', () => {
     for (const [page, body] of pages) {
       expect(body.match(/<h1[\s>]/g), page).toHaveLength(1);
       expect(body.match(/<main[\s>]/g), page).toHaveLength(1);
-      expect(body, page).toContain('rel="external">Wookieepedia</a>');
+      expect(links(body).find((l) => l.text === 'Wookieepedia')?.rel, page).toBe('external');
     }
   });
 });
@@ -160,16 +168,20 @@ describe('Sabacc', () => {
 
   it('describes the game and links to each way to play and to the rules', () => {
     const sabacc = pages.get('/sabacc/') ?? '';
-    expect(sabacc).toContain(
-      '<a href="https://sabacc.starwars.run/" rel="external">Play in your browser</a>',
-    );
-    expect(sabacc).toContain(
-      '<a href="https://sabacc.starwars.run/3d.html" rel="external">Play in 3D</a>',
-    );
+    expect(linkTo(sabacc, 'https://sabacc.starwars.run/')).toEqual({
+      href: 'https://sabacc.starwars.run/',
+      rel: 'external',
+      text: 'Play in your browser',
+    });
+    expect(linkTo(sabacc, 'https://sabacc.starwars.run/3d.html')).toMatchObject({
+      rel: 'external',
+      text: 'Play in 3D',
+    });
     expect(sabacc).toContain('up to five players');
-    expect(sabacc).toContain(
-      '<a href="https://sabacc.starwars.run/#rules" rel="external">Read the rules</a>',
-    );
+    expect(linkTo(sabacc, 'https://sabacc.starwars.run/#rules')).toMatchObject({
+      rel: 'external',
+      text: 'Read the rules',
+    });
     expect(site.sitemapPaths).toContain('/sabacc/');
   });
 });

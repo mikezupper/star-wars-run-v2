@@ -18,9 +18,11 @@ public files. Gyral adds no runtime service of its own.
 ## Static hosts
 
 Build with the layout from [Static sites and prerendering](/docs/static-sites/): Vite and the
-prerender step both write to `dist/`. Put headers files in `public/`, which Vite copies into
-`dist/` as they are. On every host the build command is `npm run build` and the output
-directory is `dist`; what differs is where response headers (CSP, caching) go:
+prerender step both write to `dist/`. Put fixed headers files in `public/`, which Vite copies
+into `dist/` as they are, and write the Content Security Policy at build time
+([Headers and CSP](/docs/static-sites/#headers-and-csp)). On every host the build command is
+`npm run build` and the output directory is `dist`; what differs is where response headers (CSP,
+caching) go:
 
 | Host             | Response headers                                     |
 | ---------------- | ---------------------------------------------------- |
@@ -32,7 +34,8 @@ directory is `dist`; what differs is where response headers (CSP, caching) go:
 GitHub Pages builds in a GitHub Actions workflow that uploads `dist` as its Pages artifact.
 
 This website is the worked example: it builds with `pnpm run build` on Cloudflare Pages, with
-`NODE_VERSION` set to 24 and a `_headers` file for its security and cache headers.
+`NODE_VERSION` set to 24. Its `_headers` file holds the security and cache headers, and the build
+adds the Content Security Policy to it.
 
 Hosts that serve `about/index.html` for `/about/` (all four above do) need no rewrite rules.
 Set the host's 404 page to your prerendered `404.html` if you render one.
@@ -64,17 +67,27 @@ export const Counter = define<{ readonly count: number }, { readonly _tag: 'Incr
 ```ts
 // server/app.ts
 import { Hono } from 'hono';
-import { html } from 'lit';
+import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import '../src/counter.js';
 
 /** Paths rendered at build time into dist/static. Everything else renders per request. */
 export const staticPaths: readonly string[] = ['/'];
 
-export function createApp({ clientEntry }: { readonly clientEntry: string }): Hono {
+export interface ClientAssets {
+  readonly clientEntry: string;
+  readonly modulepreload: readonly string[];
+}
+
+export function createApp({ clientEntry, modulepreload }: ClientAssets): Hono {
   const app = new Hono();
   app.get('/', () =>
-    renderPage({ title: 'Home', body: html`<my-counter></my-counter>`, scripts: [clientEntry] }),
+    renderPage({
+      title: 'Home',
+      body: html`<my-counter></my-counter>`,
+      scripts: [clientEntry],
+      modulepreload,
+    }),
   );
   app.get('/hello/:name', (c) =>
     renderPage({ title: 'Hello', body: html`<h1>Hello, ${c.req.param('name')}</h1>` }),
@@ -99,7 +112,11 @@ serve({ fetch: app.fetch, port: Number(process.env['PORT'] ?? 3000) });
 ```
 
 `productionServer({ distDir, createApp })` expects Vite's output in `dist/client/` (with
-`build.manifest: true`) and prerendered pages in `dist/static/`. It answers:
+`build.manifest: true`) and prerendered pages in `dist/static/`. It reads the manifest once and
+hands `createApp` the client entry and the chunks to preload with it, Gyral's hydration chunk
+included. A page whose route module is imported lazily passes
+`preload(['src/routes/product.ts'])` (also given to `createApp`) as `modulepreload` instead:
+the same list plus that module and its imports. It answers:
 
 | Request                        | Served from                | `cache-control`                       |
 | ------------------------------ | -------------------------- | ------------------------------------- |
@@ -129,10 +146,10 @@ export default { fetch: app.fetch };
 
 How far each one is tested today:
 
-- **Bun**: `renderPage` with Declarative Shadow DOM output was checked by hand on Bun 1.3.14.
-  It isn't part of Gyral's CI.
-- **Deno and Cloudflare Workers**: not tested yet. Check that Lit's server renderer
-  (`@lit-labs/ssr`) runs there before you rely on it.
+- **Bun**: `renderPage` with Declarative Shadow DOM output and `contentSecurityPolicy()` were
+  checked by hand on Bun 1.3.14 with Gyral 0.3. It isn't part of Gyral's CI.
+- **Deno and Cloudflare Workers**: not tested yet. The renderer uses no Node-only APIs (it
+  hashes in plain JavaScript and has no DOM shim), but check it there before you rely on it.
 - **`@gyral/ssr/static`** (`prerender`, `productionServer`) reads and writes files with
   `node:fs`. Use it in Node at build time; on an edge runtime, serve the static files from the
   platform's asset hosting instead.
@@ -145,7 +162,7 @@ when you write your own server:
 ```ts
 // server/cache.ts
 import { Hono } from 'hono';
-import { html } from 'lit';
+import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import { cacheHeaders } from '@gyral/ssr/static';
 
@@ -173,27 +190,29 @@ On a static host, set the same policies in its headers file. This site's `_heade
 
 ## Content Security Policy
 
-Gyral works under a strict policy. It needs:
+Gyral works under a strict policy:
 
 - **No `'unsafe-eval'`.** This website's components hydrate and run under a policy without it,
   and its build fails on any CSP violation.
 - **No inline scripts.** Hydration seeds are `data-gyral-seed` attributes, not script
   elements, and your client entry is a module file.
-- **Inline styles.** Declarative Shadow DOM writes each component's styles as a `<style>`
-  element inside its `<template>`, and `renderPage`'s `styles` option writes `<style>` in the
-  head. Allow them with `style-src 'self' 'unsafe-inline'`, or list their hashes.
+- **No `'unsafe-inline'` for styles.** Declarative Shadow DOM writes each component's styles as
+  a `<style>` element inside its `<template>`, and `renderPage`'s `styles` option writes
+  `<style>` in the head. `renderPage({ csp: { directives } })` lists all of them by hash in the
+  header it sends, and `contentSecurityPolicy()` from `@gyral/ssr` builds the same value for a
+  static headers file (see [Server rendering](/docs/server-rendering/#content-security-policy)).
 
-A good starting point:
+A good starting point, with the hashes appended by Gyral:
 
 ```text
-Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'
+Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; style-src 'self' 'sha256-…'
 ```
 
 This website's policy is the same, plus `font-src` and `connect-src` for its own files and
-`'wasm-unsafe-eval'`, which only its search index needs. On GitHub Pages, which
-can't set headers, put the policy in a
-`<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s `head` option;
-`frame-ancestors` doesn't work there.
+`'wasm-unsafe-eval'`, which only its search index needs. Inline `style="…"` attributes are the
+one thing hashes don't cover, so this site has none. On GitHub Pages, which can't set headers,
+put the policy in a `<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s
+`head` option; `frame-ancestors` doesn't work there.
 
 ## Checklist
 
@@ -201,5 +220,6 @@ can't set headers, put the policy in a
   bundled builds. `@gyral/testing`'s `mountSsr` and `hydrated` make that a
   [unit test](/docs/testing/#ssr-and-hydration-tests).
 - Cache hashed assets for a year and pages not at all (or with revalidation).
-- Serve a CSP header. Gyral needs nothing beyond inline styles.
-- Pin one Lit version for the whole app (see [Packages](/docs/packages/#known-issues)).
+- Serve a CSP header: `renderPage({ csp: { directives } })` per request, or
+  `contentSecurityPolicy()` written into a static host's headers file. Gyral needs no
+  `'unsafe-inline'` and no `'unsafe-eval'`.

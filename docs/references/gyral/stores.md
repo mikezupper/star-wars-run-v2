@@ -120,7 +120,7 @@ another's page. Pass them to the render:
 
 ```ts
 // server/cart-page.ts
-import { html } from 'lit';
+import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import { cart, type Cart } from '../src/cart.js';
 

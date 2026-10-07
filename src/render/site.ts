@@ -1,7 +1,8 @@
 // The route table and the request handler: one function renders every page, and it serves
 // both the dev server (per request) and the build (prerendered to files). Pages come from the
 // Wookieepedia archive (ADR 0008).
-import { renderToStream, renderToString, serverHtml } from '@gyral/ssr';
+import { html, type ChildValue } from '@gyral/core';
+import { renderToStream, renderToString } from '@gyral/ssr';
 import type { ArticleRecord } from '../domain/article.js';
 import type { Archive } from '../domain/archive.js';
 import { SECTIONS } from '../domain/sections.js';
@@ -24,7 +25,7 @@ export interface SiteData {
 
 interface Route {
   readonly meta: PageMeta;
-  readonly body: () => unknown;
+  readonly body: () => ChildValue;
 }
 
 export interface Site {
@@ -45,7 +46,7 @@ const notFoundMeta: PageMeta = {
   noindex: true,
 };
 
-const notFoundBody = () => serverHtml`
+const notFoundBody = () => html`
   <h1>${TEXT.notFoundTitle}</h1>
   <p>${TEXT.notFoundBody}</p>
   <p><a href="/">${TEXT.notFoundHome}</a>, or <a href="/search/">${TEXT.notFoundSearch}</a>.</p>

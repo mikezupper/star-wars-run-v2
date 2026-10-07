@@ -32,18 +32,15 @@
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
-    "@gyral/core": "^0.2.0",
-    "@gyral/ssr": "^0.2.0",
-    "@lit-labs/ssr": "4.1.0",
-    "@lit-labs/ssr-client": "1.1.8",
-    "lit": "3.3.3"
+    "@gyral/core": "file:./vendor/gyral-core-0.3.0.tgz",
+    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.0.tgz"
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
     "@axe-core/playwright": "4.13.0",
     "@duckdb/node-api": "1.5.6-r.1",
     "@eslint/js": "10.0.1",
-    "@gyral/testing": "^0.2.0",
+    "@gyral/testing": "file:./vendor/gyral-testing-0.3.0.tgz",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
@@ -70,7 +67,9 @@
   },
   "pnpm": {
     "overrides": {
-      "lit-html": "3.3.0"
+      "@gyral/core": "file:./vendor/gyral-core-0.3.0.tgz",
+      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.0.tgz",
+      "@gyral/testing": "file:./vendor/gyral-testing-0.3.0.tgz"
     }
   }
 }

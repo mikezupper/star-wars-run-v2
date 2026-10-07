@@ -15,16 +15,17 @@ repo follows.
 
 ## Decision
 
-- **Gyral** (`@gyral/core`, `@gyral/ssr`) for rendering. Pages are server-only `serverHtml`
+- **Gyral** (`@gyral/core`, `@gyral/ssr`) for rendering. Pages are server-only `html`
   templates, prerendered to static files with `prerender()` from `@gyral/ssr/static`.
-  Interactive parts are islands built with `define()`.
+  Interactive parts are islands built with `define()`. Since 0.3.0 Gyral has its own view layer;
+  nothing here depends on Lit.
 - **TypeScript** in strict mode, with `exactOptionalPropertyTypes` and
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
-- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on 0.2.0 (2026-10-06), and
-  `lit-html` is pinned to 3.3.0 with a pnpm override: later versions leak a DOM comment per
-  removed `repeat()` item (lit/lit#5298; see
-  [docs/references/gyral](../references/gyral/README.md)). Drop the pin once upstream fixes it.
+- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on 0.3.0 (2026-10-07),
+  installed from `vendor/` until it's on npm on 2026-10-10 ([vendor/README.md](../../vendor/README.md);
+  `swr-7f1.11.7` switches to npm and removes the tarballs from history). The `lit-html` 3.3.0
+  pin that 0.2 needed went with Lit.
 - **One gate, `pnpm check`:** typecheck, lint, format, tests with coverage, build. A change
   isn't done until it passes.
 - **Coverage of at least 80%** on lines, branches, functions and statements, measured over

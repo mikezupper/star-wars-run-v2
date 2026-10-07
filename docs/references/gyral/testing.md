@@ -65,7 +65,7 @@ export const Lookup = define<State, Msg>('my-lookup', {
   },
   view: (s, i) => html`
     <label for="q">Name</label>
-    <input id="q" .value=${s.query} data-intent=${i.Typed} />
+    <input id="q" value=${s.query} data-intent=${i.Typed} />
     <output for="q">${s.found ?? ''}</output>
   `,
 });
@@ -126,9 +126,16 @@ For rendering, events and focus, test the real element in a real browser. Gyral'
 [Vitest browser mode](https://vitest.dev/guide/browser/) with Chromium; spread
 `gyralVitePreset()` into the browser project's config.
 
+Gyral renders on a schedule: reducers run as soon as a message arrives, and the DOM updates in a
+microtask, once for every message that arrived together. **`await settled()`** from
+`@gyral/core` waits until every component on the page has rendered its latest state, including
+view transitions, focus commands and lazily loaded code. Await it before you look at the DOM;
+there's nothing to poll.
+
 ```ts
 // src/lookup.browser.test.ts
 import { afterEach, expect, it } from 'vitest';
+import { settled } from '@gyral/core';
 import { fakeHttp } from '@gyral/http/testing';
 import { virtualTime, type VirtualTime } from '@gyral/testing';
 import { Lookup } from './lookup.js';
@@ -146,7 +153,7 @@ it('debounces typing, then shows the answer', async () => {
   const el = new Lookup();
   el.drivers = { http };
   document.body.append(el);
-  await el.updateComplete;
+  await settled();
 
   const input = el.shadowRoot?.querySelector('input');
   if (input == null) throw new Error('missing input');
@@ -160,7 +167,7 @@ it('debounces typing, then shows the answer', async () => {
 
   http.respondNext({ body: { name: 'Ada Lovelace' } });
   await time.advance(0);
-  await el.updateComplete;
+  await settled();
   expect(el.shadowRoot?.querySelector('output')?.textContent).toBe('Ada Lovelace');
 });
 ```
@@ -187,7 +194,8 @@ before asserting that a request was aborted.
 `virtualTime()` replaces timers, `Date` and `requestAnimationFrame` with a virtual clock.
 `advance(ms)` runs what's due and the promise work in between; `runAll()` runs every pending
 timer; `restore()` puts the real clock back. It patches the platform, not Gyral, so it covers
-debounces, `periodic`, driver timeouts and retry delays alike.
+debounces, `periodic`, driver timeouts and retry delays alike. Advance the clock, then
+`await settled()` before you assert on the DOM.
 
 ## SSR and hydration tests
 
@@ -213,9 +221,14 @@ it('hydrates the server page in place', async () => {
 
 - **`mountSsr(html)`** parses Declarative Shadow DOM, applies only the `<head>` styles, restores
   the store seed and `<meta>` tags, and starts recording console errors.
-- **`hydrated(page)`** waits until every component, including nested ones, has hydrated. It fails
-  on a hydration mismatch, on any console error or warning since mounting, and on a
-  server-rendered element whose module was never imported.
+- **`hydrated(page)`** waits until every component, including nested ones, has hydrated (it
+  awaits `settled()`). It fails on a hydration mismatch, on any console error or warning since
+  mounting, and on a server-rendered element whose module was never imported. Islands keep
+  waiting unless you pass `{ releaseIslands: true }`.
+- Render the golden file with development output (Vitest does by default) and the browser also
+  checks each template's id while hydrating. Run the hydration tests against a production build
+  of your components too: production hydration recovers from a mismatch instead of throwing, so
+  only a warning shows it.
 
 ## Property tests from schemas
 

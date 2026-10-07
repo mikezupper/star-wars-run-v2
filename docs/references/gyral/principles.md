@@ -39,22 +39,24 @@ don't defend against impossible states.
 ## Thin layer, no walled garden
 
 Every Gyral component works anywhere a custom element does: in a plain page, in another
-framework, next to raw `LitElement` classes. There's no Gyral-only component model to buy into,
-and nothing stops you from dropping down to Lit or to the DOM when you need to.
+framework, next to any other custom element, however it was built. There's no Gyral-only
+component model to buy into, and nothing stops you from dropping down to the DOM, or to another
+custom element, when you need to.
 
 ## No paradigm required
 
 You don't need streams, a functional-effects library or decorators to use Gyral. The API is
 plain TypeScript: functions, objects, unions and promises. Implementation choices stay
-implementation details: Gyral 0.1 ran commands on Effect, 0.2 runs them on a small built-in
-runtime, and no public type changed.
+implementation details where they can: Gyral 0.1 ran commands on Effect, 0.2 moved them to a
+small built-in runtime without changing a public type. 0.3 replaced the view layer, which
+templates touch directly, so it came with a [migration guide](/docs/migrating-0-2-to-0-3/).
 
 ## Semantic HTML and accessibility are correctness
 
 A component that works with a mouse but not a keyboard is broken. Gyral's examples are judged on
 element choice and on the accessibility tree, not only on behaviour, and its helpers exist to
 keep accessible markup right on the server and in the browser: `invalid()`, `labelledBy()`,
-`liveBoolean()`, `focus()`.
+`focus()`, and form-state bindings that mean the same on both sides.
 
 ## Test in a real browser
 
@@ -65,12 +67,13 @@ hydration of real server output against production builds.
 ## Enforce invariants, not intentions
 
 Rules that matter become checks with error messages that explain the fix. In Gyral's own repo,
-`@gyral/core` is checked to have no runtime dependency besides Lit, views can't attach closures, and every
-decision record is indexed. This site follows the same rule: every code sample on it compiles
+`@gyral/core` is checked to have no runtime dependencies, views can't attach closures (the
+template compiler and the ESLint rules reject them), and every decision record is indexed. This site follows the same rule: every code sample on it compiles
 against the real packages, and every page passes accessibility checks in light and dark mode.
 
 ## Measure, then budget
 
 Performance claims come from measurements. Bundle size is tracked per example with production
 builds, and changes such as the devtools hook are measured before and after. Budgets follow
-measurements, not the other way round.
+measurements, not the other way round: when Gyral 0.3 set out to make the smallest app 8 KiB, it
+measured 8.9 KiB and says so.

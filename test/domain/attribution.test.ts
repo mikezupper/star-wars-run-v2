@@ -2,6 +2,7 @@ import { renderToString } from '@gyral/ssr';
 import { describe, expect, it } from 'vitest';
 import { CC_BY_SA_3, wookieepediaUrl } from '../../src/domain/attribution.js';
 import { creditLine } from '../../src/render/credit.js';
+import { linkTo } from '../fixtures/html.js';
 
 describe('Wookieepedia attribution', () => {
   it('links articles the way MediaWiki writes their addresses', () => {
@@ -27,9 +28,9 @@ describe('Wookieepedia attribution', () => {
       /<!--[^>]*-->|<\?>/g,
       '',
     );
-    expect(html).toContain('href="https://starwars.fandom.com/wiki/Luke_Skywalker" rel="external"');
+    expect(linkTo(html, 'https://starwars.fandom.com/wiki/Luke_Skywalker')?.rel).toBe('external');
     expect(html).toContain('“Luke Skywalker” article on Wookieepedia');
-    expect(html).toContain(`href="${CC_BY_SA_3}" rel="license external"`);
+    expect(linkTo(html, CC_BY_SA_3)?.rel).toBe('license external');
     expect(html).toContain('Modified for this site.');
     expect(html).toContain('data-pagefind-ignore');
   });

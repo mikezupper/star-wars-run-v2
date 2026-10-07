@@ -8,7 +8,7 @@ order: 1
 # Components
 
 A Gyral component is a standard custom element. You don't write a class: you describe the
-component as data, and `define()` builds the element. This page covers the parts of that
+component as data, and `define()` builds the element, a plain `HTMLElement` subclass. This page covers the parts of that
 description, then how components talk to each other: **props down, outputs up**.
 
 ## Anatomy of define()
@@ -47,13 +47,19 @@ four required parts and a few optional ones:
 | `init`    | The starting state, computed from props. May also start commands.                   | [Model and update](/docs/update/)              |
 | `intent`  | Parsers that turn platform events into messages, keyed by message tag.              | [Intent](/docs/intent/)                        |
 | `update`  | One pure reducer per message tag: state in, next state (and commands) out.          | [Model and update](/docs/update/)              |
-| `view`    | A pure function from state to a Lit template that _names_ intents.                  | [Views](/docs/views/)                          |
-| `props`   | Inputs from the parent or from attributes.                                          | [below](#props)                                |
-| `styles`  | Shadow-root CSS.                                                                    | [Styling](/docs/styling/)                      |
+| `view`    | A pure function from state to an `html` template that _names_ intents.              | [Views](/docs/views/)                          |
+| `props`   | Inputs from the parent or from attributes, declared with `prop.*` builders.         | [below](#props)                                |
+| `styles`  | Shadow-root CSS: `css` values or strings.                                           | [Styling](/docs/styling/)                      |
 | `stores`  | Shared state the component reads.                                                   | [Shared state](/docs/stores/)                  |
 | `drivers` | Driver substitutions for this component's commands.                                 | [Effects](/docs/effects/)                      |
 | `shadow`  | `false` renders into light DOM, for page-level components.                          | [Styling](/docs/styling/#light-dom-components) |
 | `hydrate` | When a server-rendered instance hydrates: `load`, `idle`, `visible`, `interaction`. | [Server rendering](/docs/server-rendering/)    |
+
+A few more optional fields cover rarer needs: `events` (event types a bound
+`data-intent-on=${…}` can produce, see [Intent](/docs/intent/#trigger-events)), `states`
+(custom states for CSS, see [Styling](/docs/styling/#custom-states)), `viewTransition` (render a
+change inside a View Transition, see [Views](/docs/views/#view-transitions)) and `renderOnFrame`
+(message tags from bursty sources, such as pointer moves, that render once per animation frame).
 
 The type parameters are the contract. `State` is a plain JSON record, `Msg` a union of tagged
 objects, and TypeScript checks that `update` has a reducer for every tag and that the view
@@ -64,25 +70,25 @@ how [tests](/docs/testing/) run `update` without a DOM.
 
 ## Props
 
-Props are the component's inputs. Declare them with Lit's property options, plus Gyral's rule
-that a prop which can't be `undefined` must say how a value is guaranteed: `required` or
-`default`.
+Props are the component's inputs. Declare each one with a `prop` builder. A builder says how
+an attribute's string becomes a value, and a prop whose type can't be `undefined` must say how a
+value is guaranteed: `required` or `default`.
 
 ```ts
 // src/badge.ts
-import { define, html, type Stateless } from '@gyral/core';
+import { define, html, prop, type Stateless } from '@gyral/core';
 
 export interface Props {
   readonly label: string;
   readonly count: number;
-  readonly note?: string;
+  readonly note: string | undefined;
 }
 
 export const Badge = define<Stateless, never, Props>('my-badge', {
   props: {
-    label: { type: String, required: true },
-    count: { type: Number, default: 0 },
-    note: { type: String },
+    label: prop.string({ required: true }),
+    count: prop.number({ default: 0 }),
+    note: prop.string(),
   },
   intent: {},
   update: {},
@@ -97,10 +103,35 @@ export const Badge = define<Stateless, never, Props>('my-badge', {
   Don't copy props into state just to read them.
 - **`required: true`** is a promise from the parent. A missing value logs one warning per
   instance at first render.
-- **`default`** is used whenever the element's own value is `undefined`.
+- **`default`** is used whenever the element's own value is missing.
 - A component with no state of its own uses `Stateless` and can leave out `init`.
-- Don't name a prop after a built-in element property such as `hidden`, `title` or `id`:
-  `define()` warns, because the prop would replace the platform's behaviour.
+- Don't name a prop after a built-in element property such as `hidden`, `title` or `id`. It is
+  an error in development, because the prop would replace the platform's behaviour.
+
+### Builders and attributes
+
+| Builder                     | The attribute is parsed with                 | Attribute name         |
+| --------------------------- | -------------------------------------------- | ---------------------- |
+| `prop.string(opts?)`        | nothing: the string as is                    | kebab-case of the prop |
+| `prop.number(opts?)`        | `Number(v)`; empty or `NaN` is invalid       | kebab-case             |
+| `prop.boolean(opts?)`       | presence: there is `true`, absent is `false` | kebab-case             |
+| `prop.json(schema, opts?)`  | `JSON.parse`, then the schema                | kebab-case             |
+| `prop.value(schema, opts?)` | no attribute: set it as a property           | none                   |
+
+A prop named `maxValue` reads the attribute `max-value`; pass `attribute: 'name'` to choose
+another, or `attribute: false` for a property only. The options are `required`, `default`,
+`attribute` and `schema`.
+
+The schemas are [Standard Schema](https://standardschema.dev), so any library that implements it
+works: valibot, zod, ArkType. `string`, `number` and `boolean` carry tiny built-in schemas, so
+simple props need no library; pass `schema` to narrow one, such as
+`prop.string({ schema: v.picklist(['asc', 'desc']), default: 'asc' })`.
+
+Attributes are strings from outside your code, so they are **always validated**. An invalid
+value is logged with the tag, the prop and the schema's issues, then treated as missing, so its
+`default` applies. Property sets come from typed code and are validated in development only.
+Props never write attributes back; state that CSS needs goes through
+[custom states](/docs/styling/#custom-states).
 
 ### Reacting to prop changes
 
@@ -110,7 +141,7 @@ way props enter state, so "reset when the user changes" is explicit:
 
 ```ts
 // src/user-notes.ts
-import { define, html } from '@gyral/core';
+import { define, html, prop } from '@gyral/core';
 
 export interface State {
   readonly draft: string;
@@ -119,7 +150,7 @@ export interface State {
 export type Msg = { readonly _tag: 'Typed'; readonly text: string };
 
 export const UserNotes = define<State, Msg, { readonly userId: string }>('my-user-notes', {
-  props: { userId: { type: String, required: true } },
+  props: { userId: prop.string({ required: true }) },
   init: () => ({ draft: '' }),
   intent: { Typed: ({ value }) => ({ _tag: 'Typed', text: value ?? '' }) },
   update: {
@@ -129,7 +160,7 @@ export const UserNotes = define<State, Msg, { readonly userId: string }>('my-use
   },
   view: (s, i, { props }) => html`
     <label for="notes">Note about ${props.userId}</label>
-    <input id="notes" data-intent=${i.Typed} .value=${s.draft} />
+    <input id="notes" data-intent=${i.Typed} value=${s.draft} />
   `,
 });
 ```
@@ -139,13 +170,13 @@ the new user.
 
 ## Child components and outputs
 
-A parent sets a child's props in its view (`.value=${…}` for properties) and listens to the
-child's **outputs**. A child reports up by returning `emit(output)` from a reducer. `emit` is a
+A parent sets a child's props in its view, as attributes (`step="5"`) or as properties
+(`.step=${5}`, the way objects and arrays travel), and listens to the child's **outputs**. A child reports up by returning `emit(output)` from a reducer. `emit` is a
 command like any other, so the child stays pure and testable.
 
 ```ts
 // src/stepper.ts
-import { define, emit, html, type Stateless } from '@gyral/core';
+import { define, emit, html, prop, type Stateless } from '@gyral/core';
 
 /** What the stepper tells its parent. */
 export type StepperOutput = { readonly _tag: 'Stepped'; readonly by: number };
@@ -155,7 +186,7 @@ type Msg = { readonly _tag: 'Step'; readonly by: number };
 export const Stepper = define<Stateless, Msg, { readonly step: number }, StepperOutput>(
   'my-stepper',
   {
-    props: { step: { type: Number, default: 1 } },
+    props: { step: prop.number({ default: 1 }) },
     intent: {
       Step: ({ value }) => ({ _tag: 'Step', by: Number(value) }),
     },
@@ -203,19 +234,21 @@ export const Total = define<State, Msg>('my-total', {
   parent's shadow root, so a grandchild's outputs never reach the grandparent.
 - The mapper also receives the child element, typed with its props, which is how an item in a
   list says which item it is: `child(Item, (out, el) => ({ _tag: 'Item', id: el.itemId, out }))`.
-- For lists, render children with `repeat(items, key, template)`. Keys keep each child, and its
-  state, attached to its item when the list reorders.
+- For lists, render children with `each(items, key, row)`. Keys keep each child, and its state,
+  attached to its item when the list reorders (see [Views](/docs/views/#lists)).
 - A component that contains itself (a folder tree) passes a function, `child(() => Folder, …)`,
   so the class can refer to itself.
 - Any custom element can talk to a Gyral parent by dispatching `gyral-output` with a tagged
   `detail`, so children don't have to be Gyral components.
 
-This replaces Cycle.js's `isolate()` and collections: Shadow DOM does the isolating, and Lit's
-`repeat` does the list.
+This replaces Cycle.js's `isolate()` and collections: Shadow DOM does the isolating, and `each`
+does the list.
 
 ## Escape hatches
 
 - **`el.send(msg)`** feeds a message into a component from imperative code (a canvas, an
   observer). Prefer intents and drivers where you can.
-- **Raw Lit.** Every Gyral component is a `LitElement`, and plain `LitElement` classes work
-  alongside them. Gyral adds a loop, not a walled garden.
+- **Any custom element.** Gyral components are plain custom elements, and any other custom
+  element works alongside them, whether you wrote it by hand or with another library (see
+  [Using third-party web components](/docs/third-party-components/)). Gyral adds a loop, not a
+  walled garden.

@@ -3,6 +3,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
+import gyral from '@gyral/core/eslint';
 
 const SEE = 'See the Layers table in ARCHITECTURE.md.';
 
@@ -36,7 +37,7 @@ const ISLANDS = [
   'Only src/render may import islands (to server-render them). Lower layers must not depend on UI.',
 ];
 const GYRAL = [
-  '^@gyral/|^lit($|/)',
+  '^@gyral/',
   'Rendering belongs in src/render (pages) or src/islands (interactive components).',
 ];
 const GYRAL_SSR = [
@@ -88,6 +89,9 @@ export default tseslint.config(
       'max-lines': ['error', { max: 450, skipBlankLines: true, skipComments: true }],
     },
   },
+  // Gyral's template rules (docs/references/gyral/views.md): the same checks the template
+  // compiler runs in `vite build`, in the editor and in `pnpm lint`, for page templates too.
+  { files: ['src/**/*.ts'], ...gyral.configs.recommended },
   // The layer table from ARCHITECTURE.md.
   {
     files: ['src/site.ts'],

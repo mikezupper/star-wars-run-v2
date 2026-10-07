@@ -1,6 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
+import { styleHashes } from '@gyral/core/server';
 import { CACHE, cacheControl, caddyfile, CSP, headersFor } from '../../src/hosting/headers.js';
+import { STYLE_HASHES } from '../../src/hosting/style-hashes.js';
+import '../../src/islands/explore.js';
+import '../../src/islands/site-search.js';
 
 describe('cache policy', () => {
   it('caches hashed assets for a year and rechecks the service worker every time', () => {
@@ -27,6 +31,15 @@ describe('cache policy', () => {
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
     expect(CSP).toContain("script-src 'self' 'wasm-unsafe-eval'");
     expect(CSP).not.toContain("'unsafe-eval'");
+  });
+});
+
+describe('the style policy', () => {
+  it('allows exactly the islands\u2019 styles by hash, and no other inline style', async () => {
+    // Fails when an island's CSS changes: run \`pnpm caddyfile\` and commit both files.
+    expect(STYLE_HASHES).toEqual([...(await styleHashes())].sort());
+    expect(CSP).toContain(`style-src 'self' ${STYLE_HASHES.join(' ')};`);
+    expect(CSP).not.toContain('unsafe-inline');
   });
 });
 

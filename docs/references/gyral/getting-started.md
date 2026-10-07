@@ -13,8 +13,8 @@ npm; pnpm and yarn work the same way.
 
 ## Create a project
 
-The quickest start is `create-gyral`. It sets up a Vite project with Gyral, Lit, TypeScript
-and a first test:
+The quickest start is `create-gyral`. It sets up a Vite project with Gyral, TypeScript and a
+first test:
 
 ```sh
 npm create gyral@latest my-app -- --template ssr
@@ -39,14 +39,15 @@ Gyral works with any bundler. To add it to a [Vite](https://vite.dev) project yo
 ```sh
 npm create vite@latest my-app -- --template vanilla-ts
 cd my-app
-npm install @gyral/core lit
+npm install @gyral/core
 ```
 
-Gyral renders with [Lit](https://lit.dev), and your app provides the one copy of Lit that every
-Gyral package shares. That's why you install `lit` yourself.
+`@gyral/core` is the whole runtime: Gyral renders with its own view layer and has no runtime
+dependencies.
 
-Then add Gyral's Vite preset. It makes sure only one copy of Lit is bundled, and it pre-bundles
-the Lit modules Gyral uses so the dev server doesn't reload while it discovers them:
+Then add Gyral's Vite preset. It adds the template compiler to `vite build`: every template is
+checked and precompiled, so a mistake fails the build with a code frame and the bundle doesn't
+carry the code that prepares templates at runtime:
 
 ```ts
 // vite.config.ts
@@ -57,6 +58,10 @@ export default defineConfig({
   ...gyralVitePreset(),
 });
 ```
+
+To see the same checks in your editor, add the ESLint config from `@gyral/core/eslint` (see
+[Views](/docs/views/#checked-before-it-runs)). Optionally, `npm install -D parse5` lets the
+compiler check markup against a full HTML parser too.
 
 ## Write a component
 
@@ -93,9 +98,9 @@ export const Counter = define<State, Msg>('my-counter', {
 
 Read it from the bottom up:
 
-- **The view** is a Lit template. It doesn't attach event handlers. Instead it _names_ an intent
-  on each button with `data-intent`. `i` is typed from your messages, so `i.Increment` is a
-  compile error.
+- **The view** is an `html` template. It doesn't attach event handlers. Instead it _names_ an
+  intent on each button with `data-intent`. `i` is typed from your messages, so a misspelt
+  `i.Incremnt` is a compile error.
 - **Intent** says how a platform event becomes a message. A click on a button carrying
   `data-intent=${i.Increment}` runs the `Increment` parser, which returns
   `{ _tag: 'Increment' }`. A parser can also read the event's value, form data or key, and
@@ -193,8 +198,9 @@ it('counts', () => {
 ```
 
 `Counter.spec` is the object you passed to `define()`. Tests that need the real element (clicks,
-focus, rendering) run in a browser with [Vitest browser mode](https://vitest.dev/guide/browser/);
-`@gyral/testing` also has helpers for server rendering, hydration and virtual time.
+focus, rendering) run in a browser with [Vitest browser mode](https://vitest.dev/guide/browser/)
+and `await settled()` before they look at the DOM; `@gyral/testing` also has helpers for server
+rendering, hydration and virtual time. See [Testing](/docs/testing/).
 
 ## Next steps
 
@@ -204,3 +210,4 @@ focus, rendering) run in a browser with [Vitest browser mode](https://vitest.dev
 - See a whole application in [gyral-shop](https://github.com/gyraljs/gyral-shop).
 - Before you ship, read [Deploying](/docs/deploying/) and the
   [known issues](/docs/packages/#known-issues).
+- Coming from Gyral 0.2? Read [Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/).

@@ -1,6 +1,6 @@
 // /explore/: SQL over the archive, in the browser (swr-7f1.7). The island loads DuckDB-WASM only
 // when a query runs; without JavaScript the page links to the sections instead.
-import { serverHtml } from '@gyral/ssr';
+import { html } from '@gyral/core';
 import { EXPLORE_TEXT, TEXT } from '../labels.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 import '../islands/explore.js'; // registers <swr-explore> for server rendering
@@ -12,7 +12,7 @@ export const exploreMeta: PageMeta = {
   islands: true,
 };
 
-export const exploreBody = () => serverHtml`
+export const exploreBody = () => html`
   ${breadcrumb([{ href: '/', label: TEXT.home }], EXPLORE_TEXT.nav)}
   <h1>${EXPLORE_TEXT.title}</h1>
   <p>${EXPLORE_TEXT.intro}</p>

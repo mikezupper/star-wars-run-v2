@@ -1,5 +1,5 @@
+import { html } from '@gyral/core';
 import { renderToString } from '@gyral/ssr';
-import { html } from 'lit';
 import { inputsFor, resolve, step } from '@gyral/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { drivers, plainValue, type QueryResult } from '../../src/islands/duckdb.js';
