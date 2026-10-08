@@ -127,25 +127,29 @@ const localStore = (): ThemeStorage | null => {
   }
 };
 
-const toggle =
+// Two toggles: one in the header row, one in the Sections panel for narrow screens.
+const toggles =
   typeof document === 'undefined'
-    ? null
-    : document.querySelector<HTMLButtonElement>('button[data-theme-toggle]');
-if (toggle !== null) {
+    ? []
+    : [...document.querySelectorAll<HTMLButtonElement>('button[data-theme-toggle]')];
+if (toggles.length > 0) {
   const system = matchMedia('(prefers-color-scheme: dark)');
   const sync = () => {
     const theme = shownTheme(document.documentElement, system.matches);
-    toggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    for (const toggle of toggles) toggle.setAttribute('aria-pressed', String(theme === 'dark'));
     for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'))
       meta.content = THEME_COLOR[theme];
   };
-  toggle.addEventListener('click', () => {
+  const flip = () => {
     const next = shownTheme(document.documentElement, system.matches) === 'dark' ? 'light' : 'dark';
     pickTheme(next, document.documentElement, system.matches, localStore());
     sync();
-  });
+  };
+  for (const toggle of toggles) {
+    toggle.addEventListener('click', flip);
+    toggle.hidden = false;
+  }
   system.addEventListener('change', sync);
-  toggle.hidden = false;
   sync();
 }
 

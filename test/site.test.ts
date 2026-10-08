@@ -117,13 +117,34 @@ describe('the theme', () => {
     }
   });
 
-  it('puts a toggle in every header, hidden until its script runs', () => {
+  it('puts a toggle in every header and its panel, hidden until its script runs', () => {
     for (const [path, page] of pages) {
       const header = page.slice(page.indexOf('<header>'), page.indexOf('</header>'));
-      expect(header, path).toMatch(
-        /<button[^>]*aria-pressed="false"[^>]*data-theme-toggle[^>]*hidden/,
+      const toggles = header.match(
+        /<button[^>]*aria-pressed="false"[^>]*data-theme-toggle[^>]*hidden/g,
       );
+      expect(toggles, path).toHaveLength(2);
     }
+  });
+});
+
+describe('the header', () => {
+  it('is one row: name, search, Ask, and a Sections panel that holds every section and Sabacc', () => {
+    const page = pages.get('/characters/') ?? '';
+    const header = page.slice(page.indexOf('<header>'), page.indexOf('</header>'));
+    expect(header).toMatch(/<button type="button" popovertarget="site-sections">/);
+    const panel = header.slice(header.indexOf('id="site-sections"'));
+    expect(panel).toContain('href="/sabacc/"');
+    expect(panel).toMatch(/href="\/characters\/" aria-current="page"/);
+    expect(header).toContain('id="site-search-q"');
+    expect(header).toContain('<a href="/search/" aria-label="Search">');
+  });
+
+  it('leaves search out of the header on the search page itself', () => {
+    const page = pages.get('/search/') ?? '';
+    const header = page.slice(page.indexOf('<header>'), page.indexOf('</header>'));
+    expect(header).not.toContain('site-search-q');
+    expect(header).not.toContain('href="/search/"');
   });
 });
 

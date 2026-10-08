@@ -344,14 +344,22 @@
     }
   }
 
-  /* Banner: site name, section nav, search. Wraps on narrow screens. */
+  /*
+   * Banner: one row (ADR 0004, "The look"): the name, search, Ask, a Sections button whose panel
+   * is a native popover, and the theme. Narrow screens trade the search box for a link to
+   * /search/ and move the theme into the panel.
+   */
   body > header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem 1.5rem;
-    padding-block: 1rem;
+    gap: 0.5rem;
+    padding-block: 0.75rem;
     border-block-end: var(--rule-width) solid var(--rule);
+
+    & > p:first-of-type {
+      flex: none;
+      margin-inline-end: 0.75rem;
+    }
 
     & > p:first-of-type a {
       font-family: var(--font-display);
@@ -363,62 +371,13 @@
       text-transform: uppercase;
       color: var(--text);
       text-decoration: none;
-    }
-
-    & > p + p {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    /* Ask and Sabacc beside the site name: orange in Datapad, gold in Holotable. */
-    & > p + p a {
-      display: inline-block;
-      padding: 0.3rem 0.8rem;
-      border: var(--rule-width) solid var(--ask);
-      border-radius: var(--radius-sm);
-      color: light-dark(var(--accent), var(--ask));
-      font-family: var(--font-display);
-      font-stretch: var(--ui-stretch);
-      font-weight: var(--display-weight);
-      letter-spacing: var(--ui-tracking);
-      text-transform: uppercase;
-      text-decoration: none;
-
-      &:hover,
-      &[aria-current] {
-        background: color-mix(in oklch, var(--ask) 18%, transparent);
-      }
-    }
-
-    & nav ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-      padding: 0;
-      list-style: none;
-    }
-
-    & nav a {
-      display: inline-block;
-      padding: 0.3rem 0.55rem;
-      font-size: var(--step--1);
-      border-radius: var(--radius-sm);
-      color: var(--text-muted);
-      text-decoration: none;
-
-      &:hover {
-        color: var(--text);
-        background: color-mix(in oklch, var(--text) 8%, transparent);
-      }
-
-      &[aria-current] {
-        color: var(--text);
-        background: color-mix(in oklch, var(--accent-fill) 22%, transparent);
-      }
+      white-space: nowrap;
     }
 
     & search {
-      margin-inline-start: auto;
+      flex: 1 1 16rem;
+      max-inline-size: 36rem;
+      margin-inline-end: auto;
     }
 
     & form {
@@ -434,6 +393,177 @@
         overflow: hidden;
         clip-path: inset(50%);
         white-space: nowrap;
+      }
+    }
+
+    & input[type='search'] {
+      flex: 1;
+      inline-size: auto;
+    }
+
+    /* Ask: orange in Datapad, gold in Holotable. */
+    & > a[href='/explore/'] {
+      display: inline-grid;
+      place-items: center;
+      min-block-size: 2.75rem;
+      padding-inline: 1rem;
+      border: var(--rule-width) solid var(--ask);
+      border-radius: var(--radius);
+      background: light-dark(var(--ask), transparent);
+      color: light-dark(var(--on-accent), var(--ask));
+      font-family: var(--font-display);
+      font-stretch: var(--ui-stretch);
+      font-weight: var(--display-weight);
+      letter-spacing: var(--ui-tracking);
+      text-transform: uppercase;
+      text-decoration: none;
+
+      &:hover,
+      &[aria-current] {
+        background: light-dark(
+          color-mix(in oklch, var(--ask) 82%, var(--text)),
+          color-mix(in oklch, var(--ask) 18%, transparent)
+        );
+      }
+    }
+
+    /* Sections and the search icon: quiet buttons beside Ask. */
+    & > button[popovertarget],
+    & > a[href='/search/'] {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-block-size: 2.75rem;
+      min-inline-size: 2.75rem;
+      justify-content: center;
+      padding-inline: 0.75rem;
+      border: var(--rule-width) solid var(--rule);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      color: var(--text);
+
+      &:hover {
+        background: color-mix(in oklch, var(--accent-fill) 18%, var(--surface-raised));
+      }
+    }
+
+    & > a[href='/search/'] {
+      display: none;
+      padding: 0;
+    }
+
+    & svg {
+      flex: none;
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* The panel: under the header's end, dismissed by Esc or a click outside. */
+    & nav[popover] {
+      position: fixed;
+      inset: auto;
+      inset-block-start: 4.75rem;
+      inset-inline-end: max(1rem, (100% - var(--page)) / 2);
+      inline-size: min(26rem, 100% - 2rem);
+      max-block-size: calc(100dvh - 6rem);
+      overflow: auto;
+      margin: 0;
+      padding: var(--gap);
+      border: var(--card-border);
+      border-radius: var(--radius-card);
+      background-color: var(--surface-raised);
+      background-image: var(--card-texture);
+      box-shadow: var(--card-shadow);
+      color: var(--text);
+
+      /* Two columns when they fit whole words; one on a phone. */
+      & ul {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+        gap: 0 1rem;
+        padding: 0;
+        list-style: none;
+        overflow-wrap: normal;
+      }
+
+      & ul + ul {
+        margin-block-start: 0.75rem;
+        padding-block-start: 0.75rem;
+        border-block-start: 1px solid var(--border);
+      }
+
+      & a {
+        display: block;
+        padding-block: 0.45rem;
+        color: var(--text);
+        font-family: var(--font-display);
+        font-stretch: var(--ui-stretch);
+        font-weight: var(--display-weight);
+        letter-spacing: var(--ui-tracking);
+        text-transform: uppercase;
+        text-decoration: none;
+
+        &:hover,
+        &[aria-current] {
+          color: var(--accent);
+        }
+      }
+
+      & button[data-theme-toggle] {
+        display: none;
+      }
+    }
+
+    @media (width < 48rem) {
+      gap: 0.25rem;
+      padding-block: 0.5rem;
+
+      & > p:first-of-type {
+        flex: 1 1 auto;
+        min-inline-size: 0;
+      }
+
+      & > p:first-of-type a {
+        font-size: var(--step-1);
+      }
+
+      & search,
+      & > button[data-theme-toggle] {
+        display: none;
+      }
+
+      & > a[href='/search/'] {
+        display: inline-grid;
+        place-items: center;
+      }
+
+      & > a[href='/explore/'] {
+        padding-inline: 0.75rem;
+      }
+
+      & > button[popovertarget] {
+        padding: 0;
+
+        & span {
+          position: absolute;
+          inline-size: 1px;
+          block-size: 1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+      }
+
+      & nav[popover] {
+        inset-block-start: 4rem;
+
+        & button[data-theme-toggle]:not([hidden]) {
+          display: inline-grid;
+          margin-block-start: 0.75rem;
+        }
       }
     }
   }

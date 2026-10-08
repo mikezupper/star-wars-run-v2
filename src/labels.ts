@@ -352,6 +352,7 @@ export const TEXT = {
   searchDescription:
     'Search the whole Star Wars archive, canon and Legends: characters, planets, starships, battles, stories and more.',
   searchLabel: 'Search',
+  searchPlaceholder: 'Search the archive',
   searchKindLabel: 'Show',
   searchAllKinds: 'Everything',
   searchHint:
