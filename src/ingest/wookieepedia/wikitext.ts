@@ -304,10 +304,9 @@ export function parseArticle(title: string, wikitext: string): ParsedArticle {
   const root = Parser.parse(opening(wikitext)) as unknown as Node;
   const top = root.childNodes;
   const topTemplate = top.find((n) => n.type === 'template' && templateName(n) === 'Top');
-  const flags =
-    topTemplate === undefined
-      ? []
-      : [...parameters(topTemplate).values()].map((v) => plain(v.childNodes).trim());
+  const topParameters =
+    topTemplate === undefined ? new Map<string, Node>() : parameters(topTemplate);
+  const flags = [...topParameters.values()].map((v) => plain(v.childNodes).trim());
   const box = infobox(top);
   const fields: Field[] = [];
   if (box !== undefined) {
@@ -317,9 +316,18 @@ export function parseArticle(title: string, wikitext: string): ParsedArticle {
       if (list.length > 0) fields.push({ name, items: list });
     }
   }
+  const era = flags.includes('leg') || title.endsWith('/Legends') ? 'legends' : 'canon';
+  // `{{Top|legends=Palpatine/Legends}}` on a canon article names its Legends twin, and
+  // `canon=` the reverse; a few articles spell them `leg=` and `can=`.
+  const twin =
+    era === 'canon'
+      ? (topParameters.get('legends') ?? topParameters.get('leg'))
+      : (topParameters.get('canon') ?? topParameters.get('can'));
+  const counterpart = twin === undefined ? '' : plain(twin.childNodes).trim();
   return {
-    era: flags.includes('leg') || title.endsWith('/Legends') ? 'legends' : 'canon',
+    era,
     ...(box === undefined ? {} : { kind: templateName(box) }),
+    ...(counterpart === '' ? {} : { counterpart }),
     fields,
     lead: lead(top.filter((n) => n !== box)),
   };

@@ -14,6 +14,7 @@ export interface ArticleSummary {
   readonly title: string;
   readonly era: 'canon' | 'legends';
   readonly kind?: string;
+  readonly counterpart?: string;
 }
 
 export interface WookieepediaIndex {
@@ -24,23 +25,35 @@ export interface WookieepediaIndex {
 const lines = (gz: Buffer): string[] => gunzipSync(gz).toString('utf8').split('\n').filter(Boolean);
 
 /**
- * A line's title, era and kind, read from its start without parsing the article: articleLine()
- * (src/ingest/wookieepedia/snapshot.ts) writes those keys first. Parsing every article in full
- * just to index it made a 400-page sample build spend half a minute loading.
+ * A line's title, era, kind and counterpart, read from its start without parsing the article:
+ * articleLine() (src/ingest/wookieepedia/snapshot.ts) writes those keys first. Parsing every
+ * article in full just to index it made a 400-page sample build spend half a minute loading.
  */
-const HEAD = /^\{"title":("(?:[^"\\]|\\.)*"),"era":"(canon|legends)"(?:,"kind":("(?:[^"\\]|\\.)*"))?/;
+const STRING = '("(?:[^"\\\\]|\\\\.)*")';
+const HEAD = new RegExp(
+  `^\\{"title":${STRING},"era":"(canon|legends)"(?:,"kind":${STRING})?(?:,"counterpart":${STRING})?`,
+);
 
 export function summaryOf(line: string): ArticleSummary {
   const head = HEAD.exec(line);
   if (head?.[1] === undefined) {
-    const { title, era, kind } = JSON.parse(line) as ArticleSummary;
-    return { title, era, ...(kind === undefined ? {} : { kind }) };
+    const { title, era, kind, counterpart } = JSON.parse(line) as ArticleSummary;
+    return {
+      title,
+      era,
+      ...(kind === undefined ? {} : { kind }),
+      ...(counterpart === undefined ? {} : { counterpart }),
+    };
   }
-  const kind = head[3] === undefined ? undefined : (JSON.parse(head[3]) as string);
+  const read = (json: string | undefined) =>
+    json === undefined ? undefined : (JSON.parse(json) as string);
+  const kind = read(head[3]);
+  const counterpart = read(head[4]);
   return {
     title: JSON.parse(head[1]) as string,
     era: head[2] as ArticleSummary['era'],
     ...(kind === undefined ? {} : { kind }),
+    ...(counterpart === undefined ? {} : { counterpart }),
   };
 }
 

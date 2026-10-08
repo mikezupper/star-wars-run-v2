@@ -8,9 +8,16 @@ export interface Summary {
   readonly title: string;
   readonly era: 'canon' | 'legends';
   readonly kind?: string;
+  /** Its twin in the other continuity, when Wookieepedia names one (src/domain/article.ts). */
+  readonly counterpart?: string;
 }
 
 export interface Entry extends Summary {
+  /**
+   * The same subject's article in the other continuity, when the archive has both: the named
+   * counterpart (either side may name it), else `X` and `X/Legends`. Always mutual.
+   */
+  readonly twin?: string;
   readonly section: Section;
   readonly slug: string;
   /** `/characters/luke-skywalker/` */
@@ -52,6 +59,7 @@ export function buildArchive(summaries: Iterable<Summary>): Archive {
   const sorted = [...summaries].sort((a, b) =>
     a.title < b.title ? -1 : a.title > b.title ? 1 : 0,
   );
+  const twins = pairTwins(sorted);
   const byTitle = new Map<string, Entry>();
   const taken = new Map<Section, Set<string>>(SECTIONS.map((s) => [s, new Set()]));
   const bySection = new Map<Section, Entry[]>(SECTIONS.map((s) => [s, []]));
@@ -62,8 +70,10 @@ export function buildArchive(summaries: Iterable<Summary>): Archive {
     let slug = base;
     for (let n = 2; used.has(slug); n++) slug = `${base}-${String(n)}`;
     used.add(slug);
+    const twin = twins.get(summary.title);
     const entry: Entry = {
       ...summary,
+      ...(twin === undefined ? {} : { twin }),
       section,
       slug,
       path: `/${section}/${slug}/`,
@@ -73,6 +83,28 @@ export function buildArchive(summaries: Iterable<Summary>): Archive {
     bySection.get(section)?.push(entry);
   }
   return { byTitle, bySection, pathOf: (title) => byTitle.get(title)?.path };
+}
+
+/**
+ * Canon and Legends twins, both ways. Named counterparts first (either article may name the
+ * other; the pair must be one canon and one Legends article, each in no other pair), then the
+ * default pairing of `X` with `X/Legends` for what's left.
+ */
+function pairTwins(summaries: readonly Summary[]): Map<string, string> {
+  const byTitle = new Map(summaries.map((s) => [s.title, s]));
+  const twins = new Map<string, string>();
+  const pair = (a: Summary, b: Summary | undefined) => {
+    if (b === undefined || a.era === b.era || twins.has(a.title) || twins.has(b.title)) return;
+    twins.set(a.title, b.title);
+    twins.set(b.title, a.title);
+  };
+  for (const s of summaries) {
+    if (s.counterpart !== undefined) pair(s, byTitle.get(s.counterpart));
+  }
+  for (const s of summaries) {
+    if (s.era === 'canon') pair(s, byTitle.get(`${s.title}/Legends`));
+  }
+  return twins;
 }
 
 /** A smaller archive: the first `perSection` articles of each section (the gate's sample build). */

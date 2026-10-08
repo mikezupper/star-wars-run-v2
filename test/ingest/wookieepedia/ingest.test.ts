@@ -113,6 +113,14 @@ describe('link resolution', () => {
     });
   });
 
+  it('resolves the counterpart like a link, keeps it in the line head, drops it when missing', () => {
+    const twin = (counterpart: string) =>
+      resolveLinks({ era: 'canon', counterpart, fields: [], lead: [] }, titles);
+    expect(twin('humans')).toEqual({ era: 'canon', counterpart: 'Human', fields: [], lead: [] });
+    expect(Object.keys(twin('humans'))).toEqual(['era', 'counterpart', 'fields', 'lead']);
+    expect(twin('Nobody')).toEqual({ era: 'canon', fields: [], lead: [] });
+  });
+
   it('reports a parse failure instead of throwing', () => {
     expect(parseOne('X', null as unknown as string, titles)).toMatchObject({ title: 'X' });
   });

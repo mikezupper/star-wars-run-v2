@@ -26,6 +26,29 @@ describe('real articles', { timeout: 30_000 }, () => {
     );
   });
 
+  it('reads the twin in the other continuity that {{Top}} names, if any', () => {
+    expect(luke.counterpart).toBeUndefined();
+    expect(
+      parseArticle('T-65B X-wing starfighter', fixture('t-65b-x-wing-starfighter')).counterpart,
+    ).toBe('T-65 X-wing starfighter');
+    // As the dump has it: `legends=` on the canon article.
+    expect(
+      parseArticle('Darth Sidious', '{{Top|sprot|legends=Palpatine/Legends}}\nThe Sith.')
+        .counterpart,
+    ).toBe('Palpatine/Legends');
+    expect(
+      parseArticle('Palpatine/Legends', '{{Top|leg|canon=Darth Sidious}}\nThe Sith.').counterpart,
+    ).toBe('Darth Sidious');
+    expect(parseArticle('Darth Sidious', '{{Top|leg=Palpatine}}\nThe Sith.').counterpart).toBe(
+      'Palpatine',
+    );
+    expect(parseArticle('Palpatine', '{{Top|leg|can=Darth Sidious}}\nThe Sith.')).toMatchObject({
+      era: 'legends',
+      counterpart: 'Darth Sidious',
+    });
+    expect(parseArticle('Hoth', '{{Top|leg=}}\nIce.').counterpart).toBeUndefined();
+  });
+
   it('turns fields into clean text with links, dropping citations and images', () => {
     expect(get('homeworld')).toEqual(['[Tatooine→Tatooine]']);
     expect(get('height')).toEqual(['1.72 [meters→Meter] (5 [ft→Foot], 8 in)']);

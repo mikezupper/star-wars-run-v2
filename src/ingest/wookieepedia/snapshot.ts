@@ -6,7 +6,8 @@ import type { ArticleRecord, ParsedArticle } from '../../domain/article.js';
 
 export type { ArticleRecord } from '../../domain/article.js';
 
-export const SNAPSHOT_VERSION = 2;
+// 3: articles carry `counterpart`, their twin in the other continuity (swr-a7s).
+export const SNAPSHOT_VERSION = 3;
 export const SHARD_SIZE = 20_000;
 
 /** One serialized article, with the two facts meta.json counts, so nobody re-parses it. */

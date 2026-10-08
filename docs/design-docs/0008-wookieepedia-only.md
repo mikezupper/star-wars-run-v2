@@ -24,6 +24,14 @@ Wookieepedia snapshot holds 227,272 articles, and 257 of swapi's 259 records mat
    `luke-skywalker-legends`). The kind-to-section table is data (`src/domain/sections.ts`); a
    kind not in it goes to `other`.
 
+   **Twins** (`swr-a7s`, 2026-10-08): a subject with a canon and a Legends article is one
+   subject. Usually the titles are `X` and `X/Legends`; when they differ, Wookieepedia's
+   `{{Top}}` names the other one (`legends=Palpatine/Legends` on `Darth Sidious`, `canon=` the
+   reverse; a few articles write `leg=` and `can=`). The
+   ingest keeps that as `counterpart` (snapshot version 3) and the archive pairs both ways
+   (`Entry.twin`). Pages link to their twin, and lists of best-known subjects count a pair once
+   under its canon name; Explore and search follow (`swr-cd6`).
+
    | Section         | Kinds (main ones)                                                        |
    | --------------- | ------------------------------------------------------------------------ |
    | `characters`    | Character, Droid, Family                                                 |

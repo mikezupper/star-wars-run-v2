@@ -38,6 +38,12 @@ export interface ParsedArticle {
   readonly era: 'canon' | 'legends';
   /** The infobox template's name, e.g. `Character`, `CelestialBody`; absent without one. */
   readonly kind?: string;
+  /**
+   * The same subject's article in the other continuity, when Wookieepedia names it (its
+   * `{{Top}}` template's `legends=` or `canon=`): `Palpatine/Legends` for `Darth Sidious`.
+   * Without it, the twin of `X` is `X/Legends` (src/domain/archive.ts).
+   */
+  readonly counterpart?: string;
   readonly fields: readonly Field[];
   /** The paragraphs before the first heading. */
   readonly lead: readonly Rich[];
