@@ -1,17 +1,21 @@
-// Opens the API (ADR 0010) from where its data is and the environment: the archive database and
-// Ask's schema (written by the build outside the public site), the title index, the question
-// log's file, and the model's settings. Used by the API container (scripts/api.ts) and by the
-// dev and preview servers.
+// Opens the app (ADRs 0010 and 0011) from where its data is and the environment: the archive
+// database, Ask's schema and the pages' file (written by the build outside the public site), the
+// title index, the question log's file, and the model's settings. /api/ goes to the API; with a
+// pages file, every other path is a page rendered on request. Used by the app container
+// (scripts/api.ts) and by the preview server; the dev server renders pages itself.
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { AskSchema } from '../domain/ask.js';
 import { createApi } from './api.js';
+import { createPagesApp } from './app.js';
+import { openPages } from './pages.js';
 import { openArchive } from './archive.js';
 import { openQuestionLog } from './questions.js';
 import { titleResolver } from './titles.js';
 
 export interface ApiFiles {
-  /** Holds archive.duckdb and ask-schema.json. */
+  /** Holds archive.duckdb, ask-schema.json and, for pages, pages.sqlite. */
   readonly dataDir: string;
   /** The search title index (search-titles/). */
   readonly titlesDir: string;
@@ -32,7 +36,10 @@ export async function openApi(
   const archive = await openArchive(join(files.dataDir, 'archive.duckdb'));
   const log = files.logFile === undefined ? undefined : await openQuestionLog(files.logFile);
   let schema: Promise<AskSchema> | undefined;
-  const handle = createApi({
+  const pagesFile = join(files.dataDir, 'pages.sqlite');
+  const pages = existsSync(pagesFile) ? openPages(pagesFile) : undefined;
+  const page = pages === undefined ? undefined : createPagesApp(pages);
+  const api = createApi({
     archive,
     resolve: titleResolver(files.titlesDir),
     schema: () =>
@@ -48,10 +55,14 @@ export async function openApi(
     ...(report === undefined ? {} : { report }),
   });
   return {
-    handle,
+    handle: (request) =>
+      page === undefined || new URL(request.url).pathname.startsWith('/api/')
+        ? api(request)
+        : page(request),
     close: async () => {
       await log?.close();
       archive.close();
+      pages?.close();
     },
   };
 }

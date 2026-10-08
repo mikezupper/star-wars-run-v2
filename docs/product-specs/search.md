@@ -16,7 +16,7 @@ Beads: `swr-3mo.6`; ranking at full size, `swr-357`.
 
 ## How (summary)
 
-Pagefind indexes the prerendered pages at build time and writes a static index to
+Pagefind indexes one record per article (title, lead and facts) at build time and writes a static index to
 `dist/pagefind/`, the way gyral.dev does. A Gyral island queries it in the browser. There is
 no search server.
 

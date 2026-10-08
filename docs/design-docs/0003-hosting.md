@@ -1,6 +1,6 @@
 # ADR 0003 — Hosting: a Docker image on a VPS, behind Cloudflare
 
-Status: **accepted** (2026-10-05). Implemented in `swr-3mo.10` (image, headers) and `swr-3mo.9` (offline).
+Status: **accepted** (2026-10-05; pages rendered on request since ADR 0011, 2026-10-08). Implemented in `swr-3mo.10` (image, headers) and `swr-3mo.9` (offline).
 
 ## Context
 
@@ -10,15 +10,20 @@ Cloudflare's edge or the browser cache without reaching the VPS.
 
 ## Decision
 
-- The site ships as a **Docker image** (`Dockerfile`): `node:24-slim` runs `pnpm build`, then
-  `caddy:2-alpine` serves `dist/` on port 8080. No Node process serves pages. The build
-  ingests the Wookieepedia dump, mounted from a build context that holds only the dump, so the
-  dump never lands in a layer ([0007-wookieepedia.md](0007-wookieepedia.md)). With all 227k
-  pages the image is 1.92 GB and takes about 20 minutes to build. A second, small image runs
-  the API (ADR 0010: Ask, SQL and the question log, with DuckDB); Caddy forwards `/api/*` to it.
-  `compose.yaml` runs both, with Ask's settings from an `.env` beside it, read by the API only,
-  and the log in a volume. `pnpm docker:build` builds both images and
+- The site ships as **two Docker images** (`Dockerfile`), built from one `node:24-slim` stage
+  that runs `pnpm build`. The build ingests the Wookieepedia dump, mounted from a build context
+  that holds only the dump, so the dump never lands in a layer
+  ([0007-wookieepedia.md](0007-wookieepedia.md)).
+  - **site:** `caddy:2-alpine` serves `dist/` (assets, search indexes, sitemaps, the service
+    worker) on port 8080 and forwards everything else to the app.
+  - **app** (target `api`): Node with `pages.sqlite`, Explore's database and Ask's schema. It
+    renders every page on request (ADR 0011, superseding "no Node process serves pages") and
+    answers `/api/*` (ADR 0010).
+
+  `compose.yaml` runs both, with Ask's settings from an `.env` beside it, read by the app only,
+  and the question log in a volume. `pnpm docker:build` builds both images and
   `pnpm docker:run` starts the stack locally.
+
 - **Headers have one source:** `src/hosting/headers.ts`. The preview server applies it, so
   `pnpm smoke` runs under the production CSP, and `pnpm caddyfile` renders it to the committed
   `Caddyfile`. A test fails if the two drift.
@@ -48,7 +53,7 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   `404.html` with status 404 for unknown paths. `SMOKE_BASE_URL=http://localhost:8080 pnpm
 smoke` runs the whole smoke suite against the running image.
 - The site works offline as a PWA. The service worker (`src/offline/sw.ts`, Workbox) is
-  bundled after prerendering by `scripts/build-sw.ts`, the way
+  bundled at the end of the build by `scripts/build-sw.ts`, the way
   `mikezupper-blog-astro/scripts/build-service-worker.mjs` does it:
   - **Precached on install** (`src/offline/precache.ts`): home, the section lists, `/search/`,
     `/offline/`, the hashed CSS and JS, the manifest and icons, and the **whole Pagefind

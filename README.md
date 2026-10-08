@@ -18,7 +18,8 @@ deploying the image.
 - **Pages** are rendered at build time with [Gyral](https://gyral.dev), a Model-View-Intent
   framework for web components. Only the search page loads the framework; other pages ship a few hundred bytes of script for
   the search shortcut.
-- **Hosting** is a Docker image serving static files, behind Cloudflare.
+- **Hosting** is two Docker images behind Cloudflare: Caddy for the static files, and an app that
+  renders every page on request from SQLite and answers Explore (ADRs 0010, 0011).
 
 The details are in [ARCHITECTURE.md](ARCHITECTURE.md) and the
 [design docs](docs/design-docs/index.md).

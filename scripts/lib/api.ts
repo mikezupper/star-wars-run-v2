@@ -20,9 +20,11 @@ export const isApi = (pathname: string): boolean => pathname.startsWith('/api/')
 
 let api: ReturnType<typeof openApi> | undefined;
 
+/** `extra`: headers the production server (Caddy) adds to everything, for the preview server. */
 export async function handleApi(
   req: http.IncomingMessage,
   res: http.ServerResponse,
+  extra: Readonly<Record<string, string>> = {},
 ): Promise<void> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
@@ -48,12 +50,17 @@ export async function handleApi(
     ).handle(
       new Request(new URL(req.url ?? '/', 'http://localhost'), {
         method: req.method ?? 'GET',
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          ...(typeof req.headers['if-none-match'] === 'string'
+            ? { 'if-none-match': req.headers['if-none-match'] }
+            : {}),
+        },
         ...(req.method === 'POST' ? { body: Buffer.concat(chunks) } : {}),
         signal: abort.signal,
       }),
     );
-    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.writeHead(response.status, { ...extra, ...Object.fromEntries(response.headers) });
     // pipeline(), not pipe(): an aborted or broken stream ends this response, not the process.
     if (response.body === null) res.end();
     else await pipeline(Readable.fromWeb(response.body as never), res).catch(() => undefined);

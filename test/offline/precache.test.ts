@@ -61,4 +61,17 @@ describe('precache entries', () => {
       'hash(contents of people/index.html)',
     );
   });
+
+  it('names the shell pages the app renders, revised by the build, unless a file has them', () => {
+    const entries = precacheEntries(
+      [{ path: 'search/index.html', content: 'static search' }],
+      () => 'h',
+      { urls: ['/', '/search/', '/characters/'], revision: 'b42' },
+    );
+    expect(entries).toEqual([
+      { url: '/', revision: 'b42' },
+      { url: '/characters/', revision: 'b42' },
+      { url: '/search/', revision: 'h' },
+    ]);
+  });
 });

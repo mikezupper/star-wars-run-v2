@@ -1,5 +1,7 @@
 // Which built files the service worker downloads on install (docs/product-specs/offline.md):
-// the shell pages, the hashed CSS and JS, Pagefind's runtime, the manifest and its icons.
+// the shell pages, the hashed CSS and JS, Pagefind's runtime, the manifest and its icons. The
+// shell pages are rendered on request (ADR 0011), so they're named, with the build's id as
+// their revision; a static shell page in dist/ is still taken from its file.
 // Article pages and the search index's chunks are not precached: at 227k articles the index
 // alone is 130 MB. src/offline/sw.ts caches both as they're used. Pure, so it's tested
 // directly; scripts/build-sw.ts feeds it the files in dist/.
@@ -41,13 +43,20 @@ export const isPrecached = (path: string): boolean =>
 export function precacheEntries(
   files: readonly BuiltFile[],
   hash: (content: Uint8Array | string) => string,
+  rendered: { readonly urls: readonly string[]; readonly revision: string } = {
+    urls: [],
+    revision: '',
+  },
 ): readonly PrecacheEntry[] {
-  return files
-    .flatMap((file): PrecacheEntry[] => {
-      if (HASHED.test(file.path)) return [{ url: urlOf(file.path), revision: null }];
-      return isPrecached(file.path)
-        ? [{ url: urlOf(file.path), revision: hash(file.content) }]
-        : [];
-    })
-    .sort((a, b) => a.url.localeCompare(b.url));
+  const fromFiles = files.flatMap((file): PrecacheEntry[] => {
+    if (HASHED.test(file.path)) return [{ url: urlOf(file.path), revision: null }];
+    return isPrecached(file.path) ? [{ url: urlOf(file.path), revision: hash(file.content) }] : [];
+  });
+  const have = new Set(fromFiles.map((e) => e.url));
+  return [
+    ...fromFiles,
+    ...rendered.urls
+      .filter((url) => !have.has(url))
+      .map((url) => ({ url, revision: rendered.revision })),
+  ].sort((a, b) => a.url.localeCompare(b.url));
 }
