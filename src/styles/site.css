@@ -883,7 +883,7 @@
   }
 
   /* A section's letters: chips with their counts. */
-  nav[aria-label='Browse by letter'] ul {
+  nav[aria-labelledby='a-to-z'] ul {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -914,6 +914,125 @@
       font-family: var(--font-mono);
       font-size: var(--step--1);
     }
+  }
+
+  /* Section and letter pages: a title block like an article's. */
+  main > header {
+    display: grid;
+    gap: 0.5rem;
+    padding-block-end: var(--gap);
+    border-block-end: var(--rule-width) solid var(--rule);
+
+    & > p:first-child {
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: var(--step--1);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    & > h1 + p {
+      max-inline-size: var(--measure);
+      color: var(--text-muted);
+      font-size: var(--step-1);
+    }
+  }
+
+  /*
+   * The continuity filter: three radio buttons drawn as one segmented control. The inputs stay
+   * in the page for keyboards and screen readers; the labels are what you see.
+   */
+  fieldset[data-era-filter] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+
+    & legend {
+      float: inline-start;
+      margin-inline-end: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    & label {
+      display: inline-grid;
+      place-items: center;
+      min-block-size: 2.75rem;
+      padding-inline: 1rem;
+      border: var(--rule-width) solid var(--rule);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+
+      &:has(input:checked) {
+        background: var(--text);
+        color: var(--surface);
+      }
+
+      &:has(input:focus-visible) {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+
+      &:has(input[value='canon']) {
+        color: var(--canon);
+      }
+
+      &:has(input[value='legends']) {
+        color: var(--legends);
+      }
+
+      &:has(input[value='canon']:checked),
+      &:has(input[value='legends']:checked) {
+        color: var(--surface);
+      }
+    }
+
+    & input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+  }
+
+  main:has(input[name='era'][value='canon']:checked) [data-era='legends'],
+  main:has(input[name='era'][value='legends']:checked) [data-era='canon'] {
+    display: none;
+  }
+
+  /* A section's kinds, with counts. */
+  main > ul[aria-label='Kinds'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+
+    & li {
+      border: 0;
+    }
+
+    & data {
+      color: var(--text-muted);
+    }
+  }
+
+  main > h2#a-to-z {
+    margin-block-start: var(--gap);
   }
 
   /* The opening crawl: amber, centred, set like the films (without the 3D tilt). */
