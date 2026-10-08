@@ -82,11 +82,15 @@ export function createSite(assets: Assets, { archive, articles, links }: SiteDat
       });
     }
     for (const entry of entries) {
-      const record = articles.get(entry.title);
-      if (record === undefined) continue;
+      if (!articles.has(entry.title)) continue;
+      // The record is read when the page renders, not here: a store that reads from disk
+      // (ADR 0011) then touches one article per request, not all of them at start.
       table.set(entry.path, {
         meta: articleMeta(entry),
-        body: () => articleBody(entry, record, archive, links),
+        body: () => {
+          const record = articles.get(entry.title);
+          return record === undefined ? notFoundBody() : articleBody(entry, record, archive, links);
+        },
       });
     }
   }
