@@ -950,16 +950,96 @@
     }
   }
 
-  /* Home: the sections as cards, with their record counts. */
-  main:has(> h1 + p + ul) > ul {
-    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
-    gap: var(--gap);
+  /* Home: a question box as the way in, the best-known articles, the sections as cards. */
+  main > search form {
+    display: flex;
+    gap: 0.5rem;
+    max-inline-size: 48rem;
+
+    & label {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    & input {
+      flex: 1;
+      min-block-size: 3.25rem;
+      font-size: var(--step-1);
+    }
+
+    & button {
+      min-block-size: 3.25rem;
+      padding-inline: 1.5rem;
+      background: var(--ask);
+      font-size: var(--step-1);
+    }
+  }
+
+  main > section[aria-labelledby='best-known'] ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    gap: 0 2rem;
+    padding: 0;
+    list-style: none;
+    counter-reset: rank;
 
     & li {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 4.25rem 1fr;
+      align-items: baseline;
+      padding-block: 0.6rem;
+      border-block-end: 1px solid var(--border);
+      counter-increment: rank;
+
+      &::before {
+        content: counter(rank, decimal-leading-zero);
+        grid-row: span 2;
+        white-space: nowrap;
+        color: var(--accent);
+        font-family: var(--font-display);
+        font-size: var(--step-2);
+        font-stretch: var(--display-stretch);
+        font-weight: var(--display-weight);
+        line-height: 1;
+        text-shadow: var(--glow);
+      }
+    }
+
+    & a {
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+
+      &:hover {
+        color: var(--accent);
+      }
+    }
+
+    & small {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+  }
+
+  main > section[aria-labelledby='home-sections'] > ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: var(--gap);
+    padding: 0;
+    list-style: none;
+
+    /* A name that won't fit beside its count pushes the count below; it never breaks mid-word. */
+    & li {
+      display: flex;
+      flex-wrap: wrap;
       align-content: start;
       align-items: baseline;
+      justify-content: space-between;
       gap: 0.5rem 1rem;
       padding: var(--gap);
       border: var(--card-border);
@@ -967,17 +1047,23 @@
       background-color: var(--surface-raised);
       background-image: var(--card-texture);
       box-shadow: var(--card-shadow);
+      container-type: inline-size;
+      overflow-wrap: normal;
     }
 
     & a {
-      border: 0;
-      padding: 0;
+      color: var(--text);
       font-family: var(--font-display);
-      font-size: var(--step-2);
+      font-size: clamp(1rem, 9.5cqi, 1.5rem);
       font-stretch: var(--display-stretch);
       font-weight: var(--display-weight);
-      line-height: 1;
+      line-height: 1.05;
+      text-decoration: none;
       text-transform: uppercase;
+
+      &:hover {
+        color: var(--accent);
+      }
     }
 
     & data {
@@ -986,7 +1072,7 @@
     }
 
     & p {
-      grid-column: 1 / -1;
+      flex-basis: 100%;
       color: var(--text-muted);
       font-size: var(--step--1);
     }

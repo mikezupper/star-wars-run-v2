@@ -62,7 +62,7 @@ export const normalise = (pathname: string): string =>
 
 export function createSite(assets: Assets, { archive, articles, links }: SiteData): Site {
   const table = new Map<string, Route>([
-    ['/', { meta: homeMeta, body: () => homeBody(archive) }],
+    ['/', { meta: homeMeta, body: () => homeBody(archive, links) }],
     [searchMeta.path, { meta: searchMeta, body: searchBody }],
     [offlineMeta.path, { meta: offlineMeta, body: offlineBody }],
     [sabaccMeta.path, { meta: sabaccMeta, body: sabaccBody }],
