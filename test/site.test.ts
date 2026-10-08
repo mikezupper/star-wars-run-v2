@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { wookieepediaUrl } from '../src/domain/attribution.js';
+import { THEME_SCRIPT } from '../src/domain/theme.js';
 import { fullTitle } from '../src/render/layout.js';
 import { createSite, normalise, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
@@ -102,6 +103,26 @@ describe('every page', () => {
       expect(body.match(/<h1[\s>]/g), page).toHaveLength(1);
       expect(body.match(/<main[\s>]/g), page).toHaveLength(1);
       expect(links(body).find((l) => l.text === 'Wookieepedia')?.rel, page).toBe('external');
+    }
+  });
+});
+
+describe('the theme', () => {
+  it('applies a saved pick before the stylesheet, with the script exactly as hashed', () => {
+    for (const page of [pages.get('/'), pages.get('/characters/')]) {
+      const head = page?.slice(0, page.indexOf('</head>')) ?? '';
+      expect(head).toContain(`<script>${THEME_SCRIPT}</script>`);
+      expect(head.indexOf(THEME_SCRIPT)).toBeLessThan(head.indexOf('rel="stylesheet"'));
+      expect(head).toMatch(/<meta name="theme-color" media="\(prefers-color-scheme: dark\)"/);
+    }
+  });
+
+  it('puts a toggle in every header, hidden until its script runs', () => {
+    for (const [path, page] of pages) {
+      const header = page.slice(page.indexOf('<header>'), page.indexOf('</header>'));
+      expect(header, path).toMatch(
+        /<button[^>]*aria-pressed="false"[^>]*data-theme-toggle[^>]*hidden/,
+      );
     }
   });
 });

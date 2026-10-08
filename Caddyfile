@@ -9,7 +9,7 @@
 	encode zstd gzip
 
 	header {
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc=' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 		Strict-Transport-Security "max-age=63072000"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -48,7 +48,7 @@
 	handle_errors {
 		rewrite * /404.html
 		header {
-			Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+			Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc=' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 			Strict-Transport-Security "max-age=63072000"
 			X-Content-Type-Options "nosniff"
 			Referrer-Policy "strict-origin-when-cross-origin"
