@@ -12,11 +12,6 @@ const files = [
   'sw.js',
   'assets/site-abc123.css',
   'assets/page-def456.js',
-  'pagefind/pagefind.js',
-  'pagefind/fragment/en_1.pf_fragment',
-  'pagefind/index/en_2.pf_index',
-  'pagefind/filter/en_3.pf_filter',
-  'pagefind/wasm.en.pagefind',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/favicon.ico',
@@ -26,7 +21,7 @@ const entries = precacheEntries(files, (content) => `hash(${String(content)})`);
 const urls = entries.map((e) => e.url);
 
 describe('precache entries', () => {
-  it('include the shell pages, hashed assets, Pagefind\u2019s runtime and app files', () => {
+  it('include the shell pages, hashed assets and app files', () => {
     expect(urls).toEqual([
       '/',
       '/assets/page-def456.js',
@@ -34,23 +29,13 @@ describe('precache entries', () => {
       '/icons/icon-192.png',
       '/manifest.webmanifest',
       '/offline/',
-      '/pagefind/filter/en_3.pf_filter',
-      '/pagefind/pagefind.js',
-      '/pagefind/wasm.en.pagefind',
       '/people/',
       '/search/',
     ]);
   });
 
-  it('leave out article pages and index chunks (cached on use), and files never served', () => {
-    for (const url of [
-      '/people/luke-skywalker/',
-      '/pagefind/fragment/en_1.pf_fragment',
-      '/pagefind/index/en_2.pf_index',
-      '/404.html',
-      '/sitemap.xml',
-      '/sw.js',
-    ]) {
+  it('leave out article pages (cached on use), and files never served', () => {
+    for (const url of ['/people/luke-skywalker/', '/404.html', '/sitemap.xml', '/sw.js']) {
       expect(urls).not.toContain(url);
     }
   });

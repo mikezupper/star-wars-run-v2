@@ -1,6 +1,6 @@
 // The archive's links, turned around: for each article, how many articles link to it and which
 // of those are best known. A page shows the count ("linked from 3,729 articles") and the best
-// known of them ("Linked from"); search and Ask rank by the count (src/domain/titles.ts).
+// known of them ("Linked from"); search and Ask rank by the count (src/domain/search.ts).
 import type { ArticleRecord, Rich } from './article.js';
 
 /** The articles this one links to, from its lead, its facts and its appearances; not itself. */
@@ -14,6 +14,18 @@ export function outgoing(article: ArticleRecord): Set<string> {
   for (const a of article.appearances ?? []) if (a.link !== undefined) targets.add(a.link);
   targets.delete(article.title);
   return targets;
+}
+
+/**
+ * How many articles link to each article: from their lead, facts and Appearances. A
+ * disambiguation page or a stub has a handful; Luke Skywalker has thousands.
+ */
+export function inboundLinks(articles: Iterable<ArticleRecord>): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const article of articles) {
+    for (const t of outgoing(article)) counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  return counts;
 }
 
 export interface LinkGraph {

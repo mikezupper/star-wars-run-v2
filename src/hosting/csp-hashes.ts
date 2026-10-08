@@ -4,7 +4,6 @@
 
 /** Each island's declarative shadow root <style>. */
 export const STYLE_HASHES: readonly string[] = [
-  "'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw='",
   "'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='",
 ];
 

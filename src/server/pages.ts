@@ -5,11 +5,13 @@
 import { mkdirSync, rmSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { buildArchive, type Archive, type Summary } from '../domain/archive.js';
-import type { ArticleRecord } from '../domain/article.js';
+import { buildArchive, displayTitle, type Archive, type Summary } from '../domain/archive.js';
+import type { ArticleRecord, Rich } from '../domain/article.js';
+import { tokens } from '../domain/search.js';
 import type { LinkGraph } from '../domain/links.js';
 import type { Assets } from '../render/layout.js';
 import type { SiteData } from '../render/site.js';
+import { createSearch, type Search } from './search.js';
 
 /** What a build stamps on its pages: where its CSS and JS are, and its id for ETags. */
 export interface PagesMeta {
@@ -20,6 +22,7 @@ export interface PagesMeta {
 export interface Pages {
   readonly data: SiteData;
   readonly meta: PagesMeta;
+  readonly search: Search;
   readonly close: () => void;
 }
 
@@ -28,10 +31,71 @@ const SCHEMA = `
   CREATE TABLE summaries (title TEXT PRIMARY KEY, era TEXT NOT NULL, kind TEXT, counterpart TEXT) WITHOUT ROWID;
   CREATE TABLE articles (title TEXT PRIMARY KEY, record TEXT NOT NULL) WITHOUT ROWID;
   CREATE TABLE links (title TEXT PRIMARY KEY, count INTEGER NOT NULL, linked_from TEXT) WITHOUT ROWID;
+  CREATE TABLE names (id INTEGER PRIMARY KEY, name TEXT NOT NULL, alias INTEGER NOT NULL, title TEXT NOT NULL, links INTEGER NOT NULL);
+  CREATE VIRTUAL TABLE names_fts USING fts5(name, content='names', content_rowid='id', tokenize='unicode61 remove_diacritics 2', prefix='2 3');
+  CREATE VIRTUAL TABLE names_tri USING fts5(name, content='names', content_rowid='id', tokenize='trigram');
+  CREATE VIRTUAL TABLE texts USING fts5(title UNINDEXED, name, body, tokenize='unicode61 remove_diacritics 2');
 `;
 
-/** Writes `file` from scratch: every article, the address book, the link graph and `meta`. */
-export function writePages(file: string, data: SiteData, meta: PagesMeta): void {
+/** Redirect chains longer than this are broken (they loop); the ingest uses the same limit. */
+const MAX_HOPS = 5;
+
+/** Where a redirect lands, following chains, or undefined when it lands nowhere here. */
+function landing(
+  from: string,
+  redirects: ReadonlyMap<string, string>,
+  has: (title: string) => boolean,
+): string | undefined {
+  let target = redirects.get(from);
+  for (let hop = 0; target !== undefined && !has(target) && hop < MAX_HOPS; hop++) {
+    target = redirects.get(target);
+  }
+  return target !== undefined && has(target) ? target : undefined;
+}
+
+/** Search's tables (src/server/search.ts): names and redirects, and each article's text. */
+function writeSearch(
+  db: DatabaseSync,
+  data: SiteData,
+  redirects: ReadonlyMap<string, string>,
+): void {
+  const name = db.prepare('INSERT INTO names (name, alias, title, links) VALUES (?, ?, ?, ?)');
+  const links = (title: string) => data.links.counts.get(title) ?? 0;
+  const has = (title: string) => data.archive.byTitle.has(title);
+  for (const title of data.archive.byTitle.keys()) {
+    if (/\(disambiguation\)$/.test(title)) continue;
+    name.run(displayTitle(title), 0, title, links(title));
+  }
+  for (const from of redirects.keys()) {
+    const target = landing(from, redirects, has);
+    if (target === undefined) continue;
+    const alias = displayTitle(from);
+    // "Luke skywalker" adds nothing to "Luke Skywalker".
+    if (tokens(alias).join(' ') === tokens(displayTitle(target)).join(' ')) continue;
+    name.run(alias, 1, target, links(target));
+  }
+  db.exec("INSERT INTO names_fts(names_fts) VALUES ('rebuild')");
+  db.exec("INSERT INTO names_tri(names_tri) VALUES ('rebuild')");
+  const text = db.prepare('INSERT INTO texts (title, name, body) VALUES (?, ?, ?)');
+  const plain = (runs: Rich) => runs.map((r) => r.text).join('');
+  for (const [title, record] of data.articles) {
+    if (/\(disambiguation\)$/.test(title)) continue;
+    const body = [...record.lead.map(plain), ...record.fields.flatMap((f) => f.items.map(plain))];
+    text.run(title, displayTitle(title), body.join('\n'));
+  }
+  db.exec("INSERT INTO texts(texts) VALUES ('optimize')");
+}
+
+/**
+ * Writes `file` from scratch: every article, the address book, the link graph, search's
+ * indexes (with `redirects`, so "vader" finds Anakin Skywalker) and `meta`.
+ */
+export function writePages(
+  file: string,
+  data: SiteData,
+  meta: PagesMeta,
+  redirects: ReadonlyMap<string, string> = new Map(),
+): void {
   mkdirSync(dirname(file), { recursive: true });
   rmSync(file, { force: true });
   const db = new DatabaseSync(file);
@@ -52,6 +116,7 @@ export function writePages(file: string, data: SiteData, meta: PagesMeta): void 
       const from = data.links.linkedFrom.get(title);
       link.run(title, count, from === undefined ? null : JSON.stringify(from));
     }
+    writeSearch(db, data, redirects);
     db.exec('COMMIT');
     db.exec('VACUUM');
   } finally {
@@ -127,8 +192,15 @@ export function openPages(file: string): Pages {
     },
   );
   const links: LinkGraph = { counts, linkedFrom };
+  const search = createSearch(db, archive, counts);
   return {
-    data: { archive, articles, links },
+    data: {
+      archive,
+      articles,
+      links,
+      search: (query, section) => search.search(query, section === undefined ? {} : { section }),
+    },
+    search,
     meta: {
       build: meta.get('build') ?? 'unknown',
       assets: JSON.parse(meta.get('assets') ?? '{}') as Assets,

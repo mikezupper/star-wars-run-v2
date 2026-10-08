@@ -1,18 +1,18 @@
 /// <reference types="node" />
-// `pnpm dev`: Vite serves the client modules, the stylesheet and public/; every other request is rendered by the
-// same code the build prerenders, reloaded per request so edits show up.
-// The search indexes are the exception: the build writes them (Pagefind from the finished
-// pages, the title index from the archive), so dev serves /pagefind/ and /search-titles/ from
-// the last build's dist/ (docs/lessons-learned.md).
-import { readFile } from 'node:fs/promises';
+// `pnpm dev`: Vite serves the client modules, the stylesheet and public/; every other request is
+// rendered by the same code the app runs, with the snapshot in memory and reloaded per request
+// so edits show up. Search is the exception: its index is in the last full build's pages.sqlite
+// (<DIST_DIR>-api/), so /search/ answers from there when it exists (docs/lessons-learned.md).
+import { existsSync } from 'node:fs';
 import http from 'node:http';
-import { extname, join, normalize } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { createServer as createViteServer } from 'vite';
 import { handleApi, isApi } from './lib/api.js';
 import { loadSiteData } from '../src/data/archive.js';
+import type { Section } from '../src/domain/sections.js';
 import type * as SiteModule from '../src/render/site.js';
-import { ranged } from './lib/range.js';
+import { createSearch } from '../src/server/search.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
 const vite = await createViteServer({
@@ -22,7 +22,16 @@ const vite = await createViteServer({
     // Generated folders, whatever DIST_DIR says: the full build alone is 456k files, and
     // watching them stalled startup for minutes (docs/lessons-learned.md).
     watch: {
-      ignored: ['**/dist/**', '**/.sample/**', '**/data/**', '**/coverage/**', '**/.smoke/**'],
+      ignored: [
+        '**/dist/**',
+        '**/dist-api/**',
+        '**/.sample/**',
+        '**/.sample-api/**',
+        '**/.spike/**',
+        '**/data/**',
+        '**/coverage/**',
+        '**/.smoke/**',
+      ],
     },
   },
   appType: 'custom',
@@ -44,43 +53,24 @@ const DEV_ASSETS = {
   page: '/src/page.ts',
 };
 
-const DIST = fileURLToPath(
-  new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url),
-).replace(/\/$/, '');
-/** Build outputs the dev server serves from dist/: the search indexes. (The API reads its own data.) */
-const FROM_BUILD = ['/pagefind/', '/search-titles/'];
-
-const TYPES: Record<string, string> = {
-  '.js': 'text/javascript',
-  '.wasm': 'application/wasm',
-  '.parquet': 'application/octet-stream',
+// Search from the last full build's pages file, read-only, beside the in-memory archive.
+const pagesFile = fileURLToPath(
+  new URL(`../${process.env['DIST_DIR'] ?? 'dist'}-api/pages.sqlite`, import.meta.url),
+);
+const search = existsSync(pagesFile)
+  ? createSearch(new DatabaseSync(pagesFile, { readOnly: true }), data.archive, data.links.counts)
+  : undefined;
+if (search === undefined)
+  console.log('starwars.run: no pages.sqlite yet, so no search (pnpm build)');
+const siteData = {
+  ...data,
+  ...(search === undefined
+    ? {}
+    : {
+        search: (query: string, section?: Section) =>
+          search.search(query, section === undefined ? {} : { section }),
+      }),
 };
-
-/** Serves build outputs from dist/; without a build, a 404 that says how to make one. */
-async function serveFromBuild(
-  pathname: string,
-  res: http.ServerResponse,
-  range: string | undefined,
-  head: boolean,
-): Promise<void> {
-  const file = normalize(join(DIST, pathname));
-  try {
-    if (!file.startsWith(DIST)) throw new Error('outside dist');
-    const answer = ranged(await readFile(file), range);
-    res.writeHead(answer.status, {
-      'content-type': TYPES[extname(file)] ?? 'application/octet-stream',
-      'cache-control': 'no-cache',
-      ...answer.headers,
-    });
-    res.end(head ? undefined : answer.body);
-  } catch {
-    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
-    res.end(
-      `No dist${pathname}. Search and Explore read files that \`pnpm build\` writes: ` +
-        'run it once (and again after the snapshot changes), then reload.\n',
-    );
-  }
-}
 
 const sites = new WeakMap<object, SiteModule.Site>();
 
@@ -91,7 +81,7 @@ async function render(req: http.IncomingMessage, res: http.ServerResponse): Prom
     // (Vite hands back a new module object after an edit), not on every request.
     let site = sites.get(mod);
     if (site === undefined) {
-      site = mod.createSite(DEV_ASSETS, data);
+      site = mod.createSite(DEV_ASSETS, siteData);
       sites.set(mod, site);
     }
     const response = await site.fetch(
@@ -112,10 +102,6 @@ http
     const { pathname } = new URL(req.url ?? '/', 'http://localhost');
     if (isApi(pathname)) {
       void handleApi(req, res);
-      return;
-    }
-    if (FROM_BUILD.some((prefix) => pathname.startsWith(prefix))) {
-      void serveFromBuild(pathname, res, req.headers.range, req.method === 'HEAD');
       return;
     }
     vite.middlewares(req, res, () => void render(req, res));

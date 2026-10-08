@@ -7,12 +7,19 @@
 import { checkSql } from '../domain/ask.js';
 import type { AskInput } from '../domain/ask-pipeline.js';
 import { MAX_QUERY_ROWS } from '../domain/query.js';
+import { isSection } from '../domain/sections.js';
+import { CACHE, CACHED_API } from '../hosting/headers.js';
 import { answerQuestion, type AskContext } from './ask.js';
 
 export const ASK_PATH = '/api/ask';
 export const QUERY_PATH = '/api/query';
 /** For Docker's health check: 200 once the API is open. */
 export const HEALTH_PATH = '/api/health';
+/** Search as you type (ADR 0011): GET, cacheable, since results change only with a build. */
+export const SEARCH_PATH = CACHED_API;
+/** At most this many suggestions, and this long a query. */
+const SEARCH_LIMIT = 8;
+const SEARCH_QUERY = 100;
 /** A question and a few earlier ones are a few KB; anything far bigger isn't from the page. */
 export const MAX_BODY_BYTES = 64 * 1024;
 
@@ -26,6 +33,25 @@ const json = (status: number, body: unknown): Response =>
 const error = (status: number, message: string) => json(status, { error: message });
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
+
+/** /api/search?q=…&section=…: the top suggestions, cached like a page (CACHE.pages). */
+function searchResponse(request: Request, context: AskContext): Response {
+  if (request.method !== 'GET') return error(405, 'Only GET is allowed.');
+  if (context.search === undefined) return error(503, 'Search isn’t available.');
+  const url = new URL(request.url);
+  const query = (url.searchParams.get('q') ?? '').trim().slice(0, SEARCH_QUERY);
+  const section = url.searchParams.get('section') ?? '';
+  const found =
+    query === ''
+      ? { query, results: [] }
+      : context.search(query, {
+          limit: SEARCH_LIMIT,
+          ...(isSection(section) ? { section } : {}),
+        });
+  return new Response(JSON.stringify(found), {
+    headers: { 'content-type': 'application/json', 'cache-control': CACHE.pages },
+  });
+}
 const text = (v: unknown, max: number): string | undefined =>
   typeof v === 'string' && v.trim() !== '' && v.length <= max ? v.trim() : undefined;
 
@@ -59,6 +85,7 @@ export function createApi(context: AskContext): (request: Request) => Promise<Re
   return async (request) => {
     const path = new URL(request.url).pathname;
     if (path === HEALTH_PATH) return json(200, { ok: true });
+    if (path === SEARCH_PATH) return searchResponse(request, context);
     if (path !== ASK_PATH && path !== QUERY_PATH) return error(404, 'Not found.');
     if (request.method !== 'POST') return error(405, 'Only POST is allowed.');
     let body: unknown;

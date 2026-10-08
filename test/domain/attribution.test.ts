@@ -32,6 +32,5 @@ describe('Wookieepedia attribution', () => {
     expect(html).toContain('“Luke Skywalker” article on Wookieepedia');
     expect(linkTo(html, CC_BY_SA_3)?.rel).toBe('license external');
     expect(html).toContain('Modified for this site.');
-    expect(html).toContain('data-pagefind-ignore');
   });
 });

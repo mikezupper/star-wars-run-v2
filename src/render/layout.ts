@@ -29,8 +29,6 @@ export interface PageMeta {
   readonly description: string;
   /** The section this page belongs to, marked current in the nav. */
   readonly section?: Section;
-  /** Index this page for site search, filterable under this kind (record pages). */
-  readonly searchKind?: Section;
   /** True when the body contains islands that need the client entry. */
   readonly islands?: boolean;
   /** Not indexed by search engines and left out of the sitemap (404). */
@@ -168,13 +166,7 @@ export function layout(meta: PageMeta, body: ChildValue, assets: Assets): ChildV
     head: head(meta, assets),
     scripts: meta.islands === true ? [assets.page, assets.clientEntry] : [assets.page],
     body: html`${banner(meta)}
-      <main
-        id="main"
-        data-pagefind-body=${meta.searchKind === undefined ? undefined : ''}
-        data-pagefind-filter=${meta.searchKind === undefined ? undefined : `kind:${meta.searchKind}`}
-      >
-        ${body}
-      </main>
+      <main id="main">${body}</main>
       ${footer()}`,
   });
 }

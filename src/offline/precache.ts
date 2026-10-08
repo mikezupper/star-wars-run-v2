@@ -1,10 +1,10 @@
 // Which built files the service worker downloads on install (docs/product-specs/offline.md):
-// the shell pages, the hashed CSS and JS, Pagefind's runtime, the manifest and its icons. The
+// the shell pages, the hashed CSS and JS, the manifest and its icons. The
 // shell pages are rendered on request (ADR 0011), so they're named, with the build's id as
 // their revision; a static shell page in dist/ is still taken from its file.
-// Article pages and the search index's chunks are not precached: at 227k articles the index
-// alone is 130 MB. src/offline/sw.ts caches both as they're used. Pure, so it's tested
-// directly; scripts/build-sw.ts feeds it the files in dist/.
+// Article pages aren't precached: src/offline/sw.ts keeps them as they're visited. Search needs
+// the server (ADR 0011). Pure, so it's tested directly; scripts/build-sw.ts feeds it the files
+// in dist/.
 
 /** One built file: its path relative to dist/ with `/` separators, and its bytes. */
 export interface BuiltFile {
@@ -22,11 +22,8 @@ export interface PrecacheEntry {
 const SHELL_PAGE = /^(?:[a-z0-9-]+\/)?index\.html$/;
 /** Vite's output: the content hash is in the file name. */
 const HASHED = /^assets\//;
-/** Pagefind's script, worker, WebAssembly, metadata and filters: small, and needed to search. */
-const SEARCH_INDEX = /^pagefind\/(?!index\/|fragment\/)/;
 const APP_FILES = new Set([
   'manifest.webmanifest',
-  'search-titles/index.json',
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
@@ -38,7 +35,7 @@ const urlOf = (path: string): string =>
 
 /** True for a file the service worker precaches; decided by path alone, before reading it. */
 export const isPrecached = (path: string): boolean =>
-  HASHED.test(path) || SHELL_PAGE.test(path) || SEARCH_INDEX.test(path) || APP_FILES.has(path);
+  HASHED.test(path) || SHELL_PAGE.test(path) || APP_FILES.has(path);
 
 export function precacheEntries(
   files: readonly BuiltFile[],

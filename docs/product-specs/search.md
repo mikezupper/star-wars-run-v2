@@ -1,30 +1,34 @@
 # Search
 
-Beads: `swr-3mo.6`; ranking at full size, `swr-357`.
+Beads: `swr-3mo.6`; ranking at full size, `swr-357`; on the server, `swr-sgf.5` (ADR 0011).
 
 ## Behavior
 
 - A search box is reachable from every page, and from the keyboard with `/`.
-- Results appear as the visitor types, matching article titles and the text on article
-  pages. Each result shows the article's title and section and links to its page.
-- **The article a visitor means comes first.** Up to five title matches lead the list, the
-  most linked-to first, with canon ahead of Legends when they're close. A redirect's name
-  finds its article: "vader" finds Anakin Skywalker. Text matches follow.
+- Results match article names, the names articles are known by (redirects), and the text of
+  each article's lead and facts. Each result shows the article's name, its section, and a link
+  to each of its continuities (Canon, Legends); a text match shows the passage, the matched
+  words marked.
+- **The article a visitor means comes first.** Name matches lead, the most linked-to first,
+  with canon ahead of Legends when they're close. Every word must start a word of the name; a
+  redirect counts only as the whole query, so "vader" finds Anakin Skywalker but "sky" doesn't
+  find a galaxy through an odd redirect. Text matches follow.
+- A subject with a canon and a Legends article is one result (Darth Sidious and Palpatine).
 - Results can be narrowed to one section (characters, planets and so on).
-- Without JavaScript, the search form still submits to a search page, which works once
-  scripts load. Every article stays reachable through the section and letter pages.
+- When nothing matches, the page suggests a close name ("tatoine" → Tatooine). A query that
+  reads like a question offers to ask it on the Explore page instead.
+- Search works without JavaScript: the form submits to `/search/?q=…`, whose results are
+  rendered on the server, and a results page can be shared.
 
 ## How (summary)
 
-Pagefind indexes one record per article (title, lead and facts) at build time and writes a static index to
-`dist/pagefind/`, the way gyral.dev does. A Gyral island queries it in the browser. There is
-no search server.
-
-At 227,000 pages, Pagefind's text ranking buries the obvious answer: "tatooine" listed
-Tatooine wine and Tatooine/3 above the planet. So the build also writes a title index to
-`dist/search-titles/` (`src/domain/titles.ts`): every title and redirect, filed by the first
-three letters of each word, with a score from how many articles link to it. A search fetches
-one small shard, ranks its matches, and puts the best above Pagefind's results.
+The build writes SQLite full-text indexes into the app's `pages.sqlite`: one of names and
+redirects (prefix matches, with each article's link count), a trigram index of names for
+suggestions, and one of each article's text. `src/server/search.ts` finds candidates there;
+`src/domain/search.ts` ranks them and folds twins. The same search answers `/search/`,
+`/api/search` (suggestions as you type, swr-sgf.5's second half), and Ask's lookup of the
+names in a question. Search pages and `/api/search` are cached like pages: results change only
+with a build.
 
 ## Acceptance criteria
 
@@ -32,5 +36,6 @@ one small shard, ranks its matches, and puts the best above Pagefind's results.
   Skywalker), `luke` (Luke Skywalker), `vader` (Anakin Skywalker), `tatooine` (Tatooine),
   `falcon` (Millennium Falcon), `padme` (Padmé Amidala Naberrie). `pnpm smoke` checks them.
 - Filtering to `planets` and typing `ta` lists Tatooine and no people.
-- After one online visit, search works with the network off ([offline.md](offline.md)).
-- The search island passes axe in light and dark.
+- `/search/?q=luke` lists Luke Skywalker with JavaScript off.
+- The results page passes axe in light and dark.
+- Search needs the network: offline, a new search shows the offline page ([offline.md](offline.md)).

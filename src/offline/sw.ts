@@ -8,7 +8,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { cleanupOutdatedCaches, matchPrecache, precacheAndRoute } from 'workbox-precaching';
 import type { PrecacheEntry } from 'workbox-precaching';
 import { registerRoute, setCatchHandler } from 'workbox-routing';
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { NetworkFirst } from 'workbox-strategies';
 
 declare const self: {
   readonly __WB_MANIFEST: PrecacheEntry[];
@@ -21,12 +21,10 @@ void self.skipWaiting();
 clientsClaim();
 cleanupOutdatedCaches();
 
-// The shell, assets and search index. These query parameters don't change the response, so
-// they mustn't miss the cache: `?q=` and `?kind=` select results on /search/, and Pagefind
-// adds a cache-busting `?ts=` to pagefind-entry.json (without it, search fails offline).
-precacheAndRoute(self.__WB_MANIFEST, {
-  ignoreURLParametersMatching: [/^q$/, /^kind$/, /^ts$/, /^utm_/],
-});
+// The shell and assets. Only tracking parameters are ignored: `/search/?q=` is a different
+// page from `/search/` now that results render on the server (ADR 0011), so it goes to the
+// network like any page, not to the precached empty form.
+precacheAndRoute(self.__WB_MANIFEST, { ignoreURLParametersMatching: [/^utm_/] });
 
 // Article pages: fresh from the network when it answers within 3 seconds, else the copy saved
 // the last time this page was visited. The 500 most recent are kept.
@@ -36,37 +34,6 @@ registerRoute(
     cacheName: 'pages',
     networkTimeoutSeconds: 3,
     // Workbox's own types predate exactOptionalPropertyTypes; the plugin is a WorkboxPlugin.
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 500,
-        purgeOnQuotaError: true,
-      }) as unknown as WorkboxPlugin,
-    ],
-  }),
-);
-
-// The search index's chunks and result fragments, kept as they're fetched: their names are
-// content hashes, so a saved copy is never stale. Offline, a search works when its chunks were
-// fetched online (swr-7f1.8 makes all of search work offline with a title index).
-registerRoute(
-  ({ url }) => /^\/pagefind\/(?:index|fragment)\//.test(url.pathname),
-  new CacheFirst({
-    cacheName: 'search',
-    plugins: [
-      new ExpirationPlugin({
-        maxEntries: 2000,
-        purgeOnQuotaError: true,
-      }) as unknown as WorkboxPlugin,
-    ],
-  }),
-);
-
-// The search title index's shards (swr-357), kept as they're fetched. Their names aren't
-// hashes, so a saved shard is used at once and refreshed in the background.
-registerRoute(
-  ({ url }) => url.pathname.startsWith('/search-titles/'),
-  new StaleWhileRevalidate({
-    cacheName: 'titles',
     plugins: [
       new ExpirationPlugin({
         maxEntries: 500,

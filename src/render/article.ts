@@ -41,7 +41,6 @@ export const articleMeta = (entry: Entry): PageMeta => ({
     entry.era === 'legends',
   ),
   section: entry.section,
-  searchKind: entry.section,
 });
 
 /** Lists up to this long start open; longer ones (Luke has 700 works) start closed. */
@@ -80,7 +79,7 @@ function appearancesSection(list: readonly Appearance[], archive: Archive) {
   if (list.length === 0) return nothing;
   const main = list.filter((a) => a.noncanon !== true);
   const noncanon = list.filter((a) => a.noncanon === true);
-  return html`<section aria-labelledby="appearances" data-pagefind-ignore>
+  return html`<section aria-labelledby="appearances">
     <h2 id="appearances">${TEXT.appearances}</h2>
     ${main.length === 0 ? nothing : disclosure(main.length, TEXT.appearanceCount(main.length), works(main, archive))}
     ${
@@ -108,7 +107,7 @@ function castSection(list: readonly Appearance[], archive: Archive) {
     })),
     { label: TEXT.notInArchive, items: main.filter((a) => sectionOf(a) === undefined) },
   ].filter((g) => g.items.length > 0);
-  return html`<section aria-labelledby="cast" data-pagefind-ignore>
+  return html`<section aria-labelledby="cast">
     <h2 id="cast">${TEXT.cast}</h2>
     ${groups.map(({ label, items }) =>
       disclosure(
@@ -139,7 +138,7 @@ const KEY_FACTS = 4;
 const keyFacts = (facts: readonly Field[]) =>
   facts.length === 0
     ? nothing
-    : html`<dl aria-hidden="true" data-pagefind-ignore>
+    : html`<dl aria-hidden="true">
         ${facts.slice(0, KEY_FACTS).map(
           (f) =>
             html`<div>
@@ -156,7 +155,7 @@ function linkedFromSection(entry: Entry, links: LinkGraph, archive: Archive) {
     return linker === undefined ? [] : [linker];
   });
   if (linkers.length === 0) return nothing;
-  return html`<section aria-labelledby="linked-from" data-pagefind-ignore>
+  return html`<section aria-labelledby="linked-from">
     <h2 id="linked-from">${TEXT.linkedFrom}</h2>
     <p>${TEXT.linkedFromNote(displayTitle(entry.title))}</p>
     <ul>
@@ -188,9 +187,9 @@ export function articleBody(
     )}
     <article>
       <header>
-        <p data-pagefind-ignore>${kindLabel(record.kind, entry.section)}</p>
-        <h1 data-pagefind-weight="10">${displayTitle(entry.title)}</h1>
-        <p data-pagefind-ignore>
+        <p>${kindLabel(record.kind, entry.section)}</p>
+        <h1>${displayTitle(entry.title)}</h1>
+        <p>
           <span data-era=${entry.era}>${entry.era === 'legends' ? TEXT.legends : TEXT.canon}</span>
           ${
             other === undefined
@@ -203,9 +202,7 @@ export function articleBody(
         </p>
         ${
           entry.era === 'legends'
-            ? html`<p data-pagefind-ignore>
-                <strong>${TEXT.legends}.</strong> ${TEXT.legendsNote}
-              </p>`
+            ? html`<p><strong>${TEXT.legends}.</strong> ${TEXT.legendsNote}</p>`
             : nothing
         }
       </header>
@@ -217,8 +214,8 @@ export function articleBody(
         facts.length === 0
           ? nothing
           : html`<section aria-labelledby="facts">
-              <h2 id="facts" data-pagefind-ignore>${TEXT.facts}</h2>
-              <dl data-pagefind-weight="0.5">
+              <h2 id="facts">${TEXT.facts}</h2>
+              <dl>
                 ${facts.map(
                   (f) =>
                     html`<dt>${fieldLabel(f.name)}</dt>

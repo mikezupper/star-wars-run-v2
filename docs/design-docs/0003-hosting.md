@@ -42,8 +42,8 @@ Cloudflare's edge or the browser cache without reaching the VPS.
 
 - **Security headers on every response, the 404 included:** a Content Security Policy (`'self'`
   only; the islands' Declarative Shadow DOM `<style>` elements allowed by hash, with no
-  `'unsafe-inline'`, since Gyral 0.3; `'wasm-unsafe-eval'` for Pagefind's and DuckDB's
-  WebAssembly, which does not allow `eval()`). `pnpm caddyfile` regenerates the hashes, and a
+  `'unsafe-inline'`, since Gyral 0.3; the theme script in each page's head by its hash too,
+  and nothing that allows `eval()` or WebAssembly). `pnpm caddyfile` regenerates the hashes, and a
   test fails when an island's styles change without them, HSTS without `includeSubDomains`, `nosniff`, a
   referrer policy, a permissions policy, and `Cross-Origin-Opener-Policy`. Caddy's `Server`
   header is removed. Every response also carries `Speculation-Rules`, pointing browsers at
@@ -56,9 +56,8 @@ smoke` runs the whole smoke suite against the running image.
   bundled at the end of the build by `scripts/build-sw.ts`, the way
   `mikezupper-blog-astro/scripts/build-service-worker.mjs` does it:
   - **Precached on install** (`src/offline/precache.ts`): home, the section lists, `/search/`,
-    `/offline/`, the hashed CSS and JS, the manifest and icons, and the **whole Pagefind
-    index**, because a search result needs its page's fragment. About 1.5 MB, once, in the
-    background. At Wookieepedia scale this won't hold; the spike (`swr-4g6`) must revisit it.
+    `/offline/` (rendered by the app, revised by the build's id), the hashed CSS and JS, the
+    manifest and icons. Search runs on the server (ADR 0011), so there's no index to store.
   - **Record pages** are network-first (3-second timeout) and saved as they're visited.
   - **Updates** take over immediately (`skipWaiting` + `clientsClaim`); there's no "refresh
     to update" prompt, and the next navigation fetches fresh HTML.

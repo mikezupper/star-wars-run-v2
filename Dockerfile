@@ -38,7 +38,6 @@ RUN npm install --no-save --omit=dev --no-audit --no-fund \
     && rm package.source.json
 COPY --from=build /app/.server/api.mjs ./
 COPY --from=build /app/dist-api/archive.duckdb /app/dist-api/ask-schema.json /app/dist-api/pages.sqlite /app/data/
-COPY --from=build /app/dist/search-titles /app/data/search-titles
 RUN mkdir /data && chown node:node /data
 USER node
 ENV API_DATA=/app/data QUESTIONS_DB=/data/questions.duckdb PORT=8090 NODE_ENV=production

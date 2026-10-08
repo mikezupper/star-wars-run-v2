@@ -172,3 +172,7 @@ export const normaliseKind = (kind: string): string => kind.replace(/[_\s]/g, ''
 
 export const sectionOf = (kind: string | undefined): Section =>
   kind === undefined ? 'other' : (bySpelling.get(normaliseKind(kind)) ?? 'other');
+
+/** True for a section's name, as a URL's `section=` might hold one. */
+export const isSection = (value: string): value is Section =>
+  (SECTIONS as readonly string[]).includes(value);
