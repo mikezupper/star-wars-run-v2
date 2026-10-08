@@ -19,6 +19,7 @@ async function setup(box: { focus: () => void; select: () => void } | null) {
   vi.stubGlobal('document', {
     addEventListener: (_type: string, fn: (event: unknown) => void) => (listener = fn),
     querySelector: (selector: string) => (selector === '#site-search-q' ? box : null),
+    querySelectorAll: () => [],
   });
   await import('../../src/page.js');
   return (key: string, init: object = {}) => {
@@ -102,7 +103,7 @@ describe('view transitions: the followed link becomes the next heading', () => {
     vi.stubGlobal('window', { innerHeight: 800 });
     vi.stubGlobal('document', {
       addEventListener: vi.fn(),
-      querySelectorAll: () => links,
+      querySelectorAll: (selector: string) => (selector === 'main a[href]' ? links : []),
       querySelector: (selector: string) => (selector === 'main h1' ? heading : null),
     });
     return { page: await import('../../src/page.js'), heading, FakeNode };
@@ -156,7 +157,11 @@ describe('view transitions: the followed link becomes the next heading', () => {
   it('listens for page swaps only where the browser has them', async () => {
     const listen = vi.fn();
     vi.stubGlobal('window', { onpageswap: null, addEventListener: listen });
-    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    vi.stubGlobal('document', {
+      addEventListener: vi.fn(),
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    });
     await import('../../src/page.js');
     expect(listen).toHaveBeenCalledWith('pageswap', expect.any(Function));
   });
@@ -168,7 +173,11 @@ describe('the theme toggle', () => {
   const store = () => ({ setItem: vi.fn(), removeItem: vi.fn() });
 
   it('shows the visitor’s pick, else the system’s scheme', async () => {
-    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    vi.stubGlobal('document', {
+      addEventListener: vi.fn(),
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    });
     const { shownTheme } = await import('../../src/page.js');
     expect(shownTheme(root('light'), true)).toBe('light');
     expect(shownTheme(root('dark'), false)).toBe('dark');
@@ -177,7 +186,11 @@ describe('the theme toggle', () => {
   });
 
   it('remembers a pick that differs from the system, and forgets one that matches it', async () => {
-    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    vi.stubGlobal('document', {
+      addEventListener: vi.fn(),
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    });
     const { pickTheme } = await import('../../src/page.js');
     const lightSystem = root();
     const storage = store();
@@ -190,7 +203,11 @@ describe('the theme toggle', () => {
   });
 
   it('still shows the pick when the browser refuses storage', async () => {
-    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    vi.stubGlobal('document', {
+      addEventListener: vi.fn(),
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    });
     const { pickTheme } = await import('../../src/page.js');
     const page = root();
     const refusing = {
@@ -215,6 +232,11 @@ describe('the theme toggle', () => {
       },
       addEventListener: (_type: string, fn: () => void) => (click = fn),
     };
+    const panelButton = {
+      hidden: true,
+      setAttribute: vi.fn(),
+      addEventListener: vi.fn(),
+    };
     const meta = { content: '' };
     const system = {
       matches: false,
@@ -227,18 +249,20 @@ describe('the theme toggle', () => {
     vi.stubGlobal('document', {
       documentElement,
       addEventListener: vi.fn(),
-      querySelector: (selector: string) =>
-        selector === 'button[data-theme-toggle]' ? button : null,
-      querySelectorAll: () => [meta],
+      querySelector: () => null,
+      querySelectorAll: (selector: string) =>
+        selector === 'button[data-theme-toggle]' ? [button, panelButton] : [meta],
     });
     await import('../../src/page.js');
     expect(button.hidden).toBe(false);
+    expect(panelButton.hidden).toBe(false);
     expect(button.attributes.get('aria-pressed')).toBe('false');
     expect(meta.content).toBe('#fafaf7');
     click();
     expect(documentElement.dataset['theme']).toBe('dark');
     expect(storage.setItem).toHaveBeenCalledWith('swr-theme', 'dark');
     expect(button.attributes.get('aria-pressed')).toBe('true');
+    expect(panelButton.setAttribute).toHaveBeenLastCalledWith('aria-pressed', 'true');
     expect(meta.content).toBe('#060a13');
     click();
     expect(documentElement.dataset['theme']).toBeUndefined();

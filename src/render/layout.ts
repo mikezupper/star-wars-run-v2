@@ -1,7 +1,7 @@
 // The document shell every page shares: head, banner with the section nav, footer. Server-only:
 // written with html, so none of it is hydrated and pages without islands ship no
 // JavaScript.
-import { html, nothing, raw, type ChildValue } from '@gyral/core';
+import { html, nothing, raw, svg, type ChildValue } from '@gyral/core';
 import { page } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';
 import { CC_BY_SA_3 } from '../domain/attribution.js';
@@ -62,19 +62,63 @@ const head = (meta: PageMeta, assets: Assets) => html`
   <link rel="stylesheet" href=${assets.stylesheet} />
 `;
 
+/** The id that ties the Sections button to its panel (a native popover: no script needed). */
+const SECTIONS_MENU = 'site-sections';
+
+const icon = (paths: ChildValue) =>
+  html`<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">${paths}</svg>`;
+const SEARCH_ICON = icon(svg`<circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />`);
+const MENU_ICON = icon(svg`<path d="M4 7h16M4 12h16M4 17h16" />`);
+
+/**
+ * The theme toggle (src/page.ts), hidden until that script runs. The header has two: one in the
+ * row on wide screens, one in the Sections panel on narrow ones, where the row has no room.
+ */
+const themeToggle = () => html`
+  <button type="button" aria-pressed="false" data-theme-toggle hidden title=${TEXT.darkTheme}>
+    ${icon(svg`<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />`)}
+    ${icon(
+      svg`<circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />`,
+    )}
+    <span>${TEXT.darkTheme}</span>
+  </button>
+`;
+
+const current = (here: boolean) => (here ? 'page' : undefined);
+
+/**
+ * One row (ADR 0004, "The look"): the name, search, Ask, the Sections panel and the theme.
+ * On narrow screens search shrinks to a link to /search/ and the theme moves into the panel.
+ */
 const banner = (meta: PageMeta) => html`
   <a href="#main">${TEXT.skipLink}</a>
   <header>
-    <p><a href="/" aria-current=${meta.path === '/' ? 'page' : undefined}>${SITE_NAME}</a></p>
-    <p>
-      <a href="/explore/" aria-current=${meta.path === '/explore/' ? 'page' : undefined}
-        >${EXPLORE_TEXT.nav}</a
-      >
-      <a href="/sabacc/" aria-current=${meta.path === '/sabacc/' ? 'page' : undefined}
-        >${SABACC_TEXT.nav}</a
-      >
-    </p>
-    <nav aria-label=${TEXT.primaryNav}>
+    <p><a href="/" aria-current=${current(meta.path === '/')}>${SITE_NAME}</a></p>
+    ${
+      meta.path === '/search/'
+        ? nothing
+        : html`<search>
+              <form action="/search/" method="get">
+                <label for="site-search-q">${TEXT.searchLabel}</label>
+                <input
+                  id="site-search-q"
+                  name="q"
+                  type="search"
+                  autocomplete="off"
+                  placeholder=${TEXT.searchPlaceholder}
+                  aria-keyshortcuts="/ Control+K Meta+K"
+                />
+                <button type="submit">${TEXT.searchLabel}</button>
+              </form>
+            </search>
+            <a href="/search/" aria-label=${TEXT.searchLabel}>${SEARCH_ICON}</a>`
+    }
+    <a href="/explore/" aria-current=${current(meta.path === '/explore/')}>${EXPLORE_TEXT.nav}</a>
+    <button type="button" popovertarget=${SECTIONS_MENU}>
+      ${MENU_ICON}<span>${TEXT.primaryNav}</span>
+    </button>
+    ${themeToggle()}
+    <nav id=${SECTIONS_MENU} popover aria-label=${TEXT.primaryNav}>
       <ul>
         ${SECTIONS.map(
           (section) =>
@@ -93,36 +137,15 @@ const banner = (meta: PageMeta) => html`
             </li>`,
         )}
       </ul>
+      <ul>
+        <li>
+          <a href="/sabacc/" aria-current=${current(meta.path === '/sabacc/')}
+            >${SABACC_TEXT.nav}</a
+          >
+        </li>
+      </ul>
+      ${themeToggle()}
     </nav>
-    ${
-      meta.path === '/search/'
-        ? nothing
-        : html`<search>
-            <form action="/search/" method="get">
-              <label for="site-search-q">${TEXT.searchLabel}</label>
-              <input
-                id="site-search-q"
-                name="q"
-                type="search"
-                autocomplete="off"
-                aria-keyshortcuts="/ Control+K Meta+K"
-              />
-              <button type="submit">${TEXT.searchLabel}</button>
-            </form>
-          </search>`
-    }
-    <button type="button" aria-pressed="false" data-theme-toggle hidden title=${TEXT.darkTheme}>
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
-      </svg>
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <circle cx="12" cy="12" r="4" />
-        <path
-          d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-        />
-      </svg>
-      <span>${TEXT.darkTheme}</span>
-    </button>
   </header>
 `;
 
