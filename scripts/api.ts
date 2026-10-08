@@ -1,8 +1,8 @@
 /// <reference types="node" />
-// The API service (ADR 0010): the container's entry point, an HTTP server around the handler in
-// src/server/. Caddy forwards /api/* here. Bundled to one file by `pnpm build:api`; only DuckDB's
-// native module stays outside the bundle.
-//   API_DATA: archive.duckdb, ask-schema.json and search-titles/ (default /app/data)
+// The app (ADRs 0010, 0011): the container's entry point, an HTTP server around the handler in
+// src/server/. Caddy forwards every page and /api/* here. Bundled to one file by
+// `pnpm build:api`; only DuckDB's native module stays outside the bundle.
+//   API_DATA: pages.sqlite, archive.duckdb, ask-schema.json and search-titles/ (default /app/data)
 //   QUESTIONS_DB: the question log (default /data/questions.duckdb, a volume)
 //   ASK_ORIGIN, ASK_KEY, ASK_MODEL: the model; PORT (default 8090)
 import http from 'node:http';
@@ -25,11 +25,18 @@ const api = await openApi(
 );
 const port = Number(process.env['PORT'] ?? 8090);
 
+const forwarded = (req: http.IncomingMessage): Record<string, string> => {
+  const etag = req.headers['if-none-match'];
+  return typeof etag === 'string' ? { 'if-none-match': etag } : {};
+};
+
 http
   .createServer((req, res) => {
     void (async () => {
+      // Only POSTs (Ask, the SQL editor) have a body; a page request is read no further, so a
+      // visitor who leaves mid-request costs nothing.
       const chunks: Buffer[] = [];
-      for await (const chunk of req) chunks.push(chunk as Buffer);
+      if (req.method === 'POST') for await (const chunk of req) chunks.push(chunk as Buffer);
       const abort = new AbortController();
       // 'close' also fires after a response finishes normally; only a dropped connection aborts.
       res.on('close', () => {
@@ -38,6 +45,8 @@ http
       const response = await api.handle(
         new Request(new URL(req.url ?? '/', 'http://localhost'), {
           method: req.method ?? 'GET',
+          // The one request header the app reads: a revisit's ETag, answered with a 304.
+          headers: forwarded(req),
           ...(req.method === 'POST' ? { body: Buffer.concat(chunks) } : {}),
           signal: abort.signal,
         }),

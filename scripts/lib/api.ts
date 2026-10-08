@@ -27,13 +27,15 @@ export async function handleApi(
   extra: Readonly<Record<string, string>> = {},
 ): Promise<void> {
   const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
   const abort = new AbortController();
   // 'close' also fires after a response finishes normally; only a dropped connection aborts.
   res.on('close', () => {
     if (!res.writableFinished) abort.abort();
   });
   try {
+    // Only POSTs have a body. Reading inside the try: a client that drops mid-request (smoke's
+    // link check cancels every response) must end this request, not the process.
+    if (req.method === 'POST') for await (const chunk of req) chunks.push(chunk as Buffer);
     api ??= openApi(
       {
         dataDir: at(`${DIST}-api`),

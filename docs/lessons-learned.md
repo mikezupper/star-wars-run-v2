@@ -237,3 +237,19 @@ Each entry has four parts:
   unhandled. A unit test rejects `finished` and checks.
 - **Guard:** the test, and smoke's failure on any page error. Shipped in PR #21; fixed on the
   new-look branch.
+
+## Pages through the app: a dropped request crashed preview, and the ETag never arrived (2026-10-08)
+
+- **Symptom:** Smoke died with "Error: aborted" (ECONNRESET) from the preview server, once a link
+  that redirects (`/random/`) joined the link check. Reading the container's code for the same
+  pattern turned up a second problem: a revisit with `If-None-Match` could never get a 304.
+- **Cause:** with pages rendered by the app (ADR 0011), every page request went through the
+  handler that reads a request body with `for await`, outside any error handling; a client that
+  cancels mid-request (the link check cancels every response) threw, unhandled, and took the
+  process down. The container's entry built each `Request` without the visitor's headers, so the
+  app never saw the ETag it sent.
+- **Fix:** both servers read a body only for POST, inside the error handling; the container
+  forwards `If-None-Match`.
+- **Guard:** smoke's link check cancels responses and follows `/random/`; `test/server/pages.test.ts`
+  covers the 304 at the handler. The container's own forwarding is checked when the production
+  stack is tested end to end (`swr-sgf.6`).

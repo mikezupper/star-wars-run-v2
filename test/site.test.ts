@@ -4,7 +4,7 @@ import { wookieepediaUrl } from '../src/domain/attribution.js';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
 import { bestKnown } from '../src/domain/known.js';
 import { fullTitle } from '../src/render/layout.js';
-import { createSite, normalise, sitemaps } from '../src/render/site.js';
+import { createSite, normalise, RANDOM_PATH, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
 import { FIXTURE_TITLES, fixtureSiteData } from './fixtures/archive.js';
 import { links, linkTo } from './fixtures/html.js';
@@ -68,7 +68,8 @@ describe('every page', () => {
     const broken: string[] = [];
     for (const [page, body] of pages) {
       for (const [, href] of body.matchAll(/href="(\/[^"]*)"/g)) {
-        if (href === undefined || href === '/manifest.webmanifest') continue;
+        if (href === undefined || href === '/manifest.webmanifest' || href === RANDOM_PATH)
+          continue;
         if (href.startsWith('/assets/') || href.startsWith('/icons/')) continue;
         if (!paths.has(href)) broken.push(`${page} → ${href}`);
       }
@@ -145,6 +146,14 @@ describe('the home page', () => {
       ['Darth Sidious', 9, ['Darth Sidious', 'Palpatine']],
       ['Yoda', 7, ['Yoda']],
     ]);
+  });
+
+  it('jumps to a random article, never cached', async () => {
+    const res = await get('/random/');
+    expect(res.status).toBe(302);
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(site.paths).toContain(res.headers.get('location'));
+    expect(home).toContain('href="/random/"');
   });
 
   it('has a card for every section, with its count', () => {
