@@ -4,9 +4,14 @@
 //   gyral.dev's src/shortcuts.ts.
 // - In production builds, registers the service worker (/sw.js, built by scripts/build.ts) that
 //   makes the site work offline (docs/product-specs/offline.md).
+// - The theme toggle (ADR 0004, "The look"): the site follows the system's color scheme until
+//   the visitor picks the other one; the pick is kept in localStorage and applied before the
+//   first paint by the inline script in every page's head (src/domain/theme.ts).
 // - On a page-to-page view transition (ADR 0011), the link that was followed grows into the
 //   next page's heading. The CSS names every page's heading `page-title`; here, as the old page
 //   is swapped out, the followed link takes that name instead of the old heading.
+
+import { isTheme, THEME_COLOR, THEME_KEY, type Theme } from './domain/theme.js';
 
 const typing = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
@@ -83,6 +88,65 @@ export function nameFollowedLink(event: PageSwapEvent): void {
 if (typeof window !== 'undefined' && 'onpageswap' in window) {
   document.addEventListener('click', rememberClick, { capture: true });
   window.addEventListener('pageswap', nameFollowedLink);
+}
+
+/** The theme on screen: the visitor's pick, else the system's. */
+export function shownTheme(root: HTMLElement, prefersDark: boolean): Theme {
+  const picked = root.dataset['theme'];
+  return isTheme(picked) ? picked : prefersDark ? 'dark' : 'light';
+}
+
+type ThemeStorage = Pick<Storage, 'setItem' | 'removeItem'>;
+
+/**
+ * Shows `theme` and remembers it. Picking what the system already shows forgets the pick, so the
+ * site follows the system again. A browser that refuses storage still gets the theme for the page.
+ */
+export function pickTheme(
+  theme: Theme,
+  root: HTMLElement,
+  prefersDark: boolean,
+  storage: ThemeStorage | null,
+): void {
+  const follow = theme === (prefersDark ? 'dark' : 'light');
+  if (follow) delete root.dataset['theme'];
+  else root.dataset['theme'] = theme;
+  try {
+    if (follow) storage?.removeItem(THEME_KEY);
+    else storage?.setItem(THEME_KEY, theme);
+  } catch {
+    // Private mode or a full quota: the pick lasts until the next page.
+  }
+}
+
+const localStore = (): ThemeStorage | null => {
+  try {
+    return localStorage;
+  } catch {
+    return null;
+  }
+};
+
+const toggle =
+  typeof document === 'undefined'
+    ? null
+    : document.querySelector<HTMLButtonElement>('button[data-theme-toggle]');
+if (toggle !== null) {
+  const system = matchMedia('(prefers-color-scheme: dark)');
+  const sync = () => {
+    const theme = shownTheme(document.documentElement, system.matches);
+    toggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'))
+      meta.content = THEME_COLOR[theme];
+  };
+  toggle.addEventListener('click', () => {
+    const next = shownTheme(document.documentElement, system.matches) === 'dark' ? 'light' : 'dark';
+    pickTheme(next, document.documentElement, system.matches, localStore());
+    sync();
+  });
+  system.addEventListener('change', sync);
+  toggle.hidden = false;
+  sync();
 }
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

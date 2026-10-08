@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { styleHashes } from '@gyral/core/server';
@@ -9,7 +10,8 @@ import {
   headersFor,
   SPECULATION_RULES,
 } from '../../src/hosting/headers.js';
-import { STYLE_HASHES } from '../../src/hosting/style-hashes.js';
+import { THEME_SCRIPT } from '../../src/domain/theme.js';
+import { SCRIPT_HASHES, STYLE_HASHES } from '../../src/hosting/csp-hashes.js';
 import '../../src/islands/explore.js';
 import '../../src/islands/site-search.js';
 
@@ -36,8 +38,18 @@ describe('cache policy', () => {
     const headers = headersFor('/', 200);
     expect(headers['Content-Security-Policy']).toBe(CSP);
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
-    expect(CSP).toContain("script-src 'self' 'wasm-unsafe-eval'");
+    expect(CSP).toMatch(/script-src 'self' 'sha256-[^']+' 'wasm-unsafe-eval'/);
     expect(CSP).not.toContain("'unsafe-eval'");
+  });
+});
+
+describe('the script policy', () => {
+  it('allows the theme script by its hash, and no other inline script', () => {
+    // Fails when the theme script changes: run \`pnpm caddyfile\` and commit both files.
+    const hash = `'sha256-${createHash('sha256').update(THEME_SCRIPT).digest('base64')}'`;
+    expect(SCRIPT_HASHES).toEqual([hash]);
+    expect(CSP).toContain(hash);
+    expect(CSP).not.toContain("'unsafe-inline'");
   });
 });
 

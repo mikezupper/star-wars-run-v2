@@ -203,3 +203,15 @@ Each entry has four parts:
   write that finds a reader holding the file waits and retries for up to 30 seconds.
 - **Guard:** a test in `test/server/api.test.ts` holds the file open read-only while a row is
   added, then checks both rows landed.
+
+## Vite inlined small font files, and the CSP blocked them (2026-10-08)
+
+- **Symptom:** After the new look's fonts went in, smoke failed on every page with console
+  errors: "Loading the font 'data:font/woff2;base64,…' violates the Content Security Policy".
+  The pages looked right in a quick check, because the browser fell back to the next face.
+- **Cause:** Vite inlines any imported asset under 4 KB as a `data:` URI. Some fontsource
+  subsets (Chakra Petch's latin-ext, a few hundred glyphs) are that small, so they arrived in the
+  stylesheet as `data:` fonts, which `font-src 'self'` refuses.
+- **Fix:** `build.assetsInlineLimit` in `vite.config.ts` keeps `.woff2` files as files, however
+  small; the CSP is unchanged.
+- **Guard:** smoke fails on any console error, which is how this surfaced.

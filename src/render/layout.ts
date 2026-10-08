@@ -1,11 +1,12 @@
 // The document shell every page shares: head, banner with the section nav, footer. Server-only:
 // written with html, so none of it is hydrated and pages without islands ship no
 // JavaScript.
-import { html, nothing, type ChildValue } from '@gyral/core';
+import { html, nothing, raw, type ChildValue } from '@gyral/core';
 import { page } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';
 import { CC_BY_SA_3 } from '../domain/attribution.js';
 import { SECTIONS, type Section } from '../domain/sections.js';
+import { THEME_COLOR, THEME_SCRIPT } from '../domain/theme.js';
 import { absolute, SITE_NAME } from '../site.js';
 import { EXPLORE_TEXT, SABACC_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
 
@@ -40,6 +41,7 @@ export const fullTitle = (meta: Pick<PageMeta, 'path' | 'title'>): string =>
   meta.path === '/' ? meta.title : `${meta.title} · ${SITE_NAME}`;
 
 const head = (meta: PageMeta, assets: Assets) => html`
+  ${raw(`<script>${THEME_SCRIPT}</script>`)}
   ${
     meta.noindex === true
       ? html`<meta name="robots" content="noindex" />`
@@ -51,7 +53,8 @@ const head = (meta: PageMeta, assets: Assets) => html`
   <meta property="og:title" content=${fullTitle(meta)} />
   <meta property="og:description" content=${meta.description} />
   <meta property="og:url" content=${absolute(meta.path)} />
-  <meta name="theme-color" content="#212731" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content=${THEME_COLOR.light} />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content=${THEME_COLOR.dark} />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/favicon.ico" sizes="32x32" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
@@ -108,6 +111,18 @@ const banner = (meta: PageMeta) => html`
             </form>
           </search>`
     }
+    <button type="button" aria-pressed="false" data-theme-toggle hidden title=${TEXT.darkTheme}>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+      </svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+        />
+      </svg>
+      <span>${TEXT.darkTheme}</span>
+    </button>
   </header>
 `;
 

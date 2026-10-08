@@ -336,6 +336,7 @@ export const MARKER_LABELS: Readonly<Record<string, string>> = {
 export const TEXT = {
   skipLink: 'Skip to content',
   primaryNav: 'Sections',
+  darkTheme: 'Dark theme',
   breadcrumb: 'Breadcrumb',
   home: 'Home',
   facts: 'Facts',

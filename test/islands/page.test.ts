@@ -103,7 +103,7 @@ describe('view transitions: the followed link becomes the next heading', () => {
     vi.stubGlobal('document', {
       addEventListener: vi.fn(),
       querySelectorAll: () => links,
-      querySelector: () => heading,
+      querySelector: (selector: string) => (selector === 'main h1' ? heading : null),
     });
     return { page: await import('../../src/page.js'), heading, FakeNode };
   }
@@ -159,5 +159,91 @@ describe('view transitions: the followed link becomes the next heading', () => {
     vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
     await import('../../src/page.js');
     expect(listen).toHaveBeenCalledWith('pageswap', expect.any(Function));
+  });
+});
+
+describe('the theme toggle', () => {
+  const root = (theme?: string) =>
+    ({ dataset: theme === undefined ? {} : { theme } }) as unknown as HTMLElement;
+  const store = () => ({ setItem: vi.fn(), removeItem: vi.fn() });
+
+  it('shows the visitor’s pick, else the system’s scheme', async () => {
+    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    const { shownTheme } = await import('../../src/page.js');
+    expect(shownTheme(root('light'), true)).toBe('light');
+    expect(shownTheme(root('dark'), false)).toBe('dark');
+    expect(shownTheme(root(), true)).toBe('dark');
+    expect(shownTheme(root('sepia'), false)).toBe('light');
+  });
+
+  it('remembers a pick that differs from the system, and forgets one that matches it', async () => {
+    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    const { pickTheme } = await import('../../src/page.js');
+    const lightSystem = root();
+    const storage = store();
+    pickTheme('dark', lightSystem, false, storage);
+    expect(lightSystem.dataset['theme']).toBe('dark');
+    expect(storage.setItem).toHaveBeenCalledWith('swr-theme', 'dark');
+    pickTheme('light', lightSystem, false, storage);
+    expect(lightSystem.dataset['theme']).toBeUndefined();
+    expect(storage.removeItem).toHaveBeenCalledWith('swr-theme');
+  });
+
+  it('still shows the pick when the browser refuses storage', async () => {
+    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    const { pickTheme } = await import('../../src/page.js');
+    const page = root();
+    const refusing = {
+      setItem: () => {
+        throw new Error('QuotaExceededError');
+      },
+      removeItem: vi.fn(),
+    };
+    pickTheme('dark', page, false, refusing);
+    pickTheme('light', root('dark'), true, null);
+    expect(page.dataset['theme']).toBe('dark');
+  });
+
+  it('shows the toggle, flips the theme on a click, and follows system changes', async () => {
+    let click: () => void = () => undefined;
+    let systemChange: () => void = () => undefined;
+    const button = {
+      hidden: true,
+      attributes: new Map<string, string>(),
+      setAttribute(name: string, value: string) {
+        this.attributes.set(name, value);
+      },
+      addEventListener: (_type: string, fn: () => void) => (click = fn),
+    };
+    const meta = { content: '' };
+    const system = {
+      matches: false,
+      addEventListener: (_type: string, fn: () => void) => (systemChange = fn),
+    };
+    const documentElement = root();
+    const storage = store();
+    vi.stubGlobal('matchMedia', () => system);
+    vi.stubGlobal('localStorage', storage);
+    vi.stubGlobal('document', {
+      documentElement,
+      addEventListener: vi.fn(),
+      querySelector: (selector: string) =>
+        selector === 'button[data-theme-toggle]' ? button : null,
+      querySelectorAll: () => [meta],
+    });
+    await import('../../src/page.js');
+    expect(button.hidden).toBe(false);
+    expect(button.attributes.get('aria-pressed')).toBe('false');
+    expect(meta.content).toBe('#fafaf7');
+    click();
+    expect(documentElement.dataset['theme']).toBe('dark');
+    expect(storage.setItem).toHaveBeenCalledWith('swr-theme', 'dark');
+    expect(button.attributes.get('aria-pressed')).toBe('true');
+    expect(meta.content).toBe('#060a13');
+    click();
+    expect(documentElement.dataset['theme']).toBeUndefined();
+    system.matches = true;
+    systemChange();
+    expect(button.attributes.get('aria-pressed')).toBe('true');
   });
 });
