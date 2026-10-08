@@ -4,6 +4,7 @@
 // The build writes it as shards, one per three-letter word start (`luk`, `tat`); the search
 // island fetches the shard for the query and puts its best matches above Pagefind's.
 // Pure, so the build (src/render, scripts) and the browser (src/islands) share it.
+import { outgoing } from './links.js';
 import type { ArticleRecord } from './article.js';
 import { displayTitle, type Archive } from './archive.js';
 import type { Section } from './sections.js';
@@ -47,13 +48,7 @@ export const shardKey = (token: string, length = 3): string => token.slice(0, le
 export function inboundLinks(articles: Iterable<ArticleRecord>): Map<string, number> {
   const counts = new Map<string, number>();
   for (const article of articles) {
-    const targets = new Set<string>();
-    for (const runs of [...article.lead, ...article.fields.flatMap((f) => f.items)]) {
-      for (const run of runs) if ('link' in run) targets.add(run.link);
-    }
-    for (const a of article.appearances ?? []) if (a.link !== undefined) targets.add(a.link);
-    targets.delete(article.title);
-    for (const t of targets) counts.set(t, (counts.get(t) ?? 0) + 1);
+    for (const t of outgoing(article)) counts.set(t, (counts.get(t) ?? 0) + 1);
   }
   return counts;
 }

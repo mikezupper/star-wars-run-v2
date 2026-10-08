@@ -181,6 +181,42 @@ describe('article pages', () => {
     expect(luke).not.toContain('part of Legends');
   });
 
+  it('open with a title block: the kind, the era, the other version and the link count', () => {
+    const header = luke.slice(
+      luke.indexOf('<article>'),
+      luke.indexOf('</header>', luke.indexOf('<article>')),
+    );
+    expect(header).toMatch(/<p data-pagefind-ignore>Character<\/p>/);
+    expect(header).toContain('<span data-era="canon">Canon</span>');
+    expect(header).toMatch(
+      /<a href="\/characters\/luke-skywalker-legends\/" data-era="legends"\s*>Legends version →<\/a/,
+    );
+    expect(header).toMatch(/Linked from \d+ articles?/);
+    const legends = pages.get('/characters/luke-skywalker-legends/') ?? '';
+    expect(legends).toMatch(
+      /<a href="\/characters\/luke-skywalker\/" data-era="canon"\s*>Canon version →/,
+    );
+  });
+
+  it('repeat the first facts under the title for phones, hidden from assistive tech, unlinked', () => {
+    const strip = luke.slice(
+      luke.indexOf('<dl aria-hidden="true"'),
+      luke.indexOf('</dl>', luke.indexOf('<dl aria-hidden="true"')),
+    );
+    expect(strip).toContain('<dt>Homeworld</dt>');
+    expect(strip).toContain('<dd>Tatooine</dd>');
+    expect(strip).not.toContain('<a ');
+    expect(strip.match(/<dt>/g)).toHaveLength(4);
+  });
+
+  it('list the best-known articles that link to them', () => {
+    const section = luke.slice(luke.indexOf('aria-labelledby="linked-from"'));
+    const linkers = data.links.linkedFrom.get('Luke Skywalker') ?? [];
+    expect(linkers.length).toBeGreaterThan(0);
+    for (const title of linkers.filter((t) => data.archive.byTitle.has(t)))
+      expect(section).toContain(`href="${pathOf(title)}"`);
+  });
+
   it('are indexed for search, filterable by section; other pages are not', () => {
     for (const [page, body] of pages) {
       const entry = [...data.archive.byTitle.values()].find((e) => e.path === page);

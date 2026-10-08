@@ -4,6 +4,7 @@
 import { buildArchive, sampleSummaries, type Summary } from '../domain/archive.js';
 import type { ArticleRecord } from '../domain/article.js';
 import type { Archive } from '../domain/archive.js';
+import { linkGraph, type LinkGraph } from '../domain/links.js';
 import { loadArticles, loadWookieepediaIndex, WOOKIEEPEDIA_DIR } from './wookieepedia.js';
 
 /** Always in a sample build, so tests and smoke checks have familiar pages to look for. */
@@ -29,6 +30,8 @@ export async function loadSiteData(
   articles: Map<string, ArticleRecord>;
   /** Redirect title → target, for the search title index (swr-357). */
   redirects: ReadonlyMap<string, string>;
+  /** Who links to whom, turned around: counts and each page's best-known linkers. */
+  links: LinkGraph;
 }> {
   const dir = options.dir ?? WOOKIEEPEDIA_DIR;
   const index = await loadWookieepediaIndex(dir);
@@ -40,5 +43,5 @@ export async function loadSiteData(
   }
   const archive = buildArchive(summaries);
   const articles = await loadArticles(dir, options.sample === undefined ? undefined : new Set(archive.byTitle.keys()));
-  return { archive, articles, redirects: index.redirects };
+  return { archive, articles, redirects: index.redirects, links: linkGraph(articles.values()) };
 }

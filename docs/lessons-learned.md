@@ -225,3 +225,15 @@ Each entry has four parts:
   a gray mid-crossfade background.
 - **Fix:** the step waits until `document.getAnimations()` is empty before running axe.
 - **Guard:** any later step that changes the scheme on a live page must wait the same way.
+
+## An aborted view transition threw an unhandled error (2026-10-08)
+
+- **Symptom:** Smoke reported a page error on /search/: "Transition was aborted because of
+  invalid state. ViewTransition opt-in disabled". It didn't show on every run.
+- **Cause:** `src/page.ts` restored the followed link's transition name with
+  `viewTransition.finished.finally(…)`. When the browser aborts a transition, `finished` rejects,
+  and `.finally()` passes the rejection on to a promise nothing handled.
+- **Fix:** `finished.then(restore, restore)`: the names come back either way and nothing is left
+  unhandled. A unit test rejects `finished` and checks.
+- **Guard:** the test, and smoke's failure on any page error. Shipped in PR #21; fixed on the
+  new-look branch.
