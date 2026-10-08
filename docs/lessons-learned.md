@@ -215,3 +215,13 @@ Each entry has four parts:
 - **Fix:** `build.assetsInlineLimit` in `vite.config.ts` keeps `.woff2` files as files, however
   small; the CSP is unchanged.
 - **Guard:** smoke fails on any console error, which is how this surfaced.
+
+## axe measured a button halfway through a color change (2026-10-08)
+
+- **Symptom:** Smoke failed once with a contrast error on the header's Sections button, only on
+  "/search/ with results (dark)"; the same page passed in the full dark-scheme sweep.
+- **Cause:** that step switches the page from light to dark with `emulateMedia` and runs axe at
+  once. Links and buttons ease their colors over 150 ms, so axe read a gray mid-crossfade text on
+  a gray mid-crossfade background.
+- **Fix:** the step waits until `document.getAnimations()` is empty before running axe.
+- **Guard:** any later step that changes the scheme on a live page must wait the same way.

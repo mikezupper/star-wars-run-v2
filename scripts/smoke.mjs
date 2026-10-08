@@ -274,6 +274,8 @@ async function checkSearch() {
     await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
     await axe(page, `${where} with results (light)`);
     await page.emulateMedia({ colorScheme: 'dark' });
+    // Links and buttons ease their colors (150 ms): check the settled scheme, not the crossfade.
+    await page.waitForFunction(() => document.getAnimations().length === 0);
     await axe(page, `${where} with results (dark)`);
   } finally {
     await context.close();
