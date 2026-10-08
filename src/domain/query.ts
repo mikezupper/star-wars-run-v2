@@ -9,6 +9,8 @@ export interface QueryResult {
   /** True when there were more rows than the cap. */
   readonly truncated: boolean;
   readonly ms: number;
+  /** Columns the server added that the query didn't ask for (`pair`); not shown as columns. */
+  readonly extra?: readonly string[];
 }
 
 /** The SQL editor shows at most this many rows. */

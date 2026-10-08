@@ -1,11 +1,11 @@
-// The Explore page's tables (swr-7f1.7): the archive as rows, written to a DuckDB file at build time
-// and queried in the browser with DuckDB-WASM.
+// The Explore page's tables (swr-7f1.7): the archive as rows, written to a DuckDB file at build
+// time and queried on the server by the API (ADR 0010).
 // - `archive`: one row per article: what it is, where its page is, and its numbers.
 // - `facts`: one row per infobox value: the field, its text, and the article it links to.
 // - `appearances`: one row per entry of an article's Appearances section: for a work, who
 //   appears in it; for anything else, the works it appears in.
 import type { ArticleRecord } from './article.js';
-import { displayTitle, type Archive } from './archive.js';
+import { displayTitle, type Archive, type Entry } from './archive.js';
 import { QUANTITY_FIELDS, quantities } from './quantities.js';
 import { inboundLinks } from './titles.js';
 
@@ -21,6 +21,12 @@ export type ArchiveRow = Readonly<Record<string, string | number | null>> & {
   readonly era: string;
   /** How many articles link to this one: how well known it is (src/domain/titles.ts). */
   readonly links: number;
+  /**
+   * The subject: the path of its canon article, shared by a canon article and its Legends twin
+   * (Darth Sidious and Palpatine/Legends both have /characters/darth-sidious/). Explore folds a
+   * subject's rows into one (swr-cd6).
+   */
+  readonly pair: string;
 };
 
 export interface FactRow {
@@ -44,6 +50,12 @@ export interface AppearanceRow {
   readonly markers: string;
   readonly noncanon: boolean;
 }
+
+/** The path of a subject's canon article: its own, unless it's the Legends half of a pair. */
+export const pairPath = (entry: Entry, archive: Archive): string => {
+  const twin = entry.twin === undefined ? undefined : archive.byTitle.get(entry.twin);
+  return entry.era === 'legends' && twin !== undefined ? twin.path : entry.path;
+};
 
 /** Rows for every article the archive has a page for, in title order. */
 export function exploreRows(
@@ -72,6 +84,7 @@ export function exploreRows(
       kind: record.kind ?? null,
       era: record.era,
       links: links.get(title) ?? 0,
+      pair: pairPath(entry, archive),
       ...Object.fromEntries(NUMBER_COLUMNS.map((c) => [c, numbers[c]?.value ?? null])),
     });
     for (const field of record.fields) {

@@ -75,6 +75,7 @@ export async function buildDatabase(
         kind: 'VARCHAR',
         era: 'VARCHAR',
         links: 'INTEGER',
+        pair: 'VARCHAR',
         ...Object.fromEntries(NUMBER_COLUMNS.map((c) => [c, 'DOUBLE'])),
       },
       'title',

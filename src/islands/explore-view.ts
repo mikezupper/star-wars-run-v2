@@ -74,7 +74,14 @@ export function mergeEras(r: QueryResult): {
 } {
   const pathAt = r.columns.indexOf('path');
   const eraAt = r.columns.indexOf('era');
-  const keep = r.columns.map((_, n) => n).filter((n) => n !== pathAt && n !== eraAt);
+  // `pair` (the subject's canon path, swr-cd6) joins twins whose names differ: Darth Sidious
+  // and Palpatine. Their names don't count toward "equal in everything", and the row shows the
+  // canon name.
+  const pairAt = r.columns.indexOf('pair');
+  const nameAt = r.columns.indexOf('name');
+  const keep = r.columns
+    .map((_, n) => n)
+    .filter((n) => n !== pathAt && n !== eraAt && n !== pairAt);
   const columns = keep.map((n) => r.columns[n] ?? '');
   const pathOf = (row: readonly Value[]) => {
     const p = pathAt >= 0 ? row[pathAt] : null;
@@ -87,8 +94,13 @@ export function mergeEras(r: QueryResult): {
   for (const row of r.rows) {
     const cells = keep.map((n) => row[n] ?? null);
     const era = eraAt >= 0 ? row[eraAt] : null;
-    const key = JSON.stringify(cells);
+    const pair = pairAt >= 0 ? row[pairAt] : null;
+    const key =
+      typeof pair === 'string'
+        ? JSON.stringify([pair, ...keep.map((n, i) => (n === nameAt ? null : cells[i]))])
+        : JSON.stringify(cells);
     const group = groups.get(key) ?? { cells, eras: [] };
+    if (era === 'canon') group.cells = cells;
     if (typeof era === 'string') group.eras.push({ era, path: pathOf(row) });
     else if (group.eras.length === 0) group.eras.push({ era: '', path: pathOf(row) });
     groups.set(key, group);
@@ -148,7 +160,9 @@ export function table(r: QueryResult, readable = false) {
   if (readable) return readableTable(r);
   const pathAt = r.columns.indexOf('path');
   const nameAt = r.columns.indexOf('name');
-  const shown = r.columns.map((c, n) => [c, n] as const).filter(([, n]) => n !== pathAt);
+  const shown = r.columns
+    .map((c, n) => [c, n] as const)
+    .filter(([c, n]) => n !== pathAt && !(r.extra ?? []).includes(c));
   return html`<div class="table" role="region" aria-label=${EXPLORE_TEXT.results} tabindex="0">
     <table>
       <thead>
