@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { wookieepediaUrl } from '../src/domain/attribution.js';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
+import { bestKnown } from '../src/render/home.js';
 import { fullTitle } from '../src/render/layout.js';
 import { createSite, normalise, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
@@ -104,6 +105,33 @@ describe('every page', () => {
       expect(body.match(/<main[\s>]/g), page).toHaveLength(1);
       expect(links(body).find((l) => l.text === 'Wookieepedia')?.rel, page).toBe('external');
     }
+  });
+});
+
+describe('the home page', () => {
+  const home = pages.get('/') ?? '';
+
+  it('leads with a question box that asks on the Explore page', () => {
+    expect(home).toMatch(/<form(?=[^>]*action="\/explore\/")(?=[^>]*method="get")[^>]*>/);
+    expect(home).toMatch(/<input[^>]*name="ask"/);
+  });
+
+  it('ranks the best-known characters, one row per name, canon article first', () => {
+    const best = bestKnown(data.archive, data.links, 'characters');
+    expect(best.length).toBeGreaterThan(0);
+    expect(best.map((k) => k.links)).toEqual(best.map((k) => k.links).sort((a, b) => b - a));
+    expect(new Set(best.map((k) => k.name)).size).toBe(best.length);
+    const luke = best.find((k) => k.name === 'Luke Skywalker');
+    expect(luke?.entries.map((e) => e.era)).toEqual(['canon', 'legends']);
+    const ranking = home.slice(home.indexOf('aria-labelledby="best-known"'));
+    expect(ranking).toContain(`href="${pathOf('Luke Skywalker')}">Luke Skywalker</a>`);
+    expect(ranking).toMatch(/Canon · Legends/);
+  });
+
+  it('has a card for every section, with its count', () => {
+    const cards = home.slice(home.indexOf('aria-labelledby="home-sections"'));
+    expect(cards).toContain('href="/characters/"');
+    expect(cards).toMatch(/<data value="\d+">/);
   });
 });
 

@@ -352,7 +352,10 @@ export const TEXT = {
   facts: 'Facts',
   homeIntro: (articles: number): string =>
     `The galaxy, far, far away, in ${articles.toLocaleString('en-US')} articles from Wookieepedia: canon and Legends, from Jedi Masters to junk dealers to moons nobody remembers. Every page links to everything it mentions. Pick a section, search the archive, or ask it a question on the Explore page.`,
-  homeAsk: 'Ask the archive a question in plain words →',
+  homeAskLabel: 'Ask the archive a question in plain words',
+  homeAskPlaceholder: 'Which Wookiees fought for the Rebel Alliance?',
+  bestKnown: 'Best known',
+  bestKnownCharacters: 'Best-known characters',
   notFoundTitle: 'Page not found',
   notFoundBody:
     'These aren’t the droids you’re looking for. There’s no page at this address: it may have moved, or it never existed.',
