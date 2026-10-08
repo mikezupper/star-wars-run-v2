@@ -596,6 +596,35 @@
   }
 }
 
+/*
+ * Page-to-page transitions (ADR 0011): a short crossfade instead of a white flash; the header
+ * stays put; the page's heading morphs into the next one's, or, when a link in the content was
+ * followed, that link grows into the new heading (src/page.ts names it). Browsers without
+ * cross-document view transitions navigate as before; reduced motion turns them off.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  /* stylelint-disable-next-line plugin/use-baseline -- a browser without it ignores the rule and
+     navigates as before; an @supports guard would also hide it from browsers that have it. */
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+@layer components {
+  body > header {
+    view-transition-name: site-header;
+  }
+
+  main h1 {
+    view-transition-name: page-title;
+  }
+}
+
+::view-transition-group(*) {
+  animation-duration: 220ms;
+  animation-timing-function: ease-out;
+}
+
 @media (forced-colors: active) {
   @layer components {
     body > header nav a[aria-current] {

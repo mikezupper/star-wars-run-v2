@@ -6,7 +6,7 @@ import { readFile, stat } from 'node:fs/promises';
 import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { headersFor } from '../src/hosting/headers.js';
+import { headersFor, SPECULATION_RULES } from '../src/hosting/headers.js';
 import { handleApi, isApi } from './lib/api.js';
 import { ranged } from './lib/range.js';
 
@@ -46,7 +46,10 @@ export function createPreview(dist: string): http.Server {
         // Range requests (DuckDB reads Parquet in pieces) apply to successful responses only.
         const answer = status === 200 ? ranged(await readFile(file), req.headers.range) : undefined;
         res.writeHead(answer?.status ?? status, {
-          'content-type': TYPES[extname(file)] ?? 'application/octet-stream',
+          'content-type':
+            path === SPECULATION_RULES.path
+              ? SPECULATION_RULES.type
+              : (TYPES[extname(file)] ?? 'application/octet-stream'),
           ...headersFor(path, status),
           ...(answer?.headers ?? {}),
         });

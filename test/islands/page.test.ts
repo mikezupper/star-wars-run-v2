@@ -69,3 +69,95 @@ describe('service worker registration', () => {
     vi.unstubAllEnvs();
   });
 });
+
+describe('view transitions: the followed link becomes the next heading', () => {
+  /** A link or heading with just the parts page.ts touches. */
+  const element = (href: string, top: number) => {
+    const style = { setProperty: vi.fn(), removeProperty: vi.fn() };
+    return {
+      href,
+      style,
+      getBoundingClientRect: () => ({ top, bottom: top + 20 }),
+      closest: vi.fn(),
+    };
+  };
+  const swap = (url: string | null, transition = true) => {
+    let done: () => void = () => undefined;
+    const finished = new Promise<void>((resolve) => (done = resolve));
+    return {
+      event: {
+        activation: url === null ? null : { entry: { url } },
+        viewTransition: transition ? { finished } : null,
+      } as unknown as PageSwapEvent,
+      done,
+    };
+  };
+  const LUKE = 'https://starwars.run/characters/luke-skywalker/';
+
+  async function load(links: ReturnType<typeof element>[], heading = element('', 0)) {
+    class FakeNode {
+      readonly nodeType = 1;
+    }
+    vi.stubGlobal('Element', FakeNode);
+    vi.stubGlobal('window', { innerHeight: 800 });
+    vi.stubGlobal('document', {
+      addEventListener: vi.fn(),
+      querySelectorAll: () => links,
+      querySelector: () => heading,
+    });
+    return { page: await import('../../src/page.js'), heading, FakeNode };
+  }
+
+  it('picks the link to the new page that is on screen', async () => {
+    const { page } = await load([]);
+    const above = element(LUKE, -100);
+    const other = element('https://starwars.run/planets/tatooine/', 100);
+    const seen = element(LUKE, 300);
+    expect(page.followedLink(LUKE, [above, other, seen], 800)).toBe(seen);
+    expect(page.followedLink(LUKE, [above, element(LUKE, 900)], 800)).toBeUndefined();
+  });
+
+  it('names the link for the transition, and gives the heading’s name back afterwards', async () => {
+    const link = element(LUKE, 200);
+    const { page, heading } = await load([link]);
+    const { event, done } = swap(LUKE);
+    page.nameFollowedLink(event);
+    expect(heading.style.setProperty).toHaveBeenCalledWith('view-transition-name', 'none');
+    expect(link.style.setProperty).toHaveBeenCalledWith('view-transition-name', 'page-title');
+    done();
+    await vi.waitFor(() => {
+      expect(link.style.removeProperty).toHaveBeenCalledWith('view-transition-name');
+      expect(heading.style.removeProperty).toHaveBeenCalledWith('view-transition-name');
+    });
+  });
+
+  it('prefers the link that was clicked over another to the same page', async () => {
+    const first = element(LUKE, 100);
+    const clicked = element(LUKE, 400);
+    const { page, FakeNode } = await load([first, clicked]);
+    const target = Object.assign(new FakeNode(), { closest: () => clicked });
+    page.rememberClick({ target } as unknown as Event);
+    page.nameFollowedLink(swap(LUKE).event);
+    expect(clicked.style.setProperty).toHaveBeenCalledWith('view-transition-name', 'page-title');
+    expect(first.style.setProperty).not.toHaveBeenCalled();
+  });
+
+  it('leaves the headings to morph when no link was followed, or there is no transition', async () => {
+    const link = element(LUKE, 200);
+    const { page, heading } = await load([link]);
+    page.rememberClick({ target: null } as unknown as Event);
+    page.nameFollowedLink(swap('https://starwars.run/planets/hoth/').event);
+    page.nameFollowedLink(swap(LUKE, false).event);
+    page.nameFollowedLink(swap(null).event);
+    expect(link.style.setProperty).not.toHaveBeenCalled();
+    expect(heading.style.setProperty).not.toHaveBeenCalled();
+  });
+
+  it('listens for page swaps only where the browser has them', async () => {
+    const listen = vi.fn();
+    vi.stubGlobal('window', { onpageswap: null, addEventListener: listen });
+    vi.stubGlobal('document', { addEventListener: vi.fn(), querySelector: () => null });
+    await import('../../src/page.js');
+    expect(listen).toHaveBeenCalledWith('pageswap', expect.any(Function));
+  });
+});

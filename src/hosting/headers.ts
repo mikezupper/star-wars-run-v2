@@ -36,6 +36,22 @@ export const SECURITY: Readonly<Record<string, string>> = {
 };
 
 /**
+ * Hover-to-fetch (ADR 0011): every page points browsers at one rules file, which asks them to
+ * fetch a page while its link is hovered, so the click lands on a page already there. A header,
+ * not an inline <script type="speculationrules">, so the CSP needs no exception. Browsers only
+ * read the rules if the file has its own MIME type.
+ */
+export const SPECULATION_RULES = {
+  path: '/speculation-rules.json',
+  type: 'application/speculationrules+json',
+} as const;
+
+/** On every response, beside the security headers. */
+export const NAVIGATION: Readonly<Record<string, string>> = {
+  'Speculation-Rules': `"${SPECULATION_RULES.path}"`,
+};
+
+/**
  * Cache-Control by path. Browsers revalidate pages after 5 minutes; Cloudflare keeps them an
  * hour (s-maxage) and serves a stale copy for up to a day while it refetches.
  */
@@ -74,6 +90,7 @@ export function cacheControl(path: string, status: number): string {
 /** Every header for a response to `path`. */
 export const headersFor = (path: string, status: number): Readonly<Record<string, string>> => ({
   ...SECURITY,
+  ...NAVIGATION,
   'Cache-Control': cacheControl(path, status),
 });
 
@@ -86,7 +103,9 @@ export function caddyfile(): string {
   const security = (indent: string) =>
     [
       `${indent}header {`,
-      ...Object.entries(SECURITY).map(([name, value]) => `${indent}\t${name} ${quote(value)}`),
+      ...Object.entries({ ...SECURITY, ...NAVIGATION }).map(
+        ([name, value]) => `${indent}\t${name} ${quote(value)}`,
+      ),
       `${indent}\t-Server`,
       `${indent}}`,
     ].join('\n');
@@ -110,6 +129,8 @@ ${security('\t')}
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
 \t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js /api/*
 \theader @pages Cache-Control ${quote(CACHE.pages)}
+\t# Deferred (>), so it replaces the type Caddy guesses from .json.
+\theader ${SPECULATION_RULES.path} >Content-Type ${quote(SPECULATION_RULES.type)}
 \t# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
 \theader /api/* >Cache-Control ${quote(CACHE.api)}
 

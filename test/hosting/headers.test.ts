@@ -1,7 +1,14 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { styleHashes } from '@gyral/core/server';
-import { CACHE, cacheControl, caddyfile, CSP, headersFor } from '../../src/hosting/headers.js';
+import {
+  CACHE,
+  cacheControl,
+  caddyfile,
+  CSP,
+  headersFor,
+  SPECULATION_RULES,
+} from '../../src/hosting/headers.js';
 import { STYLE_HASHES } from '../../src/hosting/style-hashes.js';
 import '../../src/islands/explore.js';
 import '../../src/islands/site-search.js';
@@ -31,6 +38,26 @@ describe('cache policy', () => {
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
     expect(CSP).toContain("script-src 'self' 'wasm-unsafe-eval'");
     expect(CSP).not.toContain("'unsafe-eval'");
+  });
+});
+
+describe('hover-to-fetch', () => {
+  it('points every response at the rules file, which exists and fetches only pages', async () => {
+    expect(headersFor('/', 200)['Speculation-Rules']).toBe('"/speculation-rules.json"');
+    expect(headersFor('/no-such-page/', 404)['Speculation-Rules']).toBeDefined();
+    const rules = JSON.parse(await readFile(`public${SPECULATION_RULES.path}`, 'utf8')) as {
+      prefetch: { eagerness: string; where: unknown }[];
+    };
+    expect(rules.prefetch[0]?.eagerness).toBe('moderate');
+    expect(JSON.stringify(rules.prefetch[0]?.where)).toContain('{"not":{"href_matches":"/api/*"}}');
+  });
+
+  it('serves the rules file with the MIME type browsers require, in production too', () => {
+    expect(SPECULATION_RULES.type).toBe('application/speculationrules+json');
+    expect(caddyfile()).toContain(
+      'header /speculation-rules.json >Content-Type "application/speculationrules+json"',
+    );
+    expect(caddyfile().match(/Speculation-Rules/g)).toHaveLength(2); // the main route and the 404
   });
 });
 

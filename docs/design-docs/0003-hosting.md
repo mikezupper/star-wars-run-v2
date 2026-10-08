@@ -41,7 +41,9 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   WebAssembly, which does not allow `eval()`). `pnpm caddyfile` regenerates the hashes, and a
   test fails when an island's styles change without them, HSTS without `includeSubDomains`, `nosniff`, a
   referrer policy, a permissions policy, and `Cross-Origin-Opener-Policy`. Caddy's `Server`
-  header is removed.
+  header is removed. Every response also carries `Speculation-Rules`, pointing browsers at
+  `/speculation-rules.json` (served as `application/speculationrules+json`), so a hovered link's
+  page is fetched before the click ([0011-rendered-on-request.md](0011-rendered-on-request.md)).
 - `pnpm preview` and Caddy share the URL rules: a slash added with a 308 redirect, and
   `404.html` with status 404 for unknown paths. `SMOKE_BASE_URL=http://localhost:8080 pnpm
 smoke` runs the whole smoke suite against the running image.

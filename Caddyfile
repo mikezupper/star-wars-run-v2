@@ -15,6 +15,7 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 		Cross-Origin-Opener-Policy "same-origin"
+		Speculation-Rules "\"/speculation-rules.json\""
 		-Server
 	}
 
@@ -26,6 +27,8 @@
 	header @sw Cache-Control "no-cache"
 	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js /api/*
 	header @pages Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+	# Deferred (>), so it replaces the type Caddy guesses from .json.
+	header /speculation-rules.json >Content-Type "application/speculationrules+json"
 	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
 	header /api/* >Cache-Control "no-store"
 
@@ -51,6 +54,7 @@
 			Referrer-Policy "strict-origin-when-cross-origin"
 			Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 			Cross-Origin-Opener-Policy "same-origin"
+			Speculation-Rules "\"/speculation-rules.json\""
 			-Server
 		}
 		header Cache-Control "public, max-age=60"

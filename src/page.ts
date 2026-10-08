@@ -4,6 +4,9 @@
 //   gyral.dev's src/shortcuts.ts.
 // - In production builds, registers the service worker (/sw.js, built by scripts/build.ts) that
 //   makes the site work offline (docs/product-specs/offline.md).
+// - On a page-to-page view transition (ADR 0011), the link that was followed grows into the
+//   next page's heading. The CSS names every page's heading `page-title`; here, as the old page
+//   is swapped out, the followed link takes that name instead of the old heading.
 
 const typing = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
@@ -24,9 +27,64 @@ document.addEventListener('keydown', (event) => {
   box.select();
 });
 
+/** The name the CSS gives each page's heading, and the followed link takes on the way out. */
+const TITLE = 'page-title';
+
+interface Linkish {
+  readonly href: string;
+  getBoundingClientRect(): { readonly top: number; readonly bottom: number };
+}
+
+/** The link to `to` that the visitor could see, if any: the one they most likely followed. */
+export function followedLink<T extends Linkish>(
+  to: string,
+  links: Iterable<T>,
+  viewportHeight: number,
+): T | undefined {
+  for (const link of links) {
+    if (link.href !== to) continue;
+    const { top, bottom } = link.getBoundingClientRect();
+    if (bottom > 0 && top < viewportHeight) return link;
+  }
+  return undefined;
+}
+
+/** The link last clicked (a click or Enter), so the right one of several to one page morphs. */
+let clicked: HTMLAnchorElement | null = null;
+
+export function rememberClick(event: Event): void {
+  clicked = event.target instanceof Element ? event.target.closest('main a[href]') : null;
+}
+
+/** Hands the heading's transition name to the followed link, until the transition ends. */
+export function nameFollowedLink(event: PageSwapEvent): void {
+  const to = event.activation?.entry.url;
+  if (!event.viewTransition || to == null) return;
+  const link =
+    clicked?.href === to
+      ? clicked
+      : followedLink(
+          to,
+          document.querySelectorAll<HTMLAnchorElement>('main a[href]'),
+          window.innerHeight,
+        );
+  if (link === undefined) return;
+  const heading = document.querySelector<HTMLElement>('main h1');
+  // A name must be unique on the page, so the old heading gives it up.
+  heading?.style.setProperty('view-transition-name', 'none');
+  link.style.setProperty('view-transition-name', TITLE);
+  // Undone once the snapshot is taken, so a return from the back/forward cache starts clean.
+  void event.viewTransition.finished.finally(() => {
+    heading?.style.removeProperty('view-transition-name');
+    link.style.removeProperty('view-transition-name');
+  });
+}
+
+if (typeof window !== 'undefined' && 'onpageswap' in window) {
+  document.addEventListener('click', rememberClick, { capture: true });
+  window.addEventListener('pageswap', nameFollowedLink);
+}
+
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   void navigator.serviceWorker.register('/sw.js');
 }
-
-// A module, so tests can import it and the build treats it as one entry.
-export {};

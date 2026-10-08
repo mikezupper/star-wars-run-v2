@@ -17,6 +17,7 @@
 // - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
 //   archive's database, with names linking to their pages; Ask the archive (swr-ei6) answers a
 //   question with the model stubbed, passes axe, and says so when the model is down;
+// - page-to-page view transitions run, and pages point browsers at the hover-to-fetch rules;
 // - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
 //   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
 //   SMOKE_BASE_URL points at another server.
@@ -116,6 +117,7 @@ try {
   await checkOffline();
   await checkExplore();
   await checkAsk();
+  await checkTransitions();
   if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
@@ -474,6 +476,47 @@ async function checkAsk() {
   }
 }
 
+/**
+ * Page-to-page view transitions and hover-to-fetch (ADR 0011): pages carry the Speculation-Rules
+ * header, the rules file has the MIME type browsers insist on, and following a link from home to
+ * a section runs a cross-document view transition.
+ */
+async function checkTransitions() {
+  const where = '/ → /characters/ (view transition)';
+  const context = await browser.newContext({ reducedMotion: 'no-preference' });
+  try {
+    const page = await context.newPage();
+    watch(page, where);
+    // Each page records whether it arrived with a transition, under its own path: a fast page
+    // can fire `load` before its first frame, and `pagereveal` comes with that frame.
+    await page.addInitScript(() => {
+      addEventListener('pagereveal', (event) => {
+        sessionStorage.setItem(
+          `reveal:${location.pathname}`,
+          String(event.viewTransition !== null),
+        );
+      });
+    });
+    const home = await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+    if (home?.headers()['speculation-rules'] !== '"/speculation-rules.json"')
+      fail(where, 'the page has no Speculation-Rules header');
+    const rules = await page.request.get(`${base}/speculation-rules.json`);
+    if (!(rules.headers()['content-type'] ?? '').startsWith('application/speculationrules+json'))
+      fail(where, `the rules are served as ${String(rules.headers()['content-type'])}`);
+    await page.locator('main a[href="/characters/"]').first().click();
+    await page.waitForURL('**/characters/');
+    const ran = await page
+      .waitForFunction(() => sessionStorage.getItem('reveal:/characters/'), null, { timeout: 5000 })
+      .then(
+        (answer) => answer.jsonValue(),
+        () => 'nothing',
+      );
+    if (ran !== 'true') fail(where, `no view transition ran (pagereveal said ${String(ran)})`);
+  } finally {
+    await context.close();
+  }
+}
+
 /** A port nothing is listening on right now. */
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -554,5 +597,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore and dev server: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore, transitions and dev server: all checks passed (${seconds}s)`,
 );
