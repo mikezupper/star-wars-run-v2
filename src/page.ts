@@ -78,11 +78,13 @@ export function nameFollowedLink(event: PageSwapEvent): void {
   // A name must be unique on the page, so the old heading gives it up.
   heading?.style.setProperty('view-transition-name', 'none');
   link.style.setProperty('view-transition-name', TITLE);
-  // Undone once the snapshot is taken, so a return from the back/forward cache starts clean.
-  void event.viewTransition.finished.finally(() => {
+  // Undone once the snapshot is taken, so a return from the back/forward cache starts clean;
+  // also when the browser aborts the transition, which rejects `finished`.
+  const restore = () => {
     heading?.style.removeProperty('view-transition-name');
     link.style.removeProperty('view-transition-name');
-  });
+  };
+  event.viewTransition.finished.then(restore, restore);
 }
 
 if (typeof window !== 'undefined' && 'onpageswap' in window) {

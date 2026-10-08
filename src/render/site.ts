@@ -5,6 +5,7 @@ import { html, type ChildValue } from '@gyral/core';
 import { renderToStream, renderToString } from '@gyral/ssr';
 import type { ArticleRecord } from '../domain/article.js';
 import type { Archive } from '../domain/archive.js';
+import type { LinkGraph } from '../domain/links.js';
 import { SECTIONS } from '../domain/sections.js';
 import { absolute } from '../site.js';
 import { TEXT } from '../labels.js';
@@ -17,10 +18,11 @@ import { sabaccBody, sabaccMeta } from './sabacc.js';
 import { searchBody, searchMeta } from './search.js';
 import { byLetter, letterBody, letterMeta, sectionBody, sectionMeta } from './section.js';
 
-/** What the site renders: the archive's address book, and each article's content. */
+/** What the site renders: the archive's address book, each article's content, and its links. */
 export interface SiteData {
   readonly archive: Archive;
   readonly articles: ReadonlyMap<string, ArticleRecord>;
+  readonly links: LinkGraph;
 }
 
 interface Route {
@@ -58,7 +60,7 @@ const HTML = { 'content-type': 'text/html; charset=utf-8' };
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-export function createSite(assets: Assets, { archive, articles }: SiteData): Site {
+export function createSite(assets: Assets, { archive, articles, links }: SiteData): Site {
   const table = new Map<string, Route>([
     ['/', { meta: homeMeta, body: () => homeBody(archive) }],
     [searchMeta.path, { meta: searchMeta, body: searchBody }],
@@ -81,7 +83,7 @@ export function createSite(assets: Assets, { archive, articles }: SiteData): Sit
       if (record === undefined) continue;
       table.set(entry.path, {
         meta: articleMeta(entry),
-        body: () => articleBody(entry, record, archive),
+        body: () => articleBody(entry, record, archive, links),
       });
     }
   }

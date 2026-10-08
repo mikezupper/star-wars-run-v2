@@ -676,9 +676,125 @@
     align-items: start;
     container-type: inline-size;
 
-    & > h1,
+    & > header,
     & > p {
       grid-column: 1 / -1;
+    }
+
+    /* Title block: the kind, the title, then its era, the other version and its link count. */
+    & > header {
+      display: grid;
+      gap: 0.6rem;
+      padding-block-end: var(--gap);
+      border-block-end: var(--rule-width) solid var(--rule);
+
+      & > p:first-child {
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: var(--step--1);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      & > h1 + p {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 0.75rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        font-size: var(--step--1);
+        text-transform: uppercase;
+      }
+
+      & [data-era] {
+        padding: 0.15em 0.55em;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      & [data-era='canon'] {
+        background: var(--canon-bg);
+        color: var(--canon);
+        box-shadow: inset 0 0 0 1px light-dark(transparent, var(--canon));
+      }
+
+      & [data-era='legends'] {
+        background: var(--legends-bg);
+        color: var(--legends);
+        box-shadow: inset 0 0 0 1px light-dark(transparent, var(--legends));
+      }
+    }
+
+    /* Key facts under the title, on narrow pages only (see src/render/article.ts). */
+    & > dl[aria-hidden] {
+      display: none;
+    }
+
+    @container (width < 40rem) {
+      & > dl[aria-hidden] {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+        border: var(--card-border);
+        border-radius: var(--radius-card);
+        background-color: var(--surface-raised);
+        background-image: var(--card-texture);
+        box-shadow: var(--card-shadow);
+        overflow: clip;
+
+        & > div {
+          padding: 0.6rem 0.8rem;
+          border-block-end: 1px solid var(--border);
+        }
+
+        & > div:nth-child(odd) {
+          border-inline-end: 1px solid var(--border);
+        }
+
+        & > div:nth-last-child(-n + 2) {
+          border-block-end: 0;
+        }
+      }
+    }
+
+    /* The best-known articles that link here, as chips. */
+    & > section[aria-labelledby='linked-from'] {
+      grid-column: 1 / -1;
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+
+      & p {
+        margin-block-end: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      & ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0;
+        list-style: none;
+      }
+
+      & a {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border: var(--rule-width) solid var(--rule);
+        border-radius: var(--radius);
+        background: var(--surface-raised);
+        color: var(--text);
+        font-weight: 700;
+        text-decoration: none;
+
+        &:hover {
+          border-color: var(--accent-fill);
+        }
+      }
     }
 
     & > div {

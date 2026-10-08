@@ -147,6 +147,16 @@ export const fieldLabel = (name: string): string =>
   FIELD_NAMES[name] ?? name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' ');
 
 /** A page's description for search results: what kind of thing it is, in which section. */
+/**
+ * An article's kind for its title block: its infobox's name in words ("CelestialBody" becomes
+ * "Celestial body"), or its section's word when it has no infobox.
+ */
+export const kindLabel = (kind: string | undefined, section: Section): string => {
+  const words =
+    kind === undefined ? SECTION_LABELS[section].one : kind.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return words.charAt(0).toUpperCase() + words.slice(1).toLowerCase();
+};
+
 export const articleDescription = (title: string, section: Section, legends: boolean): string =>
   `${title}${legends ? ' (Legends)' : ''}: a ${SECTION_LABELS[section].one} in the Star Wars archive, with its facts, its story and links to everything related.`;
 
@@ -368,6 +378,13 @@ export const TEXT = {
   resultCount: (n: number, query: string): string =>
     `${String(n)} ${n === 1 ? 'match' : 'matches'} for “${query}”.`,
   legends: 'Legends',
+  canon: 'Canon',
+  legendsVersion: 'Legends version →',
+  canonVersion: 'Canon version →',
+  linkedFrom: 'Linked from',
+  linkedFromCount: (n: number): string =>
+    `Linked from ${n.toLocaleString('en-US')} ${n === 1 ? 'article' : 'articles'}`,
+  linkedFromNote: (title: string): string => `The best-known articles that mention ${title}.`,
   legendsNote:
     'This article is part of Legends: the expanded-universe stories that Lucasfilm set apart from canon in 2014.',
   letters: 'Browse by letter',

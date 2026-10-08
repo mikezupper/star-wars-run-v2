@@ -132,6 +132,20 @@ describe('view transitions: the followed link becomes the next heading', () => {
     });
   });
 
+  it('gives the name back when the browser aborts the transition, without an unhandled error', async () => {
+    const link = element(LUKE, 200);
+    const { page, heading } = await load([link]);
+    const aborted = {
+      activation: { entry: { url: LUKE } },
+      viewTransition: { finished: Promise.reject(new DOMException('invalid state')) },
+    } as unknown as PageSwapEvent;
+    page.nameFollowedLink(aborted);
+    await vi.waitFor(() => {
+      expect(link.style.removeProperty).toHaveBeenCalledWith('view-transition-name');
+      expect(heading.style.removeProperty).toHaveBeenCalledWith('view-transition-name');
+    });
+  });
+
   it('prefers the link that was clicked over another to the same page', async () => {
     const first = element(LUKE, 100);
     const clicked = element(LUKE, 400);

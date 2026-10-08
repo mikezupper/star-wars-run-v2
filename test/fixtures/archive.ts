@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import type { ArticleRecord } from '../../src/domain/article.js';
 import { buildArchive } from '../../src/domain/archive.js';
+import { linkGraph } from '../../src/domain/links.js';
 import { resolveArticle } from '../../src/ingest/wookieepedia/links.js';
 
 /** Fixture file → the article's title. */
@@ -52,5 +53,5 @@ function build() {
       ...(kind === undefined ? {} : { kind }),
     })),
   );
-  return { archive, articles };
+  return { archive, articles, links: linkGraph(articles.values()) };
 }

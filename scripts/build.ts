@@ -13,7 +13,7 @@ import { dumpPath, prepareSnapshot, workersFrom } from '../src/ingest/wookieeped
 import { createSite, sitemaps } from '../src/render/site.js';
 import { askSchema } from '../src/domain/ask.js';
 import { exploreRows } from '../src/domain/rows.js';
-import { inboundLinks, titleShards } from '../src/domain/titles.js';
+import { titleShards } from '../src/domain/titles.js';
 import { buildDatabase } from './build-database.js';
 import { buildServiceWorker } from './build-sw.js';
 import { ORIGIN } from '../src/site.js';
@@ -110,11 +110,7 @@ async function writeTitleIndex(
   dist: string,
   data: Awaited<ReturnType<typeof loadSiteData>>,
 ): Promise<void> {
-  const { files, split } = titleShards(
-    data.archive,
-    inboundLinks(data.articles.values()),
-    data.redirects,
-  );
+  const { files, split } = titleShards(data.archive, data.links.counts, data.redirects);
   const out = join(dist, 'search-titles');
   await mkdir(out, { recursive: true });
   // `keys` lets the island skip words no title has, rather than fetch a shard that 404s.

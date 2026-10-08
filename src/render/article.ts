@@ -1,9 +1,10 @@
-// A Wookieepedia article's page (ADR 0008): its facts as a description list, its lead
-// paragraphs, the CC BY-SA credit, and its Appearances: the works it appears in or, for a work,
-// who and what appears in it. Links go to the archive's own pages; a link to an article this
-// build doesn't have (the gate's sample build) is plain text.
+// A Wookieepedia article's page (ADR 0008; the look, ADR 0004): a title block with its kind,
+// its era and how many articles link to it; its lead paragraphs and the CC BY-SA credit; its
+// facts as a description list; its Appearances (the works it appears in or, for a work, who and
+// what appears in it); and the best-known articles that link to it. Links go to the archive's
+// own pages; a link to an article this build doesn't have (the sample build) is plain text.
 import { html, nothing } from '@gyral/core';
-import type { Appearance, ArticleRecord, Rich } from '../domain/article.js';
+import type { Appearance, ArticleRecord, Field, Rich } from '../domain/article.js';
 import {
   displayTitle,
   letterPath,
@@ -11,8 +12,16 @@ import {
   type Archive,
   type Entry,
 } from '../domain/archive.js';
+import type { LinkGraph } from '../domain/links.js';
 import { SECTIONS } from '../domain/sections.js';
-import { articleDescription, fieldLabel, MARKER_LABELS, SECTION_LABELS, TEXT } from '../labels.js';
+import {
+  articleDescription,
+  fieldLabel,
+  kindLabel,
+  MARKER_LABELS,
+  SECTION_LABELS,
+  TEXT,
+} from '../labels.js';
 import { creditLine } from './credit.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 
@@ -115,8 +124,58 @@ function castSection(list: readonly Appearance[], archive: Archive) {
   </section>`;
 }
 
-export function articleBody(entry: Entry, record: ArticleRecord, archive: Archive) {
+/** The same subject in the other continuity: `X` and `X/Legends`, when the archive has both. */
+const counterpart = (entry: Entry, archive: Archive): Entry | undefined =>
+  archive.byTitle.get(
+    entry.era === 'legends' ? entry.title.replace(/\/Legends$/, '') : `${entry.title}/Legends`,
+  );
+
+const plain = (runs: Rich) => runs.map((run) => run.text).join('');
+
+/**
+ * On a phone, the first few facts sit right under the title (the full list follows the lead).
+ * A visual summary only: hidden from assistive tech, which reads the full list, and without
+ * links, so nothing hidden can take focus. CSS shows it on narrow screens.
+ */
+const KEY_FACTS = 4;
+const keyFacts = (facts: readonly Field[]) =>
+  facts.length === 0
+    ? nothing
+    : html`<dl aria-hidden="true" data-pagefind-ignore>
+        ${facts.slice(0, KEY_FACTS).map(
+          (f) =>
+            html`<div>
+              <dt>${fieldLabel(f.name)}</dt>
+              <dd>${f.items.map(plain).join(', ')}</dd>
+            </div>`,
+        )}
+      </dl>`;
+
+/** The best-known articles that link to this one. */
+function linkedFromSection(entry: Entry, links: LinkGraph, archive: Archive) {
+  const linkers = (links.linkedFrom.get(entry.title) ?? []).flatMap((title) => {
+    const linker = archive.byTitle.get(title);
+    return linker === undefined ? [] : [linker];
+  });
+  if (linkers.length === 0) return nothing;
+  return html`<section aria-labelledby="linked-from" data-pagefind-ignore>
+    <h2 id="linked-from">${TEXT.linkedFrom}</h2>
+    <p>${TEXT.linkedFromNote(displayTitle(entry.title))}</p>
+    <ul>
+      ${linkers.map((l) => html`<li><a href=${l.path}>${displayTitle(l.title)}</a></li>`)}
+    </ul>
+  </section>`;
+}
+
+export function articleBody(
+  entry: Entry,
+  record: ArticleRecord,
+  archive: Archive,
+  links: LinkGraph,
+) {
   const facts = record.fields.filter((f) => f.items.length > 0);
+  const other = counterpart(entry, archive);
+  const linkedFrom = links.counts.get(entry.title) ?? 0;
   return html`
     ${breadcrumb(
       [
@@ -130,12 +189,29 @@ export function articleBody(entry: Entry, record: ArticleRecord, archive: Archiv
       displayTitle(entry.title),
     )}
     <article>
-      <h1 data-pagefind-weight="10">${displayTitle(entry.title)}</h1>
-      ${
-        entry.era === 'legends'
-          ? html`<p data-pagefind-ignore><strong>${TEXT.legends}.</strong> ${TEXT.legendsNote}</p>`
-          : nothing
-      }
+      <header>
+        <p data-pagefind-ignore>${kindLabel(record.kind, entry.section)}</p>
+        <h1 data-pagefind-weight="10">${displayTitle(entry.title)}</h1>
+        <p data-pagefind-ignore>
+          <span data-era=${entry.era}>${entry.era === 'legends' ? TEXT.legends : TEXT.canon}</span>
+          ${
+            other === undefined
+              ? nothing
+              : html`<a href=${other.path} data-era=${other.era}
+                  >${other.era === 'legends' ? TEXT.legendsVersion : TEXT.canonVersion}</a
+                >`
+          }
+          ${linkedFrom === 0 ? nothing : html`<span>${TEXT.linkedFromCount(linkedFrom)}</span>`}
+        </p>
+        ${
+          entry.era === 'legends'
+            ? html`<p data-pagefind-ignore>
+                <strong>${TEXT.legends}.</strong> ${TEXT.legendsNote}
+              </p>`
+            : nothing
+        }
+      </header>
+      ${keyFacts(facts)}
       <div>
         ${record.lead.map((p) => html`<p>${rich(p, archive)}</p>`)} ${creditLine(entry.title)}
       </div>
@@ -158,6 +234,7 @@ export function articleBody(entry: Entry, record: ArticleRecord, archive: Archiv
           ? castSection(record.appearances ?? [], archive)
           : appearancesSection(record.appearances ?? [], archive)
       }
+      ${linkedFromSection(entry, links, archive)}
     </article>
   `;
 }
