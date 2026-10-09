@@ -87,4 +87,5 @@ API break and next.6's error channel:
 - Tests that call a parser directly pass its context (`{ props, state, read }`).
 
 The copied Gyral docs now come from gyral.dev at `b6e422d`, which adds
-[error-handling.md](../references/gyral/error-handling.md).
+[error-handling.md](../references/gyral/error-handling.md). What we learned using Gyral, for
+its authors, is in [gyral-feedback.md](../gyral-feedback.md).

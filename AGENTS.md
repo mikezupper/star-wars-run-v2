@@ -46,6 +46,7 @@ First run needs `pnpm exec playwright install chromium`.
 | [docs/product-specs/](docs/product-specs/index.md)        | What each feature must do, with acceptance criteria                                                |
 | [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code**                                        |
 | [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                                                              |
+| [docs/gyral-feedback.md](docs/gyral-feedback.md)          | Our feedback to the Gyral team: what worked, rough edges, suggestions                              |
 | `src/site.ts`                                             | Site-wide constants: origin, name, description                                                     |
 | `src/domain/`                                             | Article types, sections, slugs, URLs, quantities, Explore rows                                     |
 | `src/ingest/wookieepedia/`                                | Dump reader, wikitext parser (fields, lead, Appearances), link resolution, snapshot                |
