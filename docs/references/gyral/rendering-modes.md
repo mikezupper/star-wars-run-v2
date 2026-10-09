@@ -77,8 +77,8 @@ Measured on Gyral's examples (gzip, 0.3.1):
 
 | App         | Default: first load | Default: all chunks | `clientOnly: true` |
 | ----------- | ------------------- | ------------------- | ------------------ |
-| hello-world | 8.42 KiB            | 10.81 KiB           | 7.35 KiB           |
-| counter     | 8.34 KiB            | 10.72 KiB           | 7.27 KiB           |
+| hello-world | 9.27 KiB            | 11.71 KiB           | 8.21 KiB           |
+| counter     | 9.19 KiB            | 11.62 KiB           | 8.13 KiB           |
 
 "First load" is what a page downloads before any lazy `import()`; in these examples a
 client-only build has nothing lazy left, so its first load is all of it.
@@ -98,7 +98,7 @@ silently. The server's work is wasted, though, so treat that warning as a config
 
 `create-gyral`'s `basic` template is client-only from the start: its `vite.config.ts` sets
 `gyralVitePreset({ clientOnly: true })`, and its `vitest.config.ts` reuses that config, so tests
-build the way the app does. A new app is about 7.5 KiB gzip, in one file. Keep the option while
+build the way the app does. A new app is about 8.5 KiB gzip, in one file. Keep the option while
 every page renders in the browser. Delete `clientOnly: true` as soon as any page is rendered on
 a server or prerendered, for example when you add `@gyral/ssr`: with it on, those components
 can't hydrate and render again from scratch. The `ssr` template builds without it.
@@ -114,8 +114,9 @@ your whole dependency tree:
   their own dependencies, such as a design system built on Gyral. Any other package can't
   define a component or write its spec, so it isn't read.
 - **What counts**: the parsed source, not its text, so comments and type-only code never count.
-  The invoker fallback stays when a module's markup has `data-intent-on="command"` or a bound
-  `data-intent-on`, when it has the string `'command'` on its own (`events: ['command']`, a
+  The invoker fallback stays when a module's markup has `command` in a `data-intent-on` list
+  (`data-intent-on="command"`), a `data-intent-command` attribute or a bound `data-intent-on`,
+  when it has the string `'command'` on its own (`events: ['command']`, a
   `setAttribute`), or when it uses `raw` imported from `@gyral/core` (under any alias, or
   through a module that re-exports it), whose markup is only known at run time. A function of
   another package that happens to be called `raw` doesn't count.

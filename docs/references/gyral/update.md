@@ -14,7 +14,7 @@ state. Nothing else changes state, so every change is visible to tests and to
 
 ```ts
 // src/todo.ts
-import { define, each, html, intents } from '@gyral/core';
+import { define, each, html, intentsOf, type TemplateResult } from '@gyral/core';
 
 export interface Todo {
   readonly id: number;
@@ -32,16 +32,16 @@ export type Msg =
   | { readonly _tag: 'Toggle'; readonly id: number }
   | { readonly _tag: 'ClearDone' };
 
-const i = intents<Msg>();
+const i = intentsOf<typeof TodoList>();
 
-const Item = (t: Todo) =>
+const Item = (t: Todo): TemplateResult =>
   html`<li>
     <button type="button" value=${t.id} aria-pressed=${t.done} data-intent=${i.Toggle}>
       ${t.text}
     </button>
   </li>`;
 
-export const TodoList = define<State, Msg>('my-todo-list', {
+export const TodoList = define<State, Msg>()('my-todo-list', {
   init: () => ({ todos: [], nextId: 1 }),
   intent: {
     Add: ({ formData }) => {
@@ -64,7 +64,7 @@ export const TodoList = define<State, Msg>('my-todo-list', {
     }),
     ClearDone: (s) => ({ ...s, todos: s.todos.filter((t) => !t.done) }),
   },
-  view: (s) => html`
+  view: (s, i) => html`
     <form data-intent=${i.Add}>
       <label for="text">New todo</label>
       <input id="text" name="text" required />
@@ -93,9 +93,10 @@ objects. No `Date`, `Map` or class instances. Three things depend on it:
 Model what can happen with unions rather than flags. `{ _tag: 'Loading' } | { _tag: 'Found';
 repos } | { _tag: 'Failed'; message }` can't be loading and failed at once; two booleans can.
 
-`i` here is `intents<Msg>()`: the same typed intent names the view receives, as a module
-constant, so the list's `Item` row can name an intent and stay a pure function of its todo
-([Lists](/docs/views/#lists)). `aria-pressed=${t.done}` writes `"true"` or `"false"`, the way
+The module's `i` is `intentsOf<typeof TodoList>()`: the same typed intent names the view
+receives, as a module constant, so the list's `Item` row can name an intent and stay a pure
+function of its todo ([Lists](/docs/views/#lists)). The row's return type is written out, and
+the view uses its own `i`, so the row and the component don't infer each other's types. `aria-pressed=${t.done}` writes `"true"` or `"false"`, the way
 ARIA expects.
 
 ## One reducer per message
@@ -126,7 +127,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Start' } | { readonly _tag: 'Tick'; readonly ticks: number };
 
-export const Clock = define<State, Msg>('my-clock', {
+export const Clock = define<State, Msg>()('my-clock', {
   init: () => ({ running: false, seconds: 0 }),
   intent: { Start: () => ({ _tag: 'Start' }) },
   update: {
@@ -151,15 +152,17 @@ in depth.
 
 ## Framework messages
 
-Gyral sends four messages of its own. Their reducers are optional: leave one out and the
+Gyral sends five messages of its own. Their reducers are optional: leave one out and the
 message changes nothing.
 
-| Message          | Sent when                                                                                                                   |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `PropsChanged`   | A declared prop changed after the first render. Has `props` and `prev`. [Props](/docs/components/#reacting-to-prop-changes) |
-| `IntentRejected` | Input failed a schema in `form()` or `field()`, or the server rejected a form. [Forms](/docs/forms/)                        |
-| `StoreChanged`   | A store the component reads changed. [Shared state](/docs/stores/)                                                          |
-| `Hydrated`       | The component is live in the browser, once, after its first render. Has `serverRendered`.                                   |
+| Message          | Sent when                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PropsChanged`   | A declared prop changed after the first render. Has `props` and `prev`. [Props](/docs/components/#reacting-to-prop-changes)                   |
+| `IntentRejected` | Input failed a schema in `form()` or `field()`, or the server rejected a form. [Forms](/docs/forms/)                                          |
+| `StoreChanged`   | A store the component reads changed. [Shared state](/docs/stores/)                                                                            |
+| `Hydrated`       | The component is live in the browser, once, after its first render. Has `serverRendered`.                                                     |
+| `Connected`      | The component was removed, its commands stopped, and it was attached again. [Moves and reconnects](/docs/outside-state/#moves-and-reconnects) |
+| `Errored`        | An update, parser or command of this component failed. Has `phase` and `error` (a `GyralError`). [Error handling](/docs/error-handling/)      |
 
 `Hydrated` is the hook for progressive enhancement: render the no-JavaScript version on the
 server and in the first client render (so hydration matches), then switch to the enhanced UI

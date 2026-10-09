@@ -73,7 +73,7 @@ import { define, html } from '@gyral/core';
 
 type Msg = { readonly _tag: 'Increment' } | { readonly _tag: 'Decrement' };
 
-export const Counter = define<{ readonly count: number }, Msg>('my-counter', {
+export const Counter = define<{ readonly count: number }, Msg>()('my-counter', {
   init: () => ({ count: 0 }),
   intent: {
     Increment: () => ({ _tag: 'Increment' }),
@@ -105,7 +105,7 @@ The differences, line by line:
 
 | Cycle.js                                 | Gyral                                                                                 |
 | ---------------------------------------- | ------------------------------------------------------------------------------------- |
-| `main(sources) → sinks`                  | `define(tag, { init, intent, update, view })`                                         |
+| `main(sources) → sinks`                  | `define()(tag, { init, intent, update, view })`                                       |
 | `sources.DOM.select(…).events(…)`        | `data-intent` in the view, a parser in `intent`                                       |
 | `fold` / reducer streams                 | `update`, one reducer per message                                                     |
 | The DOM sink                             | `view`                                                                                |

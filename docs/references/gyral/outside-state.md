@@ -48,7 +48,7 @@ const watchCounter = (): Command<Msg> =>
 const add = (by: number): Command<Msg> =>
   command(addToCounter, by, { onSuccess: (): Msg | undefined => undefined });
 
-export const OutsideCounter = define<{ readonly n: number }, Msg>('my-outside-counter', {
+export const OutsideCounter = define<{ readonly n: number }, Msg>()('my-outside-counter', {
   init: () => [{ n: 0 }, [watchCounter()]],
   intent: { Add: () => ({ _tag: 'Add' }) },
   update: {
@@ -72,18 +72,67 @@ export const OutsideCounter = define<{ readonly n: number }, Msg>('my-outside-co
   XState's `actor.subscribe(…)`).
 - **Each value goes through the command's `onSuccess`**, like any streaming driver's.
 - **The source is released for you**, once, when the command is switched away, when the
-  component disconnects, and after `fail(error)`. Values emitted after that are ignored.
+  component is removed from the page, and after `fail(error)`. Values emitted after that are
+  ignored. Moving the component doesn't release it (see
+  [Moves and reconnects](#moves-and-reconnects)).
 - **The lane policy defaults to `'switch'`**: issuing the command again replaces the
   subscription. Give each input its own `key` when one component keeps several, such as one per
   chat room.
 - **`fail(error)` ends it with an error.** `onFailure` gets it (through the driver's `toError`
-  if given), after the `retry` policy, which subscribes again: a socket that reconnects. A
+  if given), after any retries: wrap the subscription in `retry(…)`, which subscribes again, for a socket
+  that reconnects. A
   `subscribe` that throws fails the same way.
 - **Writes are plain commands**, like `addToCounter` above. The change comes back through the
   subscription, not through the write's `onSuccess`.
 
 For many values per frame (market data, sensors) into a view that takes real work to render,
 list the message in the component's `renderOnFrame`, so it renders once per animation frame.
+
+## Moves and reconnects
+
+Keyed-list libraries and plain DOM code move an element by removing it and inserting it again
+(`appendChild`, `insertBefore`) in the same task. Gyral treats that as a move, so a component's
+subscriptions, timers and requests keep running:
+
+- **A move** (removed and inserted again in one task, including before the first render):
+  nothing stops and no message is sent.
+- **A real removal**: one microtask after the element leaves the page, its commands stop and
+  every subscription is released.
+- **Attached again after a real removal**: the component gets the framework message
+  `Connected { reconnect: true }`. Its reducer is optional; re-issue long-lived commands there.
+  `Connected` is never sent on the first connect (`init` covers that) and never after a move
+  (nothing stopped), so `reconnect` is always `true`. A component without a `Connected`
+  reducer stays stopped.
+
+```ts
+// src/unread-badge.ts
+import { command, define, html, subscription, type Command } from '@gyral/core';
+
+declare const unread: { get(): number; subscribe(listener: () => void): () => void };
+
+const unreadSource = subscription<number>('unread', (emit) => {
+  emit(unread.get());
+  return unread.subscribe(() => emit(unread.get()));
+});
+
+type Msg = { readonly _tag: 'Count'; readonly n: number };
+
+const watch = (): Command<Msg> =>
+  command(unreadSource, undefined, { onSuccess: (n): Msg => ({ _tag: 'Count', n }) });
+
+export const UnreadBadge = define<number, Msg>()('unread-badge', {
+  init: () => [0, [watch()]],
+  intent: {},
+  update: {
+    Count: (_n, m) => m.n,
+    // Removed for real, then attached again: subscribe again.
+    Connected: (n) => [n, [watch()]],
+  },
+  view: (n) => html`<span class="badge">${n}</span>`,
+});
+```
+
+`moveBefore()` keeps everything too, without even the disconnect.
 
 ## A store per page, provided by name
 
@@ -123,8 +172,8 @@ export const provideTable = (element: Element, store: TableStore): (() => void) 
 
 ## TC39 signals
 
-This recipe follows the `watch()` in the sabacc.starwars.run team's table driver, shared here
-with their permission. It uses the [`signal-polyfill`](https://github.com/proposal-signals/signal-polyfill)
+When an app keeps its state in signals, a subscription can stream it into components. This
+recipe uses the [`signal-polyfill`](https://github.com/proposal-signals/signal-polyfill)
 package. A `Watcher`'s notification may not read signals, so it re-arms and reads in a
 microtask:
 
@@ -148,7 +197,7 @@ export const watchSignals = <T>(name: string, read: () => T) =>
     return () => watcher.unwatch(current);
   });
 
-// const table = watchSignals('table', () => ({ game: store.game.get(), log: store.log.get() }));
+// const board = watchSignals('board', () => ({ tasks: store.tasks.get(), filter: store.filter.get() }));
 ```
 
 Have `read` return plain data, a snapshot object, not the signals themselves.
@@ -157,12 +206,11 @@ Have `read` return plain data, a snapshot object, not the signals themselves.
 
 ```ts
 // src/feed.ts
-import { command, subscription, type Command } from '@gyral/core';
+import { command, retry, subscription, type Command } from '@gyral/core';
 
 /** Text messages from `url` until the component goes away; reconnects twice on failure. */
-export const feed = subscription<string, string>(
-  'feed',
-  (emit, { input: url, fail }) => {
+export const feed = retry(
+  subscription<string, string>('feed', (emit, { input: url, fail }) => {
     const socket = new WebSocket(url);
     socket.addEventListener('message', (e: MessageEvent<unknown>) => {
       if (typeof e.data === 'string') emit(e.data);
@@ -173,8 +221,8 @@ export const feed = subscription<string, string>(
     return () => {
       socket.close();
     };
-  },
-  { retry: { times: 2, delayMs: 1000, backoff: 'exponential' } },
+  }),
+  { times: 2, delayMs: 1000, backoff: 'exponential' },
 );
 
 export const listenTo = <M>(url: string, toMsg: (line: string) => M): Command<M> =>
@@ -193,6 +241,7 @@ writes (`run: (text) => { socket.send(text); }`).
   microtask or a watcher that re-arms in one. No `await Promise.resolve()` loops.
 - **Or fake it**: `fakeDriver('counter')` records the subscription, and `emitNext(value)` pushes
   a value through it.
-- **Releasing is synchronous**: right after `el.remove()`, a real subscription's unsubscribe has
-  run and a fake's `calls[0].signal.aborted` is `true`, so assert without yielding (see
-  [Testing](/docs/testing/#fake-drivers-and-commands)).
+- **Releasing takes one microtask**: after `el.remove(); await Promise.resolve();`, a real
+  subscription's unsubscribe has run and a fake's `calls[0].signal.aborted` is `true` (see
+  [Testing](/docs/testing/#fake-drivers-and-commands)). To test a move, `append` the element
+  somewhere else in the same task and check that the signal is still not aborted.

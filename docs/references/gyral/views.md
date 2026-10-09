@@ -23,7 +23,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Edit' } | { readonly _tag: 'Save'; readonly name: string };
 
-export const Profile = define<State, Msg>('my-profile', {
+export const Profile = define<State, Msg>()('my-profile', {
   init: () => ({ editing: false, name: 'Ada' }),
   intent: {
     Edit: () => ({ _tag: 'Edit' }),
@@ -71,10 +71,12 @@ differ.
 
 In a text position, `false`, `null`, `undefined` and `nothing` render nothing, so
 ``${s.open && html`…`}`` works. Classes and inline styles are plain strings:
-`class=${s.done ? 'done' : ''}`. Inline `<svg>` works inside `html`, so icons and charts need
-nothing special; an SVG fragment that is a template of its own uses [`svg`](#svg-fragments).
-Property bindings carry data, never functions: events are [intents](#no-event-handlers), and
-behaviour on an element is a [hook](#element-hooks).
+`class=${s.done ? 'done' : ''}`, `style="--w: ${s.width}px"` (under a strict Content Security
+Policy, see [inline styles](/docs/styling/#inline-styles-under-a-strict-csp)). Inline `<svg>`
+works inside `html`, so icons and charts need nothing special; an SVG fragment that is a
+template of its own uses [`svg`](#svg-fragments). Property bindings carry data, never
+functions: events are [intents](#no-event-handlers), and behaviour on an element is a
+[hook](#element-hooks).
 
 Whitespace is normalized once per template, the same way on the server and in the browser:
 indentation between block-level tags disappears, and a run of whitespace between inline
@@ -87,36 +89,39 @@ Write a whole graphic, `<svg>` included, in `html`. When part of it is a templat
 mark shown only in some states or one shape per list item, write that part with `svg`:
 
 ```ts
-// src/hand.ts
+// src/status-strip.ts
 import { define, each, html, nothing, svg } from '@gyral/core';
 
-export interface Card {
+export interface Service {
   readonly id: number;
-  readonly suit: 'circle' | 'square' | undefined;
+  readonly status: 'up' | 'down' | undefined;
   readonly name: string;
 }
 
 // Fragments are plain functions that return svg templates.
-const mark = (suit: 'circle' | 'square') =>
-  suit === 'circle'
+const mark = (status: 'up' | 'down') =>
+  status === 'up'
     ? svg`<circle cx="5" cy="5" r="3" />`
     : svg`<rect x="2" y="2" width="6" height="6" />`;
 
-// A list row: it reads only its card, so it stays pure.
-const face = (c: Card) => svg`<g transform="translate(${(c.id - 1) * 12} 0)">
-  ${c.suit === undefined ? nothing : mark(c.suit)}
-  <text x="1" y="13">${c.name}</text>
+// A list row: it reads only its service, so it stays pure.
+const tile = (service: Service) => svg`<g transform="translate(${(service.id - 1) * 12} 0)">
+  ${service.status === undefined ? nothing : mark(service.status)}
+  <text x="1" y="13">${service.name}</text>
 </g>`;
 
-export const Hand = define<{ readonly cards: readonly Card[] }, never>('my-hand', {
-  init: () => ({ cards: [{ id: 1, suit: 'circle', name: 'Ada' }] }),
-  intent: {},
-  update: {},
-  view: (s) =>
-    html`<svg viewBox="0 0 ${s.cards.length * 12} 14" role="img" aria-label="Hand">
-      ${each(s.cards, (c) => c.id, face)}
-    </svg>`,
-});
+export const StatusStrip = define<{ readonly services: readonly Service[] }, never>()(
+  'my-status-strip',
+  {
+    init: () => ({ services: [{ id: 1, status: 'up', name: 'API' }] }),
+    intent: {},
+    update: {},
+    view: (s) =>
+      html`<svg viewBox="0 0 ${s.services.length * 12} 14" role="img" aria-label="Service status">
+        ${each(s.services, (service) => service.id, tile)}
+      </svg>`,
+  },
+);
 ```
 
 An `svg` template is `html` for SVG content:
@@ -205,12 +210,14 @@ component in it, to its item, so reordering moves elements instead of rewriting 
 
 A row re-renders only when its item or its `pick` result changes, and is skipped otherwise.
 That makes long lists cheap, and it has one rule: **a row reads only its arguments and
-module-level values.** Name intents with a module-level `intents<Msg>()`, the same names the view
-gets as `i`, and pass anything else from the view, such as the selection, through `pick`:
+module-level values.** Name intents with a module-level `intentsOf<typeof Component>()`, the
+same names the view gets as `i`, and pass anything else from the view, such as the selection,
+through `pick`. Write the row's return type (`: TemplateResult`) and use the view's own `i`, so
+the row and the component don't infer each other's types:
 
 ```ts
 // src/todos.ts
-import { define, each, html, intents } from '@gyral/core';
+import { define, each, html, intentsOf, type TemplateResult } from '@gyral/core';
 
 export interface Todo {
   readonly id: number;
@@ -228,10 +235,10 @@ export type Msg =
   | { readonly _tag: 'Select'; readonly id: number };
 
 // The intent names as a module constant, so rows can use them and stay pure.
-const i = intents<Msg>();
+const i = intentsOf<typeof Todos>();
 
 // A row: reads only its item, what `pick` returned, and module constants.
-const Row = (todo: Todo, selected: boolean) =>
+const Row = (todo: Todo, selected: boolean): TemplateResult =>
   html`<li class=${selected ? 'selected' : ''}>
     <label>
       <input type="checkbox" value=${todo.id} ?checked=${todo.done} data-intent=${i.Toggle} />
@@ -245,7 +252,7 @@ const idOf = (value: string | undefined): number | undefined => {
   return Number.isInteger(id) ? id : undefined;
 };
 
-export const Todos = define<State, Msg>('my-todos', {
+export const Todos = define<State, Msg>()('my-todos', {
   init: () => ({ todos: [{ id: 1, text: 'Write docs', done: false }], selected: 1 }),
   intent: {
     Toggle: ({ value }) => {
@@ -284,10 +291,119 @@ a small tuple or object is fine.
 - Keys are unique strings or numbers. A duplicate key is an error in development.
 - The ESLint rule `gyral/each-row-purity` names any variable a row reads from the view and
   tells you to move it into `pick`.
-- Plain arrays still render, by position: ``${s.tags.map((t) => html`<li>${t}</li>`)}`` is fine
-  for a short list that never reorders.
-- To get a fresh element when an id changes, for example to restart a CSS animation, render a
-  one-item list: `each([s.run], (run) => run.id, Run)`.
+- To get a fresh element when an id changes, render a one-item list:
+  `each([s.run], (run) => run.id, Run)`. To restart a CSS animation, a hook is lighter: see
+  [Replaying a CSS animation](#replaying-a-css-animation).
+
+### .map or each?
+
+Plain arrays render too, by position: ``${s.tags.map((t) => html`<li>${t}</li>`)}``. Choose
+by what the list does:
+
+- **`.map`** for short lists whose items don't move: a few options, a breadcrumb, table headers.
+  Its rows may read anything in the view's scope, since every row runs on every render. Keep
+  them cheap, and sort or filter once above the template, not inside the row.
+- **`each`** for lists that are long, change often or reorder: search results, an inbox, kanban
+  columns. A moved item keeps its element, with its focus, input state and animations, and a
+  row renders again only when its item or `pick` result changes. That second point is why
+  `each` rows must be pure, and why `gyral/each-row-purity` checks only `each` rows.
+
+### Moving items between lists
+
+A task that moves from one kanban column to another leaves one `each` list and joins another,
+so it is a new element, and the browser can't animate the move by itself. A FLIP hook can
+("first, last, invert, play"): it remembers where each key was last seen and, when its element
+appears somewhere else, plays the move with the Web Animations API.
+
+```ts
+// src/board.ts
+import { define, defineHook, each, html, intentsOf, type TemplateResult } from '@gyral/core';
+
+/** Where each key was last seen, in page coordinates. */
+const seen = new Map<string, { readonly x: number; readonly y: number }>();
+
+/** Animates the element from where `key` was last seen to where it is now. */
+export const flip = defineHook<[key: string, slot: number]>({
+  client: (el, [key]) => {
+    const box = el.getBoundingClientRect();
+    const now = { x: box.left + scrollX, y: box.top + scrollY };
+    const before = seen.get(key);
+    seen.set(key, now);
+    if (before === undefined || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const dx = before.x - now.x;
+    const dy = before.y - now.y;
+    if (dx === 0 && dy === 0) return;
+    el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+      duration: 200,
+      easing: 'ease-out',
+    });
+  },
+});
+
+export interface Task {
+  readonly id: string;
+  readonly label: string;
+}
+
+export interface State {
+  readonly todo: readonly Task[];
+  readonly done: readonly Task[];
+}
+
+export type Msg = { readonly _tag: 'Move'; readonly id: string };
+
+const i = intentsOf<typeof Board>();
+
+const TaskCard = (t: Task, slot: number): TemplateResult =>
+  html`<li ${flip(t.id, slot)}>
+    <button type="button" value=${t.id} data-intent=${i.Move}>${t.label}</button>
+  </li>`;
+
+const column = (label: string, tasks: readonly Task[]) =>
+  html`<section>
+    <h2>${label}</h2>
+    <ul>
+      ${each(
+        tasks,
+        (t) => t.id,
+        TaskCard,
+        (t) => tasks.indexOf(t),
+      )}
+    </ul>
+  </section>`;
+
+export const Board = define<State, Msg>()('my-board', {
+  init: () => ({
+    todo: [
+      { id: 'a', label: 'Write the release notes' },
+      { id: 'b', label: 'Update the screenshots' },
+    ],
+    done: [],
+  }),
+  intent: { Move: ({ value }) => (value ? { _tag: 'Move', id: value } : undefined) },
+  update: {
+    Move: (s, { id }) => {
+      const task = [...s.todo, ...s.done].find((t) => t.id === id);
+      if (task === undefined) return s;
+      return s.todo.includes(task)
+        ? { todo: s.todo.filter((t) => t !== task), done: [...s.done, task] }
+        : { done: s.done.filter((t) => t !== task), todo: [...s.todo, task] };
+    },
+  },
+  view: (s) => html`${column('To do', s.todo)} ${column('Done', s.done)}`,
+});
+```
+
+- **The hook gets the item's slot** (`pick` returns its index), so it also runs when a task
+  shifts inside its column. A hook runs only when its arguments change: for the new element in
+  the other column, and for tasks whose slot changed. Tasks that move because the layout changed
+  around them, after a resize, aren't animated.
+- **`seen` keeps the keys of deleted tasks.** Clear it when the board loads new data.
+- **The native way is a View Transition.** With [`viewTransition`](#view-transitions), a task
+  whose `view-transition-name` is the same before and after (a style binding on the row,
+  `style="view-transition-name: task-${t.id}"`) morphs from its old place to its new one.
+  Same-document View Transitions are only newly available in browsers, so keep the hook as the
+  fallback for now.
 
 ## Form state
 
@@ -323,12 +439,14 @@ property, so the page would arrive empty. The compiler rejects it. A checkbox's 
 ## Element hooks
 
 A hook is a small behaviour attached to the element it sits on, written inside the start tag.
-Core ships two:
+Core ships three:
 
 - **`invalid(errors)`** mirrors model errors into native validity (`setCustomValidity` and
   `aria-invalid`). See [Forms](/docs/forms/).
 - **`labelledBy('page-title')`** names a form or region after a heading outside the component's
   shadow root, which `aria-labelledby` can't reach on its own.
+- **`capturePointer()`** keeps a pointer on its element from `pointerdown` until release, for
+  [press-and-hold](/docs/intent/#press-and-hold) and drag intents.
 
 Write your own with `defineHook`. `client(el, args, prev)` runs after the render whenever the
 arguments change (`prev` is `undefined` the first time). An optional `server(args)` returns
@@ -357,7 +475,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Next' };
 
-export const Steps = define<State, Msg>('my-steps', {
+export const Steps = define<State, Msg>()('my-steps', {
   init: () => ({ current: 0 }),
   intent: { Next: () => ({ _tag: 'Next' }) },
   update: { Next: (s) => ({ current: (s.current + 1) % 3 }) },
@@ -372,6 +490,119 @@ export const Steps = define<State, Msg>('my-steps', {
 });
 ```
 
+### Custom properties
+
+To hand a value to CSS, bind a custom property in a `style` attribute and let the stylesheet
+use it, with a fallback:
+
+```ts
+// src/upload-progress.ts
+import { css, define, html, prop, type Stateless } from '@gyral/core';
+
+export interface Props {
+  readonly sent: number;
+  readonly total: number;
+}
+
+export const UploadProgress = define<Stateless, never, Props>()('my-upload-progress', {
+  props: { sent: prop.number({ default: 0 }), total: prop.number({ default: 1 }) },
+  intent: {},
+  update: {},
+  view: (_s, _i, { props }) => html`
+    <div class="bar" style="--fill: ${props.sent / props.total}"></div>
+    <p>${props.sent} of ${props.total} files</p>
+  `,
+  styles: css`
+    .bar {
+      block-size: 0.5rem;
+      background: linear-gradient(to right, currentColor calc(var(--fill, 0) * 100%), #0000 0);
+    }
+  `,
+});
+```
+
+Gyral writes `style` bindings through the CSSOM, so they work under a Content Security Policy
+without `'unsafe-inline'`. In server-rendered markup such a policy blocks the attribute until the
+component hydrates, which is why the stylesheet keeps a default, `var(--fill, 0)`. [Inline styles
+under a strict CSP](/docs/styling/#inline-styles-under-a-strict-csp) has the details.
+
+A `style` binding owns the whole attribute. For the rare element whose inline style a hook
+writes too, let a hook set only the properties it names:
+
+```ts
+// src/css-vars.ts
+import { defineHook } from '@gyral/core';
+
+/** Sets the named custom properties, leaving the element's other inline styles alone. */
+export const cssVars = defineHook<[vars: Readonly<Record<`--${string}`, string>>]>({
+  client: (el, [vars]) => {
+    if (!(el instanceof HTMLElement)) return;
+    for (const [name, value] of Object.entries(vars)) el.style.setProperty(name, value);
+  },
+});
+```
+
+### Replaying a CSS animation
+
+A CSS animation runs once, when its element appears. A "flash on change", such as an unread
+badge that pulses when a message arrives or a field that shakes on a rejected value, has to
+replay it. Count the replays in state, and restart the element's animations with the Web
+Animations API when the count changes:
+
+```ts
+// src/inbox-badge.ts
+import { css, define, defineHook, html } from '@gyral/core';
+
+/** Restarts the element's CSS animations whenever `count` changes, not on the first render. */
+export const replay = defineHook<[count: number]>({
+  client: (el, [count], prev) => {
+    if (prev === undefined || prev[0] === count) return;
+    for (const animation of el.getAnimations()) {
+      animation.cancel();
+      animation.play();
+    }
+  },
+});
+
+export interface State {
+  readonly unread: number;
+  readonly pulses: number;
+}
+
+export type Msg = { readonly _tag: 'Arrived' };
+
+export const InboxBadge = define<State, Msg>()('my-inbox-badge', {
+  init: () => ({ unread: 0, pulses: 0 }),
+  intent: { Arrived: () => ({ _tag: 'Arrived' }) },
+  update: { Arrived: (s) => ({ unread: s.unread + 1, pulses: s.pulses + 1 }) },
+  view: (s, i) => html`
+    <output class="badge" ${replay(s.pulses)}>${s.unread}</output>
+    <button type="button" data-intent=${i.Arrived}>Simulate a message</button>
+  `,
+  styles: css`
+    .badge {
+      animation: pulse 300ms ease-out;
+    }
+    @keyframes pulse {
+      50% {
+        scale: 1.3;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .badge {
+        animation: none;
+      }
+    }
+  `,
+});
+```
+
+`getAnimations()` covers the CSS animations and transitions running on the element; pass
+`{ subtree: true }` to include its descendants. The count lives in state because the model
+decides when something deserves attention, and a count, unlike a boolean, changes every time.
+Without a hook, a one-item keyed list replays by replacing the element,
+`each([s.pulses], String, Badge)`, at the cost of a new node (and its focus, if it had any).
+
 ## Widgets with a lifecycle
 
 Something with setup and teardown, such as a WebGL stage, a chart or map library, an observer or
@@ -381,7 +612,7 @@ input, keep its state inside, set up in `connectedCallback` and tear down in
 view stays a description of data, and the widget can be tested on its own:
 
 ```ts
-// src/game.ts
+// src/scene-editor.ts
 import { define, html } from '@gyral/core';
 
 interface Scene {
@@ -421,7 +652,7 @@ interface State {
 
 type Msg = { readonly _tag: 'Add' };
 
-export const Game = define<State, Msg>('my-game', {
+export const SceneEditor = define<State, Msg>()('my-scene-editor', {
   init: () => ({ scene: { cubes: 1 } }),
   intent: { Add: () => ({ _tag: 'Add' }) },
   update: { Add: (s) => ({ scene: { cubes: s.scene.cubes + 1 } }) },
@@ -500,7 +731,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Next' };
 
-export const Pager = define<State, Msg>('my-pager', {
+export const Pager = define<State, Msg>()('my-pager', {
   init: () => ({ page: 1 }),
   intent: { Next: () => ({ _tag: 'Next' }) },
   update: {
@@ -515,6 +746,113 @@ export const Pager = define<State, Msg>('my-pager', {
 ```
 
 Headings aren't focusable by default, hence `tabindex="-1"`.
+
+### Focusing what a later render brings
+
+`focus()` runs after the render its update caused. When the target only appears later, such as
+the first result once a search answers, pass `wait: true`: the request stays pending until a
+render of the component produces the target. A newer `focus()` from the component replaces it,
+and after one second it gives up with the usual warning. `settled()` doesn't wait for it.
+
+```ts
+// src/result-search.ts
+import { command, define, defineDriver, focus, html } from '@gyral/core';
+
+interface Result {
+  readonly id: string;
+  readonly title: string;
+}
+export interface State {
+  readonly query: string;
+  readonly results: readonly Result[];
+}
+export type Msg =
+  | { readonly _tag: 'Search'; readonly query: string }
+  | { readonly _tag: 'Found'; readonly results: readonly Result[] };
+
+const search = defineDriver<string, readonly Result[]>({
+  name: 'search',
+  run: async (query, { signal }) => {
+    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, { signal });
+    return (await response.json()) as readonly Result[];
+  },
+});
+
+export const ResultSearch = define<State, Msg>()('my-result-search', {
+  init: () => ({ query: '', results: [] }),
+  intent: {
+    Search: ({ formData }) => ({ _tag: 'Search', query: String(formData?.get('q') ?? '') }),
+  },
+  update: {
+    // The first result exists only after `Found` renders: the focus waits for it.
+    Search: (s, m) => [
+      { ...s, query: m.query },
+      [
+        command(search, m.query, { onSuccess: (results): Msg => ({ _tag: 'Found', results }) }),
+        focus('#results li:first-child a', { wait: true }),
+      ],
+    ],
+    Found: (s, m) => ({ ...s, results: m.results }),
+  },
+  view: (s, i) => html`
+    <form data-intent=${i.Search}>
+      <input name="q" aria-label="Search" .value=${s.query} />
+      <button>Search</button>
+    </form>
+    <ul id="results">
+      ${s.results.map((r) => html`<li><a href=${`/items/${r.id}`}>${r.title}</a></li>`)}
+    </ul>
+  `,
+});
+```
+
+### Focusing into a child component
+
+`focus()` looks inside the component's own root, so it can't reach an element in a child's
+shadow root. Give the child `shadow: { delegatesFocus: true }` and focus the child itself:
+focusing the host then focuses its first focusable element.
+
+```ts
+// src/name-field.ts
+import { define, html, type Stateless } from '@gyral/core';
+
+/** Focusing <my-name-field> focuses its input. */
+export const NameField = define<Stateless, never>()('my-name-field', {
+  shadow: { delegatesFocus: true },
+  intent: {},
+  update: {},
+  view: () => html`<label>Name <input name="name" autocomplete="name" /></label>`,
+});
+```
+
+```ts
+// src/contact-form.ts
+import { define, focus, html, type Stateless } from '@gyral/core';
+import './name-field.js';
+
+export type Msg = { readonly _tag: 'Edit' };
+
+export const ContactForm = define<Stateless, Msg>()('my-contact-form', {
+  intent: { Edit: () => ({ _tag: 'Edit' }) },
+  update: { Edit: (s) => [s, [focus('my-name-field')]] },
+  view: (_s, i) => html`
+    <button type="button" data-intent=${i.Edit}>Edit name</button>
+    <my-name-field></my-name-field>
+  `,
+});
+```
+
+The same delegation works for `el.focus()` from page script and for a click on a part of the
+child that can't take focus, and `:focus` matches the host while focus is inside it. The server
+writes `shadowrootdelegatesfocus` on the declarative shadow root, so a server-rendered child
+delegates focus before and after hydration.
+
+### Keeping focus across renders
+
+Focus stays only as long as the focused element does. When a render removes it, the browser
+moves focus to the page body. Render focusable rows with a keyed `each`, so a row moves instead
+of being created again, and when the focused item really goes away, such as a deleted row,
+return a `focus()` command for its neighbour or for the list.
 
 ## View transitions
 

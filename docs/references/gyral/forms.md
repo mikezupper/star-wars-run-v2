@@ -57,7 +57,7 @@ export type Msg =
   | { readonly _tag: 'Done'; readonly location: string | undefined }
   | { readonly _tag: 'Failed' };
 
-export const Signup = define<State, Msg>('my-signup', {
+export const Signup = define<State, Msg>()('my-signup', {
   init: () => ({ email: '', errors: {}, busy: false, done: undefined }),
   intent: {
     // Valid in the browser: post the raw FormData so the server parses it like a no-JS post.
@@ -68,7 +68,6 @@ export const Signup = define<State, Msg>('my-signup', {
       { ...s, errors: {}, busy: true },
       [
         submitForm('/signup', m.form, {
-          csrf: { meta: 'csrf-token' },
           onSuccess: (body): Msg => ({ _tag: 'Done', location: redirectedTo(body) }),
           onFailure: (): Msg => ({ _tag: 'Failed' }),
         }),
@@ -150,7 +149,9 @@ the `Submit` reducer above posts the submission with `submitForm(url, formData, 
 - The body is the `FormData` itself, so the server parses it exactly like a no-JS post.
 - A `422` answer with an `IntentRejected` body goes to your `IntentRejected` reducer, the same
   one that handles browser-side rejections.
-- `csrf: { meta: 'csrf-token' }` reads `<meta name="csrf-token">` when the request runs.
+- The CSRF token comes from the `http` driver's headers, set once for the app:
+  `makeHttpDriver({ headers: csrfFromMeta('csrf-token') })` ([Effects](/docs/effects/)).
+  `csrf: { token }` sends a token the app already holds.
 - The default concurrency is `exhaust`: a double click doesn't submit twice.
 - `redirectedTo(body)` reads the location when the server answered with a redirect.
 

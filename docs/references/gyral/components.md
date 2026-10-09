@@ -23,7 +23,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'NameChanged'; readonly name: string };
 
-export const Greeter = define<State, Msg>('my-greeter', {
+export const Greeter = define<State, Msg>()('my-greeter', {
   init: () => ({ name: '' }),
   intent: {
     NameChanged: ({ value }) => ({ _tag: 'NameChanged', name: value ?? '' }),
@@ -39,21 +39,23 @@ export const Greeter = define<State, Msg>('my-greeter', {
 });
 ```
 
-`define<State, Msg>(tag, spec)` registers `<my-greeter>` and returns its class. The spec has
-four required parts and a few optional ones:
+`define<State, Msg>()(tag, spec)` registers `<my-greeter>` and returns its class. It is two
+calls: the first takes the types you write (state, messages, props, outputs), the second the
+tag and spec, so TypeScript can still infer the intent names from the spec's `intent` keys. The
+spec has four required parts and a few optional ones:
 
-| Part      | What it is                                                                          | Guide                                          |
-| --------- | ----------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `init`    | The starting state, computed from props. May also start commands.                   | [Model and update](/docs/update/)              |
-| `intent`  | Parsers that turn platform events into messages, keyed by message tag.              | [Intent](/docs/intent/)                        |
-| `update`  | One pure reducer per message tag: state in, next state (and commands) out.          | [Model and update](/docs/update/)              |
-| `view`    | A pure function from state to an `html` template that _names_ intents.              | [Views](/docs/views/)                          |
-| `props`   | Inputs from the parent or from attributes, declared with `prop.*` builders.         | [below](#props)                                |
-| `styles`  | Shadow-root CSS: `css` values or strings.                                           | [Styling](/docs/styling/)                      |
-| `stores`  | Shared state the component reads.                                                   | [Shared state](/docs/stores/)                  |
-| `drivers` | Driver substitutions for this component's commands.                                 | [Effects](/docs/effects/)                      |
-| `shadow`  | `false` renders into light DOM, for page-level components.                          | [Styling](/docs/styling/#light-dom-components) |
-| `hydrate` | When a server-rendered instance hydrates: `load`, `idle`, `visible`, `interaction`. | [Server rendering](/docs/server-rendering/)    |
+| Part      | What it is                                                                                                     | Guide                                                                                                 |
+| --------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `init`    | The starting state, computed from props. May also start commands.                                              | [Model and update](/docs/update/)                                                                     |
+| `intent`  | Parsers that turn platform events into messages. Their keys are the component's intent names.                  | [Intent](/docs/intent/)                                                                               |
+| `update`  | One pure reducer per message tag: state in, next state (and commands) out.                                     | [Model and update](/docs/update/)                                                                     |
+| `view`    | A pure function from state to an `html` template that _names_ intents.                                         | [Views](/docs/views/)                                                                                 |
+| `props`   | Inputs from the parent or from attributes, declared with `prop.*` builders.                                    | [below](#props)                                                                                       |
+| `styles`  | Shadow-root CSS: `css` values or strings.                                                                      | [Styling](/docs/styling/)                                                                             |
+| `stores`  | Shared state the component reads.                                                                              | [Shared state](/docs/stores/)                                                                         |
+| `drivers` | Driver substitutions for this component's commands.                                                            | [Effects](/docs/effects/)                                                                             |
+| `shadow`  | `false` renders into light DOM; `{ delegatesFocus: true }` passes focus to the first focusable element inside. | [Styling](/docs/styling/#light-dom-components), [Views](/docs/views/#focusing-into-a-child-component) |
+| `hydrate` | When a server-rendered instance hydrates: `load`, `idle`, `visible`, `interaction`.                            | [Server rendering](/docs/server-rendering/)                                                           |
 
 A few more optional fields cover rarer needs: `events` (event types a bound
 `data-intent-on=${…}` can produce, see [Intent](/docs/intent/#trigger-events)), `states`
@@ -84,7 +86,7 @@ export interface Props {
   readonly note: string | undefined;
 }
 
-export const Badge = define<Stateless, never, Props>('my-badge', {
+export const Badge = define<Stateless, never, Props>()('my-badge', {
   props: {
     label: prop.string({ required: true }),
     count: prop.number({ default: 0 }),
@@ -120,7 +122,8 @@ export const Badge = define<Stateless, never, Props>('my-badge', {
 
 A prop named `maxValue` reads the attribute `max-value`; pass `attribute: 'name'` to choose
 another, or `attribute: false` for a property only. The options are `required`, `default`,
-`attribute` and `schema`.
+`attribute` and `schema`, and `equals` for `prop.json` and `prop.value`
+([below](#when-a-prop-counts-as-changed)).
 
 The schemas are [Standard Schema](https://standardschema.dev), so any library that implements it
 works: valibot, zod, ArkType. `string`, `number` and `boolean` carry tiny built-in schemas, so
@@ -167,7 +170,7 @@ const props = {
   holder: prop.value(v.nullable(v.string()), { default: 'Box office' }),
 };
 
-export const SeatPicker = define<Stateless, never, PropsOf<typeof props>>('my-seat-picker', {
+export const SeatPicker = define<Stateless, never, PropsOf<typeof props>>()('my-seat-picker', {
   props,
   intent: {},
   update: {},
@@ -199,10 +202,78 @@ export const SeatPicker = define<Stateless, never, PropsOf<typeof props>>('my-se
   `undefined`, or removing its attribute, brings the default back. Make the schema nullable and
   pass `.holder=${null}` (or the attribute `holder="null"` with `prop.json`).
 
+### When a prop counts as changed
+
+A write whose value equals the old one changes nothing: no render, no `PropsChanged`. That
+holds for property sets and attribute changes alike, so a parent may write the same value on
+every render without making the child do any work.
+
+| Builder                       | Equal when                                                 |
+| ----------------------------- | ---------------------------------------------------------- |
+| `string`, `number`, `boolean` | `Object.is(old, new)`                                      |
+| `json`                        | `JSON.stringify` gives the same text (it is JSON data)     |
+| `value`                       | `Object.is(old, new)`, or what its `equals` option returns |
+
+So a parent can bind a fresh object on every render, `.range=${{ min: s.min, max: s.max }}`, to
+a `prop.json` prop: the same JSON is the same value. Keys in a different order only cost an
+extra render. `prop.value` holds anything, class instances and DOM nodes included, so it keeps
+identity unless you say what "the same" means. `equals` receives the old and the new value,
+`undefined` when unset, and `prop.json` takes it too:
+
+```ts
+// src/results-table.ts
+import { define, html, prop, type PropsOf, type Stateless } from '@gyral/core';
+
+export interface Sort {
+  readonly key: string;
+  readonly dir: 'asc' | 'desc';
+}
+
+const isSort = (u: unknown): u is Sort =>
+  typeof u === 'object' &&
+  u !== null &&
+  'key' in u &&
+  typeof u.key === 'string' &&
+  'dir' in u &&
+  (u.dir === 'asc' || u.dir === 'desc');
+
+const isRange = (u: unknown): u is { readonly min: number; readonly max: number } =>
+  typeof u === 'object' &&
+  u !== null &&
+  'min' in u &&
+  typeof u.min === 'number' &&
+  'max' in u &&
+  typeof u.max === 'number';
+
+const sortLabel = (sort: Sort): string =>
+  `Sorted by ${sort.key}, ${sort.dir === 'asc' ? 'ascending' : 'descending'}`;
+
+const props = {
+  /** Compared by JSON text: a fresh but equal object changes nothing. */
+  range: prop.json(isRange, { default: { min: 0, max: 100 } }),
+  /** Compared field by field, instead of by identity. */
+  sort: prop.value(isSort, { equals: (a, b) => a?.key === b?.key && a?.dir === b?.dir }),
+};
+
+export const ResultsTable = define<Stateless, never, PropsOf<typeof props>>()('my-results-table', {
+  props,
+  intent: {},
+  update: {},
+  view: (_s, _i, { props: p }) => html`
+    <p>Prices ${p.range.min} to ${p.range.max}</p>
+    ${p.sort === undefined ? '' : html`<p>${sortLabel(p.sort)}</p>`}
+  `,
+});
+```
+
+When no `equals` fits, keep bound objects stable in the parent instead: build them in a reducer,
+so they live in state, rather than in the view, so an unchanged object is the same object.
+
 ### Reacting to prop changes
 
 When a declared prop changes after the first render, the component receives the framework
-message `PropsChanged`, with the new and previous props. Its reducer is optional. It is the only
+message `PropsChanged`, with the new and previous props (a write of an [equal
+value](#when-a-prop-counts-as-changed) sends nothing). Its reducer is optional. It is the only
 way props enter state, so "reset when the user changes" is explicit:
 
 ```ts
@@ -215,7 +286,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Typed'; readonly text: string };
 
-export const UserNotes = define<State, Msg, { readonly userId: string }>('my-user-notes', {
+export const UserNotes = define<State, Msg, { readonly userId: string }>()('my-user-notes', {
   props: { userId: prop.string({ required: true }) },
   init: () => ({ draft: '' }),
   intent: { Typed: ({ value }) => ({ _tag: 'Typed', text: value ?? '' }) },
@@ -240,7 +311,7 @@ A parent sets a child's props in its view, as attributes (`step="5"`) or as prop
 (`.step=${5}`, the way objects and arrays travel), and listens to the child's **outputs**. A
 child reports up by returning `emit(output)` from a reducer. `emit` is a command like any
 other, so the child stays pure and testable. Build it with `outputs<Out>()`, a module constant
-like `intents<Msg>()`: it is the same `emit`, typed by the output union, so an output of the
+like `intentsOf<typeof Component>()`: it is the same `emit`, typed by the output union, so an output of the
 wrong shape fails to compile in the child.
 
 ```ts
@@ -254,7 +325,7 @@ const emit = outputs<StepperOutput>();
 
 type Msg = { readonly _tag: 'Step'; readonly by: number };
 
-export const Stepper = define<Stateless, Msg, { readonly step: number }, StepperOutput>(
+export const Stepper = define<Stateless, Msg, { readonly step: number }, StepperOutput>()(
   'my-stepper',
   {
     props: { step: prop.number({ default: 1 }) },
@@ -286,7 +357,7 @@ export interface State {
 
 export type Msg = { readonly _tag: 'Add'; readonly by: number };
 
-export const Total = define<State, Msg>('my-total', {
+export const Total = define<State, Msg>()('my-total', {
   init: () => ({ total: 0 }),
   intent: {
     Add: child(Stepper, (out) => ({ _tag: 'Add', by: out.by })),

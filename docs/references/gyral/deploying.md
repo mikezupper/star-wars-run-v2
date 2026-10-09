@@ -43,14 +43,14 @@ Set the host's 404 page to your prerendered `404.html` if you render one.
 ## Node
 
 When some pages render per request, build into two folders and run Gyral's production server.
-`npm create gyral@latest my-app -- --template ssr` sets this up for you; the files below are a
-trimmed-down version of what it generates.
+`npm create gyral@latest my-app -- --template ssr` sets up a project like this one; the files
+below are a trimmed-down version.
 
 ```ts
 // src/counter.ts
 import { define, html } from '@gyral/core';
 
-export const Counter = define<{ readonly count: number }, { readonly _tag: 'Increment' }>(
+export const Counter = define<{ readonly count: number }, { readonly _tag: 'Increment' }>()(
   'my-counter',
   {
     init: () => ({ count: 0 }),
@@ -69,17 +69,13 @@ export const Counter = define<{ readonly count: number }, { readonly _tag: 'Incr
 import { Hono } from 'hono';
 import { html } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
+import type { AppAssets } from '@gyral/ssr/static';
 import '../src/counter.js';
 
 /** Paths rendered at build time into dist/static. Everything else renders per request. */
 export const staticPaths: readonly string[] = ['/'];
 
-export interface ClientAssets {
-  readonly clientEntry: string;
-  readonly modulepreload: readonly string[];
-}
-
-export function createApp({ clientEntry, modulepreload }: ClientAssets): Hono {
+export function createApp({ clientEntry, modulepreload, stylesheets }: AppAssets): Hono {
   const app = new Hono();
   app.get('/', () =>
     renderPage({
@@ -87,6 +83,7 @@ export function createApp({ clientEntry, modulepreload }: ClientAssets): Hono {
       body: html`<my-counter></my-counter>`,
       scripts: [clientEntry],
       modulepreload,
+      stylesheets,
     }),
   );
   app.get('/hello/:name', (c) =>
@@ -98,8 +95,9 @@ export function createApp({ clientEntry, modulepreload }: ClientAssets): Hono {
 
 ```ts
 // server/prod.ts
+import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
-import { serve } from '@hono/node-server';
+import { toNodeListener } from '@gyral/ssr/node';
 import { productionServer } from '@gyral/ssr/static';
 import { createApp } from './app.js';
 
@@ -108,30 +106,103 @@ const app = await productionServer({
   createApp,
 });
 
-serve({ fetch: app.fetch, port: Number(process.env['PORT'] ?? 3000) });
+// origin: the public origin request URLs are built on (by default, the Host header).
+createServer(toNodeListener(app.fetch, { origin: 'https://example.com' })).listen(
+  Number(process.env['PORT'] ?? 3000),
+);
 ```
 
 `productionServer({ distDir, createApp })` expects Vite's output in `dist/client/` (with
 `build.manifest: true`) and prerendered pages in `dist/static/`. It reads the manifest once and
-hands `createApp` the client entry and the chunks to preload with it, Gyral's hydration chunk
-included. A page whose route module is imported lazily passes
-`preload(['src/routes/product.ts'])` (also given to `createApp`) as `modulepreload` instead:
-the same list plus that module and its imports. It answers:
+hands `createApp` the client entry, the chunks to preload with it as `modulepreload` (Gyral's
+hydration chunk included) and the hashed CSS the entry imports as `stylesheets`. A page whose
+route module is imported lazily spreads `assets(['src/routes/product.ts'])` (also given to
+`createApp`) into `renderPage` instead: it returns `{ modulepreload, stylesheets }` with that
+module, its imports and its CSS added. It answers:
 
-| Request                        | Served from                | `cache-control`                       |
-| ------------------------------ | -------------------------- | ------------------------------------- |
-| `GET /assets/*`                | `dist/client/assets/`      | `public, max-age=31536000, immutable` |
-| `GET` of a prerendered path    | `dist/static/…/index.html` | `public, max-age=0, must-revalidate`  |
-| anything else (and every POST) | your app                   | `no-cache`, unless your app set one   |
+| Request                                  | Served from                                 | `cache-control`                       |
+| ---------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| `GET`/`HEAD /assets/*`                   | `assetsDir` (default `dist/client/assets/`) | `public, max-age=31536000, immutable` |
+| `GET`/`HEAD` of a prerendered path       | `staticDir` (default `dist/static/`)        | `public, max-age=0, must-revalidate`  |
+| anything else (other `GET`s, every POST) | your app                                    | `no-cache`, unless your app set one   |
 
-Asset paths that resolve outside `dist/client/` are refused. Its `fetch` is a plain
-`(Request) => Response` function: serve it with `@hono/node-server` as above, or mount it as a
-route in a larger Hono app.
+Assets carry their `content-type`, `content-length` and `x-content-type-options: nosniff`, and
+stay in memory once served (up to a bound; `cache: false` reads them from disk every time). A
+malformed URL is a 400. A path that leads outside `assetsDir`, or a missing file, is a 404 with
+`cache-control: no-store`, so a CDN never caches a miss while a deploy lands. Pass
+`staticDir: false` if nothing is prerendered, so page requests don't look for a file first.
+A single `Range` request (`bytes=0-1023`) gets `206 Partial Content` with that slice, so an
+imported video or audio file can seek; every asset says `accept-ranges: bytes`. A range past the
+end is a 416, and several ranges or a malformed header get the whole file.
+
+Served under a path, with Vite's `base: '/app/'`? Pass the same base to `productionServer`:
+`productionServer({ distDir, createApp, base: '/app/' })` puts it in front of the entry,
+preload and stylesheet URLs and serves assets at `/app/assets/`. For a static build, pass it to
+the manifest helpers as their last argument:
+`clientAssetsFromManifest(path, entry, [], { base: '/app/' })`.
+
+After a deploy, tabs opened before it still ask for the old release's chunks. To keep serving
+them, point `assetsDir` at a volume that keeps every release's files, or use `assetHandler`
+from `@gyral/ssr/static` on its own. It answers under `/assets/` and returns `undefined` for
+any other path, so it fits in front of any router:
+
+```ts
+// server/assets.ts
+import { assetHandler } from '@gyral/ssr/static';
+
+// A volume that keeps the hashed files of every release.
+const assets = assetHandler({ dir: '/srv/releases/assets' });
+
+export async function handle(request: Request): Promise<Response> {
+  return (await assets(request)) ?? new Response('Not found', { status: 404 });
+}
+```
+
+`productionServer` returns a plain `{ fetch }`. Mount it on Node's `http` module with
+`createServer(toNodeListener(app.fetch, { origin }))` from `@gyral/ssr/node`, as above, or on any
+server that takes a fetch handler, or as a route in a larger Hono app. `toNodeListener` streams
+request bodies in, writes each chunk of the page only as fast as the client reads it, and aborts
+`request.signal` when the client leaves. Set `origin` when your pages build absolute URLs from
+the request: otherwise it comes from the `Host` header, which the client chooses.
+
+### The client's address
+
+A `Request` doesn't say who sent it. `toNodeListener` passes the handler a second argument,
+`{ incoming, remoteAddress }`: Node's request object and the client's IP address, for rate
+limits, logs and audits.
+
+```ts
+// server/rate-limit.ts
+import { createServer } from 'node:http';
+import { toNodeListener } from '@gyral/ssr/node';
+
+const LIMIT = 100;
+const hits = new Map<string, number>();
+
+createServer(
+  toNodeListener((_request, { remoteAddress }) => {
+    const client = remoteAddress ?? 'unknown';
+    const count = (hits.get(client) ?? 0) + 1;
+    hits.set(client, count);
+    return count > LIMIT
+      ? new Response('Too many requests', { status: 429, headers: { 'retry-after': '60' } })
+      : new Response('ok');
+  }),
+).listen(3000);
+```
+
+- **Behind a proxy or a load balancer, `remoteAddress` is the proxy's address.** The client's is
+  in a header such as `X-Forwarded-For`, but anyone can send that header. Read it only when the
+  request came from a proxy you run (`remoteAddress` is that proxy's address), and take the
+  address your proxy added, the last one in the list, not the first.
+- **`remoteAddress` is `undefined` once the connection has closed**, so give it a fallback.
+- **A Hono app gets the object as `c.env`**, the shape Hono's own Node adapter passes, so
+  `getConnInfo(c)` from `@hono/node-server/conninfo` works with it.
 
 ## Bun, Deno and Cloudflare Workers
 
-`renderPage` returns a web-standard streaming `Response`, so per-request rendering fits any
-runtime that speaks `fetch`:
+`renderPage` returns a web-standard `Response` (chunked, from a synchronous render), so
+per-request rendering fits any runtime that speaks `fetch`:
 
 ```js
 // Bun
@@ -150,14 +221,15 @@ How far each one is tested today:
   checked by hand on Bun 1.3.14 with Gyral 0.3. It isn't part of Gyral's CI.
 - **Deno and Cloudflare Workers**: not tested yet. The renderer uses no Node-only APIs (it
   hashes in plain JavaScript and has no DOM shim), but check it there before you rely on it.
-- **`@gyral/ssr/static`** (`prerender`, `productionServer`) reads and writes files with
-  `node:fs`. Use it in Node at build time; on an edge runtime, serve the static files from the
-  platform's asset hosting instead.
+- **`@gyral/ssr/static`** (`prerender`, `productionServer`, `assetHandler`) reads and writes
+  files with `node:fs`. Use it in Node at build time; on an edge runtime, serve the static files
+  from the platform's asset hosting instead. **`@gyral/ssr/node`** is for Node's `http` module
+  only; the runtimes above take `app.fetch` directly.
 
 ## Cache headers
 
-`cacheHeaders` from `@gyral/ssr/static` holds the three policies `productionServer` uses, for
-when you write your own server:
+`cacheHeaders` from `@gyral/ssr/static` holds the policies `productionServer` uses, for when
+you write your own server:
 
 ```ts
 // server/cache.ts
@@ -184,6 +256,7 @@ app.get('/account', () =>
 | `immutable`  | `public, max-age=31536000, immutable` | content-hashed files (`/assets/*`)         |
 | `revalidate` | `public, max-age=0, must-revalidate`  | prerendered pages, which a rebuild changes |
 | `dynamic`    | `no-cache`                            | pages rendered per request                 |
+| `none`       | `no-store`                            | misses and errors                          |
 
 On a static host, set the same policies in its headers file. This site's `_headers` gives
 `/assets/*` the `immutable` policy and leaves pages at the host's default revalidation.
@@ -209,10 +282,13 @@ Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' d
 ```
 
 This website's policy is the same, plus `font-src` and `connect-src` for its own files and
-`'wasm-unsafe-eval'`, which only its search index needs. Inline `style="…"` attributes are the
-one thing hashes don't cover, so this site has none. On GitHub Pages, which can't set headers,
-put the policy in a `<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s
-`head` option; `frame-ancestors` doesn't work there.
+`'wasm-unsafe-eval'`, which only its search index needs. Linked stylesheets need no hash:
+`style-src 'self'` allows them. `style="…"` attributes in server HTML are the one thing the
+policy blocks: they apply only once their component hydrates (see
+[Styling](/docs/styling/#inline-styles-under-a-strict-csp)), so this site's pages have none. On
+GitHub Pages, which can't set headers, put the policy in a
+`<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s `head` option;
+`frame-ancestors` doesn't work there.
 
 ## Checklist
 

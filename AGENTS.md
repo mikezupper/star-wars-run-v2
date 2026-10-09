@@ -19,7 +19,7 @@ disagree, the doc wins; fix this file.
 
 | Command                                | What it does                                                                                                                                    |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm install`                         | Install. `@gyral/*` 0.3.1-next.1 comes from `vendor/` until 0.3.1 is on npm (vendor/README.md)                                                  |
+| `pnpm install`                         | Install. `@gyral/*` 0.3.1-next.6 comes from `vendor/` until 0.3.1 is on npm (vendor/README.md)                                                  |
 | `pnpm check`                           | **The gate.** typecheck · lint · format · invariants · tests (80%) · sample build · smoke                                                       |
 | `pnpm invariants`                      | Docs links and indexes, AGENTS.md length, workflow triggers (dispatch only)                                                                     |
 | `pnpm dev`                             | Dev server on http://localhost:5500 (~15 s; `SITE_SAMPLE=N` for less). Ask reads `.env` (ADR 0009)                                              |

@@ -92,7 +92,7 @@ describe('every page', () => {
     const descriptions = new Set<string>();
     for (const [page, body] of indexed) {
       titles.add(/<title>([^<]*)<\/title>/.exec(body)?.[1] ?? '');
-      descriptions.add(/<meta name="description" content="([^"]*)">/.exec(body)?.[1] ?? '');
+      descriptions.add(/<meta name="description" content="([^"]*)"/.exec(body)?.[1] ?? '');
       expect(body, page).toContain(`<link rel="canonical" href="${absolute(page)}">`);
     }
     expect(titles.size).toBe(indexed.length);

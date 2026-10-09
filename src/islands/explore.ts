@@ -157,7 +157,7 @@ const readAsk = (): Command<Msg> =>
       question.trim() === '' ? undefined : { _tag: 'Arrived', question },
   });
 
-export const Explore = define<State, Msg>('swr-explore', {
+export const Explore = define<State, Msg>()('swr-explore', {
   init: () => ({ _tag: 'Static' }),
   intent: {
     Typed: ({ value }) => ({ _tag: 'Typed', sql: value ?? '' }),

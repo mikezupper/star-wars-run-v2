@@ -24,14 +24,14 @@ npm install @gyral/core
 
 ## Optional packages
 
-| Package           | What it gives you                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                        |
-| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setTitle`, browser and memory history.                                                              |
-| `@gyral/time`     | `delay`, `debounce`, `periodic` and `animationFrames` as commands. `@gyral/time/delay` has `delay` and `debounce` alone, for a smaller bundle. |
-| `@gyral/ssr`      | Server rendering: `renderPage`, `page`, `contentSecurityPolicy`, `formAction`. `@gyral/ssr/static` prerenders and serves builds (Node).        |
-| `@gyral/testing`  | `step`, `run`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/arbitraries` turns schemas into fast-check arbitraries.  |
-| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                            |
+| Package           | What it gives you                                                                                                                                                                                                           |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                                                                                                     |
+| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setHead`, browser and memory history.                                                                                                                                            |
+| `@gyral/time`     | `delay`, `debounce`, `periodic` and `animationFrames` as commands. `@gyral/time/delay` has `delay` and `debounce` alone, for a smaller bundle.                                                                              |
+| `@gyral/ssr`      | Server rendering: `renderPage`, `page`, `contentSecurityPolicy`, `formAction`. `@gyral/ssr/static` prerenders and serves builds, `@gyral/ssr/node` mounts a fetch handler on Node's `http`.                                 |
+| `@gyral/testing`  | `step`, `run`, `outputsIn`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/arbitraries` turns schemas into fast-check arbitraries, `@gyral/testing/vitest` renders server markup for browser tests. |
+| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                                                                                                         |
 
 ```sh
 npm install @gyral/http @gyral/router @gyral/time
@@ -44,10 +44,10 @@ npm install -D @gyral/testing @gyral/devtools
 No Gyral package asks you to install another library at runtime. The build tools Gyral plugs
 into are optional peer dependencies: install the ones you use.
 
-| Package          | Optional peers                                                                            |
-| ---------------- | ----------------------------------------------------------------------------------------- |
-| `@gyral/core`    | `vite` ^8 (preset and compiler), `eslint` 9 or 10 (the plugin), `parse5` (compiler check) |
-| `@gyral/testing` | `fast-check` ^4 (only for `@gyral/testing/arbitraries`)                                   |
+| Package          | Optional peers                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| `@gyral/core`    | `vite` ^8 (preset and compiler), `eslint` 9 or 10 (the plugin), `parse5` (compiler check)               |
+| `@gyral/testing` | `fast-check` ^4 (only for `@gyral/testing/arbitraries`), `vitest` ^5 (only for `@gyral/testing/vitest`) |
 
 Validation in `@gyral/core`, `@gyral/http` and `@gyral/ssr` accepts any
 [Standard Schema](https://standardschema.dev) library; Gyral depends only on its types.
@@ -122,18 +122,22 @@ Measured on Gyral's examples (KiB gzip, production builds with the preset):
 
 | App                      | 0.2.0 | 0.3.1: first load | 0.3.1: all chunks |
 | ------------------------ | ----- | ----------------- | ----------------- |
-| hello-world              | 12.2  | 8.4               | 10.8              |
-| hello-world, client-only | —     | 7.4               | 7.4               |
-| isomorphic (SSR)         | 17.3  | 12.4              | 14.9              |
-| no-js-first (SSR, forms) | 18.7  | 15.8              | 18.3              |
+| hello-world              | 12.2  | 9.3               | 11.7              |
+| hello-world, client-only | —     | 8.2               | 8.2               |
+| isomorphic (SSR)         | 17.3  | 14.5              | 17.5              |
+| no-js-first (SSR, forms) | 18.7  | 16.6              | 19.2              |
 
 "First load" is the entry chunk and what it imports statically: what a page downloads before any
 lazy `import()`. On 0.3.0 the same first loads were 8.9, 12.9 and 16.6 KiB. 0.3.1 leaves out
 view transitions, the frame lane and custom states unless a module names their spec field (the
 build reads your code and the packages that depend on Gyral; see [what the build
 reads](/docs/rendering-modes/#what-the-build-reads)), and its production builds print short
-[error codes](/errors/) instead of messages. The client-only
+[error codes](/errors/) instead of messages. Those savings pay for most of 0.3.1's additions;
+the largest, [error handling](/docs/error-handling/), adds about 0.75 KiB to every app. The client-only
 row is the same app built with [`clientOnly: true`](/docs/rendering-modes/#client-only-builds).
+The isomorphic example routes, and the router's [scroll and focus
+handling](/docs/routing/#scroll-and-focus) costs it about 0.5 KiB of first load; the History API
+code (about 0.75 KiB) loads only in browsers without the Navigation API.
 The migration guides have this site's own numbers: [before and after
 0.3.0](/docs/migrating-0-2-to-0-3/#size), and [after 0.3.1](/docs/migrating-0-3-0-to-0-3-1/#new-in-031).
 
@@ -151,4 +155,4 @@ feature-detected and used as enhancements.
 - **Without a preload hint, the hydration chunk loads one round trip after the entry** on
   server-rendered pages. Pass `clientAssetsFromManifest()`'s `modulepreload` to `renderPage` (see
   [Static sites](/docs/static-sites/#a-static-build)); `productionServer` hands it to your app,
-  with a `preload(modules)` that adds a page's lazily imported route chunks.
+  with an `assets(modules)` that adds a page's lazily imported route chunks.
