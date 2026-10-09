@@ -1,13 +1,14 @@
 # Production: starwars.run behind the server's Traefik, the same way as sabacc (ADR 0003,
 # docs/deploy.md). Two containers: site (Caddy: the static files and the headers) joins Traefik's
 # network; api (every page, rendered on request, and /api/) stays on an internal network that
-# only site reaches. Everything server-specific comes from .env next to this file (see
-# .env.example): the images, the pinned tag, the host name, Traefik's names and Ask's settings.
+# only site reaches. The images carry code only; the data is a read-only volume you fill by hand.
+# Everything server-specific comes from .env next to this file (see .env.example): the images,
+# the pinned tag, where the data is, the host name, Traefik's names and Ask's settings.
 #
 #   docker compose pull && docker compose up -d
 #
 # compose.yaml at the repo's root is the local stack (`pnpm docker:run`); this file is the server's.
-name: starwars-run # fixed, so the volume is "starwars-run_questions" whatever the folder is called
+name: starwars-run # fixed, so volumes are "starwars-run_data" and "starwars-run_questions" in any folder
 
 services:
   site:
@@ -45,7 +46,10 @@ services:
       ASK_MODEL: ${ASK_MODEL:-Qwen3.8-27B}
       KEEP_BACKUPS: ${KEEP_BACKUPS:-14}
     volumes:
-      # The question log and its backups. The archive itself is in the image.
+      # The data the image doesn't carry (pages.sqlite, archive.duckdb, ask-schema.json), filled by
+      # hand and mounted read-only: a host folder or a named volume (docs/deploy.md).
+      - ${STARWARS_DATA:-data}:/app/data:ro
+      # The question log and its backups.
       - questions:/data
     networks:
       - internal
@@ -56,6 +60,7 @@ services:
         max-file: '5'
 
 volumes:
+  data:
   questions:
 
 networks:

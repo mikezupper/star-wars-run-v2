@@ -32,7 +32,7 @@ disagree, the doc wins; fix this file.
 | `pnpm ask:eval`                        | 30 questions through Ask against the real model and the full build; prints a score. On request only                                             |
 | `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                                                                              |
 | `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                                                                         |
-| `pnpm docker:build`, `pnpm docker:run` | Build the site and API images (~25 min; `IMAGE=` for a registry); run them with compose on http://localhost:8080                                |
+| `pnpm docker:build`, `pnpm docker:run` | Build the site and API images, code only (`IMAGE=` for a registry); run them on http://localhost:8080 with `dist-api/` as data                  |
 | `pnpm docker:push`                     | Push both images to `IMAGE`'s registry; deploying is in [docs/deploy.md](docs/deploy.md)                                                        |
 | `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**                                                             |
 

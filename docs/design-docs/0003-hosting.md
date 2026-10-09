@@ -31,6 +31,14 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   holds the Let's Encrypt certificate, and Cloudflare proxies in Full (strict) mode. The question
   log is backed up from the running app (`deploy/backup.sh`). The runbook is
   [docs/deploy.md](../deploy.md).
+- **The images carry code only; the data is a volume** (2026-10-09, the owner's call). The
+  archive changes with a new dump and the code changes daily, so the data (`pages.sqlite`,
+  `archive.duckdb`, `ask-schema.json`, from `pnpm build`) is copied by hand into a read-only
+  volume, and `pnpm docker:build` reads no dump and takes minutes. What tied the two together
+  is undone: the api image links the CSS and JS of the site image built with it (written into its
+  bundle), its pages' `ETag` names the data's build and the bundle, it serves the sitemaps from
+  the data, and the service worker fetches pages from the network first, so new data shows
+  without a new worker. This supersedes the first bullet above where they differ.
 
 - **Headers have one source:** `src/hosting/headers.ts`. The preview server applies it, so
   `pnpm smoke` runs under the production CSP, and `pnpm caddyfile` renders it to the committed

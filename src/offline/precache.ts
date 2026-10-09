@@ -6,6 +6,16 @@
 // the server (ADR 0011). Pure, so it's tested directly; scripts/build-sw.ts feeds it the files
 // in dist/.
 
+import { SECTIONS } from '../domain/sections.js';
+
+/** The pages the app renders that are precached too: home, search, offline and each section. */
+export const SHELL_PATHS: readonly string[] = [
+  '/',
+  '/search/',
+  '/offline/',
+  ...SECTIONS.map((section) => `/${section}/`),
+];
+
 /** One built file: its path relative to dist/ with `/` separators, and its bytes. */
 export interface BuiltFile {
   readonly path: string;

@@ -21,13 +21,10 @@ void self.skipWaiting();
 clientsClaim();
 cleanupOutdatedCaches();
 
-// The shell and assets. Only tracking parameters are ignored: `/search/?q=` is a different
-// page from `/search/` now that results render on the server (ADR 0011), so it goes to the
-// network like any page, not to the precached empty form.
-precacheAndRoute(self.__WB_MANIFEST, { ignoreURLParametersMatching: [/^utm_/] });
-
-// Article pages: fresh from the network when it answers within 3 seconds, else the copy saved
-// the last time this page was visited. The 500 most recent are kept.
+// Every page, the precached shell pages included: fresh from the network when it answers within
+// 3 seconds, else the copy saved the last time this page was visited. The 500 most recent are
+// kept. Registered before the precache's route, so a page is never served from the precache
+// while the network answers: the data can change without a new service worker (ADR 0003).
 registerRoute(
   ({ request }) => request.destination === 'document',
   new NetworkFirst({
@@ -43,9 +40,14 @@ registerRoute(
   }),
 );
 
-// Offline and never visited: the offline page, for documents only.
+// The shell pages and assets, for offline. Only tracking parameters are ignored: `/search/?q=`
+// is a different page from `/search/` now that results render on the server (ADR 0011).
+precacheAndRoute(self.__WB_MANIFEST, { ignoreURLParametersMatching: [/^utm_/] });
+
+// Offline and not saved: the precached copy of a shell page, else the offline page; for
+// documents only.
 setCatchHandler(async ({ request }) =>
   request.destination === 'document'
-    ? ((await matchPrecache('/offline/')) ?? Response.error())
+    ? ((await matchPrecache(request.url)) ?? (await matchPrecache('/offline/')) ?? Response.error())
     : Response.error(),
 );

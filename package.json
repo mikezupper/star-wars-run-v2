@@ -31,6 +31,7 @@
     "build:sample": "SITE_SAMPLE=20 DIST_DIR=.sample pnpm build",
     "build:explore": "tsx scripts/build-explore.ts",
     "build:api": "tsx scripts/build-api.ts",
+    "build:image": "tsx scripts/build-image.ts",
     "ask:eval": "tsx scripts/ask-eval.ts"
   },
   "dependencies": {

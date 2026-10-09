@@ -6,18 +6,18 @@
 import { rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { clientEntryFromManifest } from '@gyral/ssr/static';
 import { homedir } from 'node:os';
 import { loadSiteData } from '../src/data/archive.js';
 import { WOOKIEEPEDIA_DIR } from '../src/data/wookieepedia.js';
 import { dumpPath, prepareSnapshot, workersFrom } from '../src/ingest/wookieepedia/source.js';
 import { createSite, sitemaps } from '../src/render/site.js';
 import { writePages } from '../src/server/pages.js';
-import { SECTIONS } from '../src/domain/sections.js';
+import { SHELL_PATHS } from '../src/offline/precache.js';
 import { askSchema } from '../src/domain/ask.js';
 import { exploreRows } from '../src/domain/rows.js';
 import { buildDatabase } from './build-database.js';
 import { buildServiceWorker } from './build-sw.js';
+import { siteAssets } from './lib/assets.js';
 
 /** `SITE_SAMPLE=20 pnpm build`: a quick build of a sample (ADR 0008); unset builds everything. */
 const sampleOption = (): { sample?: number } => {
@@ -37,7 +37,6 @@ async function stage<T>(name: string, run: () => Promise<T>): Promise<T> {
 }
 
 export async function buildSite(dist: string): Promise<readonly string[]> {
-  const manifest = join(dist, '.vite', 'manifest.json');
   // The snapshot comes from the dump and is never stored (ADR 0007): bring it up to date
   // first. When it already matches the dump, this is a checksum of the dump and nothing more.
   const workers = workersFrom(process.env);
@@ -52,11 +51,7 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
     }),
   );
   const data = await stage('load', () => loadSiteData(sampleOption()));
-  const assets = {
-    stylesheet: await clientEntryFromManifest(manifest, 'src/styles/site.css'),
-    clientEntry: await clientEntryFromManifest(manifest, 'src/entry-client.ts'),
-    page: await clientEntryFromManifest(manifest, 'src/page.ts'),
-  };
+  const assets = await siteAssets(dist);
   const site = createSite(assets, data);
   // The build's id: every page's ETag, and the precached pages' revision.
   const build = Date.now().toString(36);
@@ -80,8 +75,9 @@ export async function buildSite(dist: string): Promise<readonly string[]> {
   );
   // Last: the service worker's precache list covers everything written above, and the shell
   // pages, which the app renders, by the build's id.
-  const shell = ['/', '/search/', '/offline/', ...SECTIONS.map((s) => `/${s}/`)];
-  const sw = await stage('service worker', () => buildServiceWorker(dist, { shell, build }));
+  const sw = await stage('service worker', () =>
+    buildServiceWorker(dist, { shell: SHELL_PATHS, build }),
+  );
   console.log(`service worker: ${String(sw.entries)} precached files, sw.js ${sw.kb} KB`);
   return site.paths;
 }
