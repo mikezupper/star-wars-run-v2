@@ -13,6 +13,19 @@ Each entry has four parts:
 
 ---
 
+## A failed API open stuck until restart (2026-10-09)
+
+- **Symptom:** Explore's Ask said "The AI that reads questions isn't answering right now"
+  although the model answered when called directly, and no failed question was in the log.
+- **Cause:** the dev and preview servers opened the API with `api ??= openApi(…)`. If the first
+  request came while `dist-api/` was missing or being rewritten by `pnpm build`, the rejected
+  promise was kept, so every later `/api/*` request answered 502 until the server restarted.
+  The browser shows any non-OK answer as "isn't answering", and the error was never printed.
+- **Fix:** `openOnce()` in `src/server/open.ts` keeps a successful open and forgets a failed
+  one, so the next request tries again. `scripts/lib/api.ts` uses it and logs each failure
+  (`swr-gqt`).
+- **Guard:** `test/server/open.test.ts` checks that a failed open is retried.
+
 ## Long titles widened article pages on phones (2026-10-09)
 
 - **Symptom:** the full-build smoke run (`SMOKE_PAGES=1000`) failed after the PR stack merged:
