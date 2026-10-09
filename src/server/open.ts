@@ -22,6 +22,20 @@ export interface ApiFiles {
 
 type Env = Readonly<Record<string, string | undefined>>;
 
+/**
+ * Opens something on first use and keeps it, unless opening failed: then the next call tries
+ * again. A server that opened the API while `pnpm build` was rewriting its files would
+ * otherwise answer every later request with the same failure until it restarted (swr-gqt).
+ */
+export function openOnce<T>(open: () => Promise<T>): () => Promise<T> {
+  let opened: Promise<T> | undefined;
+  return () =>
+    (opened ??= open().catch((error: unknown) => {
+      opened = undefined;
+      throw error;
+    }));
+}
+
 export async function openApi(
   files: ApiFiles,
   env: Env,
