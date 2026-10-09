@@ -94,6 +94,10 @@ export async function answerQuestion(
           ? 'unavailable'
           : 'unanswerable';
     record(reason, null, null);
+    // The visitor sees "isn't answering"; the server's log says why (swr-ddp).
+    if (reason === 'unavailable' && signal?.aborted !== true) {
+      context.report?.('ask: the model is unavailable', cause);
+    }
     send({ _tag: 'Failed', reason });
   } finally {
     clearTimeout(timer);
