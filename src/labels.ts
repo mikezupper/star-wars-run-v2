@@ -355,6 +355,7 @@ export const TEXT = {
   homeAskLabel: 'Ask the archive a question in plain words',
   homeAskPlaceholder: 'Which Wookiees fought for the Rebel Alliance?',
   bestKnown: 'Best known',
+  randomArticle: 'Jump to hyperspace: a random article →',
   show: 'Show',
   both: 'Both',
   kinds: 'Kinds',

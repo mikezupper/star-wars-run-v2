@@ -8,6 +8,7 @@ import { SECTIONS } from '../domain/sections.js';
 import { DESCRIPTION, SITE_NAME } from '../site.js';
 import { EXPLORE_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
 import { exploreMeta } from './explore.js';
+import { RANDOM_PATH } from './site.js';
 import type { PageMeta } from './layout.js';
 
 export const homeMeta: PageMeta = {
@@ -37,6 +38,7 @@ export const homeBody = (archive: Archive, links: LinkGraph) => {
         <button type="submit">${EXPLORE_TEXT.nav}</button>
       </form>
     </search>
+    <p><a href=${RANDOM_PATH}>${TEXT.randomArticle}</a></p>
     ${
       best.length === 0
         ? nothing

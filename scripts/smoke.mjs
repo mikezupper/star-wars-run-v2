@@ -200,6 +200,15 @@ async function checkLinks(links) {
   await pool([...internal], 16, async (path) => {
     const res = await fetch(base + path, { redirect: 'manual' });
     await res.body?.cancel();
+    // /random/ is meant to redirect, uncached, to an article that exists.
+    if (path === '/random/') {
+      const to = res.headers.get('location') ?? '';
+      const landed = await fetch(base + to, { redirect: 'manual' });
+      await landed.body?.cancel();
+      if (res.status !== 302 || res.headers.get('cache-control') !== 'no-store' || !landed.ok)
+        fail('links', `/random/ → ${String(res.status)} ${to} → ${String(landed.status)}`);
+      return;
+    }
     if (res.status !== 200) fail('links', `${path} → ${String(res.status)}`);
   });
 }

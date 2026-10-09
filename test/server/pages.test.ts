@@ -87,6 +87,13 @@ describe('pages rendered on request', () => {
     expect((await get('/no-such-page')).status).toBe(404);
   });
 
+  it('send /random/ to a random article, uncached', async () => {
+    const res = await get('/random');
+    expect(res.status).toBe(302);
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(res.headers.get('location')).toMatch(/^\/[a-z-]+\/[^/]+\/$/);
+  });
+
   it('take GET and HEAD only; HEAD has no body', async () => {
     expect((await get('/', {}, 'POST')).status).toBe(405);
     const head = await get('/', {}, 'HEAD');

@@ -57,6 +57,9 @@ const notFoundBody = () => html`
 const HTML = { 'content-type': 'text/html; charset=utf-8' };
 
 /** Paths always end with a slash; `/characters` and `/characters/` are the same page. */
+/** A random article, every time: a redirect nobody may cache. */
+export const RANDOM_PATH = '/random/';
+
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
@@ -96,12 +99,20 @@ export function createSite(assets: Assets, { archive, articles, links }: SiteDat
   }
 
   const notFound = async () => renderToString(layout(notFoundMeta, notFoundBody(), assets));
+  const everything = [...archive.byTitle.values()];
 
   return {
     paths: [...table.keys()],
     sitemapPaths: [...table].filter(([, r]) => r.meta.noindex !== true).map(([path]) => path),
     notFound,
     async fetch(request) {
+      if (normalise(new URL(request.url).pathname) === RANDOM_PATH) {
+        const pick = everything[Math.floor(Math.random() * everything.length)];
+        return new Response(null, {
+          status: 302,
+          headers: { location: pick?.path ?? '/', 'cache-control': 'no-store' },
+        });
+      }
       const route = table.get(normalise(new URL(request.url).pathname));
       if (route === undefined) {
         return new Response(await notFound(), { status: 404, headers: HTML });
