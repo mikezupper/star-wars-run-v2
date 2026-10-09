@@ -17,8 +17,10 @@ const dist = join(root, process.env['DIST_DIR'] ?? 'dist');
 const assets = existsSync(join(dist, '.vite', 'manifest.json'))
   ? await siteAssets(dist)
   : undefined;
+// `pnpm check` builds the bundle without one, to check it stays one file (swr-smn); the image
+// build runs `vite build` first.
 if (assets === undefined)
-  console.warn("build:api: no client build, so pages use the data's assets");
+  console.log("build:api: no client build in dist/, so pages link the data's assets");
 await build({
   configFile: false,
   root,

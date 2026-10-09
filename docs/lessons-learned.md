@@ -24,8 +24,8 @@ Each entry has four parts:
   chunks in `.server/assets/`.
 - **Fix:** `codeSplitting: false` keeps the bundle one file, and `build:api` now fails if it
   writes anything besides `api.mjs` (`swr-59p`).
-- **Guard:** that check, which fails `pnpm docker:build` early. Nothing in `pnpm check` builds the
-  API bundle yet; that is `swr-smn`.
+- **Guard:** that check, which `pnpm check` runs on every change (`pnpm build:api`, `swr-smn`)
+  and `pnpm docker:build` runs again.
 
 ## A failed API open stuck until restart (2026-10-09)
 
