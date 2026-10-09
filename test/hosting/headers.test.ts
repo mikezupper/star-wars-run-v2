@@ -27,7 +27,7 @@ describe('cache policy', () => {
   it('lets Cloudflare hold pages longer than browsers do', () => {
     expect(cacheControl('/people/luke-skywalker/', 200)).toBe(CACHE.pages);
     expect(cacheControl('/pagefind/pagefind.js', 200)).toBe(CACHE.pages);
-    expect(CACHE.pages).toMatch(/max-age=300, s-maxage=3600/);
+    expect(CACHE.pages).toMatch(/max-age=300, s-maxage=604800, .*stale-if-error=604800/);
   });
 
   it('keeps 404s short, whatever the path', () => {

@@ -1,7 +1,9 @@
 # Architecture
 
-Data comes in once, at ingest time. Every page is rendered once, at build time. In production,
-Caddy hands out those files, and one API service answers Explore's questions (ADR 0010).
+Data comes in once, at ingest time. The build turns it into data files; pages render on request
+from one of them, and Cloudflare caches the result (ADR 0011). In production, Caddy serves the
+static files and forwards everything else to one app: every page, and Explore's questions
+(ADR 0010).
 
 ```
 dump.7z (local file) ──► src/ingest/wookieepedia (stream, parse, link) ──► data/wookieepedia/
@@ -10,9 +12,11 @@ data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (secti
                                      └──► src/render (route table, templates) ──► Response
                                                               │
                          scripts/dev.ts: per request ◄────────┤  (archive loaded once at start)
-                         scripts/build.ts: prerender every path → dist/
+                         src/server/app.ts: per request ◄─────┘  (from dist-api/pages.sqlite)
+articles ──► src/domain/links ──► src/server/pages.ts ──► dist-api/pages.sqlite (not public)
 articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist-api/archive.duckdb (not public)
 articles ──► src/domain/titles ──► dist/search-titles/ (search: title matches first; Ask's names)
+browser ──► any page (Caddy, or preview in-process) ──► src/server/app.ts ──► src/render
 browser ──► /api/* (Caddy, or dev/preview in-process) ──► src/server (the API):
               /api/ask   ──► the model (key from the environment) + DuckDB, read-only, locked down
               /api/query ──► DuckDB, the same instance
@@ -35,19 +39,19 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer           | Runs                                    | Contains                                                                    | May import                                                                                 |
-| --------------- | --------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `src/site.ts`   | server and browser                      | Site-wide constants: origin, name, description                              | nothing                                                                                    |
-| `src/labels.ts` | server and browser                      | Every user-facing string (copy lives here only)                             | `src/domain/` (types)                                                                      |
-| `src/domain/`   | server and browser                      | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only | `src/site.ts`                                                                              |
-| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`        | Read the dump, parse at the boundary, write the snapshot                    | `src/domain/`, Node built-ins                                                              |
-| `src/data/`     | Node, build time                        | Read the snapshot in `data/wookieepedia/` into articles                     | `src/domain/`, Node built-ins                                                              |
-| `src/render/`   | Node, build time                        | Route table, page templates (`html`), layout, sitemap                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`  | browser (and server)                    | Interactive Gyral components: search, Explore (a client of the API)         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
-| `src/offline/`  | build (precache list); service worker   | What to precache (pure); the worker itself (`sw.ts`)                        | Workbox                                                                                    |
-| `src/hosting/`  | build and preview                       | Headers policy, the `Caddyfile`                                             | `src/domain/`                                                                              |
-| `src/server/`   | Node, the API service (and dev/preview) | `/api/ask`, `/api/query`, the question log; DuckDB, the model               | `src/hosting/`, Node built-ins                                                             |
-| `scripts/`      | Node                                    | Thin CLIs: dev server, build, preview, ingest, checks                       | anything                                                                                   |
+| Layer           | Runs                                  | Contains                                                                                    | May import                                                                                 |
+| --------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description                                              | nothing                                                                                    |
+| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)                                             | `src/domain/` (types)                                                                      |
+| `src/domain/`   | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
+| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
+| `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
+| `src/render/`   | Node, build time                      | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/islands/`  | browser (and server)                  | Interactive Gyral components: search, Explore (a client of the API)                         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
+| `src/hosting/`  | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
+| `src/server/`   | Node, the app (and dev/preview)       | Pages on request from SQLite; `/api/ask`, `/api/query`, the question log; DuckDB, the model | `src/render/`, `src/hosting/`, `src/domain/`, Node built-ins                               |
+| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks                                       | anything                                                                                   |
 
 **Status today:** every layer exists.
 
@@ -65,8 +69,9 @@ references and markup are the parser's problem and nobody else's.
 ## Rendering
 
 `src/render/site.ts` owns the route table. `createSite()` returns a `fetch(request)` handler
-that serves every page. The dev server calls it once per request; the build calls Gyral's
-`prerender()` with every path and writes `dist/<path>/index.html`.
+that serves every page. The dev server calls it with the snapshot in memory; the app
+(`src/server/app.ts`) calls it with `src/server/pages.ts`, which reads one article from
+`pages.sqlite` when its page renders, and adds the ETag and Cache-Control (ADR 0011).
 
 Page templates use `html` from `@gyral/core`, rendered on the server and never hydrated, so a
 page without islands ships **no framework JavaScript**: only `src/page.ts`, a few hundred bytes
@@ -76,18 +81,18 @@ place, loading its hydration code lazily. The entry loads only on pages that set
 `islands: true` (today, `/search/` and `/explore/`). See
 [docs/references/gyral/server-rendering.md](docs/references/gyral/server-rendering.md).
 
-Search: after prerendering, `scripts/build.ts` runs Pagefind over the article pages (the ones
-whose `<main>` has `data-pagefind-body`) and writes a static index to `dist/pagefind/`. The
-search island loads it in the browser. An article's `<h1>` is weighted up, its facts down, and
-its Appearances list left out, so an article's own page outranks pages that merely link to it.
+Search: `scripts/build.ts` gives Pagefind one record per article (its title, lead and facts as
+text, filterable by section) and writes a static index to `dist/pagefind/`, which the search
+island loads in the browser; the title index puts title matches first. Server search replaces
+both (`swr-sgf.5`).
 
-URLs always end with a slash (`/people/luke-skywalker/`). `normalise()` in
-`src/render/site.ts` makes `/people` and `/people/` the same route. Preview answers `/people`
-with a 308 redirect to `/people/`.
+URLs always end with a slash (`/people/luke-skywalker/`). The app answers `/people` with a 308
+redirect to `/people/`, and an unknown path with the 404 page.
 
 ## Output
 
-`dist/` is a static site: `index.html` per path, `404.html`, `sitemap.xml`, hashed
-`assets/`, and `public/` copied as it is. The Docker image (`swr-3mo.10`) serves it with the
-cache headers described in
-[docs/design-docs/0003-hosting.md](docs/design-docs/0003-hosting.md).
+`dist/` holds the public files: hashed `assets/`, `404.html` (for Caddy's own errors), the
+sitemaps, the search indexes, the service worker, and `public/` copied as it is. `dist-api/`
+holds the app's data: `pages.sqlite`, `archive.duckdb` and `ask-schema.json`. The site image
+serves `dist/`; the app image carries `dist-api/` and renders every page (ADR 0011,
+[docs/design-docs/0003-hosting.md](docs/design-docs/0003-hosting.md)).

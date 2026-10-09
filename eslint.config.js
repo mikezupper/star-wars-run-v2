@@ -132,9 +132,10 @@ export default tseslint.config(
     rules: forbid(INGEST, RENDER, ISLANDS, GYRAL),
   },
   {
-    // The API service (ADR 0010): Node and DuckDB, behind Caddy. No pages, no islands.
+    // The app (ADRs 0010, 0011): Node, DuckDB and SQLite, behind Caddy. It renders pages through
+    // src/render, so that layer is allowed; islands and Gyral directly are not.
     files: ['src/server/**/*.ts'],
-    rules: forbid(INGEST, DATA, RENDER, ISLANDS, GYRAL),
+    rules: forbid(INGEST, DATA, ISLANDS, GYRAL),
   },
   {
     files: ['src/render/**/*.ts'],

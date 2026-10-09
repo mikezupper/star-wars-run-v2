@@ -1,12 +1,13 @@
 /// <reference types="node" />
-// `pnpm preview`: serves dist/ the way the production server (Caddy, see Caddyfile) does:
-// `/x/` → `x/index.html`, `/x` → 308 to `/x/`, unknown paths → 404.html with status 404, and
-// the headers from src/hosting/headers.ts. The smoke test runs against this server.
+// `pnpm preview`: serves a build the way production does (ADR 0011): the files in dist/ as Caddy
+// serves them, with the headers from src/hosting/headers.ts, and everything else from the app
+// (src/server): /api/, and every page, rendered from <dist>-api/pages.sqlite. The smoke test runs
+// against this server.
 import { readFile, stat } from 'node:fs/promises';
 import http from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { headersFor, SPECULATION_RULES } from '../src/hosting/headers.js';
+import { headersFor, NAVIGATION, SECURITY, SPECULATION_RULES } from '../src/hosting/headers.js';
 import { handleApi, isApi } from './lib/api.js';
 import { ranged } from './lib/range.js';
 
@@ -36,37 +37,24 @@ export function createPreview(dist: string): http.Server {
   return http.createServer((req, res) => {
     void (async () => {
       const url = new URL(req.url ?? '/', 'http://localhost');
-      if (isApi(url.pathname)) {
-        await handleApi(req, res);
-        return;
-      }
       const path = decodeURIComponent(url.pathname);
       const local = normalize(join(dist, path));
-      const send = async (file: string, status: number) => {
-        // Range requests (DuckDB reads Parquet in pieces) apply to successful responses only.
-        const answer = status === 200 ? ranged(await readFile(file), req.headers.range) : undefined;
-        res.writeHead(answer?.status ?? status, {
+      // A file in dist/ is served as Caddy serves it; everything else is the app's (ADR 0011):
+      // /api/, and every page, rendered on request with its own Cache-Control.
+      if (!isApi(path) && local.startsWith(dist) && (await isFile(local))) {
+        const answer = ranged(await readFile(local), req.headers.range);
+        res.writeHead(answer.status, {
           'content-type':
             path === SPECULATION_RULES.path
               ? SPECULATION_RULES.type
-              : (TYPES[extname(file)] ?? 'application/octet-stream'),
-          ...headersFor(path, status),
-          ...(answer?.headers ?? {}),
+              : (TYPES[extname(local)] ?? 'application/octet-stream'),
+          ...headersFor(path, 200),
+          ...answer.headers,
         });
-        res.end(req.method === 'HEAD' ? undefined : (answer?.body ?? (await readFile(file))));
-      };
-      if (!local.startsWith(dist)) {
-        await send(join(dist, '404.html'), 404);
-      } else if (path.endsWith('/') && (await isFile(join(local, 'index.html')))) {
-        await send(join(local, 'index.html'), 200);
-      } else if (!path.endsWith('/') && (await isFile(join(local, 'index.html')))) {
-        res.writeHead(308, { location: `${path}/${url.search}` });
-        res.end();
-      } else if (await isFile(local)) {
-        await send(local, 200);
-      } else {
-        await send(join(dist, '404.html'), 404);
+        res.end(req.method === 'HEAD' ? undefined : answer.body);
+        return;
       }
+      await handleApi(req, res, { ...SECURITY, ...NAVIGATION });
     })();
   });
 }

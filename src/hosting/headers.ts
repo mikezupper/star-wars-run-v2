@@ -53,8 +53,8 @@ export const NAVIGATION: Readonly<Record<string, string>> = {
 };
 
 /**
- * Cache-Control by path. Browsers revalidate pages after 5 minutes; Cloudflare keeps them an
- * hour (s-maxage) and serves a stale copy for up to a day while it refetches.
+ * Cache-Control by path. Browsers revalidate pages after 5 minutes; Cloudflare keeps them a week
+ * (s-maxage), until a deploy purges it, and serves a stale copy while it refetches.
  */
 export const CACHE = {
   /** Content-hashed file names: a new build means a new URL. */
@@ -63,8 +63,13 @@ export const CACHE = {
   icons: 'public, max-age=86400',
   /** The service worker must be rechecked on every load, or a deploy never reaches visitors. */
   serviceWorker: 'no-cache',
-  /** HTML, Pagefind's entry files, the manifest, the sitemaps. */
-  pages: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+  /**
+   * Pages, Pagefind's entry files, the manifest, the sitemaps. Pages change only with a deploy,
+   * which purges Cloudflare's cache (ADR 0011): Cloudflare may keep them a week, and serve a
+   * stale copy while it refetches or while the app is down.
+   */
+  pages:
+    'public, max-age=300, s-maxage=604800, stale-while-revalidate=86400, stale-if-error=604800',
   /** The 404 page: short, so a page that appears after a deploy isn't hidden for long. */
   notFound: 'public, max-age=60',
   /** Ask the archive's answers (/api/): each one is for one visitor, once. */
@@ -97,7 +102,10 @@ export const headersFor = (path: string, status: number): Readonly<Record<string
 
 const quote = (value: string): string => `"${value.replaceAll('"', '\\"')}"`;
 
-/** The production server config: Caddy serving dist/ (copied to /srv) on port 8080. */
+/**
+ * The production server config: Caddy on port 8080, serving the files in dist/ (copied to /srv)
+ * and forwarding everything else, pages and /api/, to the app (ADR 0011).
+ */
 export function caddyfile(): string {
   // Caddy's error route doesn't run the main route's header directives, so the 404 page gets
   // its own copy of the security block.
@@ -129,15 +137,25 @@ ${security('\t')}
 \t@sw path /sw.js
 \theader @sw Cache-Control ${quote(CACHE.serviceWorker)}
 \t@pages not path ${HASHED_PATHS.map((p) => `${p}*`).join(' ')} /icons/* /sw.js /api/*
-\theader @pages Cache-Control ${quote(CACHE.pages)}
+\t# A default (?): the app sets its own on pages and 404s; this covers the static files.
+\theader @pages ?Cache-Control ${quote(CACHE.pages)}
 \t# Deferred (>), so it replaces the type Caddy guesses from .json.
 \theader ${SPECULATION_RULES.path} >Content-Type ${quote(SPECULATION_RULES.type)}
 \t# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
 \theader /api/* >Cache-Control ${quote(CACHE.api)}
 
-\t# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
-\t# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
-\thandle /api/* {
+\t# A file in /srv is served from disk: assets, icons, the sitemaps, the search indexes, the
+\t# service worker. Everything else goes to the app container, at API (ADRs 0010, 0011): every
+\t# page, rendered on request, and /api/, whose Ask answers stream as server-sent events, so
+\t# nothing is buffered. Unset, it goes nowhere.
+\t@static {
+\t\tfile
+\t\tnot path */
+\t}
+\thandle @static {
+\t\tfile_server
+\t}
+\thandle {
 \t\trequest_body {
 \t\t\tmax_size 64KB
 \t\t}
@@ -145,8 +163,6 @@ ${security('\t')}
 \t\t\tflush_interval -1
 \t\t}
 \t}
-
-\tfile_server
 
 \thandle_errors {
 \t\trewrite * /404.html

@@ -26,8 +26,9 @@ RUN --mount=type=bind,from=dump,target=/dump \
 # The API's bundle, for the api image below.
 RUN pnpm build:api
 
-# The API (ADR 0010): Node, the bundled service, and the data the site build wrote beside dist/
-# (the archive database, Ask's schema) plus the title index. Debian, not Alpine: DuckDB's native
+# The app (ADRs 0010, 0011): Node, the bundled service, and the data the build wrote beside
+# dist/: the pages' SQLite file (every page renders here, on request), the archive database and
+# Ask's schema, plus the title index. Debian, not Alpine: DuckDB's native
 # module is built for glibc. Only that module is installed, at the version package.json pins.
 FROM node:24-slim AS api
 WORKDIR /app
@@ -36,7 +37,7 @@ RUN npm install --no-save --omit=dev --no-audit --no-fund \
       "@duckdb/node-api@$(node -p "require('./package.source.json').dependencies['@duckdb/node-api']")" \
     && rm package.source.json
 COPY --from=build /app/.server/api.mjs ./
-COPY --from=build /app/dist-api/archive.duckdb /app/dist-api/ask-schema.json /app/data/
+COPY --from=build /app/dist-api/archive.duckdb /app/dist-api/ask-schema.json /app/dist-api/pages.sqlite /app/data/
 COPY --from=build /app/dist/search-titles /app/data/search-titles
 RUN mkdir /data && chown node:node /data
 USER node

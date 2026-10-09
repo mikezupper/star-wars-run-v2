@@ -26,15 +26,25 @@
 	@sw path /sw.js
 	header @sw Cache-Control "no-cache"
 	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js /api/*
-	header @pages Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+	# A default (?): the app sets its own on pages and 404s; this covers the static files.
+	header @pages ?Cache-Control "public, max-age=300, s-maxage=604800, stale-while-revalidate=86400, stale-if-error=604800"
 	# Deferred (>), so it replaces the type Caddy guesses from .json.
 	header /speculation-rules.json >Content-Type "application/speculationrules+json"
 	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
 	header /api/* >Cache-Control "no-store"
 
-	# Everything that answers a question (ADR 0010): the API container, at API. It streams Ask's
-	# steps as server-sent events, so nothing is buffered. Unset, /api goes nowhere.
-	handle /api/* {
+	# A file in /srv is served from disk: assets, icons, the sitemaps, the search indexes, the
+	# service worker. Everything else goes to the app container, at API (ADRs 0010, 0011): every
+	# page, rendered on request, and /api/, whose Ask answers stream as server-sent events, so
+	# nothing is buffered. Unset, it goes nowhere.
+	@static {
+		file
+		not path */
+	}
+	handle @static {
+		file_server
+	}
+	handle {
 		request_body {
 			max_size 64KB
 		}
@@ -42,8 +52,6 @@
 			flush_interval -1
 		}
 	}
-
-	file_server
 
 	handle_errors {
 		rewrite * /404.html

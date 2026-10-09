@@ -30,8 +30,15 @@ async function builtFiles(dist: string): Promise<BuiltFile[]> {
 const sha = (content: Uint8Array | string): string =>
   createHash('sha256').update(content).digest('hex').slice(0, 16);
 
+/** Pages the app renders that are precached too, with the build's id as their revision. */
+export interface Shell {
+  readonly shell: readonly string[];
+  readonly build: string;
+}
+
 export async function buildServiceWorker(
   dist: string,
+  { shell, build: buildId }: Shell,
 ): Promise<{ readonly entries: number; readonly kb: string }> {
   const result = (await build({
     configFile: false,
@@ -55,7 +62,7 @@ export async function buildServiceWorker(
       `service worker: "${INJECTION_POINT}" is missing from the bundle. src/offline/sw.ts must pass it to precacheAndRoute().`,
     );
   }
-  const entries = precacheEntries(await builtFiles(dist), sha);
+  const entries = precacheEntries(await builtFiles(dist), sha, { urls: shell, revision: buildId });
   const code = output.code.replace(INJECTION_POINT, JSON.stringify(entries));
   await writeFile(join(dist, 'sw.js'), code);
   return { entries: entries.length, kb: (code.length / 1024).toFixed(1) };
