@@ -355,6 +355,10 @@ export const TEXT = {
   homeAskLabel: 'Ask the archive a question in plain words',
   homeAskPlaceholder: 'Which Wookiees fought for the Rebel Alliance?',
   bestKnown: 'Best known',
+  show: 'Show',
+  both: 'Both',
+  kinds: 'Kinds',
+  aToZ: 'A to Z',
   bestKnownCharacters: 'Best-known characters',
   notFoundTitle: 'Page not found',
   notFoundBody:
@@ -390,7 +394,6 @@ export const TEXT = {
   linkedFromNote: (title: string): string => `The best-known articles that mention ${title}.`,
   legendsNote:
     'This article is part of Legends: the expanded-universe stories that Lucasfilm set apart from canon in 2014.',
-  letters: 'Browse by letter',
   appearances: 'Appearances',
   appearanceCount: (n: number): string =>
     `${n.toLocaleString('en-US')} ${n === 1 ? 'work' : 'works'}, in story order`,

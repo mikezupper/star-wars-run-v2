@@ -118,6 +118,7 @@ try {
   await checkExplore();
   await checkAsk();
   await checkTransitions();
+  await checkEraFilter();
   if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
 } finally {
   await browser.close();
@@ -519,6 +520,30 @@ async function checkTransitions() {
   }
 }
 
+/** The continuity filter on a letter page hides the other continuity's rows, with CSS alone. */
+async function checkEraFilter() {
+  const where = '/characters/l/ (continuity filter)';
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    watch(page, where);
+    await page.goto(`${base}/characters/l/`, { waitUntil: 'networkidle' });
+    const visible = (era) => page.locator(`main li[data-era="${era}"]:visible`).count();
+    // The labels are what a visitor clicks; the radios inside them are 1 px and hidden.
+    const choose = (text) =>
+      page.locator('fieldset[data-era-filter] label').filter({ hasText: text }).click();
+    if ((await visible('legends')) === 0) fail(where, 'no Legends rows to filter');
+    await choose('Canon');
+    if ((await visible('legends')) !== 0) fail(where, 'Canon still shows Legends rows');
+    if ((await visible('canon')) === 0) fail(where, 'Canon hides the canon rows');
+    await choose('Legends');
+    if ((await visible('canon')) !== 0) fail(where, 'Legends still shows canon rows');
+    await axe(page, where);
+  } finally {
+    await context.close();
+  }
+}
+
 /** A port nothing is listening on right now. */
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -599,5 +624,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore, transitions and dev server: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore, transitions, the continuity filter and dev server: all checks passed (${seconds}s)`,
 );

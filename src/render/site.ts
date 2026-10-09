@@ -73,10 +73,13 @@ export function createSite(assets: Assets, { archive, articles, links }: SiteDat
     const entries = archive.bySection.get(section) ?? [];
     const letters = byLetter(entries);
     const meta = sectionMeta(section, entries.length);
-    table.set(meta.path, { meta, body: () => sectionBody(section, letters) });
+    table.set(meta.path, { meta, body: () => sectionBody(section, letters, archive, links) });
     for (const [letter, inLetter] of letters) {
       const lm = letterMeta(section, letter, inLetter.length);
-      table.set(lm.path, { meta: lm, body: () => letterBody(section, letter, inLetter) });
+      table.set(lm.path, {
+        meta: lm,
+        body: () => letterBody(section, letter, inLetter, archive, links),
+      });
     }
     for (const entry of entries) {
       const record = articles.get(entry.title);

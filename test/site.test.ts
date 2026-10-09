@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildArchive } from '../src/domain/archive.js';
 import { wookieepediaUrl } from '../src/domain/attribution.js';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
-import { bestKnown } from '../src/render/home.js';
+import { bestKnown } from '../src/domain/known.js';
 import { fullTitle } from '../src/render/layout.js';
 import { createSite, normalise, sitemaps } from '../src/render/site.js';
 import { absolute, ORIGIN, SITE_NAME } from '../src/site.js';
@@ -282,6 +282,26 @@ describe('section and letter pages', () => {
     expect(l).toContain(`<a href="${pathOf('Luke Skywalker')}">Luke Skywalker</a>`);
     expect(l).toMatch(/Luke Skywalker <small>Legends<\/small>/);
     expect(pages.get('/')).toContain('<a href="/characters/">Characters</a>');
+  });
+
+  it('rank the best known, one row per subject, marked by continuity for the filter', () => {
+    const characters = pages.get('/characters/') ?? '';
+    const ranking = characters.slice(characters.indexOf('aria-labelledby="best-known"'));
+    expect(ranking).toMatch(
+      /<li data-era="both">\s*<a href="\/characters\/luke-skywalker\/">Luke Skywalker<\/a>/,
+    );
+    expect(ranking.match(/>Luke Skywalker</g)).toHaveLength(1);
+    const l = pages.get('/characters/l/') ?? '';
+    expect(l).toMatch(/<li data-era="legends">\s*<a href="\/characters\/luke-skywalker-legends\/"/);
+  });
+
+  it('offer a continuity filter that needs no script, and list the section’s kinds', () => {
+    for (const path of ['/characters/', '/characters/l/']) {
+      const page = pages.get(path) ?? '';
+      expect(page, path).toContain('<fieldset data-era-filter>');
+      expect(page.match(/<input type="radio" name="era"/g), path).toHaveLength(3);
+    }
+    expect(pages.get('/characters/')).toMatch(/<ul aria-label="Kinds">[\s\S]*Character <data/);
   });
 });
 
