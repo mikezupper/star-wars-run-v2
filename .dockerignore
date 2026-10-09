@@ -22,3 +22,6 @@ data/wookieepedia
 
 dist-api
 .sample-api
+
+# The SQLite spike's output (scripts/spike-sqlite.ts)
+.spike/

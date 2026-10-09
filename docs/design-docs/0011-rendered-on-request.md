@@ -1,6 +1,6 @@
 # ADR 0011 — Pages rendered on request, SQLite for pages and search, view transitions
 
-Status: **proposed** (2026-10-08). Supersedes parts of [0003-hosting.md](0003-hosting.md)
+Status: **accepted** (2026-10-08, after the spike below). Supersedes parts of [0003-hosting.md](0003-hosting.md)
 (the static `dist/` served by Caddy, Pagefind and the offline search index) and
 [0010-one-api.md](0010-one-api.md) ("DuckDB is the one database engine").
 
@@ -65,3 +65,22 @@ stale-if-error=604800` and an `ETag` from the build. A deploy purges Cloudflare'
 - A spike measures page latency from SQLite under load (p50 and p95, uncached), memory and
   image size before the build switches over. If it disappoints, this ADR is revisited.
 - The production Docker and compose work waits for this, so it's done once, on the new shape.
+
+## Measured: the spike (2026-10-08, `swr-sgf.3`)
+
+`scripts/spike-sqlite.ts` writes the full archive to one SQLite file and serves every page from
+it: the address book (titles, eras, kinds, twins) and link counts in memory; each article's
+record and its "Linked from" list read from the file when its page renders. One Node process,
+on a machine already at a load average of about 32 on 12 cores from other work:
+
+|                                     | From SQLite                                    | Today's in-memory server (dev) |
+| ----------------------------------- | ---------------------------------------------- | ------------------------------ |
+| Build the file                      | 27 s (after the 44 s load), 830 MB             |                                |
+| Start                               | 6.8 s, 0.62 GB resident                        | 47–120 s, 2+ GB                |
+| 3,000 random articles, 16 at a time | p50 23 ms, p95 55 ms, p99 95 ms; 586 pages/s   |                                |
+| 3,000 random articles, 64 at a time | p50 87 ms, p95 172 ms, p99 213 ms; 670 pages/s |                                |
+| Memory after 6,000 requests         | 0.66 GB                                        |                                |
+
+Every request was a different article, as Cloudflare's long tail would send; pages average 8 KB
+compressed. Go: one process serves hundreds of uncached pages a second before Cloudflare's cache
+takes any. The site image will carry this file (830 MB) beside the Explore database.
