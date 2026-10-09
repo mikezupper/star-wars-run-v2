@@ -40,7 +40,9 @@ process.env.QUESTIONS_DB ??= new URL('../.smoke/questions.duckdb', import.meta.u
 const model = await fakeModel();
 process.env.ASK_ORIGIN = `http://localhost:${String(model.address().port)}`;
 process.env.ASK_KEY = 'smoke';
-const server = process.env.SMOKE_BASE_URL === undefined ? await startPreview() : undefined;
+/** Checking another server (SMOKE_BASE_URL): it has its own model, and no dev server here. */
+const REMOTE = process.env.SMOKE_BASE_URL !== undefined;
+const server = REMOTE ? undefined : await startPreview();
 const base = process.env.SMOKE_BASE_URL ?? `http://localhost:${String(server.address().port)}`;
 
 async function startPreview() {
@@ -119,7 +121,7 @@ try {
   await checkAsk();
   await checkTransitions();
   await checkEraFilter();
-  if (process.env.SMOKE_BASE_URL === undefined) await checkDevServer();
+  if (!REMOTE) await checkDevServer();
 } finally {
   await browser.close();
   server?.close();
@@ -431,10 +433,21 @@ async function checkAsk() {
     await explore.locator('#question').fill('Who comes from Tatooine?');
     await explore.locator('.ask button[type=submit]').click();
     try {
-      await explore
-        .locator('.ask .summary')
-        .getByText('comes from Tatooine.')
-        .waitFor({ timeout: 60_000 });
+      if (REMOTE) {
+        // Another server asks its own, real model (swr-d6q): its words vary, so wait for the
+        // answer's rows, or for the page to say the model isn't answering.
+        await explore
+          .locator('.ask tbody a')
+          .first()
+          .or(explore.locator('.ask [role=status]').getByText('isn’t answering'))
+          .waitFor({ timeout: 90_000 });
+        if ((await explore.locator('.ask tbody a').count()) === 0) throw new Error('unavailable');
+      } else {
+        await explore
+          .locator('.ask .summary')
+          .getByText('comes from Tatooine.')
+          .waitFor({ timeout: 60_000 });
+      }
     } catch {
       fail(where, `no answer: ${await explore.locator('.ask').innerText()}`);
       return;
@@ -447,6 +460,8 @@ async function checkAsk() {
     if (!links.includes('/characters/luke-skywalker/'))
       fail(where, 'the answer has no link to Luke Skywalker');
     await axe(page, where);
+    // The model failing can only be staged with the local fake; another server's is real.
+    if (REMOTE) return;
 
     await explore.locator('#question').fill('Who comes from Hoth?');
     await explore.locator('.ask button[type=submit]').click();
@@ -591,10 +606,14 @@ async function checkDevServer() {
 
 mkdirSync('.smoke', { recursive: true });
 const seconds = ((Date.now() - started) / 1000).toFixed(0);
+/** What this run checked: against another server, Ask uses its real model and there's no dev server. */
+const checked = REMOTE
+  ? `search, offline, Explore, Ask (${base}'s own model; the model-outage check needs the local fake, so it was skipped), transitions and the continuity filter`
+  : 'search, offline, Explore, Ask, transitions, the continuity filter and the dev server';
 const report = [
   '# Smoke report',
   '',
-  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus search, offline, Explore and the dev server (${seconds}s).`,
+  `${String(paths.length + unlisted.length)} pages and the 404 page, light and dark, plus ${checked} (${seconds}s).`,
   '',
   failures.length === 0 ? 'All checks passed.' : failures.map((f) => `- ${f}`).join('\n'),
   '',
@@ -605,5 +624,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, search, offline, Explore, transitions, the continuity filter and dev server: all checks passed (${seconds}s)`,
+  `smoke: ${String(paths.length + unlisted.length)} pages + 404, light and dark, ${checked}: all checks passed (${seconds}s)`,
 );
