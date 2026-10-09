@@ -68,6 +68,10 @@ export const RANDOM_PATH = '/random/';
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
+/** The 404 document. It needs no archive, so an image built without data can carry it. */
+export const notFoundPage = (assets: Assets): Promise<string> =>
+  renderToString(layout(notFoundMeta, notFoundBody(), assets));
+
 export function createSite(assets: Assets, { archive, articles, links, search }: SiteData): Site {
   const table = new Map<string, Route>([
     ['/', { meta: homeMeta, body: () => homeBody(archive, links) }],
@@ -103,7 +107,7 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
     }
   }
 
-  const notFound = async () => renderToString(layout(notFoundMeta, notFoundBody(), assets));
+  const notFound = () => notFoundPage(assets);
   const everything = [...archive.byTitle.values()];
 
   return {

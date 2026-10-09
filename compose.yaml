@@ -1,7 +1,9 @@
-# The production stack (ADR 0010): the site (Caddy: static files, and /api/* forwarded) and the
-# API (Ask, the SQL editor, the question log). Build the images with `pnpm docker:build`, then
-# `docker compose up -d` next to an .env that holds the model's settings (ASK_ORIGIN, ASK_KEY,
-# ASK_MODEL; ADR 0009). The question log lives in the `questions` volume.
+# The stack on your machine (`pnpm docker:run`): the site (Caddy: static files, and everything
+# else forwarded) and the app (every page, Ask, the SQL editor, the question log). Build the
+# images with `pnpm docker:build`. The images carry no data (ADR 0003): the app reads this
+# checkout's last `pnpm build` from dist-api/, read-only. Ask's settings come from .env (ADR
+# 0009); the question log lives in the `questions` volume. The server's file is
+# deploy/compose.yml.
 services:
   site:
     image: starwars-run
@@ -19,6 +21,7 @@ services:
       - path: .env
         required: false
     volumes:
+      - ./dist-api:/app/data:ro
       - questions:/data
     restart: unless-stopped
 volumes:

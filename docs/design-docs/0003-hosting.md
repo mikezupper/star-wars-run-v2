@@ -24,6 +24,22 @@ Cloudflare's edge or the browser cache without reaching the VPS.
   and the question log in a volume. `pnpm docker:build` builds both images and
   `pnpm docker:run` starts the stack locally.
 
+- **Production runs behind the VPS's Traefik**, the same way as sabacc (`swr-sgf.6`,
+  2026-10-09), at the root domain `starwars.run`. Images are `linux/amd64`, tagged with the commit
+  and pushed to a registry (`IMAGE=… pnpm docker:build`, `pnpm docker:push`); the server runs
+  `deploy/compose.yml` with one `.env`. Only the site container joins Traefik's network, Traefik
+  holds the Let's Encrypt certificate, and Cloudflare proxies in Full (strict) mode. The question
+  log is backed up from the running app (`deploy/backup.sh`). The runbook is
+  [docs/deploy.md](../deploy.md).
+- **The images carry code only; the data is a volume** (2026-10-09, the owner's call). The
+  archive changes with a new dump and the code changes daily, so the data (`pages.sqlite`,
+  `archive.duckdb`, `ask-schema.json`, from `pnpm build`) is copied by hand into a read-only
+  volume, and `pnpm docker:build` reads no dump and takes minutes. What tied the two together
+  is undone: the api image links the CSS and JS of the site image built with it (written into its
+  bundle), its pages' `ETag` names the data's build and the bundle, it serves the sitemaps from
+  the data, and the service worker fetches pages from the network first, so new data shows
+  without a new worker. This supersedes the first bullet above where they differ.
+
 - **Headers have one source:** `src/hosting/headers.ts`. The preview server applies it, so
   `pnpm smoke` runs under the production CSP, and `pnpm caddyfile` renders it to the committed
   `Caddyfile`. A test fails if the two drift.
@@ -64,7 +80,8 @@ smoke` runs the whole smoke suite against the running image.
 
 ## Consequences
 
-- Deploying means building and running an image. The VPS needs only Docker.
+- Deploying means building and pushing two images, then `docker compose pull && up -d` on the
+  server ([docs/deploy.md](../deploy.md)). The VPS needs only Docker and its Traefik.
 - Every header is in this repo, so `curl -I` against `docker run` shows exactly what
   Cloudflare will see.
 - After a deploy, Cloudflare may serve old HTML until `s-maxage` runs out. Purge the cache

@@ -1,11 +1,10 @@
 # syntax=docker/dockerfile:1
-# starwars.run: build the static site with Node, serve it with Caddy (docs/design-docs/0003-hosting.md),
-# plus the API's image (target `api`, ADR 0010). compose.yaml runs the two together.
-# The build reads the Wookieepedia dump and nothing else from outside: no network beyond the
-# package install. The dump isn't in the repo (ADR 0007), so `pnpm docker:build` passes the
-# folder holding it as a named build context, `dump`, mounted for the one step that needs it:
-#   docker build --build-context dump=<folder> --build-arg DUMP_FILE=<name> -t starwars-run .
-# The snapshot is ingested inside the build (about 6.5 minutes), then every page prerendered.
+# starwars.run's two images (docs/design-docs/0003-hosting.md): the site (Caddy: the static
+# files and every header) and, as target `api`, the app that renders every page and answers
+# /api/ (ADRs 0010, 0011). They carry code only. The data (pages.sqlite, archive.duckdb,
+# ask-schema.json) is built on your machine by `pnpm build` and reaches the app through a
+# read-only volume at /app/data, so a build here needs no Wookieepedia dump and takes minutes.
+# `pnpm docker:build` builds both; deploy/compose.yml runs them (docs/deploy.md).
 
 FROM node:24-slim AS build
 WORKDIR /app
@@ -15,21 +14,13 @@ COPY package.json pnpm-lock.yaml ./
 COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
-ARG DUMP_FILE=starwars_pages_current.xml.7z
-# Ask the archive's model name, built into the islands; its key is given at `docker run`.
-ARG ASK_MODEL=Qwen3.8-27B
-ENV ASK_MODEL=${ASK_MODEL}
-# Each ingest worker needs about 0.5 GB; the prerender after it peaks near 10 GB.
-ARG WOOKIEEPEDIA_WORKERS=4
-RUN --mount=type=bind,from=dump,target=/dump \
-    WOOKIEEPEDIA_DUMP="/dump/${DUMP_FILE}" WOOKIEEPEDIA_WORKERS="${WOOKIEEPEDIA_WORKERS}" pnpm build
-# The API's bundle, for the api image below.
-RUN pnpm build:api
+# The client (hashed CSS and JS), the API's one-file bundle (which records those names), then
+# the rest of dist/: the 404 page and the service worker. No data is read.
+RUN pnpm exec vite build && pnpm build:api && pnpm build:image
 
-# The app (ADRs 0010, 0011): Node, the bundled service, and the data the build wrote beside
-# dist/: the pages' SQLite file (every page renders here, on request), the archive database and
-# Ask's schema, plus the title index. Debian, not Alpine: DuckDB's native
-# module is built for glibc. Only that module is installed, at the version package.json pins.
+# The app: Node and the bundled service. Debian, not Alpine: DuckDB's native module is built
+# for glibc. Only that module is installed, at the version package.json pins. Its data is
+# mounted at /app/data (read-only); the question log is the /data volume.
 FROM node:24-slim AS api
 WORKDIR /app
 COPY package.json ./package.source.json
@@ -37,8 +28,7 @@ RUN npm install --no-save --omit=dev --no-audit --no-fund \
       "@duckdb/node-api@$(node -p "require('./package.source.json').dependencies['@duckdb/node-api']")" \
     && rm package.source.json
 COPY --from=build /app/.server/api.mjs ./
-COPY --from=build /app/dist-api/archive.duckdb /app/dist-api/ask-schema.json /app/dist-api/pages.sqlite /app/data/
-RUN mkdir /data && chown node:node /data
+RUN mkdir -p /app/data /data && chown node:node /data
 USER node
 ENV API_DATA=/app/data QUESTIONS_DB=/data/questions.duckdb PORT=8090 NODE_ENV=production
 VOLUME /data

@@ -32,7 +32,8 @@ disagree, the doc wins; fix this file.
 | `pnpm ask:eval`                        | 30 questions through Ask against the real model and the full build; prints a score. On request only                                             |
 | `pnpm icons`                           | Render `public/icons/icon.svg` to the PNG sizes; commit the result                                                                              |
 | `pnpm caddyfile`                       | Regenerate `Caddyfile` from `src/hosting/headers.ts` (a test checks it)                                                                         |
-| `pnpm docker:build`, `pnpm docker:run` | Build the site and API images (~15 min); run them with compose on http://localhost:8080                                                         |
+| `pnpm docker:build`, `pnpm docker:run` | Build the site and API images, code only (`IMAGE=` for a registry); run them on http://localhost:8080 with `dist-api/` as data                  |
+| `pnpm docker:push`                     | Push both images to `IMAGE`'s registry; deploying is in [docs/deploy.md](docs/deploy.md)                                                        |
 | `pnpm ci:local`                        | Run `.github/workflows/ci.yml` in Docker via `gh act`. **Only when the owner asks**                                                             |
 
 First run needs `pnpm exec playwright install chromium`.
@@ -47,6 +48,7 @@ First run needs `pnpm exec playwright install chromium`.
 | [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code**                                        |
 | [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                                                              |
 | [docs/gyral-feedback.md](docs/gyral-feedback.md)          | Our feedback to the Gyral team: what worked, rough edges, suggestions                              |
+| `deploy/`                                                 | The server's compose file, `.env` template and backup script ([docs/deploy.md](docs/deploy.md))    |
 | `src/site.ts`                                             | Site-wide constants: origin, name, description                                                     |
 | `src/domain/`                                             | Article types, sections, slugs, URLs, quantities, Explore rows                                     |
 | `src/ingest/wookieepedia/`                                | Dump reader, wikitext parser (fields, lead, Appearances), link resolution, snapshot                |

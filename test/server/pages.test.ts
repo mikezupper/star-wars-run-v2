@@ -108,6 +108,45 @@ describe('pages rendered on request', () => {
   });
 });
 
+describe('pages from data another build wrote (images carry no data, ADR 0003)', () => {
+  const image = {
+    assets: {
+      stylesheet: '/assets/site-new.css',
+      clientEntry: '/assets/e2.js',
+      page: '/assets/p2.js',
+    },
+    id: 'code7',
+  };
+  const get = (path: string, headers: Record<string, string> = {}) =>
+    createPagesApp(pages, image)(new Request(`https://starwars.run${path}`, { headers }));
+
+  it("link the image's CSS and JS, not the ones stamped in the data", async () => {
+    const html = await (await get('/characters/luke-skywalker/')).text();
+    expect(html).toContain('href="/assets/site-new.css"');
+    expect(html).not.toContain('/assets/site.css');
+    expect(await (await get('/no-such-page/')).text()).toContain('/assets/site-new.css');
+  });
+
+  it("name both the data and the code in the ETag, so new code isn't a 304", async () => {
+    const res = await get('/');
+    expect(res.headers.get('etag')).toBe('W/"b42-code7"');
+    expect((await get('/', { 'if-none-match': 'W/"b42"' })).status).toBe(200);
+    expect((await get('/', { 'if-none-match': 'W/"b42-code7"' })).status).toBe(304);
+  });
+
+  it('serve the sitemaps from the data, cached like pages', async () => {
+    const index = await get('/sitemap.xml');
+    expect(index.status).toBe(200);
+    expect(index.headers.get('content-type')).toBe('application/xml');
+    expect(index.headers.get('cache-control')).toBe(CACHE.pages);
+    expect(await index.text()).toContain('<loc>https://starwars.run/sitemap-1.xml</loc>');
+    expect(await (await get('/sitemap-1.xml')).text()).toContain(
+      '<loc>https://starwars.run/characters/luke-skywalker/</loc>',
+    );
+    expect((await get('/sitemap-99.xml')).status).toBe(404);
+  });
+});
+
 describe('search', () => {
   const find = (query: string, section?: Section) =>
     pages.search.search(query, section === undefined ? {} : { section });

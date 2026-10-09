@@ -7,8 +7,8 @@
 // DuckDB lets one process at a time open a file, even to read it. So the log holds its file only
 // while it writes a row: the CLI can open it whenever the API isn't mid-write, and a write that
 // finds the CLI holding it waits and tries again.
-import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { copyFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import {
   BOOLEAN,
   DOUBLE,
@@ -125,4 +125,30 @@ export async function openQuestionLog(file: string): Promise<QuestionLog> {
     },
     close: () => pending,
   };
+}
+
+/**
+ * Copies the log into `dir` as questions-<time>.duckdb and keeps the newest `keep` copies; returns
+ * the copy's path. Safe while the API runs: it takes the file as a write does (waiting for one in
+ * progress), checkpoints so the file holds every row, and copies it before letting go. Run in the
+ * container as `node api.mjs backup` (deploy/backup.sh).
+ */
+export async function backupQuestionLog(
+  file: string,
+  dir: string,
+  keep: number,
+  now: Date = new Date(),
+): Promise<string> {
+  mkdirSync(dir, { recursive: true });
+  const copy = join(dir, `questions-${now.toISOString().replace(/[:.]/g, '-')}.duckdb`);
+  await withFile(file, async (run) => {
+    await run('CHECKPOINT');
+    copyFileSync(file, copy);
+  });
+  const copies = readdirSync(dir)
+    .filter((name) => /^questions-.*\.duckdb$/.test(name))
+    .sort()
+    .reverse();
+  for (const old of copies.slice(Math.max(1, keep))) rmSync(join(dir, old));
+  return copy;
 }

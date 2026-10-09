@@ -4,11 +4,21 @@
 // copies that one file, so a split chunk (Gyral's renderer loads parts of itself lazily) would
 // crash the container on start (swr-59p): code splitting is off, and anything else written fails
 // the build here instead.
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
+import { siteAssets } from './lib/assets.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
+// The site's CSS and JS, from the client build beside it (`vite build` first): the API links
+// these, not the names stamped in the data, which may come from another build (ADR 0003).
+const dist = join(root, process.env['DIST_DIR'] ?? 'dist');
+const assets = existsSync(join(dist, '.vite', 'manifest.json'))
+  ? await siteAssets(dist)
+  : undefined;
+if (assets === undefined)
+  console.warn("build:api: no client build, so pages use the data's assets");
 await build({
   configFile: false,
   root,
@@ -21,6 +31,7 @@ await build({
     target: 'node24',
     rollupOptions: { output: { entryFileNames: 'api.mjs', codeSplitting: false } },
   },
+  define: { __SITE_ASSETS__: JSON.stringify(assets ?? null) },
   ssr: { target: 'node', noExternal: true, external: ['@duckdb/node-api'] },
 });
 const written = readdirSync(new URL('../.server/', import.meta.url), { recursive: true });

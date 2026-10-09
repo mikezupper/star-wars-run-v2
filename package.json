@@ -24,12 +24,14 @@
     "icons": "node scripts/render-icons.mjs",
     "caddyfile": "tsx scripts/caddyfile.ts",
     "docker:build": "tsx scripts/docker-build.ts",
+    "docker:push": "tsx scripts/docker-push.ts",
     "docker:run": "docker compose up",
     "ci:local": "tsx scripts/ci-local.ts",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
     "build:sample": "SITE_SAMPLE=20 DIST_DIR=.sample pnpm build",
     "build:explore": "tsx scripts/build-explore.ts",
     "build:api": "tsx scripts/build-api.ts",
+    "build:image": "tsx scripts/build-image.ts",
     "ask:eval": "tsx scripts/ask-eval.ts"
   },
   "dependencies": {

@@ -8,7 +8,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { AskSchema } from '../domain/ask.js';
 import { createApi } from './api.js';
-import { createPagesApp } from './app.js';
+import { createPagesApp, type PagesCode } from './app.js';
 import { openPages } from './pages.js';
 import { openArchive } from './archive.js';
 import { openQuestionLog } from './questions.js';
@@ -40,6 +40,7 @@ export async function openApi(
   files: ApiFiles,
   env: Env,
   report?: (problem: string, cause: unknown) => void,
+  code: PagesCode = {},
 ): Promise<{
   readonly handle: (request: Request) => Promise<Response>;
   readonly close: () => Promise<void>;
@@ -49,7 +50,7 @@ export async function openApi(
   let schema: Promise<AskSchema> | undefined;
   const pagesFile = join(files.dataDir, 'pages.sqlite');
   const pages = existsSync(pagesFile) ? openPages(pagesFile) : undefined;
-  const page = pages === undefined ? undefined : createPagesApp(pages);
+  const page = pages === undefined ? undefined : createPagesApp(pages, code);
   const api = createApi({
     archive,
     // Without the pages file there's no search: Ask then finds no names, and says so.
