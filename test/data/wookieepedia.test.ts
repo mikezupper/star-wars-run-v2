@@ -55,6 +55,27 @@ describe('reading a line\u2019s summary without parsing the article', () => {
     }
   });
 
+  it('reads the counterpart from the head too', () => {
+    const line = articleLine('Palpatine', {
+      era: 'legends',
+      kind: 'Character',
+      counterpart: 'Darth "Sidious"',
+      fields: [],
+      lead: [],
+    }).line;
+    expect(summaryOf(line)).toEqual({
+      title: 'Palpatine',
+      era: 'legends',
+      kind: 'Character',
+      counterpart: 'Darth "Sidious"',
+    });
+    expect(summaryOf('{"era":"legends","counterpart":"X","title":"Y"}')).toEqual({
+      title: 'Y',
+      era: 'legends',
+      counterpart: 'X',
+    });
+  });
+
   it('falls back to a full parse when the keys come in another order', () => {
     expect(summaryOf('{"era":"canon","title":"Hoth"}')).toEqual({ title: 'Hoth', era: 'canon' });
   });

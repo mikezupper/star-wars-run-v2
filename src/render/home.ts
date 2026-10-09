@@ -26,8 +26,9 @@ export interface Known {
 }
 
 /**
- * A section's best-known names: the most-linked articles, one row per name so a subject with
- * canon and Legends articles counts once (Explore does the same).
+ * A section's best-known subjects: the most-linked articles, one row per subject, so a canon
+ * article and its Legends twin count once (Palpatine and Darth Sidious too). The row takes the
+ * canon article's name.
  */
 export function bestKnown(
   archive: Archive,
@@ -37,7 +38,9 @@ export function bestKnown(
 ): Known[] {
   const byName = new Map<string, { entries: Entry[]; links: number }>();
   for (const entry of archive.bySection.get(section) ?? []) {
-    const name = displayTitle(entry.title);
+    const twin = entry.twin === undefined ? undefined : archive.byTitle.get(entry.twin);
+    const canon = entry.era === 'canon' || twin === undefined ? entry : twin;
+    const name = displayTitle(canon.title);
     const known = byName.get(name) ?? { entries: [], links: 0 };
     known.entries.push(entry);
     known.links = Math.max(known.links, links.counts.get(entry.title) ?? 0);

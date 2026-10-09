@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildArchive } from '../src/domain/archive.js';
 import { wookieepediaUrl } from '../src/domain/attribution.js';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
 import { bestKnown } from '../src/render/home.js';
@@ -126,6 +127,24 @@ describe('the home page', () => {
     const ranking = home.slice(home.indexOf('aria-labelledby="best-known"'));
     expect(ranking).toContain(`href="${pathOf('Luke Skywalker')}">Luke Skywalker</a>`);
     expect(ranking).toMatch(/Canon · Legends/);
+  });
+
+  it('counts a canon article and its named Legends twin once, under the canon name', () => {
+    const archive = buildArchive([
+      { title: 'Darth Sidious', era: 'canon', kind: 'Character', counterpart: 'Palpatine' },
+      { title: 'Palpatine', era: 'legends', kind: 'Character' },
+      { title: 'Yoda', era: 'canon', kind: 'Character' },
+    ]);
+    const counts = new Map([
+      ['Palpatine', 9],
+      ['Darth Sidious', 5],
+      ['Yoda', 7],
+    ]);
+    const best = bestKnown(archive, { counts, linkedFrom: new Map() }, 'characters');
+    expect(best.map((k) => [k.name, k.links, k.entries.map((e) => e.title)])).toEqual([
+      ['Darth Sidious', 9, ['Darth Sidious', 'Palpatine']],
+      ['Yoda', 7, ['Yoda']],
+    ]);
   });
 
   it('has a card for every section, with its count', () => {

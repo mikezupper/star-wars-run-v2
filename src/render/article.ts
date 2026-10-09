@@ -124,11 +124,9 @@ function castSection(list: readonly Appearance[], archive: Archive) {
   </section>`;
 }
 
-/** The same subject in the other continuity: `X` and `X/Legends`, when the archive has both. */
+/** The same subject in the other continuity, when the archive has both (Entry.twin). */
 const counterpart = (entry: Entry, archive: Archive): Entry | undefined =>
-  archive.byTitle.get(
-    entry.era === 'legends' ? entry.title.replace(/\/Legends$/, '') : `${entry.title}/Legends`,
-  );
+  entry.twin === undefined ? undefined : archive.byTitle.get(entry.twin);
 
 const plain = (runs: Rich) => runs.map((run) => run.text).join('');
 

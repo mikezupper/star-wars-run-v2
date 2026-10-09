@@ -48,15 +48,26 @@ function resolveRich(rich: Rich, titles: Titles): Rich {
   return out;
 }
 
-/** The article with every link pointing at the article it lands on, or turned into text. */
-export const resolveLinks = (article: ParsedArticle, titles: Titles): ParsedArticle => ({
-  ...article,
-  fields: article.fields.map((f) => ({
-    name: f.name,
-    items: f.items.map((i) => resolveRich(i, titles)),
-  })),
-  lead: article.lead.map((p) => resolveRich(p, titles)),
-});
+/**
+ * The article with every link pointing at the article it lands on, or turned into text; its
+ * counterpart likewise, kept only when it lands on one. Keys in a fixed order: title, era, kind
+ * and counterpart lead each snapshot line, where the index reads them (src/data/wookieepedia.ts).
+ */
+export const resolveLinks = (article: ParsedArticle, titles: Titles): ParsedArticle => {
+  const twin =
+    article.counterpart === undefined ? undefined : resolveTitle(article.counterpart, titles);
+  return {
+    era: article.era,
+    ...(article.kind === undefined ? {} : { kind: article.kind }),
+    ...(twin === undefined ? {} : { counterpart: twin }),
+    fields: article.fields.map((f) => ({
+      name: f.name,
+      items: f.items.map((i) => resolveRich(i, titles)),
+    })),
+    lead: article.lead.map((p) => resolveRich(p, titles)),
+    ...(article.appearances === undefined ? {} : { appearances: article.appearances }),
+  };
+};
 
 /**
  * Appearances with links: each takes the first candidate that lands on an article. A work listed
