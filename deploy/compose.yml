@@ -1,0 +1,65 @@
+# Production: starwars.run behind the server's Traefik, the same way as sabacc (ADR 0003,
+# docs/deploy.md). Two containers: site (Caddy: the static files and the headers) joins Traefik's
+# network; api (every page, rendered on request, and /api/) stays on an internal network that
+# only site reaches. Everything server-specific comes from .env next to this file (see
+# .env.example): the images, the pinned tag, the host name, Traefik's names and Ask's settings.
+#
+#   docker compose pull && docker compose up -d
+#
+# compose.yaml at the repo's root is the local stack (`pnpm docker:run`); this file is the server's.
+name: starwars-run # fixed, so the volume is "starwars-run_questions" whatever the folder is called
+
+services:
+  site:
+    image: ${STARWARS_IMAGE:?set STARWARS_IMAGE in .env}:${STARWARS_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      API: http://api:8090
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - traefik
+      - internal
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
+      - traefik.http.routers.starwars.rule=Host(`${STARWARS_HOST:-starwars.run}`)
+      - traefik.http.routers.starwars.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}
+      - traefik.http.routers.starwars.tls=true
+      - traefik.http.routers.starwars.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}
+      - traefik.http.services.starwars.loadbalancer.server.port=8080
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '5'
+
+  api:
+    image: ${STARWARS_IMAGE:?set STARWARS_IMAGE in .env}-api:${STARWARS_TAG:-latest}
+    restart: unless-stopped
+    # Listed one by one, so Ask's key reaches this container and no other.
+    environment:
+      ASK_ORIGIN: ${ASK_ORIGIN:?set ASK_ORIGIN in .env}
+      ASK_KEY: ${ASK_KEY:?set ASK_KEY in .env}
+      ASK_MODEL: ${ASK_MODEL:-Qwen3.8-27B}
+      KEEP_BACKUPS: ${KEEP_BACKUPS:-14}
+    volumes:
+      # The question log and its backups. The archive itself is in the image.
+      - questions:/data
+    networks:
+      - internal
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '5'
+
+volumes:
+  questions:
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik}
+  internal:

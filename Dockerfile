@@ -5,7 +5,9 @@
 # package install. The dump isn't in the repo (ADR 0007), so `pnpm docker:build` passes the
 # folder holding it as a named build context, `dump`, mounted for the one step that needs it:
 #   docker build --build-context dump=<folder> --build-arg DUMP_FILE=<name> -t starwars-run .
-# The snapshot is ingested inside the build (about 6.5 minutes), then every page prerendered.
+# The snapshot is ingested inside the build (about 6.5 minutes), then the pages' data written.
+# Ask's model settings (ASK_ORIGIN, ASK_KEY, ASK_MODEL) are never built in: the API reads them
+# when it starts (deploy/compose.yml).
 
 FROM node:24-slim AS build
 WORKDIR /app
@@ -16,9 +18,6 @@ COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG DUMP_FILE=starwars_pages_current.xml.7z
-# Ask the archive's model name, built into the islands; its key is given at `docker run`.
-ARG ASK_MODEL=Qwen3.8-27B
-ENV ASK_MODEL=${ASK_MODEL}
 # Each ingest worker needs about 0.5 GB; the prerender after it peaks near 10 GB.
 ARG WOOKIEEPEDIA_WORKERS=4
 RUN --mount=type=bind,from=dump,target=/dump \

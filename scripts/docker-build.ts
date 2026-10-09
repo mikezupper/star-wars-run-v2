@@ -4,14 +4,21 @@
 // ($WOOKIEEPEDIA_DUMP, else ~/Downloads). The dump goes in as the `dump` build context, mounted
 // only for the build step (see Dockerfile), so it never lands in an image layer. The context is
 // a temporary folder holding just the dump: Docker sends a context folder whole, and the
-// dump's own folder (~/Downloads) can hold gigabytes of other files (docs/lessons-learned.md). Takes about 15 minutes:
-// the ingest, then every page.
+// dump's own folder (~/Downloads) can hold gigabytes of other files (docs/lessons-learned.md).
+// Takes about 25 minutes: the ingest, then every page.
+//
+// Images are linux/amd64, tagged with the commit (12 characters) and `latest`: $IMAGE for the site
+// and $IMAGE-api for the API. IMAGE defaults to starwars-run, which compose.yaml runs locally;
+// set it to your registry path to push (`pnpm docker:push`, docs/deploy.md).
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, linkSync, mkdirSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dumpPath, missingDump, WORKERS_ENV } from '../src/ingest/wookieepedia/source.js';
+
+const git = (...args: string[]): string =>
+  spawnSync('git', args, { encoding: 'utf8' }).stdout.trim();
 
 const dump = dumpPath(process.env, homedir());
 if (!existsSync(dump)) {
@@ -31,26 +38,30 @@ try {
   copyFileSync(dump, join(context, basename(dump))); // another filesystem: copy instead
 }
 const workers = process.env[WORKERS_ENV];
-// The model name only: the key never goes into the build (it's given at `docker run`).
-const envFile = fileURLToPath(new URL('../.env', import.meta.url));
-if (existsSync(envFile)) process.loadEnvFile(envFile);
-const model = process.env['ASK_MODEL'];
-const args = [
+const image = process.env['IMAGE'] ?? 'starwars-run';
+const sha = git('rev-parse', '--short=12', 'HEAD');
+if (git('status', '--porcelain', '--untracked-files=no') !== '') {
+  console.warn(`warning: uncommitted changes are in the build, so it won't match ${sha} exactly`);
+}
+const common = [
   'build',
+  '--platform',
+  'linux/amd64',
   '--build-context',
   `dump=${context}`,
   '--build-arg',
   `DUMP_FILE=${basename(dump)}`,
   ...(workers === undefined ? [] : ['--build-arg', `${WORKERS_ENV}=${workers}`]),
-  ...(model === undefined ? [] : ['--build-arg', `ASK_MODEL=${model}`]),
-  '-t',
-  'starwars-run',
-  '.',
 ];
-console.log(`docker ${args.join(' ')}`);
-const site = spawnSync('docker', args, { stdio: 'inherit' }).status ?? 1;
-if (site !== 0) process.exit(site);
-// The API's image: the same build stage (cached), then its own small stage.
-const api = [...args.slice(0, -3), '--target', 'api', '-t', 'starwars-run-api', '.'];
-console.log(`docker ${api.join(' ')}`);
-process.exit(spawnSync('docker', api, { stdio: 'inherit' }).status ?? 1);
+const tags = (name: string) => ['-t', `${name}:${sha}`, '-t', `${name}:latest`];
+// The site's image (the Dockerfile's last stage), then the API's: the same build stage
+// (cached), then its own small stage.
+for (const args of [
+  [...common, ...tags(image), '.'],
+  [...common, '--target', 'api', ...tags(`${image}-api`), '.'],
+]) {
+  console.log(`docker ${args.join(' ')}`);
+  const status = spawnSync('docker', args, { stdio: 'inherit' }).status ?? 1;
+  if (status !== 0) process.exit(status);
+}
+console.log(`built ${image}:${sha} and ${image}-api:${sha} (and :latest)`);

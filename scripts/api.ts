@@ -5,16 +5,33 @@
 //   API_DATA: pages.sqlite, archive.duckdb and ask-schema.json (default /app/data)
 //   QUESTIONS_DB: the question log (default /data/questions.duckdb, a volume)
 //   ASK_ORIGIN, ASK_KEY, ASK_MODEL: the model; PORT (default 8090)
+//   KEEP_BACKUPS: copies `node api.mjs backup` keeps (default 14)
 import http from 'node:http';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { join } from 'node:path';
 import { openApi } from '../src/server/open.js';
+import { backupQuestionLog } from '../src/server/questions.js';
 
 const data = process.env['API_DATA'] ?? '/app/data';
+const logFile = process.env['QUESTIONS_DB'] ?? '/data/questions.duckdb';
+
+// `node api.mjs backup` (deploy/backup.sh): copy the question log beside it, keep the newest
+// KEEP_BACKUPS (default 14), and exit. The running server is left alone.
+if (process.argv[2] === 'backup') {
+  const copy = await backupQuestionLog(
+    logFile,
+    join(logFile, '..', 'backups'),
+    Number(process.env['KEEP_BACKUPS'] ?? 14),
+  );
+  console.log(`backup: ${copy}`);
+  process.exit(0);
+}
+
 const api = await openApi(
   {
     dataDir: data,
-    logFile: process.env['QUESTIONS_DB'] ?? '/data/questions.duckdb',
+    logFile,
   },
   process.env,
   (problem, cause) => {

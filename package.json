@@ -24,6 +24,7 @@
     "icons": "node scripts/render-icons.mjs",
     "caddyfile": "tsx scripts/caddyfile.ts",
     "docker:build": "tsx scripts/docker-build.ts",
+    "docker:push": "tsx scripts/docker-push.ts",
     "docker:run": "docker compose up",
     "ci:local": "tsx scripts/ci-local.ts",
     "ingest:wookieepedia": "tsx scripts/ingest-wookieepedia.ts",
