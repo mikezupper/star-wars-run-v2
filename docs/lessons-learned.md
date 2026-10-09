@@ -13,6 +13,20 @@ Each entry has four parts:
 
 ---
 
+## The API container crashed on a chunk its image didn't copy (2026-10-09)
+
+- **Symptom:** `pnpm docker:run` never came up: the API container restarted in a loop with
+  `ERR_MODULE_NOT_FOUND` for `/app/assets/render-….js`, so the site container never started.
+  `pnpm check` and the full-build smoke run passed, because neither runs the container.
+- **Cause:** `scripts/build-api.ts` bundles the API into `.server/api.mjs`, and the Dockerfile
+  copies only that file. Once the API rendered pages (`4bde807`), the bundle included
+  `@gyral/core`, whose renderer loads parts of itself lazily, and Vite wrote those as separate
+  chunks in `.server/assets/`.
+- **Fix:** `codeSplitting: false` keeps the bundle one file, and `build:api` now fails if it
+  writes anything besides `api.mjs` (`swr-59p`).
+- **Guard:** that check, which fails `pnpm docker:build` early. Nothing in `pnpm check` builds the
+  API bundle yet; that is `swr-smn`.
+
 ## A failed API open stuck until restart (2026-10-09)
 
 - **Symptom:** Explore's Ask said "The AI that reads questions isn't answering right now"
