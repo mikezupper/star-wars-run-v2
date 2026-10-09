@@ -13,7 +13,7 @@
     "dev": "tsx scripts/dev.ts",
     "build": "vite build && tsx scripts/build.ts",
     "preview": "tsx scripts/preview.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:sample && DIST_DIR=.sample pnpm smoke",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:api && pnpm build:sample && DIST_DIR=.sample pnpm smoke",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
