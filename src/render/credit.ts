@@ -5,7 +5,7 @@ import { CC_BY_SA_3, wookieepediaUrl } from '../domain/attribution.js';
 import { CREDIT } from '../labels.js';
 
 export const creditLine = (title: string) =>
-  html`<p data-pagefind-ignore>
+  html`<p>
     <small>
       ${CREDIT.before}
       <a href=${wookieepediaUrl(title)} rel="external">${CREDIT.article(title)}</a>,

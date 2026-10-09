@@ -39,7 +39,6 @@ export async function handleApi(
     api ??= openApi(
       {
         dataDir: at(`${DIST}-api`),
-        titlesDir: at(`${DIST}/search-titles`),
         logFile: process.env['QUESTIONS_DB'] ?? at('data/questions/questions.duckdb'),
       },
       process.env,

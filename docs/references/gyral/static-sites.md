@@ -27,7 +27,7 @@ import { define, html } from '@gyral/core';
 
 export type Msg = { readonly _tag: 'Increment' };
 
-export const Counter = define<{ readonly count: number }, Msg>('my-counter', {
+export const Counter = define<{ readonly count: number }, Msg>()('my-counter', {
   init: () => ({ count: 0 }),
   intent: { Increment: () => ({ _tag: 'Increment' }) },
   update: { Increment: (s) => ({ count: s.count + 1 }) },
@@ -48,9 +48,10 @@ import '../src/counter.js';
 export interface ClientAssets {
   readonly clientEntry: string;
   readonly modulepreload: readonly string[];
+  readonly stylesheets: readonly string[];
 }
 
-export const createApp = ({ clientEntry, modulepreload }: ClientAssets): Hono => {
+export const createApp = ({ clientEntry, modulepreload, stylesheets }: ClientAssets): Hono => {
   const app = new Hono();
   // A page with a live component loads the client entry, and preloads what it needs...
   app.get('/', () =>
@@ -62,11 +63,12 @@ export const createApp = ({ clientEntry, modulepreload }: ClientAssets): Hono =>
       </main>`,
       scripts: [clientEntry],
       modulepreload,
+      stylesheets,
     }),
   );
-  // ...and a page without one ships no JavaScript at all.
+  // ...and a page without one ships no JavaScript at all, only the stylesheet.
   app.get('/about/', () =>
-    renderPage({ title: 'About', body: html`<main><h1>About us</h1></main>` }),
+    renderPage({ title: 'About', body: html`<main><h1>About us</h1></main>`, stylesheets }),
   );
   return app;
 };
@@ -81,7 +83,11 @@ import { createApp } from '../server/create-app.js';
 
 const client = await clientAssetsFromManifest('dist/.vite/manifest.json', 'src/entry-client.ts');
 const pages = await prerender({
-  app: createApp({ clientEntry: client.entry, modulepreload: client.modulepreload }),
+  app: createApp({
+    clientEntry: client.entry,
+    modulepreload: client.modulepreload,
+    stylesheets: client.css,
+  }),
   paths: ['/', '/about/'],
   outDir: 'dist',
   origin: 'https://example.com',
@@ -116,7 +122,12 @@ export default defineConfig({
   `renderPage({ modulepreload })` writes a `<link rel="modulepreload">` for each, so the browser
   fetches them alongside the entry instead of a round trip later. A third argument lists
   modules a page imports lazily, by source path (`['src/routes/product.ts']`); they are
-  preloaded too, each with its static imports.
+  preloaded too, each with its static imports, and their CSS joins `css`.
+- **`css`** lists the content-hashed CSS files Vite built from the stylesheets your client entry
+  imports (`import './app.css';`), each after the files of the modules it imports, so the
+  cascade is the one you had in development. Link them with `renderPage({ stylesheets })`
+  instead of inlining your CSS into every page with `styles`: the browser caches one file across
+  pages, and `style-src 'self'` allows it with no hash.
 - The client entry is the one from [Server rendering](/docs/server-rendering/#hydration-and-the-client-entry):
   it imports your components, and each one hydrates on its own.
 - `@gyral/ssr/static` reads and writes files, so it runs in Node at build time. Your pages
@@ -159,9 +170,11 @@ await writeFile('dist/_headers', `/*\n  Content-Security-Policy: ${csp}\n`);
 ```
 
 The hashes change when a component's CSS changes, so write the file in every build, never by
-hand. Inline `style="…"` attributes in your own templates aren't covered: give them a class
-instead. This site works this way; its code blocks are coloured by classes rather than the
-inline styles a highlighter writes by default.
+hand. Linked stylesheets need no hash: `style-src 'self'` allows them. `style="…"` attributes
+aren't covered: the policy blocks them in the HTML, and on a page that never hydrates nothing
+applies them later (see [Styling](/docs/styling/#inline-styles-under-a-strict-csp)). Give the
+element a class instead. This site works this way; its code blocks are coloured by classes
+rather than the inline styles a highlighter writes by default.
 
 ## Mixing static and per-request pages
 

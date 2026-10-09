@@ -12,13 +12,10 @@ import { createPagesApp } from './app.js';
 import { openPages } from './pages.js';
 import { openArchive } from './archive.js';
 import { openQuestionLog } from './questions.js';
-import { titleResolver } from './titles.js';
 
 export interface ApiFiles {
   /** Holds archive.duckdb, ask-schema.json and, for pages, pages.sqlite. */
   readonly dataDir: string;
-  /** The search title index (search-titles/). */
-  readonly titlesDir: string;
   /** The question log; unset, questions aren't logged. */
   readonly logFile?: string | undefined;
 }
@@ -41,7 +38,11 @@ export async function openApi(
   const page = pages === undefined ? undefined : createPagesApp(pages);
   const api = createApi({
     archive,
-    resolve: titleResolver(files.titlesDir),
+    // Without the pages file there's no search: Ask then finds no names, and says so.
+    resolve:
+      pages?.search.resolve ??
+      ((names) => Promise.resolve(names.map((asked) => ({ asked, titles: [] })))),
+    ...(pages === undefined ? {} : { search: pages.search.search }),
     schema: () =>
       (schema ??= readFile(join(files.dataDir, 'ask-schema.json'), 'utf8').then(
         (t) => JSON.parse(t) as AskSchema,

@@ -14,14 +14,17 @@ import {
 import type { Archive } from './archive.js';
 import { modelClient, type ModelSettings } from './model.js';
 import type { Outcome, QuestionLog } from './questions.js';
-import type { titleResolver } from './titles.js';
+import type { Search } from './search.js';
 
 /** A question that takes longer than this is stopped, with its own message. */
 export const TIME_LIMIT_MS = 45_000;
 
 export interface AskContext {
   readonly archive: Archive;
-  readonly resolve: ReturnType<typeof titleResolver>;
+  /** Ask's names to the articles they mean: search's name lookup (src/server/search.ts). */
+  readonly resolve: Search['resolve'];
+  /** Search itself, for /api/search; unset when the data has no search index. */
+  readonly search?: Search['search'];
   readonly schema: () => Promise<AskSchema>;
   readonly model: ModelSettings;
   readonly log: QuestionLog | undefined;

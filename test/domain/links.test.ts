@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ArticleRecord } from '../../src/domain/article.js';
-import { linkGraph, outgoing } from '../../src/domain/links.js';
-import { inboundLinks } from '../../src/domain/titles.js';
+import { inboundLinks, linkGraph, outgoing } from '../../src/domain/links.js';
 
 /** An article whose lead links to each of `targets`. */
 const article = (title: string, ...targets: string[]): ArticleRecord => ({

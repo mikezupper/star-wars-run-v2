@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DuckDBInstance } from '@duckdb/node-api';
@@ -7,17 +7,19 @@ import { buildDatabase } from '../../scripts/build-database.js';
 import { askSchema } from '../../src/domain/ask.js';
 import type { AskEvent } from '../../src/domain/ask-pipeline.js';
 import { exploreRows } from '../../src/domain/rows.js';
-import { inboundLinks, titleShards } from '../../src/domain/titles.js';
 import { ASK_PATH, createApi, parseAsk, QUERY_PATH } from '../../src/server/api.js';
+import { CACHE } from '../../src/hosting/headers.js';
+import type { Results } from '../../src/domain/search.js';
 import { openArchive, QueryTimeout, withPairs, type Archive } from '../../src/server/archive.js';
 import { openQuestionLog, type QuestionLog } from '../../src/server/questions.js';
-import { titleResolver } from '../../src/server/titles.js';
+import { openPages, writePages, type Pages } from '../../src/server/pages.js';
 import { fixtureSiteData } from '../fixtures/archive.js';
 
 const { archive: site, articles } = fixtureSiteData();
 let dir: string;
 let archive: Archive;
 let log: QuestionLog;
+let pages: Pages;
 
 beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), 'swr-api-'));
@@ -27,14 +29,11 @@ beforeAll(async () => {
     join(dir, 'ask-schema.json'),
     JSON.stringify(askSchema(rows.archive, rows.facts)),
   );
-  const { files, split } = titleShards(site, inboundLinks(articles.values()));
-  const titles = join(dir, 'search-titles');
-  await mkdir(titles, { recursive: true });
-  await writeFile(
-    join(titles, 'index.json'),
-    JSON.stringify({ split, keys: [...files.keys()].map((f) => f.replace(/\.json$/, '')) }),
-  );
-  for (const [file, shard] of files) await writeFile(join(titles, file), JSON.stringify(shard));
+  writePages(join(dir, 'pages.sqlite'), fixtureSiteData(), {
+    build: 'test',
+    assets: { stylesheet: '/s.css', clientEntry: '/e.js', page: '/p.js' },
+  });
+  pages = openPages(join(dir, 'pages.sqlite'));
   archive = await openArchive(join(dir, 'archive.duckdb'), 300);
   log = await openQuestionLog(join(dir, 'questions.duckdb'));
 });
@@ -42,6 +41,7 @@ beforeAll(async () => {
 afterAll(async () => {
   archive.close();
   await log.close();
+  pages.close();
   vi.unstubAllGlobals();
   await rm(dir, { recursive: true, force: true });
 });
@@ -103,7 +103,8 @@ describe('the API', () => {
   const api = (questions: QuestionLog = log) =>
     createApi({
       archive,
-      resolve: titleResolver(join(dir, 'search-titles')),
+      resolve: pages.search.resolve,
+      search: pages.search.search,
       schema: () => Promise.resolve({ kinds: {}, fields: {} }),
       model: { origin: 'https://model.example', key: 'server-key', model: 'test-model' },
       log: questions,
@@ -221,6 +222,37 @@ describe('the API', () => {
     ).toBe(400);
     expect((await api()(post(ASK_PATH, { question: 'x'.repeat(70_000) }))).status).toBe(413);
     expect((await api()(post(ASK_PATH, { question: ' ' }))).status).toBe(400);
+  });
+
+  it('searches as you type: names first, twins folded, cached like a page', async () => {
+    const res = await api()(new Request('https://starwars.run/api/search?q=luke'));
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toBe(CACHE.pages);
+    const found = (await res.json()) as Results;
+    expect(found.results[0]).toMatchObject({
+      name: 'Luke Skywalker',
+      path: '/characters/luke-skywalker/',
+      eras: [
+        { era: 'canon', path: '/characters/luke-skywalker/' },
+        { era: 'legends', path: '/characters/luke-skywalker-legends/' },
+      ],
+    });
+    expect(found.results.length).toBeLessThanOrEqual(8);
+    const empty = (await (
+      await api()(new Request('https://starwars.run/api/search?q='))
+    ).json()) as Results;
+    expect(empty.results).toEqual([]);
+    const planets = (await (
+      await api()(new Request('https://starwars.run/api/search?q=tat&section=planets'))
+    ).json()) as Results;
+    expect(planets.results.map((r) => r.section)).toEqual(planets.results.map(() => 'planets'));
+    expect((await api()(post('/api/search', {}))).status).toBe(405);
+  });
+
+  it('resolves Ask’s names through search, redirects included', async () => {
+    const [luke, empire] = await pages.search.resolve(['Luke Skywalker', 'the Empire']);
+    expect(luke?.titles[0]).toEqual({ title: 'Luke Skywalker', section: 'characters' });
+    expect(empire?.asked).toBe('the Empire');
   });
 
   it('keeps only the history a follow-up needs', () => {

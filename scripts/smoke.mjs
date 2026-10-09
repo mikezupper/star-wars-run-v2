@@ -213,13 +213,10 @@ async function checkLinks(links) {
   });
 }
 
-function island(page) {
-  return page.locator('swr-site-search');
-}
-
+/** The result links on a server-rendered /search/ page, in order. */
 function hrefs(page) {
-  return island(page)
-    .locator('ol a')
+  return page
+    .locator('main ol[aria-label="Search results"] > li > a:first-child')
     .evaluateAll((as) => as.map((a) => a.getAttribute('href')));
 }
 
@@ -238,50 +235,32 @@ async function checkSearch() {
       await page.keyboard.type(query);
       await page.keyboard.press('Enter');
       await page.waitForURL(`**/search/?q=${query}`);
-      try {
-        await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
-      } catch {
+      const top = (await hrefs(page)).slice(0, 5);
+      if (top.length === 0) {
         fail(where, `"${query}": no results`);
         continue;
       }
-      const top = (await hrefs(page)).slice(0, 5);
       for (const path of expected) {
         if (!top.includes(path))
           fail(where, `"${query}": ${path} not in the top 5 (${top.join(', ')})`);
       }
     }
 
-    const copies = await island(page).evaluate(
-      (el) => el.shadowRoot?.querySelectorAll('input#q').length ?? 0,
-    );
-    if (copies !== 1) fail(where, `${String(copies)} search boxes after hydration, expected 1`);
-
-    // The kind filter: only planets.
-    await page.goto(`${base}/search/?q=ta&kind=planets`, { waitUntil: 'networkidle' });
-    await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
+    // The section filter: only planets.
+    await page.goto(`${base}/search/?q=ta&section=planets`, { waitUntil: 'networkidle' });
     const outside = (await hrefs(page)).filter((h) => !h.startsWith('/planets/'));
-    if (outside.length > 0) fail(where, `kind=planets returned ${outside.join(', ')}`);
+    if (outside.length > 0) fail(where, `section=planets returned ${outside.join(', ')}`);
 
-    // Keys: ArrowDown from the box focuses the first result; Escape clears the box.
-    await island(page).locator('#q').focus();
-    await page.keyboard.press('ArrowDown');
-    const active = await island(page).evaluate((el) => el.shadowRoot?.activeElement?.id ?? '');
-    if (active !== 'hit-0') fail(where, `ArrowDown focused "${active}", expected hit-0`);
-    await page.keyboard.press('Escape');
-    try {
-      await page.waitForFunction(
-        () =>
-          document.querySelector('swr-site-search')?.shadowRoot?.querySelector('#q')?.value === '',
-        undefined,
-        { timeout: 2000 },
-      );
-    } catch {
-      fail(where, 'Escape did not clear the search box');
-    }
+    // Suggestions' API: the same search, as JSON, cacheable.
+    const api = await fetch(`${base}/api/search?q=vader`);
+    const found = await api.json();
+    if (found.results?.[0]?.path !== '/characters/anakin-skywalker/')
+      fail(where, `/api/search?q=vader → ${JSON.stringify(found.results?.[0])}`);
+    if (!(api.headers.get('cache-control') ?? '').includes('s-maxage'))
+      fail(where, `/api/search isn't cacheable: ${String(api.headers.get('cache-control'))}`);
 
     // axe with results showing, in both schemes.
     await page.goto(`${base}/search/?q=sky`, { waitUntil: 'networkidle' });
-    await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
     await axe(page, `${where} with results (light)`);
     await page.emulateMedia({ colorScheme: 'dark' });
     // Links and buttons ease their colors (150 ms): check the settled scheme, not the crossfade.
@@ -292,14 +271,15 @@ async function checkSearch() {
   }
 }
 
+/** Search renders on the server (ADR 0011): results without any JavaScript. */
 async function checkWithoutJavaScript() {
   const where = '/search/ (no JavaScript)';
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    await page.goto(`${base}/search/?q=sky`);
-    const fallback = await page.locator('swr-site-search a[href="/characters/"]').count();
-    if (fallback !== 1) fail(where, 'no fallback link to /characters/');
+    await page.goto(`${base}/search/?q=luke`);
+    if (!(await hrefs(page)).includes('/characters/luke-skywalker/'))
+      fail(where, 'no results for "luke" without JavaScript');
   } finally {
     await context.close();
   }
@@ -330,23 +310,18 @@ async function checkOffline() {
         );
       }
     });
-    // A visit through the worker saves the page, and a search saves the index chunks it reads.
+    // A visit through the worker saves the page.
     await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
-    await page.goto(`${base}/search/?q=sky`);
-    await island(page).locator('ol a').first().waitFor({ timeout: 10000 });
-    await page.waitForLoadState('networkidle');
     await context.setOffline(true);
 
     await page.goto(`${base}/characters/luke-skywalker/`);
     const h1 = await page.locator('h1').textContent();
     if (h1 !== 'Luke Skywalker') fail(where, `visited page shows "${String(h1)}" offline`);
 
+    // Search needs the server now (ADR 0011): offline, a new search gets the offline page.
     await page.goto(`${base}/search/?q=sky`);
-    try {
-      await island(page).locator('ol a').first().waitFor({ timeout: 5000 });
-    } catch {
-      fail(where, 'search found nothing offline');
-    }
+    if (!/offline/i.test((await page.locator('h1').textContent()) ?? ''))
+      fail(where, 'a search offline does not show the offline page');
 
     await page.goto(`${base}/species/wookiee/`);
     const offline = await page.locator('h1').textContent();
@@ -601,12 +576,9 @@ async function checkDevServer() {
         if (response?.status() !== 200)
           fail(where, `${path}: status ${String(response?.status())}`);
       }
+      // Dev searches the last build's pages.sqlite (DIST_DIR-api), beside its own archive.
       await page.goto(`${devBase}/search/?q=sky`, { waitUntil: 'networkidle' });
-      try {
-        await island(page).locator('ol a').first().waitFor({ timeout: 15_000 });
-      } catch {
-        fail(where, '"sky" found nothing on the dev server');
-      }
+      if ((await hrefs(page)).length === 0) fail(where, '"sky" found nothing on the dev server');
     } finally {
       await context.close();
     }

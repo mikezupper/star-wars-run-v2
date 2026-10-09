@@ -22,8 +22,8 @@ repo follows.
 - **TypeScript** in strict mode, with `exactOptionalPropertyTypes` and
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
-- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on the 0.3.1-next.1
-  prerelease (2026-10-07), installed from `vendor/` until 0.3.1 is on npm
+- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on the 0.3.1-next.6
+  prerelease (2026-10-09), installed from `vendor/` until 0.3.1 is on npm
   ([vendor/README.md](../../vendor/README.md);
   `swr-7f1.11.7` switches to npm and removes the tarballs from history). The `lit-html` 3.3.0
   pin that 0.2 needed went with Lit.
@@ -72,3 +72,20 @@ enabled because pages are prerendered. The copied docs include the
 [0.3.0 to 0.3.1 upgrade guide](../references/gyral/migrating-0-3-0-to-0-3-1.md).
 Node tests omit the new template-location plugin because its generated fallback branches
 distort V8 coverage; the dev server keeps it ([lessons learned](../lessons-learned.md)).
+
+## Gyral 0.3.1-next.6 (`swr-6sg`, 2026-10-09)
+
+Core, ssr and testing moved to 0.3.1-next.6 (commit `209304e`). This took in next.4's one-time
+API break and next.6's error channel:
+
+- Explore uses the two-call `define<State, Msg>()(…)`.
+- `page({ head })` became `page({ extraHead })`. The site's head stays out of Gyral's managed
+  head (`Head` fields) on purpose. No page changes its head in the browser, so the managed
+  `data-gyral-head` markers would be dead bytes on every page. The theme script must also run
+  before the stylesheet, and `page({ stylesheets })` writes stylesheets first. Only the title
+  and description go through `Head`.
+- Tests that call a parser directly pass its context (`{ props, state, read }`).
+
+The copied Gyral docs now come from gyral.dev at `b6e422d`, which adds
+[error-handling.md](../references/gyral/error-handling.md). What we learned using Gyral, for
+its authors, is in [gyral-feedback.md](../gyral-feedback.md).

@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CACHE } from '../../src/hosting/headers.js';
 import { createPagesApp } from '../../src/server/app.js';
 import { openPages, writePages, type Pages } from '../../src/server/pages.js';
+import type { Section } from '../../src/domain/sections.js';
 import { fixtureSiteData } from '../fixtures/archive.js';
 
 const data = fixtureSiteData();
@@ -18,7 +19,12 @@ let pages: Pages;
 
 beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), 'swr-pages-'));
-  writePages(join(dir, 'pages.sqlite'), data, { build: 'b42', assets });
+  const redirects = new Map([
+    ['Farmboy', 'Luke Skywalker'],
+    ['Loop a', 'Loop b'],
+    ['Loop b', 'Loop a'],
+  ]);
+  writePages(join(dir, 'pages.sqlite'), data, { build: 'b42', assets }, redirects);
   pages = openPages(join(dir, 'pages.sqlite'));
 });
 
@@ -99,5 +105,57 @@ describe('pages rendered on request', () => {
     const head = await get('/', {}, 'HEAD');
     expect(head.status).toBe(200);
     expect(await head.text()).toBe('');
+  });
+});
+
+describe('search', () => {
+  const find = (query: string, section?: Section) =>
+    pages.search.search(query, section === undefined ? {} : { section });
+
+  it('finds an article by its name, by a redirect, and by a word of its story', () => {
+    expect(find('luke').results[0]?.name).toBe('Luke Skywalker');
+    expect(find('farmboy').results[0]?.path).toBe('/characters/luke-skywalker/');
+    const story = find('legendary jedi').results.find((r) => r.name === 'Luke Skywalker');
+    expect(story?.excerpt.some((run) => run.mark)).toBe(true);
+  });
+
+  it('keeps to one section when asked', () => {
+    const planets = find('t', 'planets').results;
+    expect(planets.length).toBeGreaterThan(0);
+    expect(new Set(planets.map((r) => r.section))).toEqual(new Set(['planets']));
+  });
+
+  it('suggests a close name when nothing matches', () => {
+    const typo = find('tatoine');
+    expect(typo.results).toEqual([]);
+    expect(typo.didYouMean).toBe('Tatooine');
+    expect(find('qqqqzzzz').didYouMean).toBeUndefined();
+  });
+});
+
+describe('the search page, rendered on request', () => {
+  const page = async (query: string) =>
+    (await createPagesApp(pages)(new Request(`https://starwars.run/search/${query}`))).text();
+
+  it('lists results with their continuities, and offers Ask for a question', async () => {
+    const luke = await page('?q=luke');
+    expect(luke).toMatch(/<a href="\/characters\/luke-skywalker\/">Luke Skywalker<\/a>/);
+    expect(luke).toContain('data-era="legends"');
+    expect(luke).toMatch(/value="luke"/);
+    expect(await page('?q=Who+trained+Luke%3F')).toContain(
+      'href="/explore/?ask=Who+trained+Luke%3F"',
+    );
+  });
+
+  it('says so when nothing matches, with a close name to try', async () => {
+    const typo = await page('?q=tatoine&section=planets');
+    expect(typo).toContain('Nothing in the archive matches');
+    expect(typo).toContain('href="/search/?q=Tatooine&amp;section=planets"');
+  });
+
+  it('shows the form and a hint without a query', async () => {
+    const empty = await page('');
+    expect(empty).toContain('<form');
+    expect(empty).not.toContain('role="status"');
   });
 });

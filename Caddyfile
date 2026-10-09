@@ -9,7 +9,7 @@
 	encode zstd gzip
 
 	header {
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc=' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc='; style-src 'self' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 		Strict-Transport-Security "max-age=63072000"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -19,19 +19,24 @@
 		-Server
 	}
 
-	@assets path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/*
+	@assets path /assets/*
 	header @assets Cache-Control "public, max-age=31536000, immutable"
 	@icons path /icons/*
 	header @icons Cache-Control "public, max-age=86400"
 	@sw path /sw.js
 	header @sw Cache-Control "no-cache"
-	@pages not path /assets/* /pagefind/index/* /pagefind/fragment/* /pagefind/filter/* /icons/* /sw.js /api/*
+	@pages not path /assets/* /icons/* /sw.js /api/*
 	# A default (?): the app sets its own on pages and 404s; this covers the static files.
 	header @pages ?Cache-Control "public, max-age=300, s-maxage=604800, stale-while-revalidate=86400, stale-if-error=604800"
 	# Deferred (>), so it replaces the type Caddy guesses from .json.
 	header /speculation-rules.json >Content-Type "application/speculationrules+json"
-	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a second.
-	header /api/* >Cache-Control "no-store"
+	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a
+	# second. Search's answers are the exception: cached like pages, as the app says.
+	@private {
+		path /api/*
+		not path /api/search
+	}
+	header @private >Cache-Control "no-store"
 
 	# A file in /srv is served from disk: assets, icons, the sitemaps, the search indexes, the
 	# service worker. Everything else goes to the app container, at API (ADRs 0010, 0011): every
@@ -56,7 +61,7 @@
 	handle_errors {
 		rewrite * /404.html
 		header {
-			Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc=' 'wasm-unsafe-eval'; style-src 'self' 'sha256-C9rkR8DBgS/9vXrzh//YBQ82Ik8YnzFL5QWpKROWbCw=' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+			Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Cg25GLqXp6/RN8mqJrk4Ce85qdFMkXsDai8d3gOtkFc='; style-src 'self' 'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 			Strict-Transport-Security "max-age=63072000"
 			X-Content-Type-Options "nosniff"
 			Referrer-Policy "strict-origin-when-cross-origin"

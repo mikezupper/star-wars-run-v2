@@ -13,20 +13,19 @@ import {
 import { THEME_SCRIPT } from '../../src/domain/theme.js';
 import { SCRIPT_HASHES, STYLE_HASHES } from '../../src/hosting/csp-hashes.js';
 import '../../src/islands/explore.js';
-import '../../src/islands/site-search.js';
 
 describe('cache policy', () => {
   it('caches hashed assets for a year and rechecks the service worker every time', () => {
     expect(cacheControl('/assets/site-abc.css', 200)).toBe(CACHE.assets);
-    expect(cacheControl('/pagefind/fragment/en_1a2b.pf_fragment', 200)).toBe(CACHE.assets);
-    expect(cacheControl('/pagefind/pagefind-entry.json', 200)).toBe(CACHE.pages);
+    expect(cacheControl('/api/search', 200)).toBe(CACHE.pages);
+    expect(cacheControl('/api/ask', 200)).toBe(CACHE.api);
     expect(cacheControl('/icons/icon-192.png', 200)).toBe(CACHE.icons);
     expect(cacheControl('/sw.js', 200)).toBe(CACHE.serviceWorker);
   });
 
   it('lets Cloudflare hold pages longer than browsers do', () => {
     expect(cacheControl('/people/luke-skywalker/', 200)).toBe(CACHE.pages);
-    expect(cacheControl('/pagefind/pagefind.js', 200)).toBe(CACHE.pages);
+    expect(cacheControl('/sitemap.xml', 200)).toBe(CACHE.pages);
     expect(CACHE.pages).toMatch(/max-age=300, s-maxage=604800, .*stale-if-error=604800/);
   });
 
@@ -38,7 +37,8 @@ describe('cache policy', () => {
     const headers = headersFor('/', 200);
     expect(headers['Content-Security-Policy']).toBe(CSP);
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
-    expect(CSP).toMatch(/script-src 'self' 'sha256-[^']+' 'wasm-unsafe-eval'/);
+    expect(CSP).toMatch(/script-src 'self' 'sha256-[^';]+'; /);
+    expect(CSP).not.toContain('wasm');
     expect(CSP).not.toContain("'unsafe-eval'");
   });
 });

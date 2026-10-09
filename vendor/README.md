@@ -1,8 +1,8 @@
-# Vendored Gyral 0.3.1-next.1
+# Vendored Gyral 0.3.1-next.6
 
-The `@gyral/*` packages this site uses: core, ssr and testing, all at 0.3.1-next.1.
-They were copied from `gyral-tarballs/release-0.3.1-next.1/`, packed from Gyral's
-`next` branch at commit `bd2acc9` with a clean checkout. `SOURCE.json` preserves the
+The `@gyral/*` packages this site uses: core, ssr and testing, all at 0.3.1-next.6.
+They were copied from `gyral-tarballs/release-0.3.1-next.6/`, packed from Gyral's
+`next` branch at commit `209304e` with a clean checkout. `SOURCE.json` preserves the
 release provenance; it lists the whole release, including packages this site doesn't use.
 `SHA256SUMS` contains the release's checksums for the three tarballs and `SOURCE.json`.
 
@@ -12,7 +12,7 @@ install without a sibling `gyral-tarballs` folder.
 
 **Wiring:** `package.json` points each `@gyral/*`
 dependency at `file:./vendor/…`, and `pnpm.overrides` points them there too, because the
-packages depend on core at exactly `0.3.1-next.1`. The Dockerfile
+packages depend on core at exactly `0.3.1-next.6`. The Dockerfile
 copies `vendor/` before `pnpm install`.
 
 Verify the copied files from this directory with `sha256sum -c SHA256SUMS`.

@@ -29,8 +29,6 @@ export interface PageMeta {
   readonly description: string;
   /** The section this page belongs to, marked current in the nav. */
   readonly section?: Section;
-  /** Index this page for site search, filterable under this kind (record pages). */
-  readonly searchKind?: Section;
   /** True when the body contains islands that need the client entry. */
   readonly islands?: boolean;
   /** Not indexed by search engines and left out of the sitemap (404). */
@@ -40,7 +38,12 @@ export interface PageMeta {
 export const fullTitle = (meta: Pick<PageMeta, 'path' | 'title'>): string =>
   meta.path === '/' ? meta.title : `${meta.title} · ${SITE_NAME}`;
 
-const head = (meta: PageMeta, assets: Assets) => html`
+/**
+ * The head after the title and description. Kept out of Gyral's managed head (`Head` fields):
+ * no page changes its head in the browser, so the managed markers would be dead weight, and the
+ * theme script has to run before the stylesheet, which `page({ stylesheets })` writes first.
+ */
+const extraHead = (meta: PageMeta, assets: Assets) => html`
   ${raw(`<script>${THEME_SCRIPT}</script>`)}
   ${
     meta.noindex === true
@@ -165,16 +168,10 @@ export function layout(meta: PageMeta, body: ChildValue, assets: Assets): ChildV
   return page({
     title: fullTitle(meta),
     description: meta.description,
-    head: head(meta, assets),
+    extraHead: extraHead(meta, assets),
     scripts: meta.islands === true ? [assets.page, assets.clientEntry] : [assets.page],
     body: html`${banner(meta)}
-      <main
-        id="main"
-        data-pagefind-body=${meta.searchKind === undefined ? undefined : ''}
-        data-pagefind-filter=${meta.searchKind === undefined ? undefined : `kind:${meta.searchKind}`}
-      >
-        ${body}
-      </main>
+      <main id="main">${body}</main>
       ${footer()}`,
   });
 }

@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@duckdb/node-api": "1.5.6-r.1",
-    "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.1.tgz",
-    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.1.tgz"
+    "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.6.tgz",
+    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.6.tgz"
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
@@ -45,14 +45,13 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/chakra-petch": "^5.3.0",
-    "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.1.tgz",
+    "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.6.tgz",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
     "eslint-plugin-compat": "7.0.2",
     "fast-check": "4.10.2",
     "globals": "17.13.0",
-    "pagefind": "1.5.2",
     "playwright": "1.63.0",
     "prettier": "3.9.9",
     "saxes": "^6.0.0",
@@ -72,9 +71,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.1.tgz",
-      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.1.tgz",
-      "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.1.tgz"
+      "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.6.tgz",
+      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.6.tgz",
+      "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.6.tgz"
     }
   }
 }

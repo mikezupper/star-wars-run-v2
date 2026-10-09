@@ -15,7 +15,6 @@ data/wookieepedia/ ──► src/data (load) ──► src/domain/archive (secti
                          src/server/app.ts: per request ◄─────┘  (from dist-api/pages.sqlite)
 articles ──► src/domain/links ──► src/server/pages.ts ──► dist-api/pages.sqlite (not public)
 articles ──► src/domain/rows ──► scripts/build-database.ts ──► dist-api/archive.duckdb (not public)
-articles ──► src/domain/titles ──► dist/search-titles/ (search: title matches first; Ask's names)
 browser ──► any page (Caddy, or preview in-process) ──► src/server/app.ts ──► src/render
 browser ──► /api/* (Caddy, or dev/preview in-process) ──► src/server (the API):
               /api/ask   ──► the model (key from the environment) + DuckDB, read-only, locked down
@@ -81,10 +80,10 @@ place, loading its hydration code lazily. The entry loads only on pages that set
 `islands: true` (today, `/search/` and `/explore/`). See
 [docs/references/gyral/server-rendering.md](docs/references/gyral/server-rendering.md).
 
-Search: `scripts/build.ts` gives Pagefind one record per article (its title, lead and facts as
-text, filterable by section) and writes a static index to `dist/pagefind/`, which the search
-island loads in the browser; the title index puts title matches first. Server search replaces
-both (`swr-sgf.5`).
+Search runs on the server: SQLite full-text indexes in `pages.sqlite`, queried by
+`src/server/search.ts` and ranked by `src/domain/search.ts` (names first, then text; twins
+folded). It renders `/search/` and answers `/api/search` and Ask's name lookups
+([docs/product-specs/search.md](docs/product-specs/search.md)).
 
 URLs always end with a slash (`/people/luke-skywalker/`). The app answers `/people` with a 308
 redirect to `/people/`, and an unknown path with the 404 page.

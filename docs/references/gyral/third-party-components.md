@@ -32,7 +32,7 @@ export type Msg = { readonly _tag: 'SizeChanged'; readonly size: string };
 const valueOf = (el: Element): string | undefined =>
   'value' in el && typeof el.value === 'string' ? el.value : undefined;
 
-export const SizeField = define<State, Msg>('my-size-field', {
+export const SizeField = define<State, Msg>()('my-size-field', {
   init: () => ({ size: 'M' }),
   intent: {
     SizeChanged: ({ target }) => {
@@ -62,20 +62,68 @@ component and waits for its `gyral-output` event, which a library element never 
 when the event name itself is bound, `data-intent-on=${…}`, list the types it can produce in
 the spec's `events`, such as `events: ['sl-change']`.
 
+The event can also go in the attribute's name: `data-intent-sl-change=${i.SizeChanged}` does
+the same as the pair above, and leaves `data-intent` free for another event on the same element
+(see [Intent](/docs/intent/#one-element-an-intent-per-event)). Attribute names are lower case,
+so this works for event names without capitals. For a name such as `valueChange`, use
+`data-intent-on="valueChange"`.
+
 ## What the parser gets
 
 - **`target`** is the library element. Read its state from it (`value`, `checked`, …), as the
   example does. The `value` field of the intent input is only filled for native `<input>`,
   `<select>`, `<textarea>` and `<button>` elements.
-- **`detail`** is the event's `detail`, when the library sends data that way.
+- **`detail`** is the `detail` of any `CustomEvent`, so a library that sends data that way (a
+  map's selected marker, a date picker's range) reaches the parser like a Gyral child's output.
+  Its type is `unknown`: check it with a type guard or a schema before you use it.
 - **`event`** is the raw event, if you need anything else.
+
+A store finder whose map element dispatches `marker-select`, with the marker as `detail`:
+
+```ts
+// src/store-finder.ts
+import { define, html } from '@gyral/core';
+
+export interface Marker {
+  readonly id: string;
+  readonly lat: number;
+  readonly lng: number;
+}
+
+const isMarker = (u: unknown): u is Marker =>
+  typeof u === 'object' &&
+  u !== null &&
+  'id' in u &&
+  typeof u.id === 'string' &&
+  'lat' in u &&
+  typeof u.lat === 'number' &&
+  'lng' in u &&
+  typeof u.lng === 'number';
+
+export type Msg = { readonly _tag: 'Select'; readonly marker: Marker };
+
+export const StoreFinder = define<{ readonly selected: string }, Msg>()('my-store-finder', {
+  init: () => ({ selected: '' }),
+  intent: {
+    Select: ({ detail }) => (isMarker(detail) ? { _tag: 'Select', marker: detail } : undefined),
+  },
+  update: { Select: (_s, m) => ({ selected: m.marker.id }) },
+  view: (s, i) => html`
+    <geo-map data-intent-marker-select=${i.Select}></geo-map>
+    <p>Selected store: <output>${s.selected}</output></p>
+  `,
+});
+```
+
+The element's events must bubble, or be dispatched on the element that carries the intent
+attribute, as here.
 
 Keep the parser the place where library specifics live: the message it returns is plain data,
 so `update` and your tests never know which library you used.
 
 This website's build checks this path: a Gyral component hosts a non-Gyral custom element,
 receives its custom event through `data-intent-on` alone, and reads both `detail` and the
-element.
+element. A second component receives the same event through a `data-intent-<event>` attribute.
 
 ## Styling them
 

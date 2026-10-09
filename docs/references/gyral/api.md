@@ -16,7 +16,7 @@ from the code.
 | ---------------------------------------- | ------------------------------------------------------------------------------ |
 | [`@gyral/core`](/docs/api/core/)         | `define`, commands, stores, forms, the view layer; server, Vite and ESLint     |
 | [`@gyral/http`](/docs/api/http/)         | `get`, `request`, `submitForm`, the `http` driver; `fakeHttp` for tests        |
-| [`@gyral/router`](/docs/api/router/)     | `routes`, `listen`, `navigate`, `setTitle`, `makeRouter`                       |
+| [`@gyral/router`](/docs/api/router/)     | `routes`, `listen`, `navigate`, `setHead`, `makeRouter`                        |
 | [`@gyral/time`](/docs/api/time/)         | `delay`, `debounce`, `periodic`, `animationFrames`                             |
 | [`@gyral/ssr`](/docs/api/ssr/)           | `renderPage`, `page`, `contentSecurityPolicy`, `formAction`; static generation |
 | [`@gyral/testing`](/docs/api/testing/)   | `step`, `run`, fake drivers, virtual time, `mountSsr`, `hydrated`; arbitraries |
@@ -24,7 +24,7 @@ from the code.
 
 ## Reading the reference
 
-- **Types are the contract.** A component is `define<State, Msg, Props, Output>(tag, spec)`;
+- **Types are the contract.** A component is `define<State, Msg, Props, Output>()(tag, spec)`;
   `ComponentSpec` in `@gyral/core` describes every field of `spec`.
 - **Functions return data.** Command helpers such as `get`, `delay` and `navigate` return a
   `Command`, which does nothing until a reducer returns it.

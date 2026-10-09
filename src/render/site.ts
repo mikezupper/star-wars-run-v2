@@ -15,19 +15,24 @@ import { layout, type Assets, type PageMeta } from './layout.js';
 import { offlineBody, offlineMeta } from './offline.js';
 import { exploreBody, exploreMeta } from './explore.js';
 import { sabaccBody, sabaccMeta } from './sabacc.js';
-import { searchBody, searchMeta } from './search.js';
+import { searchBody, searchMeta, type SearchArchive } from './search.js';
 import { byLetter, letterBody, letterMeta, sectionBody, sectionMeta } from './section.js';
 
-/** What the site renders: the archive's address book, each article's content, and its links. */
+/**
+ * What the site renders: the archive's address book, each article's content, and its links; and
+ * search, where the data has its index (the app's pages.sqlite, src/server/search.ts).
+ */
 export interface SiteData {
   readonly archive: Archive;
   readonly articles: ReadonlyMap<string, ArticleRecord>;
   readonly links: LinkGraph;
+  readonly search?: SearchArchive;
 }
 
 interface Route {
   readonly meta: PageMeta;
-  readonly body: () => ChildValue;
+  /** The page's body; `url` carries its query, which only /search/ reads. */
+  readonly body: (url: URL) => ChildValue;
 }
 
 export interface Site {
@@ -63,10 +68,10 @@ export const RANDOM_PATH = '/random/';
 export const normalise = (pathname: string): string =>
   pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-export function createSite(assets: Assets, { archive, articles, links }: SiteData): Site {
+export function createSite(assets: Assets, { archive, articles, links, search }: SiteData): Site {
   const table = new Map<string, Route>([
     ['/', { meta: homeMeta, body: () => homeBody(archive, links) }],
-    [searchMeta.path, { meta: searchMeta, body: searchBody }],
+    [searchMeta.path, { meta: searchMeta, body: (url) => searchBody(url, search) }],
     [offlineMeta.path, { meta: offlineMeta, body: offlineBody }],
     [sabaccMeta.path, { meta: sabaccMeta, body: sabaccBody }],
     [exploreMeta.path, { meta: exploreMeta, body: exploreBody }],
@@ -117,9 +122,12 @@ export function createSite(assets: Assets, { archive, articles, links }: SiteDat
       if (route === undefined) {
         return new Response(await notFound(), { status: 404, headers: HTML });
       }
-      return new Response(renderToStream(layout(route.meta, route.body(), assets)), {
-        headers: HTML,
-      });
+      return new Response(
+        renderToStream(layout(route.meta, route.body(new URL(request.url)), assets)),
+        {
+          headers: HTML,
+        },
+      );
     },
   };
 }

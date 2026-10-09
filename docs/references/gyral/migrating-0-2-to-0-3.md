@@ -49,7 +49,7 @@ Everything a view needs comes from `@gyral/core`:
 | `LIT_PACKAGES`, `LIT_PREBUNDLE` (`@gyral/core/vite`)             | removed                                           |
 | `el.updateComplete`, `requestUpdate`, `renderRoot`, `hasUpdated` | `await settled()` (see [Tests](#tests))           |
 
-New in `@gyral/core`: `each`, `raw`, `defineHook`, `prop`, `intents`, `settled`,
+New in `@gyral/core`: `each`, `raw`, `defineHook`, `prop`, `intentsOf`, `settled`,
 `HydrationMismatch`, the `renderOnFrame` spec field (messages from bursty sources render once
 per animation frame), and the entry points `@gyral/core/server` and `@gyral/core/eslint`. New in
 `@gyral/ssr`: `contentSecurityPolicy`, `renderPage({ csp })` and `page({ modulepreload })`; in
@@ -160,7 +160,7 @@ interface Props {
   readonly items: readonly string[];
 }
 
-export const Stepper = define<{ readonly value: number }, { readonly _tag: 'Bump' }, Props>(
+export const Stepper = define<{ readonly value: number }, { readonly _tag: 'Bump' }, Props>()(
   'my-stepper',
   {
     props: {
@@ -186,7 +186,8 @@ an attribute. `PropsChanged`, and props as `ctx.props`, are unchanged. See
 
 `each(items, key, row, pick?)` replaces `repeat` and `keyed`. A row re-renders only when its item
 or its `pick` result changes, so a row may read only its arguments and module-level values. Name
-intents in rows with a module-level `intents<Msg>()`, and pass view values, such as the
+intents in rows with a module-level `intentsOf<typeof Component>()` (0.3.1; 0.3.0 had
+`intents<Msg>()`), and pass view values, such as the
 selection, through `pick`. ESLint's `gyral/each-row-purity` names every read to move.
 
 ```text
@@ -198,7 +199,7 @@ ${repeat(s.todos, (t) => t.id, (t) =>
 
 ```ts
 // src/todos.ts
-import { define, each, html, intents } from '@gyral/core';
+import { define, each, html, intentsOf, type TemplateResult } from '@gyral/core';
 
 interface Todo {
   readonly id: number;
@@ -210,14 +211,14 @@ interface State {
 }
 type Msg = { readonly _tag: 'Pick'; readonly id: number };
 
-const i = intents<Msg>();
+const i = intentsOf<typeof Todos>();
 
-const Row = (t: Todo, selected: boolean) =>
+const Row = (t: Todo, selected: boolean): TemplateResult =>
   html`<li class=${selected ? 'selected' : ''}>
     <button type="button" value=${t.id} data-intent=${i.Pick}>${t.text}</button>
   </li>`;
 
-export const Todos = define<State, Msg>('my-todos', {
+export const Todos = define<State, Msg>()('my-todos', {
   init: () => ({ todos: [{ id: 1, text: 'Write docs' }], selected: 1 }),
   intent: { Pick: ({ value }) => ({ _tag: 'Pick', id: Number(value) }) },
   update: { Pick: (s, m) => ({ ...s, selected: m.id }) },
@@ -330,7 +331,7 @@ export function home(): Response {
   return renderPage({
     title: 'Home',
     styles,
-    head: html`<link rel="icon" href="/favicon.svg" />`, // was serverHtml`…`
+    extraHead: html`<link rel="icon" href="/favicon.svg" />`, // was serverHtml`…`
     body: html`<my-home></my-home>`,
     scripts: ['/src/entry-client.ts'],
     csp: { directives: { 'default-src': "'self'" } }, // built when the page renders

@@ -19,7 +19,7 @@ This picker takes a label, a maximum and a list of items, and reports which one 
 
 ```ts
 // src/picker.ts
-import { define, each, html, intents, outputs, prop } from '@gyral/core';
+import { define, each, html, intentsOf, outputs, prop, type TemplateResult } from '@gyral/core';
 import * as v from 'valibot';
 
 export type PickerOutput = { readonly _tag: 'Picked'; readonly id: string };
@@ -28,8 +28,8 @@ const emit = outputs<PickerOutput>();
 
 type Msg = { readonly _tag: 'Pick'; readonly id: string };
 
-const i = intents<Msg>();
-const Item = (id: string) =>
+const i = intentsOf<typeof Picker>();
+const Item = (id: string): TemplateResult =>
   html`<li><button type="button" value=${id} data-intent=${i.Pick}>${id}</button></li>`;
 
 export interface PickerProps {
@@ -38,7 +38,7 @@ export interface PickerProps {
   readonly items: readonly string[];
 }
 
-export const Picker = define<{ readonly picks: number }, Msg, PickerProps, PickerOutput>(
+export const Picker = define<{ readonly picks: number }, Msg, PickerProps, PickerOutput>()(
   'my-picker',
   {
     props: {

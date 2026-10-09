@@ -29,7 +29,7 @@ import { define, html } from '@gyral/core';
 
 export type Msg = { readonly _tag: 'Increment' } | { readonly _tag: 'Decrement' };
 
-export const Counter = define<{ readonly count: number }, Msg>('my-counter', {
+export const Counter = define<{ readonly count: number }, Msg>()('my-counter', {
   init: () => ({ count: 0 }),
   intent: {
     Increment: () => ({ _tag: 'Increment' }),
@@ -62,7 +62,8 @@ app.get('/', () =>
   renderPage({
     title: 'Counter',
     description: 'A counter rendered on the server and hydrated in the browser.',
-    head: html`<link rel="icon" href="/favicon.svg" />`,
+    canonical: 'https://example.com/',
+    links: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
     body: html`<main>
       <h1>Counter</h1>
       <my-counter></my-counter>
@@ -72,15 +73,26 @@ app.get('/', () =>
 );
 ```
 
-- **`renderPage(options, init?)`** returns a streaming `Response`, so the first bytes leave
-  before the page is complete. It's a web `Response`, so Hono, Deno, Bun, Cloudflare Workers or a
+- **`renderPage(options, init?)`** returns a web `Response` whose body is pulled in chunks from
+  a synchronous render, one component boundary per pull. Load data before you call it: nothing
+  is awaited mid-page, and there is no suspense streaming. The status and headers are final
+  before the first byte, so a 404 is a real 404. Hono, Deno, Bun, Cloudflare Workers or a
   service worker can serve it.
 - **`page(options)`** is the document shell (doctype, `<head>`, `<body>`) on its own, for
   `renderToString` or `renderToStream`.
-- **`body`** and **`head`** are ordinary `html` templates from `@gyral/core`, the same tag your
-  components use. The shell itself is never hydrated; the components inside it are.
+- **The head fields** (`title`, `description`, `canonical`, `robots`, `meta`, `links`,
+  `jsonLd`, `lang`, `dir`) are a `Head` from `@gyral/core`, the same value the router's
+  `setHead()` applies after a client navigation ([Routing](/docs/routing/#the-head)). The
+  server writes each entry once, marked `data-gyral-head`.
+- **`body`** and **`extraHead`** are ordinary `html` templates from `@gyral/core`, the same tag
+  your components use. `extraHead` is for head markup the head model doesn't manage, such as a
+  `<meta>` with a `media` query. The shell itself is never hydrated; the components inside it
+  are.
 - **`styles`** takes your global CSS as text and writes it into `<style>` elements, escaped so
   it can't close the element early. Trusted CSS only.
+- **`stylesheets`** takes stylesheet URLs and writes a `<link rel="stylesheet">` for each, before
+  the inline `styles`. In production these are the hashed CSS files Vite builds from your client
+  entry (see [Static sites](/docs/static-sites/#a-static-build)).
 - **`stores`** passes this request's [store](/docs/stores/) instances.
 - **`csp`** sets a `Content-Security-Policy` header (see
   [below](#content-security-policy)).
@@ -106,8 +118,9 @@ To avoid fetching again in the browser what the server already loaded, make the 
 the props in `init`: `init: (p) => p.product ? [{ … }] : [{ … }, [load()]]`. Both sides make the
 same decision.
 
-The renderer streams at component boundaries, and it is fast: a 1,000-row table renders to a
-string in about 0.2 ms on Node 24 (1.3 ms including encoding), where Gyral 0.2 took 24 to 28 ms.
+The renderer yields a chunk at every component boundary, and it is fast: a 1,000-row table
+renders to a string in about 0.2 ms on Node 24 (1.3 ms including encoding), where Gyral 0.2 took
+24 to 28 ms.
 
 ## Hydration and the client entry
 
@@ -130,6 +143,7 @@ server-rendered component connects. Pages without one never fetch it. In product
 with the entry: `clientAssetsFromManifest()` from `@gyral/ssr/static` reads the entry and the
 chunks it needs from Vite's manifest, and `renderPage({ modulepreload })` writes a
 `<link rel="modulepreload">` for each (see [Static sites](/docs/static-sites/#a-static-build)).
+The same call returns the hashed CSS your entry imports, for `renderPage({ stylesheets })`.
 
 Every client-side instance then gets the `Hydrated` message once. Use it for progressive
 enhancement: render the no-JavaScript version on the server and in the first client render, then
@@ -211,8 +225,48 @@ export function home(): Response {
 
 The header is built when the page renders, so it lists every shadow component registered by
 then, also those whose modules were imported lazily after startup, plus each entry of the
-page's `styles`. Inline `style="…"` attributes and `<style>` elements you write in `head` aren't
-covered: move that CSS into `styles` or a stylesheet.
+page's `styles`. `<style>` elements you write in `extraHead` aren't covered: move that CSS into
+`styles` or a stylesheet. Linked stylesheets are same-origin, so `style-src 'self'` allows them
+without hashes.
+
+`style="…"` attributes in server HTML aren't covered by default: under a strict policy they
+apply only once the component hydrates (see
+[Styling](/docs/styling/#inline-styles-under-a-strict-csp)). To have them paint at once, opt in
+with `styleAttributes: 'hash'`:
+
+```ts
+// server/upload.ts
+import { html } from '@gyral/core';
+import { renderPage } from '@gyral/ssr';
+
+export function upload(done: number): Response {
+  return renderPage({
+    title: 'Upload',
+    body: html`<div class="bar" style="--done: ${done}%"></div>`,
+    csp: { directives: { 'default-src': "'self'" }, styleAttributes: 'hash' },
+  });
+}
+```
+
+The header then gets `style-src-attr 'unsafe-hashes' 'sha256-…'` for every distinct `style`
+value the page wrote: static, bound and element-hook values, but not `raw()` markup. The page
+is rendered to a string first, so its body isn't sent in chunks, and each value adds about 54
+bytes of header. Development warns above 32 distinct values, and `maxStyleHashes` (default 128)
+caps the list; values past it wait for hydration as before. It applies to pages rendered per
+request: a prerendered page has no per-page header. If your `style-src-attr` already allows
+`'unsafe-inline'`, no hashes are added, since a hash would switch `'unsafe-inline'` off.
+
+### Trusted Types
+
+Gyral parses template HTML and `raw()` markup in the browser through one Trusted Types policy
+named `gyral`, created on first use; client-only apps are covered too. Under
+`require-trusted-types-for 'script'`, a policy that lists allowed policies must include it:
+`'trusted-types': 'gyral'`, plus your own. If the browser refuses the policy, Gyral falls back to
+plain strings, which works only while Trusted Types aren't enforced, and development builds warn
+once ([G0072](/errors/#G0072)). The policy trusts its input as the app's own HTML, so `raw()`
+still never takes user input.
+
+### Ahead of time
 
 `contentSecurityPolicy({ directives, styles? })` builds the same value ahead of time, for the
 components imported before the call. Use it where no page renders per request: a static site
@@ -243,6 +297,7 @@ server code, never from a client entry, so client bundles carry no server render
   `.value=` or `.checked=`, which the server can't write.
 - Load data before rendering; never put a `Promise` in a view.
 - Send a CSP with `renderPage({ csp: { directives } })`; you don't need `'unsafe-inline'`.
-- Preload the entry's chunks and the hydration chunk with `modulepreload`.
+- Preload the entry's chunks and the hydration chunk with `modulepreload`, and link the entry's
+  hashed CSS with `stylesheets`.
 - Test hydration against a production build, not only the dev server. `@gyral/testing`'s
   `mountSsr` and `hydrated` make that a unit test (see [Testing](/docs/testing/#ssr-and-hydration-tests)).

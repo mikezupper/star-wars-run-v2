@@ -9,7 +9,6 @@ import { styleHashes } from '@gyral/core/server';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
 
 // Registering the islands is what makes their styles known.
-await import('../src/islands/site-search.js');
 await import('../src/islands/explore.js');
 // Sorted: the order islands register in is no part of the policy.
 const hashes = [...(await styleHashes())].sort();

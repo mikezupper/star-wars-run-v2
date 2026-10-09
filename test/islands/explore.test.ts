@@ -1,10 +1,10 @@
 import { html } from '@gyral/core';
 import { renderToString } from '@gyral/ssr';
-import { inputsFor, resolve, step } from '@gyral/testing';
+import { inputsFor, readerOf, resolve, step } from '@gyral/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { QueryResult } from '../../src/domain/query.js';
 import { drivers, QUERY_UNAVAILABLE } from '../../src/islands/api.js';
-import { Explore, type Msg, type State } from '../../src/islands/explore.js';
+import { Explore, type State } from '../../src/islands/explore.js';
 import { EXPLORE_TEXT } from '../../src/labels.js';
 
 const spec = Explore.spec;
@@ -32,7 +32,7 @@ afterEach(() => {
 
 describe('explore', () => {
   it('starts static, then ready with the first question, without loading the engine', () => {
-    const hydrated = step(spec, { _tag: 'Static' }, { _tag: 'Hydrated' } as unknown as Msg);
+    const hydrated = step(spec, { _tag: 'Static' }, { _tag: 'Hydrated', serverRendered: true });
     expect(hydrated.state).toEqual(live(EXPLORE_TEXT.presets[0].sql));
     // Only ?ask= is read: nothing loads until someone asks or runs a query.
     expect(hydrated.commands.map((c) => c.driver.name)).toEqual(['ask-location']);
@@ -75,18 +75,26 @@ describe('explore', () => {
   });
 
   it('runs on Ctrl+Enter and the button, not on other keys', () => {
-    const parse = (spec.intent as Record<string, (i: unknown) => unknown>)['Run'];
+    // A parser's second argument is the read-only context: props, state and stores.
+    const ctx = { props: {}, state: live(), read: readerOf([]) };
+    const parsers = spec.intent as unknown as Record<
+      string,
+      (i: unknown, c: typeof ctx) => unknown
+    >;
+    const parse = (input: unknown) => parsers['Run']?.(input, ctx);
     const key = (k: string, ctrl: boolean) => ({
       key: k,
       event: { type: 'keydown', ctrlKey: ctrl, metaKey: false, preventDefault: vi.fn() },
     });
-    expect(parse?.(key('Enter', true))).toEqual({ _tag: 'Run' });
-    expect(parse?.(key('Enter', false))).toBeUndefined();
-    expect(parse?.(key('a', true))).toBeUndefined();
-    expect(parse?.({ event: { type: 'submit' } })).toEqual({ _tag: 'Run' });
-    const other = spec.intent as Record<string, (i: unknown) => unknown>;
-    expect(other['Typed']?.({ value: 'SELECT 3' })).toEqual({ _tag: 'Typed', sql: 'SELECT 3' });
-    expect(other['Preset']?.({ value: '2' })).toEqual({ _tag: 'Preset', index: 2 });
+    expect(parse(key('Enter', true))).toEqual({ _tag: 'Run' });
+    expect(parse(key('Enter', false))).toBeUndefined();
+    expect(parse(key('a', true))).toBeUndefined();
+    expect(parse({ event: { type: 'submit' } })).toEqual({ _tag: 'Run' });
+    expect(parsers['Typed']?.({ value: 'SELECT 3' }, ctx)).toEqual({
+      _tag: 'Typed',
+      sql: 'SELECT 3',
+    });
+    expect(parsers['Preset']?.({ value: '2' }, ctx)).toEqual({ _tag: 'Preset', index: 2 });
   });
 });
 

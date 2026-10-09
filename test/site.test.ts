@@ -77,13 +77,11 @@ describe('every page', () => {
     expect(broken).toEqual([]);
   });
 
-  it('ships only the every-page script, plus the island entry on /search/ and /explore/', () => {
+  it('ships only the every-page script, plus the island entry on /explore/', () => {
     for (const [page, body] of pages) {
       const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
       expect(scripts, page).toEqual(
-        ['/search/', '/explore/'].includes(page)
-          ? ['/assets/page.js', '/assets/entry.js']
-          : ['/assets/page.js'],
+        page === '/explore/' ? ['/assets/page.js', '/assets/entry.js'] : ['/assets/page.js'],
       );
     }
   });
@@ -94,7 +92,7 @@ describe('every page', () => {
     const descriptions = new Set<string>();
     for (const [page, body] of indexed) {
       titles.add(/<title>([^<]*)<\/title>/.exec(body)?.[1] ?? '');
-      descriptions.add(/<meta name="description" content="([^"]*)">/.exec(body)?.[1] ?? '');
+      descriptions.add(/<meta name="description" content="([^"]*)"/.exec(body)?.[1] ?? '');
       expect(body, page).toContain(`<link rel="canonical" href="${absolute(page)}">`);
     }
     expect(titles.size).toBe(indexed.length);
@@ -232,7 +230,7 @@ describe('article pages', () => {
   it('mark Legends articles in the title, heading and a note', () => {
     const legends = pages.get('/characters/luke-skywalker-legends/') ?? '';
     expect(legends).toContain('<title>Luke Skywalker (Legends) · starwars.run</title>');
-    expect(legends).toContain('<h1 data-pagefind-weight="10">Luke Skywalker</h1>');
+    expect(legends).toContain('<h1>Luke Skywalker</h1>');
     expect(legends).toContain('part of Legends');
     expect(luke).not.toContain('part of Legends');
   });
@@ -242,7 +240,7 @@ describe('article pages', () => {
       luke.indexOf('<article>'),
       luke.indexOf('</header>', luke.indexOf('<article>')),
     );
-    expect(header).toMatch(/<p data-pagefind-ignore>Character<\/p>/);
+    expect(header).toMatch(/<p>Character<\/p>/);
     expect(header).toContain('<span data-era="canon">Canon</span>');
     expect(header).toMatch(
       /<a href="\/characters\/luke-skywalker-legends\/" data-era="legends"\s*>Legends version →<\/a/,
@@ -273,13 +271,8 @@ describe('article pages', () => {
       expect(section).toContain(`href="${pathOf(title)}"`);
   });
 
-  it('are indexed for search, filterable by section; other pages are not', () => {
-    for (const [page, body] of pages) {
-      const entry = [...data.archive.byTitle.values()].find((e) => e.path === page);
-      if (entry !== undefined)
-        expect(body, page).toContain(`data-pagefind-filter="kind:${entry.section}"`);
-      else expect(body, page).not.toContain('data-pagefind-body');
-    }
+  it('carry no search-index markup: search reads the data, not the pages (ADR 0011)', () => {
+    for (const [page, body] of pages) expect(body, page).not.toContain('data-pagefind');
   });
 });
 

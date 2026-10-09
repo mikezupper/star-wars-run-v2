@@ -14,7 +14,7 @@ import { ask, type AskDeps } from '../src/domain/ask-pipeline.js';
 import type { QueryResult } from '../src/domain/query.js';
 import { openArchive } from '../src/server/archive.js';
 import { modelClient } from '../src/server/model.js';
-import { titleResolver } from '../src/server/titles.js';
+import { openPages } from '../src/server/pages.js';
 
 interface Case {
   readonly question: string;
@@ -53,7 +53,7 @@ const deps: AskDeps = {
     onText(text);
     return text;
   },
-  resolve: titleResolver(at(`${dist}/search-titles`)),
+  resolve: openPages(at(`${dist}-api/pages.sqlite`)).search.resolve,
   query: (sql) => archive.query(sql, MAX_ROWS + 1),
   schema: () => Promise.resolve(schema),
 };

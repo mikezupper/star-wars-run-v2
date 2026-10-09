@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@gyral/core': file:./vendor/gyral-core-0.3.1-next.1.tgz
-  '@gyral/ssr': file:./vendor/gyral-ssr-0.3.1-next.1.tgz
-  '@gyral/testing': file:./vendor/gyral-testing-0.3.1-next.1.tgz
+  '@gyral/core': file:./vendor/gyral-core-0.3.1-next.6.tgz
+  '@gyral/ssr': file:./vendor/gyral-ssr-0.3.1-next.6.tgz
+  '@gyral/testing': file:./vendor/gyral-testing-0.3.1-next.6.tgz
 
 importers:
 
@@ -17,11 +17,11 @@ importers:
         specifier: 1.5.6-r.1
         version: 1.5.6-r.1
       '@gyral/core':
-        specifier: file:vendor/gyral-core-0.3.1-next.1.tgz
-        version: file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-core-0.3.1-next.6.tgz
+        version: file:vendor/gyral-core-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@gyral/ssr':
-        specifier: file:vendor/gyral-ssr-0.3.1-next.1.tgz
-        version: file:vendor/gyral-ssr-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-ssr-0.3.1-next.6.tgz
+        version: file:vendor/gyral-ssr-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
     devDependencies:
       7zip-bin:
         specifier: ^5.2.0
@@ -45,8 +45,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@gyral/testing':
-        specifier: file:vendor/gyral-testing-0.3.1-next.1.tgz
-        version: file:vendor/gyral-testing-0.3.1-next.1.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+        specifier: file:vendor/gyral-testing-0.3.1-next.6.tgz
+        version: file:vendor/gyral-testing-0.3.1-next.6.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))(vitest@5.0.3)
       '@types/node':
         specifier: 24.19.1
         version: 24.19.1
@@ -65,9 +65,6 @@ importers:
       globals:
         specifier: 17.13.0
         version: 17.13.0
-      pagefind:
-        specifier: 1.5.2
-        version: 1.5.2
       playwright:
         specifier: 1.63.0
         version: 1.63.0
@@ -493,9 +490,9 @@ packages:
   '@fontsource/chakra-petch@5.3.0':
     resolution: {integrity: sha512-QZvbM/q2R6n1pg2x+TJPftZmBNS+ADU37L4Z4L/6UJIz+JZ/SRaEf8usPFRiP7Ht28sIideMu/Bm1SnGlSrwNw==}
 
-  '@gyral/core@file:vendor/gyral-core-0.3.1-next.1.tgz':
-    resolution: {integrity: sha512-CuroWcW8o1QaiXicbExDtV/I6zqwW9yfi2fQCukDhs7SxS9/kC8HXH2Qq2QMKgzjiENOidzzUL6pgKMf0mBZUw==, tarball: file:vendor/gyral-core-0.3.1-next.1.tgz}
-    version: 0.3.1-next.1
+  '@gyral/core@file:vendor/gyral-core-0.3.1-next.6.tgz':
+    resolution: {integrity: sha512-aCItr2b5q6JZgMKOxL3IQtGPpl8PHFbbxbnjAjLI5KULXC/Unsy8gptlJqqIatnDkrbct8CJp2J8ujZY2bDYvg==, tarball: file:vendor/gyral-core-0.3.1-next.6.tgz}
+    version: 0.3.1-next.6
     peerDependencies:
       eslint: ^9.0.0 || ^10.0.0
       parse5: ^7.0.0 || ^8.0.0
@@ -508,17 +505,20 @@ packages:
       vite:
         optional: true
 
-  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.1.tgz':
-    resolution: {integrity: sha512-0RkOlP4q8Eo6zUR3puRk4+Z+zgVgPnPFjXnU3RcwotkOF8VGsDweHg+NWwFICMrXyEFfj+e0P8muWn5K8W8/Gw==, tarball: file:vendor/gyral-ssr-0.3.1-next.1.tgz}
-    version: 0.3.1-next.1
+  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.6.tgz':
+    resolution: {integrity: sha512-KpocWXNp6JDG1vq3AvB4h0iIX5qV5HoUUO3gX9cNt5coksG0OOoTOiSN0pLs3bszENnc6o9lVz3Fe9/gAmW4hQ==, tarball: file:vendor/gyral-ssr-0.3.1-next.6.tgz}
+    version: 0.3.1-next.6
 
-  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.1.tgz':
-    resolution: {integrity: sha512-BpBBy+N2rtkDFFdJjnWszGA/oy93Ej/XoCRAXeODVh8u+2v60bq3aAJ8+TC4tH48PvMsXQvngEL0O9ShMQyFwg==, tarball: file:vendor/gyral-testing-0.3.1-next.1.tgz}
-    version: 0.3.1-next.1
+  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.6.tgz':
+    resolution: {integrity: sha512-0y/XD2qXb7aJRvCwfok2prtgMe1p7R9BfGdgbdwlBGI9RUE7WgkGccCU9QdsTX6O13kzj5HN4Rs4Lec016gIVQ==, tarball: file:vendor/gyral-testing-0.3.1-next.6.tgz}
+    version: 0.3.1-next.6
     peerDependencies:
       fast-check: ^4.0.0
+      vitest: ^4.1.0 || ^5.0.0
     peerDependenciesMeta:
       fast-check:
+        optional: true
+      vitest:
         optional: true
 
   '@humanfs/core@0.19.2':
@@ -580,41 +580,6 @@ packages:
 
   '@oxc-project/types@0.152.0':
     resolution: {integrity: sha512-oM/5rLBm2tPkg0iBgkH/FOeR3PCDpY19GTgAZjMFM8h9WI9VW7cLgzp6nwtarYKmovavIQZ+Fe/RKX/8C8O/Rw==}
-
-  '@pagefind/darwin-arm64@1.5.2':
-    resolution: {integrity: sha512-MXpI+7HsAdPkvJ0gk9xj9g541BCqBZOBbdwj9g6lB5LCj6kSV6nqDSjzcAJwvOsfu0fjwvC8hQU+ecfhp+MpiQ==}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@pagefind/darwin-x64@1.5.2':
-    resolution: {integrity: sha512-IojxFWMEJe0RQ7PQ3KXQsPIImNsbpPYpoZ+QUDrL8fAl/O27IX+LVLs74/UzEZy5uA2LD8Nz1AiwKr72vrkZQw==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@pagefind/freebsd-x64@1.5.2':
-    resolution: {integrity: sha512-7EVzo9+0w+2cbe671BtMj10UlNo83I+HrLVLfRxO731svHRJKUfJ/mo05gU14pe9PCfpKNQT8FS3Xc/oDN6pOA==}
-    cpu: [x64]
-    os: [freebsd]
-
-  '@pagefind/linux-arm64@1.5.2':
-    resolution: {integrity: sha512-Ovt9+K35sqzn8H3ZMXGwls4TD/wMJuvRtShHIsmUQREmaxjrDEX7gHckRCrwYJ4XE1H1p6HkLz3wukrAnsfXQw==}
-    cpu: [arm64]
-    os: [linux]
-
-  '@pagefind/linux-x64@1.5.2':
-    resolution: {integrity: sha512-V+tFqHKXhQKq/WqPBD67AFy7scn1/aZID00ws4fSDd+1daSi5UHR9VVlRrOUYKxn3VuFQYRD7lYXdZK1WED1YA==}
-    cpu: [x64]
-    os: [linux]
-
-  '@pagefind/windows-arm64@1.5.2':
-    resolution: {integrity: sha512-hN9Nh90fNW61nNRCW9ZyQrAj/mD0eRvmJ8NlTUzkbuW8kIzGJUi3cxjFkEcMZ5h/8FsKWD/VcouZl4yo1F7B6g==}
-    cpu: [arm64]
-    os: [win32]
-
-  '@pagefind/windows-x64@1.5.2':
-    resolution: {integrity: sha512-Fa2Iyw7kaDRzGMfNYNUXNW2zbL5FQVDgSOcbDHdzBrDEdpqOqg8TcZ68F22ol6NJ9IGzvUdmeyZypLW5dyhqsg==}
-    cpu: [x64]
-    os: [win32]
 
   '@rolldown/binding-android-arm-eabi@1.2.12':
     resolution: {integrity: sha512-dB/a1214qKfHMXCpgqR4OZT+jS4kTyEXbQGJPqzobt5EwH5rX080pxE37alt3RzvR1bf1Yz/yGqRfrYAxuPw0A==}
@@ -1418,10 +1383,6 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
-  pagefind@1.5.2:
-    resolution: {integrity: sha512-XTUaK0hXMCu2jszWE584JGQT7y284TmMV9l/HX3rnG5uo3rHI/uHU56XTyyyPFjeWEBxECbAi0CaFDJOONtG0Q==}
-    hasBin: true
-
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -2086,7 +2047,7 @@ snapshots:
 
   '@fontsource/chakra-petch@5.3.0': {}
 
-  '@gyral/core@file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/core@file:vendor/gyral-core-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
     dependencies:
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
@@ -2094,22 +2055,23 @@ snapshots:
       parse5: 7.3.0
       vite: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15)
 
-  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/ssr@file:vendor/gyral-ssr-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
     dependencies:
-      '@gyral/core': file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+      '@gyral/core': file:vendor/gyral-core-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@standard-schema/spec': 1.1.0
     transitivePeerDependencies:
       - eslint
       - parse5
       - vite
 
-  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.1.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))':
+  '@gyral/testing@file:vendor/gyral-testing-0.3.1-next.6.tgz(eslint@10.12.0)(fast-check@4.10.2)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))(vitest@5.0.3)':
     dependencies:
-      '@gyral/core': file:vendor/gyral-core-0.3.1-next.1.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
+      '@gyral/core': file:vendor/gyral-core-0.3.1-next.6.tgz(eslint@10.12.0)(parse5@7.3.0)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
       '@sinonjs/fake-timers': 15.4.0
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
       fast-check: 4.10.2
+      vitest: 5.0.3(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(tsx@4.23.15))
     transitivePeerDependencies:
       - eslint
       - parse5
@@ -2165,27 +2127,6 @@ snapshots:
       fastq: 1.20.3
 
   '@oxc-project/types@0.152.0': {}
-
-  '@pagefind/darwin-arm64@1.5.2':
-    optional: true
-
-  '@pagefind/darwin-x64@1.5.2':
-    optional: true
-
-  '@pagefind/freebsd-x64@1.5.2':
-    optional: true
-
-  '@pagefind/linux-arm64@1.5.2':
-    optional: true
-
-  '@pagefind/linux-x64@1.5.2':
-    optional: true
-
-  '@pagefind/windows-arm64@1.5.2':
-    optional: true
-
-  '@pagefind/windows-x64@1.5.2':
-    optional: true
 
   '@rolldown/binding-android-arm-eabi@1.2.12':
     optional: true
@@ -2914,16 +2855,6 @@ snapshots:
   p-locate@5.0.0:
     dependencies:
       p-limit: 3.1.0
-
-  pagefind@1.5.2:
-    optionalDependencies:
-      '@pagefind/darwin-arm64': 1.5.2
-      '@pagefind/darwin-x64': 1.5.2
-      '@pagefind/freebsd-x64': 1.5.2
-      '@pagefind/linux-arm64': 1.5.2
-      '@pagefind/linux-x64': 1.5.2
-      '@pagefind/windows-arm64': 1.5.2
-      '@pagefind/windows-x64': 1.5.2
 
   parent-module@1.0.1:
     dependencies:

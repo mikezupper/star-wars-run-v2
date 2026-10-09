@@ -7,7 +7,7 @@
 import type { ArticleRecord } from './article.js';
 import { displayTitle, type Archive, type Entry } from './archive.js';
 import { QUANTITY_FIELDS, quantities } from './quantities.js';
-import { inboundLinks } from './titles.js';
+import { inboundLinks } from './links.js';
 
 /** The numeric columns, in a fixed order (every row has all of them, null when unknown). */
 export const NUMBER_COLUMNS = [...new Set(Object.values(QUANTITY_FIELDS).map((f) => f.key))].sort();
@@ -19,7 +19,7 @@ export type ArchiveRow = Readonly<Record<string, string | number | null>> & {
   readonly section: string;
   readonly kind: string | null;
   readonly era: string;
-  /** How many articles link to this one: how well known it is (src/domain/titles.ts). */
+  /** How many articles link to this one: how well known it is (src/domain/links.ts). */
   readonly links: number;
   /**
    * The subject: the path of its canon article, shared by a canon article and its Legends twin

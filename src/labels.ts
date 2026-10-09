@@ -374,11 +374,10 @@ export const TEXT = {
   searchKindLabel: 'Show',
   searchAllKinds: 'Everything',
   searchHint:
-    'Type a name: a character, a planet, a ship. Arrow keys move through the results; Escape clears.',
-  searching: 'Searching the archive…',
-  searchNoScript:
-    'Search runs in your browser, and it needs JavaScript. Without it, browse a section instead:',
-  searchFailed: 'The search index didn’t load. Check your connection and try again.',
+    'Type a name: a character, a planet, a ship, a battle. Or a few words from its story.',
+  searchUnavailable:
+    'Search isn’t available in this build: it needs the pages database (pnpm build).',
+  didYouMean: 'Did you mean',
   searchResults: 'Search results',
   askInstead: 'That sounds like a question. Ask the archive instead →',
   noResults: (query: string): string =>

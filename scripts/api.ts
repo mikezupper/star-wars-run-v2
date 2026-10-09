@@ -2,11 +2,10 @@
 // The app (ADRs 0010, 0011): the container's entry point, an HTTP server around the handler in
 // src/server/. Caddy forwards every page and /api/* here. Bundled to one file by
 // `pnpm build:api`; only DuckDB's native module stays outside the bundle.
-//   API_DATA: pages.sqlite, archive.duckdb, ask-schema.json and search-titles/ (default /app/data)
+//   API_DATA: pages.sqlite, archive.duckdb and ask-schema.json (default /app/data)
 //   QUESTIONS_DB: the question log (default /data/questions.duckdb, a volume)
 //   ASK_ORIGIN, ASK_KEY, ASK_MODEL: the model; PORT (default 8090)
 import http from 'node:http';
-import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { openApi } from '../src/server/open.js';
@@ -15,7 +14,6 @@ const data = process.env['API_DATA'] ?? '/app/data';
 const api = await openApi(
   {
     dataDir: data,
-    titlesDir: join(data, 'search-titles'),
     logFile: process.env['QUESTIONS_DB'] ?? '/data/questions.duckdb',
   },
   process.env,

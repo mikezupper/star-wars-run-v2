@@ -11,7 +11,7 @@ FROM node:24-slim AS build
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
-# Gyral 0.3.1-next.1 installs from vendor/ until 0.3.1 is on npm (vendor/README.md).
+# Gyral 0.3.1-next.6 installs from vendor/ until 0.3.1 is on npm (vendor/README.md).
 COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
@@ -38,7 +38,6 @@ RUN npm install --no-save --omit=dev --no-audit --no-fund \
     && rm package.source.json
 COPY --from=build /app/.server/api.mjs ./
 COPY --from=build /app/dist-api/archive.duckdb /app/dist-api/ask-schema.json /app/dist-api/pages.sqlite /app/data/
-COPY --from=build /app/dist/search-titles /app/data/search-titles
 RUN mkdir /data && chown node:node /data
 USER node
 ENV API_DATA=/app/data QUESTIONS_DB=/data/questions.duckdb PORT=8090 NODE_ENV=production
