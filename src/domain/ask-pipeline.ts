@@ -77,7 +77,8 @@ export async function ask(
     try {
       return await deps.chat(messages, schema);
     } catch (cause) {
-      throw new Unavailable(String(cause));
+      // The model's own error is the cause, so the server can log why (src/server/ask.ts).
+      throw new Unavailable(cause instanceof Error ? cause.message : String(cause), { cause });
     }
   };
   emit({ _tag: 'Reading' });

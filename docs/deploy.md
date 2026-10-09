@@ -119,8 +119,9 @@ new data is its own step (above).
 - `GET /api/health` answers 200 once the api container has opened its data; its Docker health
   check uses it, and the site container waits for it.
 - Logs: `docker compose logs -f api` (and `site`). Rotation is set in `compose.yml` (5 × 10 MB).
-  When Ask can't reach the model, the visitor sees "The AI that reads questions isn't answering";
-  the reason isn't logged yet (`swr-ddp`).
+  When Ask can't reach the model, the visitor sees "The AI that reads questions isn't answering"
+  and the api's log says why, with `ask: the model is unavailable` and the HTTP status or network
+  error. A failure that looks temporary (no answer, 429, 5xx) is retried once before that.
 
 ### Backups
 

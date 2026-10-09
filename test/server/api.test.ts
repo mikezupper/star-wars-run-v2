@@ -100,14 +100,24 @@ describe('the archive, locked down', () => {
 });
 
 describe('the API', () => {
+  /** What the API reported to the server's log, for the test that reads it. */
+  let reported: { problem: string; cause: unknown }[] = [];
   const api = (questions: QuestionLog = log) =>
     createApi({
       archive,
       resolve: pages.search.resolve,
       search: pages.search.search,
       schema: () => Promise.resolve({ kinds: {}, fields: {} }),
-      model: { origin: 'https://model.example', key: 'server-key', model: 'test-model' },
+      model: {
+        origin: 'https://model.example',
+        key: 'server-key',
+        model: 'test-model',
+        retryMs: 0,
+      },
       log: questions,
+      report: (problem, cause) => {
+        reported.push({ problem, cause });
+      },
     });
   /** Asks through an API with a log of its own, then reads that log back. */
   const askAndRead = async (question: string) => {
@@ -198,10 +208,13 @@ describe('the API', () => {
     ]);
   });
 
-  it('streams a failure with its reason, and logs it', async () => {
+  it('streams a failure with its reason, logs it, and reports why to the server', async () => {
+    reported = [];
     vi.stubGlobal('fetch', () => Promise.resolve(new Response('down', { status: 503 })));
     const { steps, logged } = await askAndRead('Who comes from Hoth?');
     expect(steps.at(-1)).toEqual({ _tag: 'Failed', reason: 'unavailable' });
+    expect(reported.map((r) => r.problem)).toEqual(['ask: the model is unavailable']);
+    expect((reported[0]?.cause as Error).message).toContain('HTTP 503');
     expect(logged).toEqual([
       {
         question: 'Who comes from Hoth?',
