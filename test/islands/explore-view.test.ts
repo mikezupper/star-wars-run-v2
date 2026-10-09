@@ -39,6 +39,25 @@ describe('Ask’s results', () => {
     ]);
   });
 
+  it('fold twins with different names by their pair, under the canon name', () => {
+    const merged = mergeEras({
+      ...result(
+        ['name', 'path', 'era', 'pair'],
+        [
+          ['Palpatine', '/characters/palpatine-legends/', 'legends', '/characters/darth-sidious/'],
+          ['Darth Sidious', '/characters/darth-sidious/', 'canon', '/characters/darth-sidious/'],
+          ['Yoda', '/characters/yoda/', 'canon', '/characters/yoda/'],
+        ],
+      ),
+      extra: ['pair'],
+    });
+    expect(merged.columns).toEqual(['name']);
+    expect(merged.rows.map((r) => [r.cells, r.path, r.eras.map((e) => e.era)])).toEqual([
+      [['Darth Sidious'], '/characters/darth-sidious/', ['canon', 'legends']],
+      [['Yoda'], '/characters/yoda/', ['canon']],
+    ]);
+  });
+
   it('keep rows apart when their values differ', () => {
     const merged = mergeEras(
       result(

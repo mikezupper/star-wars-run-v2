@@ -9,7 +9,7 @@ import type { AskEvent } from '../../src/domain/ask-pipeline.js';
 import { exploreRows } from '../../src/domain/rows.js';
 import { inboundLinks, titleShards } from '../../src/domain/titles.js';
 import { ASK_PATH, createApi, parseAsk, QUERY_PATH } from '../../src/server/api.js';
-import { openArchive, QueryTimeout, type Archive } from '../../src/server/archive.js';
+import { openArchive, QueryTimeout, withPairs, type Archive } from '../../src/server/archive.js';
 import { openQuestionLog, type QuestionLog } from '../../src/server/questions.js';
 import { titleResolver } from '../../src/server/titles.js';
 import { fixtureSiteData } from '../fixtures/archive.js';
@@ -71,6 +71,25 @@ describe('the archive, locked down', () => {
       archive.query('SELECT count(*) FROM range(100000000000)', 10),
     ).rejects.toBeInstanceOf(QueryTimeout);
     expect((await archive.query('SELECT 1', 10)).rows).toEqual([[1]]);
+  });
+
+  it('adds each row’s pair beside its path, marked as extra, unless the query chose it', async () => {
+    const r = await archive.query(
+      "SELECT name, path FROM archive WHERE title IN ('Luke Skywalker', 'Luke Skywalker/Legends') ORDER BY title",
+      10,
+    );
+    expect(r.columns).toEqual(['name', 'path', 'pair']);
+    expect(r.extra).toEqual(['pair']);
+    expect(r.rows.map((row) => row[2])).toEqual([
+      '/characters/luke-skywalker/',
+      '/characters/luke-skywalker/',
+    ]);
+    const chosen = await archive.query("SELECT path, pair FROM archive WHERE title = 'Hoth'", 10);
+    expect(chosen.extra).toBeUndefined();
+    expect((await archive.query('SELECT 1 AS n', 10)).columns).toEqual(['n']);
+    expect(
+      withPairs({ columns: ['path'], rows: [['/x/']], truncated: false, ms: 1 }, new Map()),
+    ).toEqual({ columns: ['path'], rows: [['/x/']], truncated: false, ms: 1 });
   });
 
   it('caps the rows and says so', async () => {

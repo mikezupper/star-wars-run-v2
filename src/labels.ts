@@ -274,7 +274,7 @@ export const EXPLORE_TEXT = {
   failed: (reason: string): string => `The query didn't run: ${reason}`,
   tablesHeading: 'The tables',
   archiveTable:
-    'archive: one row per article. title, name, path, section, kind, era, links (how many articles link to it), and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
+    'archive: one row per article. title, name, path, section, kind, era, links (how many articles link to it), pair (the canon article’s path, shared by an article and its Legends twin), and numbers where the article has them: height_m, mass_kg, length_m, wingspan_m, depth_m, diameter_km, population, crew, passengers, cost_credits, max_speed_kph, mglt, hyperdrive_class, day_hours, year_days.',
   factsTable:
     'facts: one row per infobox value. title, field, item (0 for the first), text, and link: the article it points to (homeworld → Tatooine).',
   appearancesTable:
