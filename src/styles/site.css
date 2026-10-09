@@ -672,6 +672,8 @@
    */
   article {
     display: grid;
+    /* minmax(0, …): a long word can't widen the column past the page (swr-3v9). */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--gap);
     align-items: start;
     container-type: inline-size;
@@ -684,6 +686,7 @@
     /* Title block: the kind, the title, then its era, the other version and its link count. */
     & > header {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 0.6rem;
       padding-block-end: var(--gap);
       border-block-end: var(--rule-width) solid var(--rule);
@@ -706,6 +709,43 @@
         font-family: var(--font-mono);
         font-size: var(--step--1);
         text-transform: uppercase;
+      }
+
+      /*
+       * A title with a long word (titleFit in src/render/article.ts) shrinks only as far as that
+       * word needs to fit the article's width: about 0.56em per capital, so 100 / (0.56 × the
+       * step) container units. Wide pages keep the normal size. Hyphens break what still won't.
+       */
+      & > h1 {
+        hyphens: auto;
+      }
+
+      & > h1[data-fit] {
+        font-size: min(var(--h1-size), var(--fit));
+      }
+
+      & > h1[data-fit='13'] {
+        --fit: 13.7cqi;
+      }
+
+      & > h1[data-fit='15'] {
+        --fit: 11.9cqi;
+      }
+
+      & > h1[data-fit='17'] {
+        --fit: 10.5cqi;
+      }
+
+      & > h1[data-fit='20'] {
+        --fit: 8.9cqi;
+      }
+
+      & > h1[data-fit='24'] {
+        --fit: 7.4cqi;
+      }
+
+      & > h1[data-fit='29'] {
+        --fit: 6.1cqi;
       }
 
       & [data-era] {

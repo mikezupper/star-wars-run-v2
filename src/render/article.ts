@@ -25,6 +25,18 @@ import {
 import { creditLine } from './credit.js';
 import { breadcrumb, type PageMeta } from './layout.js';
 
+/**
+ * The size step for a title whose longest word wouldn't fit the title's normal size on a phone
+ * (src/styles/site.css, `h1[data-fit]`): the word's length, rounded up to a step. Lines can
+ * break at spaces, hyphens and slashes, so those end a word. Undefined for titles that fit.
+ */
+const FIT_STEPS = [13, 15, 17, 20, 24, 29] as const;
+export function titleFit(title: string): (typeof FIT_STEPS)[number] | undefined {
+  const longest = Math.max(...title.split(/[\s/\u2010-\u2015-]+/u).map((w) => w.length));
+  if (longest < FIT_STEPS[0]) return undefined;
+  return FIT_STEPS.find((step) => longest <= step) ?? FIT_STEPS[FIT_STEPS.length - 1];
+}
+
 /** Rich text as HTML: each link to a page in the archive, or plain text when it has none. */
 export const rich = (runs: Rich, archive: Archive) =>
   runs.map((run) => {
@@ -188,7 +200,7 @@ export function articleBody(
     <article>
       <header>
         <p>${kindLabel(record.kind, entry.section)}</p>
-        <h1>${displayTitle(entry.title)}</h1>
+        <h1 data-fit=${titleFit(displayTitle(entry.title))}>${displayTitle(entry.title)}</h1>
         <p>
           <span data-era=${entry.era}>${entry.era === 'legends' ? TEXT.legends : TEXT.canon}</span>
           ${
