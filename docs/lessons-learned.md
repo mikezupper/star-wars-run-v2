@@ -13,6 +13,22 @@ Each entry has four parts:
 
 ---
 
+## Long titles widened article pages on phones (2026-10-09)
+
+- **Symptom:** the full-build smoke run (`SMOKE_PAGES=1000`) failed after the PR stack merged:
+  six pages scrolled sideways at 360px, five "(disambiguation)" pages by 5px and
+  `/other/holodocumentarian/` by 69px. `pnpm check` passed, because its sample build has no
+  such title.
+- **Cause:** the article and its title block are grids with no column size at phone width, so
+  their implicit `auto` column grows to the longest unbreakable word. At the title's size,
+  "HOLODOCUMENTARIAN" needs 413px against 313px. `overflow-wrap: break-word` doesn't help: it
+  doesn't lower the minimum width a grid track is sized from.
+- **Fix:** `minmax(0, 1fr)` columns, and `titleFit()` in `src/render/article.ts` marks a title
+  with a long word (`data-fit`), which the CSS shrinks only as far as that word needs to fit
+  the article's width. `hyphens: auto` covers what still won't fit (`swr-3v9`).
+- **Guard:** `test/render/article.test.ts` covers `titleFit()`; the smoke's 360px overflow
+  check catches it on a full build. The gate's sample has no long title yet: `swr-e7p`.
+
 ## The Ask smoke query hid Luke beyond the displayed rows (2026-10-07)
 
 - **Symptom:** the full-archive smoke test failed its Luke Skywalker link assertion for
