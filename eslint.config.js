@@ -111,7 +111,7 @@ export default tseslint.config(
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
-    files: ['src/page.ts', 'src/hyperspace.ts'],
+    files: ['src/page.ts', 'src/hyperspace.ts', 'src/previews.ts'],
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {

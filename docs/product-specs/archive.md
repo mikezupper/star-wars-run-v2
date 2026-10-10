@@ -57,6 +57,24 @@ Browsers without the effect, and visitors without JavaScript, see only the worki
 - **Credit:** every article names and links its Wookieepedia source and CC BY-SA 3.0
   ([CONTENT-LICENSE.md](../../CONTENT-LICENSE.md)).
 
+## Link previews
+
+On devices with a fine pointer and hover, hovering or focusing an article link in the main
+content opens a card with its name, continuity, first sentence and up to three facts. Long
+sentences and facts are clipped to keep the card small. It uses a native popover and anchor
+positioning, without moving the page. Unsupported browsers keep ordinary links.
+
+The card stays open while its link or content has focus or the pointer is over either. Tab
+from the source link reaches the card. Escape or “Close preview” dismisses it; dismissal from
+inside the card returns focus to the link. Moving between links cancels the earlier request,
+so a late response cannot replace the current article. Explore's result links have the same
+behavior and accessible descriptions across their shadow root.
+
+`GET /api/preview?path=<article-path>` reads one article from SQLite and returns bounded plain
+text, cached like a page. Unknown paths return a short-cached 404. The browser retains up to
+40 previews. Touch, no JavaScript, an unavailable endpoint and browsers without the needed
+features keep normal navigation.
+
 ## Appearances
 
 Wookieepedia's Appearances section means two things, and the page shows each its own way:
@@ -89,6 +107,12 @@ first appearance, mentioned only, in a flashback, as a hologram and so on. A lis
 - A Legends article says it's Legends; its canon namesake has a different URL
   (`luke-skywalker` and `luke-skywalker-legends`).
 - Every page passes axe in light and dark, and works at 360px.
+- The sample always includes Holodocumentarian and Trithiannelyzaccarondoritha. Both fit at
+  360px in light and dark; restoring the old grid tracks and unbroken full-size title makes
+  the browser overflow check fail.
+- Previews pass axe in light and dark, stay within the viewport, keep keyboard focus on the
+  source until Tab, allow pointer access, and dismiss with Escape. Touch links navigate
+  without requesting a preview; a failed fetch leaves the article link usable.
 - The random-article jump shows points, then radial light trails, then its article. Escape
   skips it, and reduced motion turns it off. No temporary stars remain after the transition
   or a return with Back.

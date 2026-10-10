@@ -3,6 +3,7 @@
 // - POST /api/ask {question, history}: Ask the archive, as server-sent events, one per step, then
 //   the answer (or why there isn't one).
 // - POST /api/query {sql}: the SQL editor's query, as JSON.
+// - GET /api/search?q=… and /api/preview?path=…: cached suggestions and article cards.
 // - GET /api/health: 200, for Docker.
 import { checkSql } from '../domain/ask.js';
 import type { AskInput } from '../domain/ask-pipeline.js';
@@ -17,6 +18,7 @@ export const QUERY_PATH = '/api/query';
 export const HEALTH_PATH = '/api/health';
 /** Search as you type (ADR 0011): GET, cacheable, since results change only with a build. */
 export const SEARCH_PATH = CACHED_API;
+export const PREVIEW_PATH = '/api/preview';
 /** At most this many suggestions, and this long a query. */
 const SEARCH_LIMIT = 8;
 const SEARCH_QUERY = 100;
@@ -86,6 +88,18 @@ export function createApi(context: AskContext): (request: Request) => Promise<Re
     const path = new URL(request.url).pathname;
     if (path === HEALTH_PATH) return json(200, { ok: true });
     if (path === SEARCH_PATH) return searchResponse(request, context);
+    if (path === PREVIEW_PATH) {
+      if (request.method !== 'GET') return error(405, 'Only GET is allowed.');
+      if (context.preview === undefined) return error(503, 'Previews aren’t available.');
+      const found = context.preview(new URL(request.url).searchParams.get('path') ?? '');
+      return new Response(JSON.stringify(found ?? { error: 'Not found.' }), {
+        status: found === undefined ? 404 : 200,
+        headers: {
+          'content-type': 'application/json',
+          'cache-control': found === undefined ? CACHE.notFound : CACHE.pages,
+        },
+      });
+    }
     if (path !== ASK_PATH && path !== QUERY_PATH) return error(404, 'Not found.');
     if (request.method !== 'POST') return error(405, 'Only POST is allowed.');
     let body: unknown;

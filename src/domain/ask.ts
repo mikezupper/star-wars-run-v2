@@ -8,6 +8,7 @@
 // check and run it, summarize the rows.
 import type { ArchiveRow, FactRow } from './rows.js';
 import { SECTIONS, type Section } from './sections.js';
+import { summaryInformation } from './ask-summary.js';
 
 /** A chat message, as the OpenAI chat API takes it. */
 export interface Message {
@@ -131,7 +132,6 @@ export const QUERY_SCHEMA = {
 
 /** The most rows an answer lists; one more is fetched to know whether there were more. */
 export const MAX_ROWS = 200;
-const SUMMARY_ROWS = 25;
 
 const PLAN_SYSTEM = `You read questions about Star Wars for a search engine over Wookieepedia.
 List every proper name in the question: characters, species, planets, organizations, ships,
@@ -296,12 +296,18 @@ export function checkSql(
   return { sql: `SELECT * FROM (${body}) AS answer LIMIT ${String(limit)}` };
 }
 
-const SUMMARY_SYSTEM = `You answer questions about Star Wars from the rows of a database query
-over Wookieepedia. The rows are the answer: say what they show. A value is the answer even when
+const SUMMARY_SYSTEM = `You answer questions about Star Wars from a database query
+over Wookieepedia. The supplied data is the answer: say what it shows. A value is the answer even when
 it reads oddly ("Yoda's species" is the name of Yoda's species).
-Write one or two short, plain sentences. Use only the rows: never add facts, names or numbers
-that aren't in them. Name at most three. If there are no rows, say nothing matched.
-The same name in canon and in Legends is one result: count names, not rows.
+Write one or two short, plain sentences. Use only the supplied answer data: never add facts,
+names or numbers that aren't in it. Name at most three example subjects.
+For kind=subjects, state the supplied count and mention only the supplied examples, if useful.
+The count already agrees with the table's canon/Legends grouping: never count the examples
+as the total. If countIsLowerBound is true, say "at least"; never claim an exact total or
+"more than" that number. If the count is zero, say nothing matched.
+For kind=values, answer using the actual values (including counts, measurements and categories).
+Never replace an aggregate value with the number of rows. If values is empty, say nothing matched.
+If truncated is true, make clear the answer is incomplete.
 The query shows which fact matched. When that fact's word is broader than the question's (the
 question says "wife", the query matched "partners"), use the fact's word: "Han Solo's
 partners", not "his wives".
@@ -315,25 +321,14 @@ export function summaryMessages(
   truncated: boolean,
   sql = '',
 ): Message[] {
-  const shown = rows
-    .slice(0, SUMMARY_ROWS)
-    .map((r) =>
-      Object.fromEntries(
-        columns.map((c, i): [string, unknown] => [c, plain(r[i])]).filter(([c]) => c !== 'path'),
-      ),
-    );
-  const count = truncated ? `more than ${String(rows.length)}` : String(rows.length);
   return [
     { role: 'system', content: SUMMARY_SYSTEM },
     {
       role: 'user',
-      content: `Question: ${question}\n${sql === '' ? '' : `Query: ${sql}\n`}Rows: ${count}.\n${JSON.stringify(shown)}`,
+      content: `Question: ${question}\n${sql === '' ? '' : `Query: ${sql}\n`}Answer data:\n${JSON.stringify(summaryInformation(columns, rows, truncated))}`,
     },
   ];
 }
-
-/** Counts come back from DuckDB as BigInt, which JSON can't write. */
-const plain = (v: unknown): unknown => (typeof v === 'bigint' ? Number(v) : v);
 
 /** Finds the JSON in a reply; models sometimes wrap it in prose or a code fence. */
 export function parseJson(content: string): unknown {

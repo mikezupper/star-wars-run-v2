@@ -57,7 +57,7 @@ export async function openApi(
     resolve:
       pages?.search.resolve ??
       ((names) => Promise.resolve(names.map((asked) => ({ asked, titles: [] })))),
-    ...(pages === undefined ? {} : { search: pages.search.search }),
+    ...(pages === undefined ? {} : { search: pages.search.search, preview: pages.preview }),
     schema: () =>
       (schema ??= readFile(join(files.dataDir, 'ask-schema.json'), 'utf8').then(
         (t) => JSON.parse(t) as AskSchema,

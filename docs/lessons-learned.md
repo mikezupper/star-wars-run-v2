@@ -13,6 +13,34 @@ Each entry has four parts:
 
 ---
 
+## Preview delegation missed focus changes inside Explore (2026-10-10)
+
+- **Symptom:** the new card opened on article pages, but focusing an Explore result from
+  the SQL preset button left it closed.
+- **Cause:** delegation listened only on `document`. Focus and pointer transitions between
+  children of the same shadow root can stay within that root. An ID-based description also
+  could not refer from the shadow link to the card in the document.
+- **Fix:** delegate within the server-rendered shadow roots as well, and assign the
+  description through `ariaDescribedByElements`, which can reference the parent document
+  ([scope rules](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Reflected_attributes#reflected_element_reference_scope),
+  `swr-3so`).
+- **Guard:** browser smoke moves focus from a preset to a result, hovers between result
+  links, checks the description reference, and verifies Tab, Escape and the close button.
+
+## Ask summaries enumerated results and counted twins twice (2026-10-10)
+
+- **Symptom:** summaries could name many subjects despite the three-example instruction,
+  and their count could disagree with the table's canon/Legends grouping.
+- **Cause:** the model received up to 25 raw rows and their raw count. Only the browser
+  grouped twins; the summary prompt still exposed enough names for a long enumeration.
+- **Fix:** the summary and table share the grouping function. Lists send the grouped count
+  and only three examples; capped counts are lower bounds. Scalar and aggregate answers keep
+  every returned value, including continuity categories (`swr-ys4.7`).
+- **Guard:** unit tests cover large lists, differently named twins, differing fact values,
+  upstream truncation and scalar/category aggregates. Three live summary calls verified 127
+  Tatooine characters with three examples, one grouped Darth Sidious/Palpatine subject, and
+  the 227,272-article count. The gate stubs the model; it cannot guarantee live wording.
+
 ## Letter indexes sent thousands of rows in one response (2026-10-10)
 
 - **Symptom:** the full archive's Media S index sent 6,233 articles in 797 KB of HTML;
@@ -91,8 +119,11 @@ Each entry has four parts:
 - **Fix:** `minmax(0, 1fr)` columns, and `titleFit()` in `src/render/article.ts` marks a title
   with a long word (`data-fit`), which the CSS shrinks only as far as that word needs to fit
   the article's width. `hyphens: auto` covers what still won't fit (`swr-3v9`).
-- **Guard:** `test/render/article.test.ts` covers `titleFit()`; the smoke's 360px overflow
-  check catches it on a full build. The gate's sample has no long title yet: `swr-e7p`.
+- **Guard:** `test/render/article.test.ts` covers `titleFit()`. The gate's sample always
+  includes Holodocumentarian and Trithiannelyzaccarondoritha, checked at 360px in light and
+  dark. Smoke also restores the old grid tracks and unbroken full-size heading, and requires
+  the overflow detector to catch that combined regression (`swr-e7p`). Removing `data-fit`
+  alone does not reproduce the bug because the other layout protections still apply.
 
 ## The Ask smoke query hid Luke beyond the displayed rows (2026-10-07)
 

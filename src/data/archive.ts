@@ -21,6 +21,9 @@ export const FEATURED = [
   'Galactic Empire',
   'Battle of Yavin',
   'Padmé Amidala Naberrie',
+  // Real extremes protect the phone layout regardless of alphabetical sampling (swr-e7p).
+  'Holodocumentarian',
+  'Trithiannelyzaccarondoritha',
 ] as const;
 
 export async function loadSiteData(

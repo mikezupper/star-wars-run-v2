@@ -72,19 +72,20 @@ export const CACHE = {
     'public, max-age=300, s-maxage=604800, stale-while-revalidate=86400, stale-if-error=604800',
   /** The 404 page: short, so a page that appears after a deploy isn't hidden for long. */
   notFound: 'public, max-age=60',
-  /** Ask's answers and SQL results (/api/): each one is for one visitor, once. /api/search,
-   *  whose results change only with a build, is cached like a page. */
+  /** Ask's answers and SQL results (/api/): each one is for one visitor, once. Search and
+   * article previews change only with a build and are cached like pages. */
   api: 'no-store',
 } as const;
 
 /** Paths whose file names are content hashes: Vite's output. */
 export const HASHED_PATHS = ['/assets/'] as const;
 
-/** The one API path whose answers anyone may cache (src/server/api.ts). */
+/** Search's endpoint and the public API paths (src/server/api.ts). */
 export const CACHED_API = '/api/search';
+export const CACHED_APIS = [CACHED_API, '/api/preview'] as const;
 
 export function cacheControl(path: string, status: number): string {
-  if (path === CACHED_API) return CACHE.pages;
+  if (CACHED_APIS.some((p) => p === path)) return status === 404 ? CACHE.notFound : CACHE.pages;
   if (path.startsWith('/api/')) return CACHE.api;
   if (status === 404) return CACHE.notFound;
   if (HASHED_PATHS.some((p) => path.startsWith(p))) return CACHE.assets;
@@ -142,10 +143,10 @@ ${security('\t')}
 \t# Deferred (>), so it replaces the type Caddy guesses from .json.
 \theader ${SPECULATION_RULES.path} >Content-Type ${quote(SPECULATION_RULES.type)}
 \t# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a
-\t# second. Search's answers are the exception: cached like pages, as the app says.
+\t# second. Search and article previews are cached like pages, as the app says.
 \t@private {
 \t\tpath /api/*
-\t\tnot path ${CACHED_API}
+\t\tnot path ${CACHED_APIS.join(' ')}
 \t}
 \theader @private >Cache-Control ${quote(CACHE.api)}
 

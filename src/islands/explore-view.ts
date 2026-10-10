@@ -3,7 +3,8 @@
 // and Ask the archive.
 import { css, html, nothing } from '@gyral/core';
 import { EXPLORE_TEXT } from '../labels.js';
-import type { QueryResult, Value } from '../domain/query.js';
+import { mergeEras, type QueryResult } from '../domain/query.js';
+export { mergeEras } from '../domain/query.js';
 
 /** Where a SQL run is. */
 export type Result =
@@ -54,63 +55,6 @@ const ERAS: Readonly<Record<string, string>> = { canon: 'Canon', legends: 'Legen
  * The results; `name` links to `path` when both are columns, and `path` itself is hidden.
  * `readable` (Ask the archive) labels columns for readers instead of showing their SQL names.
  */
-
-/** One row of Ask's table: its cells (no path, no era), where its name links, and its eras. */
-export interface MergedRow {
-  readonly cells: readonly Value[];
-  readonly path: string | null;
-  readonly eras: readonly { readonly era: string; readonly path: string | null }[];
-}
-
-/**
- * Ask's rows with canon and Legends folded together (swr-ca3.1): rows equal in everything but
- * era and path become one, whose name links to the canon page, with a badge per era linking
- * to each. Rows that differ (heights that disagree, say) stay apart, each with its own badge.
- * Without an era column, rows pass through as they are.
- */
-export function mergeEras(r: QueryResult): {
-  readonly columns: readonly string[];
-  readonly rows: readonly MergedRow[];
-} {
-  const pathAt = r.columns.indexOf('path');
-  const eraAt = r.columns.indexOf('era');
-  // `pair` (the subject's canon path, swr-cd6) joins twins whose names differ: Darth Sidious
-  // and Palpatine. Their names don't count toward "equal in everything", and the row shows the
-  // canon name.
-  const pairAt = r.columns.indexOf('pair');
-  const nameAt = r.columns.indexOf('name');
-  const keep = r.columns
-    .map((_, n) => n)
-    .filter((n) => n !== pathAt && n !== eraAt && n !== pairAt);
-  const columns = keep.map((n) => r.columns[n] ?? '');
-  const pathOf = (row: readonly Value[]) => {
-    const p = pathAt >= 0 ? row[pathAt] : null;
-    return typeof p === 'string' ? p : null;
-  };
-  const groups = new Map<
-    string,
-    { cells: Value[]; eras: { era: string; path: string | null }[] }
-  >();
-  for (const row of r.rows) {
-    const cells = keep.map((n) => row[n] ?? null);
-    const era = eraAt >= 0 ? row[eraAt] : null;
-    const pair = pairAt >= 0 ? row[pairAt] : null;
-    const key =
-      typeof pair === 'string'
-        ? JSON.stringify([pair, ...keep.map((n, i) => (n === nameAt ? null : cells[i]))])
-        : JSON.stringify(cells);
-    const group = groups.get(key) ?? { cells, eras: [] };
-    if (era === 'canon') group.cells = cells;
-    if (typeof era === 'string') group.eras.push({ era, path: pathOf(row) });
-    else if (group.eras.length === 0) group.eras.push({ era: '', path: pathOf(row) });
-    groups.set(key, group);
-  }
-  const rows = [...groups.values()].map(({ cells, eras }) => {
-    const ordered = [...eras].sort((a, b) => (a.era === 'canon' ? -1 : b.era === 'canon' ? 1 : 0));
-    return { cells, path: ordered[0]?.path ?? null, eras: ordered.filter((e) => e.era !== '') };
-  });
-  return { columns, rows };
-}
 
 /** Ask's results: one row per name, labelled for readers, with Canon and Legends badges. */
 function readableTable(r: QueryResult) {

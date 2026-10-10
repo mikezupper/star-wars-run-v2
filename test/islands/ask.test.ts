@@ -105,6 +105,26 @@ describe('the ask pipeline', () => {
     expect(answer.summary).toBe('');
   });
 
+  it('counts twins together and keeps a truncation reported by the database', async () => {
+    const result: QueryResult = {
+      columns: ['name', 'path', 'era', 'pair'],
+      rows: [
+        ['Darth Sidious', '/characters/darth-sidious/', 'canon', '/characters/darth-sidious/'],
+        ['Palpatine', '/characters/palpatine/', 'legends', '/characters/darth-sidious/'],
+      ],
+      truncated: true,
+      ms: 5,
+    };
+    const deps = fakes([plan, query('SELECT * FROM archive')], () => Promise.resolve(result));
+    const events: AskEvent[] = [];
+    const answer = await ask({ question: 'q', history: [] }, deps, (e) => events.push(e));
+    expect(events).toContainEqual({ _tag: 'Found', count: 1, truncated: true });
+    expect(answer.result).toEqual(result);
+    const messages = vi.mocked(deps.stream).mock.calls[0]?.[0] ?? [];
+    expect(messages.at(-1)?.content).toContain('"count":1,"countIsLowerBound":true');
+    expect(messages.at(-1)?.content).toContain('"continuities":["canon","legends"]');
+  });
+
   it('reports an unreachable model as Unavailable, and a hopeless question otherwise', async () => {
     const deps = {
       ...fakes([], () => Promise.resolve(rows(1))),

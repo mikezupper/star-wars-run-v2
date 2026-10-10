@@ -107,6 +107,7 @@ describe('the API', () => {
       archive,
       resolve: pages.search.resolve,
       search: pages.search.search,
+      preview: pages.preview,
       schema: () => Promise.resolve({ kinds: {}, fields: {} }),
       model: {
         origin: 'https://model.example',
@@ -137,6 +138,25 @@ describe('the API', () => {
   };
   const post = (path: string, body: unknown) =>
     new Request(`https://starwars.run${path}`, { method: 'POST', body: JSON.stringify(body) });
+  it('reads small cached previews from SQLite and keeps article and index paths distinct', async () => {
+    const response = await api()(
+      new Request('https://starwars.run/api/preview?path=%2Fcharacters%2Fluke-skywalker%2F'),
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe(CACHE.pages);
+    expect(await response.json()).toMatchObject({
+      name: 'Luke Skywalker',
+      path: '/characters/luke-skywalker/',
+      section: 'characters',
+      era: 'canon',
+    });
+    const missing = await api()(
+      new Request('https://starwars.run/api/preview?path=/characters/letters/l/'),
+    );
+    expect(missing.status).toBe(404);
+    expect(missing.headers.get('cache-control')).toBe(CACHE.notFound);
+    expect((await api()(post('/api/preview', {}))).status).toBe(405);
+  });
   const events = async (res: Response): Promise<AskEvent[]> =>
     (await res.text())
       .split('\n\n')

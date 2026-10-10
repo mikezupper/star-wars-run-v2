@@ -38,20 +38,20 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer                              | Runs                                  | Contains                                                                                    | May import                                                                                 |
-| ---------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `src/site.ts`                      | server and browser                    | Site-wide constants: origin, name, description                                              | nothing                                                                                    |
-| `src/labels.ts`                    | server and browser                    | Every user-facing string (copy lives here only)                                             | `src/domain/` (types)                                                                      |
-| `src/domain/`                      | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
-| `src/ingest/`                      | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
-| `src/data/`                        | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
-| `src/render/`                      | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`                     | browser (and server)                  | Search suggestions and Explore's Gyral components and API clients                           | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
-| `src/page.ts`, `src/hyperspace.ts` | browser                               | Page controls and native view transitions                                                   | each other, `src/site.ts`, `src/labels.ts`, `src/domain/`                                  |
-| `src/offline/`                     | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
-| `src/hosting/`                     | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
-| `src/server/`                      | Node, the app (and dev/preview)       | Pages on request from SQLite; `/api/ask`, `/api/query`, the question log; DuckDB, the model | `src/render/`, `src/hosting/`, `src/domain/`, Node built-ins                               |
-| `scripts/`                         | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks                                       | anything                                                                                   |
+| Layer                                                 | Runs                                  | Contains                                                                                    | May import                                                                                 |
+| ----------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/site.ts`                                         | server and browser                    | Site-wide constants: origin, name, description                                              | nothing                                                                                    |
+| `src/labels.ts`                                       | server and browser                    | Every user-facing string (copy lives here only)                                             | `src/domain/` (types)                                                                      |
+| `src/domain/`                                         | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
+| `src/ingest/`                                         | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
+| `src/data/`                                           | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
+| `src/render/`                                         | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/islands/`                                        | browser (and server)                  | Search suggestions and Explore's Gyral components and API clients                           | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/page.ts`, `src/hyperspace.ts`, `src/previews.ts` | browser                               | Page controls, native view transitions and article previews                                 | each other, `src/site.ts`, `src/labels.ts`, `src/domain/`                                  |
+| `src/offline/`                                        | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
+| `src/hosting/`                                        | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
+| `src/server/`                                         | Node, the app (and dev/preview)       | Pages on request from SQLite; `/api/ask`, `/api/query`, the question log; DuckDB, the model | `src/render/`, `src/hosting/`, `src/domain/`, Node built-ins                               |
+| `scripts/`                                            | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks                                       | anything                                                                                   |
 
 **Status today:** every layer exists.
 
@@ -91,6 +91,12 @@ Search runs on the server: SQLite full-text indexes in `pages.sqlite`, queried b
 `src/server/search.ts` and ranked by `src/domain/search.ts` (names first, then text; twins
 folded). It renders `/search/` and answers `/api/search` and Ask's name lookups
 ([docs/product-specs/search.md](docs/product-specs/search.md)).
+
+Article previews use the same SQLite file. `src/server/pages.ts` reads one article for
+`/api/preview?path=…`; `src/domain/preview.ts` limits it to plain text, a first sentence and
+three facts. Search and preview GET responses use the public page cache policy. The browser's
+`src/previews.ts` installs one native popover for main-content links on devices with a fine
+pointer and hover, and keeps a bounded cache. It needs no Gyral island.
 
 URLs always end with a slash (`/characters/luke-skywalker/`). The app answers `/characters`
 with a 308 redirect to `/characters/`, and an unknown path with the 404 page. Letter indexes

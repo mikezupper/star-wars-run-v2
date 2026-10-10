@@ -1334,6 +1334,54 @@
     display: contents;
   }
 
+  /* The single top-layer hovercard is anchored to the current link, never measured in JS. */
+  #link-preview {
+    margin: 0.4rem;
+    padding: 1rem;
+    inline-size: min(24rem, calc(100% - 2rem));
+    max-block-size: min(32rem, calc(100dvh - 2rem));
+    overflow: auto;
+    border: var(--card-border);
+    border-radius: var(--radius-card);
+    background: var(--surface-raised);
+    color: var(--text);
+    box-shadow: var(--card-shadow);
+    overflow-wrap: anywhere;
+
+    & h2 {
+      font-size: var(--step-1);
+      margin-block-end: 0.5rem;
+    }
+
+    & p,
+    & dl {
+      margin-block-end: 0.75rem;
+    }
+
+    & dt {
+      color: var(--text-muted);
+      font-size: var(--step--1);
+    }
+
+    & dd {
+      margin-block-end: 0.5rem;
+    }
+  }
+
+  @supports (position-anchor: auto) {
+    #link-preview {
+      position: fixed;
+      inset: auto;
+      /* showPopover({ source }) supplies an implicit anchor, including from shadow DOM. */
+      position-anchor: auto;
+      position-area: bottom span-right;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
   nav[data-pagination] {
     & ul {
       display: none;

@@ -104,7 +104,7 @@ describe('what the model is told', () => {
       [['Luke', '/characters/luke/', 3n]],
       true,
     );
-    expect(user?.content).toContain('Rows: more than 1.');
+    expect(user?.content).toContain('"count":1,"countIsLowerBound":true');
     expect(user?.content).toContain('{"name":"Luke","count":3}');
     expect(user?.content).not.toContain('/characters/luke/');
     const [system, withQuery] = summaryMessages(
@@ -115,7 +115,7 @@ describe('what the model is told', () => {
       'SELECT … partners',
     );
     expect(withQuery?.content).toContain('Query: SELECT … partners');
-    expect(system?.content).toContain('count names, not rows');
+    expect(system?.content).toContain('canon/Legends grouping');
   });
 });
 

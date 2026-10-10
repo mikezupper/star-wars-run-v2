@@ -239,7 +239,7 @@ export const ASK_TEXT = {
     n === 0
       ? 'No results found. Try another question.'
       : truncated
-        ? `Showing ${n.toLocaleString('en-US')} ${n === 1 ? 'result' : 'results'}; more matched.`
+        ? `Showing ${n.toLocaleString('en-US')} ${n === 1 ? 'result' : 'results'}; the search reached its limit.`
         : `${n.toLocaleString('en-US')} ${n === 1 ? 'result' : 'results'}.`,
   matched: (pairs: readonly string[]): string =>
     pairs.length === 0 ? 'No names to look up.' : `Looked up ${pairs.join('; ')}.`,
@@ -249,7 +249,7 @@ export const ASK_TEXT = {
     looksFor.trim() === '' ? 'Searching the archive…' : `Searching the archive for ${looksFor}…`,
   found: (n: number, truncated: boolean): string =>
     truncated
-      ? `Found more than ${n.toLocaleString('en-US')}; showing the first ${n.toLocaleString('en-US')}.`
+      ? `Found at least ${n.toLocaleString('en-US')}. The search reached its limit.`
       : n === 0
         ? 'Found nothing.'
         : `Found ${n.toLocaleString('en-US')}.`,
@@ -403,6 +403,7 @@ export const TEXT = {
   searchLoading: 'Searching the archive…',
   searchSuggestionsUnavailable: 'Suggestions couldn’t be loaded. Press Enter to search.',
   searchAllResults: 'See all results →',
+  closePreview: 'Close preview',
   searchSuggestionCount: (n: number): string =>
     `${String(n)} ${n === 1 ? 'suggestion' : 'suggestions'}. Use the arrow keys to choose, then Enter to open.`,
   askInstead: 'That sounds like a question. Ask the archive instead →',

@@ -18,6 +18,8 @@ describe('cache policy', () => {
   it('caches hashed assets for a year and rechecks the service worker every time', () => {
     expect(cacheControl('/assets/site-abc.css', 200)).toBe(CACHE.assets);
     expect(cacheControl('/api/search', 200)).toBe(CACHE.pages);
+    expect(cacheControl('/api/preview', 200)).toBe(CACHE.pages);
+    expect(cacheControl('/api/preview', 404)).toBe(CACHE.notFound);
     expect(cacheControl('/api/ask', 200)).toBe(CACHE.api);
     expect(cacheControl('/icons/icon-192.png', 200)).toBe(CACHE.icons);
     expect(cacheControl('/sw.js', 200)).toBe(CACHE.serviceWorker);

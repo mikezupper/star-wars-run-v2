@@ -13,6 +13,7 @@
 // - The random-article link gets an optional four-second hyperspace transition (src/hyperspace.ts).
 
 import { isTheme, THEME_COLOR, THEME_KEY, type Theme } from './domain/theme.js';
+import './previews.js';
 import {
   arriveHyperspace,
   departHyperspace,

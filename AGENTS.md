@@ -40,28 +40,28 @@ First run needs `pnpm exec playwright install chromium`.
 
 ## Where things are
 
-| Path                                                      | Contents                                                                                        |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [ARCHITECTURE.md](ARCHITECTURE.md)                        | Layers, what each may import, data flow, output                                                 |
-| [docs/design-docs/](docs/design-docs/index.md)            | Decisions (ADRs) and why they were made                                                         |
-| [docs/product-specs/](docs/product-specs/index.md)        | What each feature must do, with acceptance criteria                                             |
-| [docs/references/gyral/](docs/references/gyral/README.md) | Gyral's docs, copied in. **Read before writing Gyral code**                                     |
-| [docs/lessons-learned.md](docs/lessons-learned.md)        | Real bugs: symptom, cause, fix, guard                                                           |
-| [docs/gyral-feedback.md](docs/gyral-feedback.md)          | Our feedback to the Gyral team: what worked, rough edges, suggestions                           |
-| `deploy/`                                                 | The server's compose file, `.env` template and backup script ([docs/deploy.md](docs/deploy.md)) |
-| `src/site.ts`                                             | Site-wide constants: origin, name, description                                                  |
-| `src/domain/`                                             | Article types, sections, slugs, URLs, quantities, Explore rows                                  |
-| `src/ingest/wookieepedia/`                                | Dump reader, wikitext parser (fields, lead, Appearances), link resolution, snapshot             |
-| `src/data/`                                               | Loads the snapshot for the build                                                                |
-| `data/wookieepedia/`                                      | The snapshot. Never committed; written only by `pnpm ingest:wookieepedia`                       |
-| `src/render/`                                             | Route table (`site.ts`), layout, home, section, article and page templates                      |
-| `src/labels.ts`                                           | **Every user-facing string.** Change copy here, nowhere else                                    |
-| `src/islands/`, `src/page.ts`, `src/hyperspace.ts`        | Search and Explore islands; `/` key, theme, page and hyperspace transitions, service worker     |
-| `src/server/`; `src/islands/explore.ts`, `api.ts`         | The API (ADR 0010): Ask, SQL and the question log, DuckDB on the server; Explore is its client  |
-| `src/styles/site.css`                                     | The one stylesheet                                                                              |
-| `scripts/`                                                | Dev server, build, preview. Thin: logic goes in `src/`                                          |
-| `test/`                                                   | Vitest tests                                                                                    |
-| `public/`                                                 | Copied into `dist/` as is (icons)                                                               |
+| Path                                                                  | Contents                                                                                        |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)                                    | Layers, what each may import, data flow, output                                                 |
+| [docs/design-docs/](docs/design-docs/index.md)                        | Decisions (ADRs) and why they were made                                                         |
+| [docs/product-specs/](docs/product-specs/index.md)                    | What each feature must do, with acceptance criteria                                             |
+| [docs/references/gyral/](docs/references/gyral/README.md)             | Gyral's docs, copied in. **Read before writing Gyral code**                                     |
+| [docs/lessons-learned.md](docs/lessons-learned.md)                    | Real bugs: symptom, cause, fix, guard                                                           |
+| [docs/gyral-feedback.md](docs/gyral-feedback.md)                      | Our feedback to the Gyral team: what worked, rough edges, suggestions                           |
+| `deploy/`                                                             | The server's compose file, `.env` template and backup script ([docs/deploy.md](docs/deploy.md)) |
+| `src/site.ts`                                                         | Site-wide constants: origin, name, description                                                  |
+| `src/domain/`                                                         | Article types, sections, slugs, URLs, quantities, Explore rows                                  |
+| `src/ingest/wookieepedia/`                                            | Dump reader, wikitext parser (fields, lead, Appearances), link resolution, snapshot             |
+| `src/data/`                                                           | Loads the snapshot for the build                                                                |
+| `data/wookieepedia/`                                                  | The snapshot. Never committed; written only by `pnpm ingest:wookieepedia`                       |
+| `src/render/`                                                         | Route table (`site.ts`), layout, home, section, article and page templates                      |
+| `src/labels.ts`                                                       | **Every user-facing string.** Change copy here, nowhere else                                    |
+| `src/islands/`, `src/page.ts`, `src/hyperspace.ts`, `src/previews.ts` | Search and Explore islands; page controls, transitions, article previews, service worker        |
+| `src/server/`; `src/islands/explore.ts`, `api.ts`                     | The API (ADR 0010): Ask, SQL and the question log, DuckDB on the server; Explore is its client  |
+| `src/styles/site.css`                                                 | The one stylesheet                                                                              |
+| `scripts/`                                                            | Dev server, build, preview. Thin: logic goes in `src/`                                          |
+| `test/`                                                               | Vitest tests                                                                                    |
+| `public/`                                                             | Copied into `dist/` as is (icons)                                                               |
 
 ## Read before changing…
 

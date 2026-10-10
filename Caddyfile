@@ -31,10 +31,10 @@
 	# Deferred (>), so it replaces the type Caddy guesses from .json.
 	header /speculation-rules.json >Content-Type "application/speculationrules+json"
 	# Deferred (>): the API sends its own Cache-Control, and this replaces it rather than adding a
-	# second. Search's answers are the exception: cached like pages, as the app says.
+	# second. Search and article previews are cached like pages, as the app says.
 	@private {
 		path /api/*
-		not path /api/search
+		not path /api/search /api/preview
 	}
 	header @private >Cache-Control "no-store"
 

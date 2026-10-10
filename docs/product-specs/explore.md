@@ -18,6 +18,10 @@ Beads: `swr-7f1.7` (SQL), epic `swr-ei6` (Ask the archive). How:
 - The answer has a heading and a result count, counting the rows after canon and Legends are
   folded together. An empty answer says no results were found. A failure has a Retry button
   that asks the same question with the same conversation.
+- A list summary states that grouped count and names at most three example subjects. If the
+  query reached its limit, the count is “at least”, and the page says the search reached its
+  limit. Scalar and aggregate answers keep their actual values, including counts and
+  continuity categories; the number of rows is not the aggregate answer.
 - Example questions start expanded under “Try”. After a question is submitted, they collapse
   under “Try another question”, below the answer; they can still be opened. Selecting an
   example starts a fresh conversation and focuses the question box as the examples close.
@@ -54,3 +58,6 @@ Without JavaScript, the page says Explore needs it and links to the sections.
 - The "Who comes from Tatooine?" SQL question lists Luke Skywalker; `Ctrl+Enter` runs a query.
 - The page passes axe in light and dark, before, during and after a question, and fits a
   360 px viewport.
+- Summary regressions cover lists longer than three subjects, canon/Legends twins with
+  different names, capped results and aggregate values. Selected live questions check the
+  one- or two-sentence summaries when the prompt changes.

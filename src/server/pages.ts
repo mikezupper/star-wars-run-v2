@@ -5,13 +5,20 @@
 import { mkdirSync, rmSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { buildArchive, displayTitle, type Archive, type Summary } from '../domain/archive.js';
+import {
+  buildArchive,
+  displayTitle,
+  type Archive,
+  type Entry,
+  type Summary,
+} from '../domain/archive.js';
 import type { ArticleRecord, Rich } from '../domain/article.js';
 import { tokens } from '../domain/search.js';
 import type { LinkGraph } from '../domain/links.js';
 import type { Assets } from '../render/layout.js';
 import type { SiteData } from '../render/site.js';
 import { createSearch, type Search } from './search.js';
+import { articlePreview, type ArticlePreview } from '../domain/preview.js';
 
 /** What a build stamps on its pages: where its CSS and JS are, and its id for ETags. */
 export interface PagesMeta {
@@ -23,6 +30,7 @@ export interface Pages {
   readonly data: SiteData;
   readonly meta: PagesMeta;
   readonly search: Search;
+  readonly preview: (path: string) => ArticlePreview | undefined;
   readonly close: () => void;
 }
 
@@ -193,6 +201,8 @@ export function openPages(file: string): Pages {
   );
   const links: LinkGraph = { counts, linkedFrom };
   const search = createSearch(db, archive, counts);
+  // Created once on the first preview, rather than scanning the address book per hover.
+  let byPath: ReadonlyMap<string, Entry> | undefined;
   return {
     data: {
       archive,
@@ -201,6 +211,14 @@ export function openPages(file: string): Pages {
       search: (query, section) => search.search(query, section === undefined ? {} : { section }),
     },
     search,
+    preview: (path) => {
+      byPath ??= new Map([...archive.byTitle.values()].map((e) => [e.path, e]));
+      const entry = byPath.get(path);
+      const article = entry === undefined ? undefined : articles.get(entry.title);
+      return entry === undefined || article === undefined
+        ? undefined
+        : articlePreview(entry, article);
+    },
     meta: {
       build: meta.get('build') ?? 'unknown',
       assets: JSON.parse(meta.get('assets') ?? '{}') as Assets,

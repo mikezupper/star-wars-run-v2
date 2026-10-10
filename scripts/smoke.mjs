@@ -72,6 +72,7 @@ const SEARCHES = [
   ['falcon', ['/starships/millennium-falcon/']],
   ['padme', ['/characters/padme-amidala-naberrie/']],
 ];
+const LONG_TITLES = ['/other/holodocumentarian/', '/characters/trithiannelyzaccarondoritha/'];
 
 /**
  * The pages to check. A full build has 227k: checking each in Chromium would take about a day,
@@ -82,7 +83,7 @@ const paths = samplePaths(listed, Number(process.env.SMOKE_PAGES ?? 'Infinity'))
 
 function samplePaths(all, limit) {
   if (!(all.length > limit)) return all;
-  const always = new Set(SEARCHES.flatMap(([, expected]) => expected));
+  const always = new Set([...SEARCHES.flatMap(([, expected]) => expected), ...LONG_TITLES]);
   const isList = (p) =>
     p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/letters\/[a-z0-9]\/(?:\d+\/)?$/.test(p);
   const kept = all.filter((p) => isList(p) || always.has(p));
@@ -116,6 +117,8 @@ try {
   await checkSearch();
   await checkSuggestions();
   await checkWithoutJavaScript();
+  await checkLongTitles();
+  await checkPreviews();
   await checkOffline();
   await checkExplore();
   await checkAskFeedback();
@@ -133,7 +136,7 @@ try {
 /** Home, list pages, search, 404, and the first two articles of each section. */
 function darkSample(path) {
   const parts = path.split('/').filter(Boolean);
-  if (parts.length < 2 || parts[1] === 'letters') return true;
+  if (parts.length < 2 || parts[1] === 'letters' || LONG_TITLES.includes(path)) return true;
   const articles = paths.filter(
     (p) => p.startsWith(`/${parts[0]}/`) && p.split('/').filter(Boolean).length === 2,
   );
@@ -184,11 +187,53 @@ async function checkPage({ scheme, path, status }, links) {
     if (scheme === 'light' && status === 200) {
       for (const href of await page.$$eval('a[href]', (as) => as.map((a) => a.href)))
         links.add(href);
+    }
+    if (status === 200 && (scheme === 'light' || LONG_TITLES.includes(path))) {
       await page.setViewportSize({ width: 360, height: 800 });
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - window.innerWidth,
-      );
+      const overflow = await horizontalOverflow(page);
       if (overflow > 0) fail(where, `${String(overflow)}px horizontal overflow at 360px wide`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+function horizontalOverflow(page) {
+  return page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+}
+
+/** Pin real extreme titles in the sample and prove the phone check detects the old bug. */
+async function checkLongTitles() {
+  const context = await browser.newContext({
+    viewport: { width: 360, height: 800 },
+    reducedMotion: 'reduce',
+  });
+  try {
+    const page = await context.newPage();
+    for (const path of LONG_TITLES) {
+      if (!listed.includes(path)) {
+        fail(path, 'required long-title regression article is missing');
+        continue;
+      }
+      await page.goto(base + path, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+      if ((await horizontalOverflow(page)) > 0) fail(path, 'the real title overflows at 360px');
+      // Restore the original intrinsic grid tracks and unbroken full-size heading, together.
+      // CSSOM mutation works under the real CSP; no test-only inline stylesheet is allowed.
+      await page.evaluate(() => {
+        const article = document.querySelector('main article');
+        const header = article?.querySelector(':scope > header');
+        const title = header?.querySelector('h1');
+        for (const grid of [article, header])
+          grid?.style.setProperty('grid-template-columns', 'auto');
+        article?.style.setProperty('container-type', 'normal');
+        title?.removeAttribute('data-fit');
+        title?.style.setProperty('font-size', 'var(--h1-size)');
+        title?.style.setProperty('hyphens', 'none');
+        title?.style.setProperty('overflow-wrap', 'normal');
+      });
+      if ((await horizontalOverflow(page)) <= 0)
+        fail(path, 'the phone layout check did not detect the seeded grid/title regression');
     }
   } finally {
     await context.close();
@@ -408,6 +453,169 @@ async function checkWithoutJavaScript() {
       fail(where, 'the requested section did not survive server rendering');
   } finally {
     await context.close();
+  }
+}
+
+/** The optional card is persistent, dismissible and reachable, while links stay native. */
+async function checkPreviews() {
+  const where = 'article previews';
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    reducedMotion: 'reduce',
+  });
+  try {
+    const page = await context.newPage();
+    watch(page, where, 503);
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
+    const source = page.locator('main a[href="/planets/tatooine/"]').first();
+    const human = page.locator('main a[href="/species/human/"]').first();
+    const card = page.locator('#link-preview');
+    await source.scrollIntoViewIfNeeded();
+    const before = await page.locator('main').boundingBox();
+    await source.hover();
+    await card.waitFor({ state: 'visible' });
+    if (!(await card.locator('h2').textContent()).includes('Tatooine'))
+      fail(where, 'wrong hovered article');
+    if ((await card.locator('dt').count()) > 3) fail(where, 'too many preview facts');
+    if (JSON.stringify(await page.locator('main').boundingBox()) !== JSON.stringify(before))
+      fail(where, 'the preview shifted page layout');
+    const box = await card.boundingBox();
+    if (box.x < 0 || box.y < 0 || box.x + box.width > 1280 || box.y + box.height > 900)
+      fail(where, 'the anchored card is outside the viewport');
+    await card.hover();
+    await page.waitForTimeout(350); // longer than the crossing delay
+    if (!(await card.isVisible())) fail(where, 'the pointer cannot enter the card');
+    await axe(page, `${where} (light)`);
+    await source.focus(); // keep the card open while the theme's font metrics change
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    await card.waitFor({ state: 'visible' });
+    await axe(page, `${where} (dark)`);
+    await page.keyboard.press('Escape');
+    await card.waitFor({ state: 'hidden' });
+    await source.evaluate((a) => a.blur()); // a fresh focus should reopen after dismissal
+    await page.mouse.move(0, 0);
+    await source.focus();
+    await card.waitFor({ state: 'visible' });
+    if (!(await source.evaluate((a) => document.activeElement === a)))
+      fail(where, 'showing the preview stole link focus');
+    await page.keyboard.press('Tab');
+    if (!(await card.evaluate((c) => c.contains(document.activeElement))))
+      fail(where, 'Tab did not reach the card from its source');
+    await page.keyboard.press('Escape');
+    await card.waitFor({ state: 'hidden' });
+    if (!(await source.evaluate((a) => document.activeElement === a)))
+      fail(where, 'Escape did not return focus to the source');
+    if ((await source.getAttribute('aria-describedby')) !== null)
+      fail(where, 'dismissal left a hidden preview description');
+
+    // A slow response from the previous link must not replace the current card.
+    let release;
+    let seen;
+    const held = new Promise((resolve) => {
+      release = resolve;
+    });
+    const requested = new Promise((resolve) => {
+      seen = resolve;
+    });
+    await page.route('**/api/preview?*', async (route) => {
+      if (new URL(route.request().url()).searchParams.get('path') !== '/species/human/')
+        return route.continue();
+      seen();
+      await held;
+      await route
+        .fulfill({
+          contentType: 'application/json',
+          body: JSON.stringify({
+            name: 'Stale Human',
+            path: '/species/human/',
+            section: 'species',
+            era: 'canon',
+            lead: '',
+            facts: [],
+          }),
+        })
+        .catch(() => undefined); // a cancelled request may already be gone
+    });
+    await human.focus();
+    await requested;
+    await source.focus();
+    await card.waitFor({ state: 'visible' });
+    release();
+    await page.waitForTimeout(100);
+    if (!(await card.locator('h2').textContent()).includes('Tatooine'))
+      fail(where, 'a stale preview replaced the active link');
+    await page.unroute('**/api/preview?*');
+    await page.route('**/api/preview?*', (route) => route.fulfill({ status: 503, body: '{}' }));
+    await human.focus();
+    await card.waitFor({ state: 'hidden' });
+    await human.press('Enter');
+    await page.waitForURL('**/species/human/');
+
+    // Focus and pointer transitions within an island do not reach document delegation.
+    await page.unroute('**/api/preview?*');
+    await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    const explore = page.locator('swr-explore');
+    await explore.locator('details.advanced > summary').click();
+    const preset = explore.getByRole('button', { name: 'Who comes from Tatooine?' });
+    await preset.click();
+    const result = explore.locator('tbody a[href="/characters/luke-skywalker/"]').first();
+    await result.waitFor();
+    await result.focus();
+    await card.waitFor({ state: 'visible' });
+    if (
+      !(await result.evaluate((a) =>
+        a.ariaDescribedByElements?.includes(document.getElementById('link-preview-description')),
+      ))
+    )
+      fail(where, 'the shadow link cannot reach its accessible preview description');
+    await page.keyboard.press('Tab');
+    if (!(await card.evaluate((c) => c.contains(document.activeElement))))
+      fail(where, 'Tab did not reach the card from the shadow link');
+    await page.keyboard.press('Escape');
+    await card.waitFor({ state: 'hidden' });
+    if (!(await result.evaluate((a) => a.getRootNode().activeElement === a)))
+      fail(where, 'Escape did not return focus to the shadow link');
+    await preset.focus();
+    await preset.hover();
+    await result.hover();
+    await card.waitFor({ state: 'visible' });
+    const other = explore
+      .locator('tbody a[href]:not([href="/characters/luke-skywalker/"])')
+      .first();
+    const otherPath = await other.getAttribute('href');
+    await other.hover();
+    await page.waitForFunction(
+      (path) => document.querySelector('#link-preview h2 a')?.getAttribute('href') === path,
+      otherPath,
+    );
+    await axe(page, `${where} (Explore)`);
+    await card.getByRole('button', { name: 'Close preview' }).click();
+    await card.waitFor({ state: 'hidden' });
+    if (!(await other.evaluate((a) => a.getRootNode().activeElement === a)))
+      fail(where, 'Close preview did not return focus to the shadow link');
+  } finally {
+    await context.close();
+  }
+
+  const touch = await browser.newContext({
+    viewport: { width: 360, height: 800 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  try {
+    const page = await touch.newPage();
+    let requests = 0;
+    page.on('request', (r) => {
+      if (new URL(r.url()).pathname === '/api/preview') requests++;
+    });
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.locator('main a[href="/planets/tatooine/"]').first().tap();
+    await page.waitForURL('**/planets/tatooine/');
+    if (requests !== 0 || (await page.locator('#link-preview').count()) !== 0)
+      fail(where, 'touch navigation installed or fetched a preview');
+  } finally {
+    await touch.close();
   }
 }
 

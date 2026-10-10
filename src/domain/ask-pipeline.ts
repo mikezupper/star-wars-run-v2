@@ -17,7 +17,7 @@ import {
   type Resolved,
   type Turn,
 } from './ask.js';
-import type { QueryResult } from './query.js';
+import { mergeEras, type QueryResult } from './query.js';
 
 /** Tries at writing SQL that runs: the first, and two corrections with the error. */
 const ATTEMPTS = 3;
@@ -109,9 +109,9 @@ export async function ask(
       continue;
     }
     // One row past MAX_ROWS was fetched to know whether there were more.
-    const truncated = result.rows.length > MAX_ROWS;
+    const truncated = result.truncated || result.rows.length > MAX_ROWS;
     const rows = result.rows.slice(0, MAX_ROWS);
-    emit({ _tag: 'Found', count: rows.length, truncated });
+    emit({ _tag: 'Found', count: mergeEras({ ...result, rows }).rows.length, truncated });
     // Without a summary, the rows still answer the question.
     const summary = await deps
       .stream(summaryMessages(question, result.columns, rows, truncated, query.sql), (text) => {
