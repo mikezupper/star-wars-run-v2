@@ -9,9 +9,18 @@ Beads: `swr-7f1.7` (SQL), epic `swr-ei6` (Ask the archive). How:
 - `/explore/` leads with a question box and a few example questions. A visitor types a question
   in plain words ("Which Wookiees fought for the Rebel Alliance?") and gets an answer: one or
   two sentences, then the results as a table with every name linking to its page.
-- While it works, each step shows as it happens: reading the question, the names it looked up
-  and the articles they matched, what it searched for, how many it found, writing the answer.
-  The steps are announced to screen readers.
+- Submitting shows “Searching…” on the button and “Reading your question…” below the box
+  immediately, before the server replies. A second submit is ignored while it works.
+- Progress, the answer and any failure appear directly below the question. One current phase
+  is visible and announced to screen readers: reading the question, searching the archive or
+  writing the answer. The button keeps keyboard focus as its label changes; finishing does
+  not move focus.
+- The answer has a heading and a result count, counting the rows after canon and Legends are
+  folded together. An empty answer says no results were found. A failure has a Retry button
+  that asks the same question with the same conversation.
+- Example questions start expanded under “Try”. After a question is submitted, they collapse
+  under “Try another question”, below the answer; they can still be opened. Selecting an
+  example starts a fresh conversation and focuses the question box as the examples close.
 - The answer is checkable: "How I answered" lists the steps and the query, and opens the query
   in the SQL editor.
 - Follow-ups refine the last answer ("only the ones from Kashyyyk"); a question that stands on
@@ -40,5 +49,8 @@ Without JavaScript, the page says Explore needs it and links to the sections.
 
 - Asked "Which Wookiees fought for the Rebel Alliance?", the answer lists Chewbacca, linked.
 - With the AI service down, the page says so within 30 seconds.
+- With the first API response held back, progress appears immediately, repeated Enter submits
+  make one request, and examples do not displace the answer. Follow-ups, Retry and `?ask=` work.
 - The "Who comes from Tatooine?" SQL question lists Luke Skywalker; `Ctrl+Enter` runs a query.
-- The page passes axe in light and dark, before and after a question.
+- The page passes axe in light and dark, before, during and after a question, and fits a
+  360 px viewport.

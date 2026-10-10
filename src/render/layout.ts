@@ -35,7 +35,7 @@ export const fullTitle = (meta: Pick<PageMeta, 'path' | 'title'>): string =>
  * The head after the title and description. Kept out of Gyral's managed head (`Head` fields):
  * no page changes its head in the browser, so the managed markers would be dead weight.
  */
-const extraHead = (meta: PageMeta) => html`
+const extraHead = (meta: PageMeta, assets: Assets) => html`
   ${
     meta.noindex === true
       ? html`<meta name="robots" content="noindex" />`
@@ -53,6 +53,7 @@ const extraHead = (meta: PageMeta) => html`
   <link rel="icon" href="/icons/favicon.ico" sizes="32x32" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <script type="module" src=${assets.page} blocking="render"></script>
 `;
 
 /** The id that ties the Sections button to its panel (a native popover: no script needed). */
@@ -161,8 +162,8 @@ export function layout(meta: PageMeta, body: ChildValue, assets: Assets): PageOp
     description: meta.description,
     headScripts: THEME_SCRIPT,
     stylesheets: [assets.stylesheet],
-    extraHead: extraHead(meta),
-    scripts: [assets.page],
+    // pagereveal must be registered before the first frame for a cross-document transition.
+    extraHead: extraHead(meta, assets),
     ...(components === undefined ? {} : { components }),
     body: html`${banner(meta)}
       <main id="main">${body}</main>

@@ -118,8 +118,10 @@ try {
   await checkWithoutJavaScript();
   await checkOffline();
   await checkExplore();
+  await checkAskFeedback();
   await checkAsk();
   await checkTransitions();
+  await checkHyperspace();
   await checkEraFilter();
   if (!REMOTE) await checkDevServer();
 } finally {
@@ -435,6 +437,132 @@ async function fakeModel() {
   return fake;
 }
 
+/** Hold the first response before any event: progress, focus and duplicate guards must be local. */
+async function checkAskFeedback() {
+  for (const scheme of ['light', 'dark']) {
+    const where = `/explore/ (delayed Ask, ${scheme})`;
+    const context = await browser.newContext({
+      colorScheme: scheme,
+      reducedMotion: 'reduce',
+      viewport: { width: 360, height: 780 },
+    });
+    let release;
+    const held = new Promise((resolve) => {
+      release = resolve;
+    });
+    let requests = 0;
+    const questions = [];
+    try {
+      const page = await context.newPage();
+      watch(page, where);
+      await page.route('**/api/ask', async (route) => {
+        questions.push(route.request().postDataJSON());
+        requests++;
+        if (requests === 1) await held;
+        const answer = {
+          question: questions.at(-1).question,
+          looksFor: 'Luke Skywalker',
+          sql: 'SELECT name, path, era FROM archive',
+          resolved: [],
+          result: {
+            columns: ['name', 'path', 'era'],
+            rows: [
+              ['Luke Skywalker', '/characters/luke-skywalker/', 'canon'],
+              ['Luke Skywalker', '/characters/luke-skywalker-legends/', 'legends'],
+            ],
+            truncated: false,
+            ms: 1,
+          },
+          summary: 'Luke Skywalker comes from Tatooine.',
+        };
+        const events =
+          requests === 2 ? [{ _tag: 'Failed', reason: 'slow' }] : [{ _tag: 'Answered', answer }];
+        await route.fulfill({
+          contentType: 'text/event-stream',
+          body: events.map((event) => `data: ${JSON.stringify(event)}\n\n`).join(''),
+        });
+      });
+      await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+      const explore = page.locator('swr-explore');
+      const input = explore.locator('#question');
+      const submit = explore.locator('.ask button[type=submit]');
+      const status = explore.locator('#ask-status');
+      await input.fill('Who comes from Tatooine?');
+      await submit.focus();
+      await submit.press('Enter');
+      await status.getByText('Reading your question…', { exact: true }).waitFor();
+      if (
+        (await submit.getAttribute('aria-disabled')) !== 'true' ||
+        !(await submit.innerText()).includes('Searching…')
+      )
+        fail(where, 'the submit button has no immediate busy state');
+      const focused = await submit.evaluate(
+        (button) => button.getRootNode().activeElement === button,
+      );
+      if (!focused) fail(where, 'submitting moved keyboard focus');
+      if ((await explore.locator('details.examples').getAttribute('open')) !== null)
+        fail(where, 'examples did not collapse after submission');
+      const ordered = await explore.evaluate((el) => {
+        const root = el.shadowRoot;
+        return !!(
+          root.querySelector('.answer').compareDocumentPosition(root.querySelector('.examples')) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+        );
+      });
+      if (!ordered) fail(where, 'progress and answers are below examples');
+      await input.press('Enter');
+      await page.evaluate(
+        () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+      );
+      if (requests !== 1) fail(where, `duplicate submission made ${String(requests)} requests`);
+      await axe(page, `${where}, pending`);
+      release();
+      await status.getByText('1 result.', { exact: true }).waitFor();
+      await explore.getByRole('heading', { name: 'Answer', exact: true }).waitFor();
+      await axe(page, `${where}, answered`);
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+      const islandWide = await explore.evaluate((el) =>
+        [...el.shadowRoot.querySelectorAll('form, .answer, .examples')].some(
+          (node) => node.getBoundingClientRect().right > innerWidth,
+        ),
+      );
+      if (wide || islandWide) fail(where, 'question or answer overflows at 360px');
+      await explore.locator('.answer-steps > summary').click();
+      await explore.getByRole('button', { name: 'Open this query in the SQL editor' }).click();
+      if ((await explore.locator('#sql').inputValue()) !== 'SELECT name, path, era FROM archive')
+        fail(where, 'the answer no longer opens its SQL');
+      await input.fill('Only canon');
+      await submit.click();
+      await status.getByText('That took too long', { exact: false }).waitFor();
+      if (questions[1].history.length !== 1) fail(where, 'the follow-up lost its conversation');
+      await explore.getByRole('button', { name: 'Retry', exact: true }).click();
+      await status.getByText('1 result.', { exact: true }).waitFor();
+      if (questions[2].question !== 'Only canon' || questions[2].history.length !== 1)
+        fail(where, 'Retry changed the failed question or its conversation');
+      await explore.locator('.examples > summary').click();
+      await explore
+        .getByRole('button', { name: 'Which Wookiees fought for the Rebel Alliance?' })
+        .click();
+      await status.getByText('1 result.', { exact: true }).waitFor();
+      if (
+        questions[3].history.length !== 0 ||
+        (await explore.locator('details.examples').getAttribute('open')) !== null
+      )
+        fail(where, 'an example did not start fresh and collapse its disclosure');
+      if (!(await input.evaluate((el) => el.getRootNode().activeElement === el)))
+        fail(where, 'closing the examples left keyboard focus on a hidden button');
+      await page.goto(`${base}/explore/?ask=Who%20is%20Luke%3F`);
+      await status.getByText('1 result.', { exact: true }).waitFor();
+      if (questions[4].question !== 'Who is Luke?') fail(where, '?ask= no longer asks on arrival');
+    } catch (error) {
+      fail(where, error.message);
+    } finally {
+      release();
+      await context.close();
+    }
+  }
+}
+
 /**
  * Ask the archive (ADR 0009, 0010), end to end through the API with the fake model: the page
  * shows the answer, links Luke Skywalker, passes axe, and says so when the model is down.
@@ -531,6 +659,126 @@ async function checkTransitions() {
         () => 'nothing',
       );
     if (ran !== 'true') fail(where, `no view transition ran (pagereveal said ${String(ran)})`);
+  } finally {
+    await context.close();
+  }
+}
+
+/** A random jump stretches named points into trails, then cleans up for Back or Escape. */
+async function checkHyperspace() {
+  for (const scheme of ['light', 'dark']) {
+    const where = `/ → /random/ (hyperspace, ${scheme})`;
+    const context = await browser.newContext({
+      colorScheme: scheme,
+      reducedMotion: 'no-preference',
+      viewport: { width: 360, height: 780 },
+    });
+    try {
+      const page = await context.newPage();
+      watch(page, where);
+      await page.addInitScript(() => {
+        addEventListener('pagereveal', (event) => {
+          if (!event.viewTransition) return;
+          event.viewTransition.ready.then(
+            () => {
+              const star = document
+                .getAnimations()
+                .find(
+                  (animation) =>
+                    animation.effect.pseudoElement ===
+                    '::view-transition-group(hyperspace-star-23)',
+                );
+              if (!star) return;
+              sessionStorage.setItem(
+                'jump-capture',
+                JSON.stringify({
+                  duration: star.effect.getTiming().duration,
+                  widths: star.effect.getKeyframes().map((frame) => frame.width),
+                  field: document.querySelector('.hyperspace-field') !== null,
+                  started: Date.now(),
+                }),
+              );
+              event.viewTransition.finished.then(() => {
+                sessionStorage.setItem(
+                  'jump-duration',
+                  String(Date.now() - JSON.parse(sessionStorage.getItem('jump-capture')).started),
+                );
+              });
+            },
+            () => {},
+          );
+        });
+      });
+      const jump = async (keyboard = false) => {
+        await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+        const link = page.locator('a[href="/random/"]');
+        if (keyboard) await link.press('Enter', { noWaitAfter: true });
+        else await link.click({ noWaitAfter: true });
+        await page.waitForURL((url) => url.pathname !== '/');
+        await page.waitForFunction(() => sessionStorage.getItem('jump-capture'));
+      };
+      await jump();
+      const capture = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jump-capture')));
+      if (
+        capture.duration !== 4000 ||
+        !capture.field ||
+        parseFloat(capture.widths[0]) !== 2 ||
+        parseFloat(capture.widths.at(-1)) <= 35
+      )
+        fail(where, `stars did not stretch into four-second trails: ${JSON.stringify(capture)}`);
+      await page.waitForFunction(() => sessionStorage.getItem('jump-duration'));
+      const elapsed = await page.evaluate(() => Number(sessionStorage.getItem('jump-duration')));
+      if (elapsed < 3600) fail(where, `the jump ended early at ${String(elapsed)} ms`);
+      const clean = () =>
+        page.evaluate(
+          () =>
+            !document.documentElement.hasAttribute('data-hyperspace') &&
+            document.querySelector('.hyperspace-field') === null &&
+            sessionStorage.getItem('swr-hyperspace-to') === null,
+        );
+      if (!(await clean())) fail(where, 'the completed jump left stars or a pending destination');
+      await page.goBack({ waitUntil: 'networkidle' });
+      if (!(await clean())) fail(where, 'Back restored the temporary stars');
+      await page.evaluate(() => {
+        sessionStorage.removeItem('jump-capture');
+        sessionStorage.removeItem('jump-duration');
+      });
+      await jump(true);
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => !document.documentElement.hasAttribute('data-hyperspace'));
+      if (!(await clean())) fail(where, 'Escape did not clean up the jump');
+      await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+      const preference = page.getByRole('checkbox', { name: 'Animate hyperspace jumps' });
+      await preference.uncheck();
+      await page.reload({ waitUntil: 'networkidle' });
+      if (await preference.isChecked()) fail(where, 'the opt-out was forgotten after reload');
+      await page.locator('a[href="/random/"]').click();
+      await page.waitForURL((url) => url.pathname !== '/');
+      if (!(await clean())) fail(where, 'the stored opt-out still showed stars');
+      await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+      await preference.check();
+      await page.reload({ waitUntil: 'networkidle' });
+      if (!(await preference.isChecked())) fail(where, 'the effect could not be enabled again');
+    } catch (error) {
+      fail(where, error.message);
+    } finally {
+      await context.close();
+    }
+  }
+  const context = await browser.newContext({ reducedMotion: 'reduce' });
+  try {
+    const page = await context.newPage();
+    watch(page, '/random/ (reduced motion)');
+    await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+    await page.locator('a[href="/random/"]').click();
+    await page.waitForURL((url) => url.pathname !== '/');
+    const clean = await page.evaluate(
+      () =>
+        !document.documentElement.hasAttribute('data-hyperspace') &&
+        document.querySelector('.hyperspace-field') === null &&
+        sessionStorage.getItem('swr-hyperspace-to') === null,
+    );
+    if (!clean) fail('/random/', 'reduced motion still created the hyperspace effect');
   } finally {
     await context.close();
   }

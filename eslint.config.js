@@ -111,6 +111,10 @@ export default tseslint.config(
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
   },
   {
+    files: ['src/page.ts', 'src/hyperspace.ts'],
+    rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),
+  },
+  {
     // The header policy is plain data; preview and the Caddyfile generator read it.
     files: ['src/hosting/**/*.ts'],
     rules: forbid(NODE, INGEST, DATA, RENDER, ISLANDS, GYRAL),

@@ -56,7 +56,7 @@ First run needs `pnpm exec playwright install chromium`.
 | `data/wookieepedia/`                                      | The snapshot. Never committed; written only by `pnpm ingest:wookieepedia`                                |
 | `src/render/`                                             | Route table (`site.ts`), layout, home, section, article and page templates                               |
 | `src/labels.ts`                                           | **Every user-facing string.** Change copy here, nowhere else                                             |
-| `src/islands/`, `src/page.ts`                             | Explore's island (automatically loaded); `/` key, theme toggle, transitions, service worker registration |
+| `src/islands/`, `src/page.ts`, `src/hyperspace.ts`        | Explore's island (automatically loaded); `/` key, theme, page and hyperspace transitions, service worker |
 | `src/server/`; `src/islands/explore.ts`, `api.ts`         | The API (ADR 0010): Ask, SQL and the question log, DuckDB on the server; Explore is its client           |
 | `src/styles/site.css`                                     | The one stylesheet                                                                                       |
 | `scripts/`                                                | Dev server, build, preview. Thin: logic goes in `src/`                                                   |

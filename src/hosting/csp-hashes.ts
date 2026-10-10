@@ -4,7 +4,7 @@
 
 /** Each island's declarative shadow root <style>. */
 export const STYLE_HASHES: readonly string[] = [
-  "'sha256-piSc7SVDu0Cy5ALf0YkBQCt7ge2jBG7FYWLaspsJvEI='",
+  "'sha256-g7QtR2SARqkTM/cUF4nkFfkXuXKRsnKL6Qk94bISuvA='",
 ];
 
 /** The theme script in every page's <head> (src/domain/theme.ts). */

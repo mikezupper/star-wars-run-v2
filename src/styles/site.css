@@ -421,7 +421,7 @@
       &:hover,
       &[aria-current] {
         background: light-dark(
-          color-mix(in oklch, var(--ask) 82%, var(--text)),
+          color-mix(in oklch, var(--ask) 82%, var(--surface)),
           color-mix(in oklch, var(--ask) 18%, transparent)
         );
       }
@@ -1299,6 +1299,139 @@
 ::view-transition-group(*) {
   animation-duration: 220ms;
   animation-timing-function: ease-out;
+}
+
+/* Only /random/ gets the longer jump. Native snapshots stretch points into radial trails;
+   the temporary star DOM stays until the live snapshots finish, then is removed. */
+@layer components {
+  .hyperspace-jump {
+    display: grid;
+    gap: 0.25rem;
+
+    & > p {
+      font-size: var(--step-1);
+      color: var(--text-muted);
+    }
+  }
+
+  .hyperspace-setting {
+    color: var(--text-muted);
+    font-size: var(--step--1);
+
+    &[hidden] {
+      display: none;
+    }
+
+    & label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-block-size: 2.75rem;
+      cursor: pointer;
+    }
+
+    @supports (accent-color: auto) {
+      & input {
+        accent-color: var(--accent);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (view-transition-class: hyperspace-star) {
+    @layer components {
+      .hyperspace-field {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .hyperspace-star {
+        position: absolute;
+        inset-inline-start: calc(50% + var(--star-x));
+        inset-block-start: calc(50% + var(--star-y));
+        inline-size: var(--star-length);
+        block-size: 2px;
+        border-radius: 50%;
+        background: oklch(95% 0.03 220);
+        transform: rotate(var(--star-angle));
+        transform-origin: left center;
+        view-transition-class: hyperspace-star;
+      }
+
+      html[data-hyperspace] :is(body > header, main h1) {
+        view-transition-name: none;
+      }
+    }
+
+    html[data-hyperspace]::view-transition {
+      background: oklch(6% 0.02 250);
+    }
+
+    html[data-hyperspace]::view-transition-group(root) {
+      z-index: 1;
+      animation-duration: 4s;
+    }
+
+    html[data-hyperspace]::view-transition-old(root) {
+      animation: hyperspace-depart 4s ease-out both;
+    }
+
+    html[data-hyperspace]::view-transition-new(root) {
+      animation: hyperspace-arrive 4s ease-out both;
+    }
+
+    html[data-hyperspace]::view-transition-group(.hyperspace-star) {
+      z-index: 2;
+      animation-duration: 4s;
+      animation-timing-function: cubic-bezier(0.7, 0, 0.8, 0.4);
+    }
+
+    html[data-hyperspace]::view-transition-image-pair(.hyperspace-star) {
+      animation: hyperspace-trail 4s linear both;
+    }
+
+    html[data-hyperspace]::view-transition-old(.hyperspace-star),
+    html[data-hyperspace]::view-transition-new(.hyperspace-star) {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: fill;
+    }
+
+    @keyframes hyperspace-depart {
+      0% {
+        opacity: 1;
+      }
+      18%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes hyperspace-arrive {
+      0%,
+      80% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes hyperspace-trail {
+      0% {
+        opacity: 0;
+      }
+      12%,
+      72% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  }
 }
 
 @media (forced-colors: active) {

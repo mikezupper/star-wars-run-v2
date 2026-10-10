@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { QueryResult } from '../../src/domain/query.js';
 import { drivers, QUERY_UNAVAILABLE } from '../../src/islands/api.js';
 import { Explore, type State } from '../../src/islands/explore.js';
-import { EXPLORE_TEXT } from '../../src/labels.js';
+import { ASK_TEXT, EXPLORE_TEXT } from '../../src/labels.js';
 
 const spec = Explore.spec;
 const live = (sql = 'SELECT 1', started = false): Extract<State, { _tag: 'Live' }> => ({
@@ -17,6 +17,7 @@ const live = (sql = 'SELECT 1', started = false): Extract<State, { _tag: 'Live' 
   ask: { _tag: 'Idle' },
   history: [],
   advanced: false,
+  examplesOpen: true,
 });
 const result: QueryResult = {
   columns: ['name', 'path', 'height_m'],
@@ -96,6 +97,15 @@ describe('explore', () => {
       _tag: 'Preset',
       index: 2,
     });
+    expect(parse(Explore, 'ExamplesToggled', { newState: 'open' }, { state: live() })).toEqual({
+      _tag: 'ExamplesToggled',
+      open: true,
+    });
+    expect(parse(Explore, 'ExamplesToggled', { newState: 'closed' }, { state: live() })).toEqual({
+      _tag: 'ExamplesToggled',
+      open: false,
+    });
+    expect(parse(Explore, 'ExamplesToggled', {}, { state: live() })).toBeUndefined();
   });
 });
 
@@ -134,6 +144,59 @@ describe('explore view', () => {
     });
     expect(nulls).toContain('—');
     expect(nulls).toContain('showing the first 500');
+  });
+
+  it('shows progress before any event, and puts results ahead of collapsed examples', async () => {
+    const started = step(spec, live(), { _tag: 'Arrived', question: 'Who is Luke?' }).state;
+    const pending = await view(started);
+    expect(pending).toContain('aria-disabled="true"');
+    expect(pending).toContain(ASK_TEXT.busy);
+    expect(pending).toContain(
+      `<p id="ask-status" role="status" aria-live="polite" aria-atomic="true">`,
+    );
+    expect(pending.indexOf(ASK_TEXT.reading)).toBeLessThan(pending.indexOf('class="examples"'));
+    expect(pending).toContain('<details class="examples"');
+    expect(pending).not.toMatch(/<details class="examples"[^>]*\bopen\b/);
+
+    const answer = {
+      question: 'Who is Luke?',
+      looksFor: 'Luke',
+      sql: 'SELECT name, path FROM archive',
+      resolved: [],
+      result,
+      summary: 'Luke is here.',
+    };
+    const answered = await view(
+      step(spec, started, { _tag: 'Asked', event: { _tag: 'Answered', answer } }).state,
+    );
+    expect(answered).toContain('<h3>Answer</h3>');
+    expect(answered).toContain(ASK_TEXT.results(1, false));
+    expect(answered.indexOf('<table>')).toBeLessThan(answered.indexOf('class="examples"'));
+
+    const empty = await view({
+      ...live(),
+      ask: { _tag: 'Answered', steps: [], answer: { ...answer, result: { ...result, rows: [] } } },
+    });
+    expect(empty).toContain(ASK_TEXT.results(0, false));
+    expect(empty).not.toContain('<table>');
+  });
+
+  it('keeps detailed steps out of the live region and places Retry beside failures', async () => {
+    const started = step(spec, live(), { _tag: 'Arrived', question: 'Who is Luke?' }).state;
+    const searching = step(spec, started, {
+      _tag: 'Asked',
+      event: { _tag: 'Searching', looksFor: 'Luke' },
+    }).state;
+    const out = await view(searching);
+    const status = out.match(/<p id="ask-status"[^>]*>(.*?)<\/p>/s)?.[1] ?? '';
+    expect(status).toContain(ASK_TEXT.searchingArchive);
+    expect(status).not.toContain(ASK_TEXT.reading);
+    expect(out).toContain('<details class="answer-steps">');
+    expect(out).toContain(ASK_TEXT.searching('Luke'));
+    const failed = await view(step(spec, searching, { _tag: 'AskFailed', reason: 'slow' }).state);
+    expect(failed).toContain(ASK_TEXT.slow);
+    expect(failed).toContain('>Retry</button>');
+    expect(failed.indexOf(ASK_TEXT.slow)).toBeLessThan(failed.indexOf('class="examples"'));
   });
 });
 

@@ -12,7 +12,7 @@ import { ASK_TEXT, EXPLORE_TEXT, SECTION_LABELS } from '../labels.js';
 import type { Answer, AskEvent, AskFailure } from '../domain/ask-pipeline.js';
 import type { QueryResult } from '../domain/query.js';
 import { askQuestion, runQuery } from './api.js';
-import { statusText, styles, table, type Result } from './explore-view.js';
+import { mergeEras, statusText, styles, table, type Result } from './explore-view.js';
 
 export type { Result } from './explore-view.js';
 
@@ -24,7 +24,9 @@ export type Msg =
   | { readonly _tag: 'Failed'; readonly sql: string; readonly reason: string }
   | { readonly _tag: 'AskTyped'; readonly text: string }
   | { readonly _tag: 'Ask' }
+  | { readonly _tag: 'AskRetry' }
   | { readonly _tag: 'Example'; readonly index: number }
+  | { readonly _tag: 'ExamplesToggled'; readonly open: boolean }
   | { readonly _tag: 'Arrived'; readonly question: string }
   | { readonly _tag: 'Asked'; readonly event: AskEvent }
   | { readonly _tag: 'AskFailed'; readonly reason: AskFailure }
@@ -37,11 +39,17 @@ export type AskState =
   | {
       readonly _tag: 'Asking';
       readonly question: string;
+      readonly phase: 'reading' | 'searchingArchive' | 'writing';
       readonly steps: readonly string[];
       readonly summary: string;
     }
   | { readonly _tag: 'Answered'; readonly steps: readonly string[]; readonly answer: Answer }
-  | { readonly _tag: 'Failed'; readonly steps: readonly string[]; readonly reason: AskFailure };
+  | {
+      readonly _tag: 'Failed';
+      readonly question: string;
+      readonly steps: readonly string[];
+      readonly reason: AskFailure;
+    };
 
 export type State =
   | { readonly _tag: 'Static' }
@@ -58,6 +66,7 @@ export type State =
       readonly history: readonly Turn[];
       /** Whether "Write SQL yourself" is open. */
       readonly advanced: boolean;
+      readonly examplesOpen: boolean;
     };
 
 type Live = Extract<State, { _tag: 'Live' }>;
@@ -82,9 +91,20 @@ const run = (s: Live): [State, Command<Msg>[]] => {
 
 const ask = (s: Live, question: string): [State, Command<Msg>[]] | State => {
   const q = question.trim();
-  if (q === '') return s;
+  if (q === '' || s.ask._tag === 'Asking') return s;
   return [
-    { ...s, question: q, ask: { _tag: 'Asking', question: q, steps: [], summary: '' } },
+    {
+      ...s,
+      question: q,
+      examplesOpen: false,
+      ask: {
+        _tag: 'Asking',
+        question: q,
+        phase: 'reading',
+        steps: [ASK_TEXT.reading],
+        summary: '',
+      },
+    },
     [
       askQuestion(
         { question: q, history: s.history },
@@ -139,10 +159,21 @@ function onAsked(s: Live, event: AskEvent): State {
     const steps = current.steps.includes(ASK_TEXT.writing)
       ? current.steps
       : [...current.steps, ASK_TEXT.writing];
-    return { ...s, ask: { ...current, steps, summary: event.text } };
+    return { ...s, ask: { ...current, phase: 'writing', steps, summary: event.text } };
   }
   const text = stepText(event);
-  return text === undefined ? s : { ...s, ask: { ...current, steps: [...current.steps, text] } };
+  const phase =
+    event._tag === 'Searching' || event._tag === 'Found' ? 'searchingArchive' : current.phase;
+  return text === undefined
+    ? s
+    : {
+        ...s,
+        ask: {
+          ...current,
+          phase,
+          steps: current.steps.at(-1) === text ? current.steps : [...current.steps, text],
+        },
+      };
 }
 
 const askLocation = defineDriver<undefined, string>({
@@ -176,7 +207,12 @@ export const Explore = define<State, Msg>()('swr-explore', {
     Preset: ({ value }) => ({ _tag: 'Preset', index: Number(value) }),
     AskTyped: ({ value }) => ({ _tag: 'AskTyped', text: value ?? '' }),
     Ask: true,
+    AskRetry: true,
     Example: ({ value }) => ({ _tag: 'Example', index: Number(value) }),
+    ExamplesToggled: ({ newState }) =>
+      newState === 'open' || newState === 'closed'
+        ? { _tag: 'ExamplesToggled', open: newState === 'open' }
+        : undefined,
     StartOver: true,
     EditSql: true,
   },
@@ -191,6 +227,7 @@ export const Explore = define<State, Msg>()('swr-explore', {
         ask: { _tag: 'Idle' },
         history: [],
         advanced: false,
+        examplesOpen: true,
       },
       [readAsk()],
     ],
@@ -211,19 +248,33 @@ export const Explore = define<State, Msg>()('swr-explore', {
         : s,
     AskTyped: (s, m) => (s._tag === 'Live' ? { ...s, question: m.text } : s),
     Ask: (s) => (s._tag === 'Live' ? ask(s, s.question) : s),
+    AskRetry: (s) => (s._tag === 'Live' && s.ask._tag === 'Failed' ? ask(s, s.ask.question) : s),
     Example: (s, m) => {
       const example = ASK_TEXT.examples[m.index];
-      return s._tag === 'Live' && example !== undefined ? ask({ ...s, history: [] }, example) : s;
+      if (s._tag !== 'Live' || s.ask._tag === 'Asking' || example === undefined) return s;
+      const next = ask({ ...s, history: [] }, example);
+      // The examples close after submission; move off their now-hidden button only once.
+      return Array.isArray(next)
+        ? [next[0], [...next[1], focus('#question', { preventScroll: true })]]
+        : next;
     },
+    ExamplesToggled: (s, m) =>
+      s._tag === 'Live' && s.examplesOpen !== m.open ? { ...s, examplesOpen: m.open } : s,
     Arrived: (s, m) => (s._tag === 'Live' ? ask(s, m.question) : s),
     Asked: (s, m) => (s._tag === 'Live' ? onAsked(s, m.event) : s),
     AskFailed: (s, m) =>
       s._tag === 'Live' && s.ask._tag === 'Asking'
-        ? { ...s, ask: { _tag: 'Failed', steps: s.ask.steps, reason: m.reason } }
+        ? {
+            ...s,
+            ask: { _tag: 'Failed', question: s.ask.question, steps: s.ask.steps, reason: m.reason },
+          }
         : s,
     StartOver: (s) =>
-      s._tag === 'Live'
-        ? [{ ...s, question: '', ask: { _tag: 'Idle' }, history: [] }, [focus('#question')]]
+      s._tag === 'Live' && s.ask._tag !== 'Asking'
+        ? [
+            { ...s, question: '', ask: { _tag: 'Idle' }, history: [], examplesOpen: true },
+            [focus('#question')],
+          ]
         : s,
     EditSql: (s) =>
       s._tag === 'Live' && s.ask._tag === 'Answered'
@@ -239,7 +290,7 @@ export const Explore = define<State, Msg>()('swr-explore', {
       : html`
           <section class="ask" aria-labelledby="ask-heading">
             <h2 id="ask-heading">${ASK_TEXT.heading}</h2>
-            <form data-intent=${i.Ask}>
+            <form data-intent=${i.Ask} aria-busy=${s.ask._tag === 'Asking'}>
               <label for="question">
                 ${s.history.length > 0 ? ASK_TEXT.followUpLabel : ASK_TEXT.label}
               </label>
@@ -253,34 +304,61 @@ export const Explore = define<State, Msg>()('swr-explore', {
                   value=${s.question}
                   data-intent=${i.AskTyped}
                 />
-                <button type="submit">${ASK_TEXT.ask}</button>
+                <button type="submit" aria-disabled=${s.ask._tag === 'Asking'}>
+                  <span
+                    class="spinner"
+                    aria-hidden="true"
+                    ?hidden=${s.ask._tag !== 'Asking'}
+                  ></span>
+                  ${s.ask._tag === 'Asking' ? ASK_TEXT.busy : ASK_TEXT.ask}
+                </button>
               </div>
             </form>
-            <div class="examples">
-              <span>${ASK_TEXT.examplesLabel}</span>
-              <ul>
-                ${ASK_TEXT.examples.map(
-                  (q, n) =>
-                    html`<li>
-                      <button type="button" value=${String(n)} data-intent=${i.Example}>
-                        ${q}
-                      </button>
-                    </li>`,
-                )}
-              </ul>
+            <div class="answer">
+              <p id="ask-status" role="status" aria-live="polite" aria-atomic="true">
+                ${askStatus(s.ask)}
+              </p>
+              ${answerView(s.ask, i.EditSql, i.AskRetry)}
             </div>
-            <p id="ask-note">${ASK_TEXT.note}</p>
-            <div role="status" aria-live="polite">${askStatus(s.ask)}</div>
-            ${answerView(s.ask, i.EditSql)}
             ${
               s.history.length > 0
                 ? html`<p>
-                    <button type="button" data-intent=${i.StartOver}>
+                    <button
+                      type="button"
+                      data-intent=${i.StartOver}
+                      aria-disabled=${s.ask._tag === 'Asking'}
+                    >
                       ${ASK_TEXT.newQuestion}
                     </button>
                   </p>`
                 : nothing
             }
+            <details
+              class="examples"
+              ?open=${s.examplesOpen}
+              data-intent=${i.ExamplesToggled}
+              data-intent-on="toggle"
+            >
+              <summary>
+                ${s.ask._tag === 'Idle' ? ASK_TEXT.examplesLabel : ASK_TEXT.moreExamples}
+              </summary>
+              <ul>
+                ${ASK_TEXT.examples.map(
+                  (q, n) =>
+                    html`<li>
+                      <button
+                        type="button"
+                        value=${String(n)}
+                        data-intent=${i.Example}
+                        aria-disabled=${s.ask._tag === 'Asking'}
+                      >
+                        ${q}
+                      </button>
+                    </li>`,
+                )}
+              </ul>
+            </details>
+            <p id="ask-note">${ASK_TEXT.note}</p>
           </section>
           <details class="advanced" ?open=${s.advanced}>
             <summary>${ASK_TEXT.advanced}</summary>
@@ -319,33 +397,52 @@ ${s.sql}</textarea>
   styles,
 });
 
-/** The steps while a question is worked on, or why it failed. Answered, they move into
- * "How I answered". */
+/** Announce one phase at a time; streaming prose and the step history stay outside the live region. */
 function askStatus(a: AskState) {
-  if (a._tag === 'Idle' || a._tag === 'Answered') return nothing;
-  const failure = a._tag === 'Failed' ? html`<p>${ASK_TEXT[a.reason]}</p>` : nothing;
-  return html`<ol class="steps">
-      ${a.steps.map((step) => html`<li>${step}</li>`)}
-    </ol>
-    ${failure}`;
+  switch (a._tag) {
+    case 'Idle':
+      return ASK_TEXT.answerHint;
+    case 'Asking':
+      return ASK_TEXT[a.phase];
+    case 'Failed':
+      return ASK_TEXT[a.reason];
+    case 'Answered':
+      return ASK_TEXT.results(mergeEras(a.answer.result).rows.length, a.answer.result.truncated);
+  }
 }
 
 /** The answer: the sentence (as it's written), the rows, and how it was found. */
-function answerView(a: AskState, editSql: string) {
+function answerView(a: AskState, editSql: string, retry: string) {
+  if (a._tag === 'Idle') return nothing;
   if (a._tag === 'Asking') {
-    return a.summary === '' ? nothing : html`<p class="summary">${a.summary}</p>`;
+    return html`${a.summary === '' ? nothing : html`<p class="summary">${a.summary}</p>`}
+    ${answerSteps(a)}`;
   }
-  if (a._tag !== 'Answered') return nothing;
+  if (a._tag === 'Failed') {
+    return html`<h3>${ASK_TEXT.failedHeading}</h3>
+      <p>${ASK_TEXT.asked(a.question)}</p>
+      <p><button type="button" data-intent=${retry}>${ASK_TEXT.retry}</button></p>
+      ${answerSteps(a)}`;
+  }
   const { answer } = a;
-  return html`<p>${ASK_TEXT.asked(answer.question)}</p>
+  return html`<h3>${ASK_TEXT.answerHeading}</h3>
+    <p>${ASK_TEXT.asked(answer.question)}</p>
     ${answer.summary === '' ? nothing : html`<p class="summary">${answer.summary}</p>`}
     ${answer.result.rows.length > 0 ? table(answer.result, true) : nothing}
-    <details>
-      <summary>${ASK_TEXT.howAnswered}</summary>
-      <ol class="steps">
-        ${a.steps.filter((step) => step !== ASK_TEXT.writing).map((step) => html`<li>${step}</li>`)}
-      </ol>
-      <pre><code>${answer.sql}</code></pre>
-      <button type="button" data-intent=${editSql}>${ASK_TEXT.editSql}</button>
-    </details>`;
+    ${answerSteps(a, editSql)}`;
+}
+
+function answerSteps(a: Exclude<AskState, { _tag: 'Idle' }>, editSql?: string) {
+  return html`<details class="answer-steps">
+    <summary>${ASK_TEXT.howAnswered}</summary>
+    <ol class="steps">
+      ${a.steps.map((step) => html`<li>${step}</li>`)}
+    </ol>
+    ${
+      a._tag === 'Answered'
+        ? html`<pre><code>${a.answer.sql}</code></pre>
+            <button type="button" data-intent=${editSql}>${ASK_TEXT.editSql}</button>`
+        : nothing
+    }
+  </details>`;
 }

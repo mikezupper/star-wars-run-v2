@@ -38,7 +38,16 @@ export const homeBody = (archive: Archive, links: LinkGraph) => {
         <button type="submit">${EXPLORE_TEXT.nav}</button>
       </form>
     </search>
-    <p><a href=${RANDOM_PATH}>${TEXT.randomArticle}</a></p>
+    <div class="hyperspace-jump">
+      <p><a href=${RANDOM_PATH}>${TEXT.randomArticle}</a></p>
+      <div class="hyperspace-setting" data-hyperspace-setting hidden>
+        <label>
+          <input type="checkbox" data-hyperspace-toggle checked />
+          ${TEXT.hyperspaceAnimation}
+        </label>
+        <small id="hyperspace-note" hidden>${TEXT.hyperspaceReducedMotion}</small>
+      </div>
+    </div>
     ${
       best.length === 0
         ? nothing

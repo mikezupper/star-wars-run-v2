@@ -192,7 +192,14 @@ export const styles = css`
   @layer component {
     :host {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 1.25rem;
+      min-inline-size: 0;
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
     }
     ul {
       display: flex;
@@ -228,6 +235,7 @@ export const styles = css`
     }
     form {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 0.5rem;
     }
     label {
@@ -248,6 +256,7 @@ export const styles = css`
     p {
       margin: 0;
       color: var(--text-muted, inherit);
+      overflow-wrap: anywhere;
     }
     :focus-visible {
       outline: 3px solid var(--focus, Highlight);
@@ -279,7 +288,60 @@ export const styles = css`
   @layer component {
     .ask {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 1rem;
+      min-inline-size: 0;
+    }
+    .answer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      min-inline-size: 0;
+      padding: 1rem;
+      border-inline-start: 3px solid var(--link, LinkText);
+      background: var(--surface-raised, transparent);
+    }
+    .answer > * {
+      min-inline-size: 0;
+    }
+    .answer h3 {
+      margin: 0;
+      color: var(--text, inherit);
+      font-size: var(--step-1, 1.15rem);
+    }
+    #ask-status {
+      color: var(--text, inherit);
+      font-weight: 700;
+    }
+    [hidden] {
+      display: none;
+    }
+    button[aria-disabled='true'] {
+      cursor: progress;
+    }
+    .ask button[type='submit'] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-inline-size: 8rem;
+    }
+    .spinner {
+      inline-size: 1em;
+      block-size: 1em;
+      border: 2px solid currentColor;
+      border-inline-end-color: transparent;
+      border-radius: 50%;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .spinner {
+        animation: spin 900ms linear infinite;
+      }
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(1turn);
+      }
     }
     .eras {
       display: flex;
@@ -314,10 +376,7 @@ export const styles = css`
       color: var(--text, inherit);
     }
     .examples {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
+      color: var(--text-muted, inherit);
     }
     .steps {
       display: grid;

@@ -129,6 +129,7 @@ describe('asking from Explore', () => {
     ask: { _tag: 'Idle' },
     history: [],
     advanced: false,
+    examplesOpen: true,
   };
   const answer = {
     question: 'Which Wookiees?',
@@ -145,7 +146,9 @@ describe('asking from Explore', () => {
     expect(inputsFor(asked.commands, drivers.ask)).toEqual([
       { question: 'Which Wookiees?', history: [] },
     ]);
-    expect(asked.state).toMatchObject({ ask: { _tag: 'Asking', steps: [] } });
+    expect(asked.state).toMatchObject({
+      ask: { _tag: 'Asking', phase: 'reading', steps: [ASK_TEXT.reading] },
+    });
     const example = step(spec, live, { _tag: 'Example', index: 1 });
     expect(inputsFor(example.commands, drivers.ask)[0]).toMatchObject({
       question: ASK_TEXT.examples[1],
@@ -153,6 +156,43 @@ describe('asking from Explore', () => {
     const arrived = step(spec, live, { _tag: 'Arrived', question: 'Who is Yoda?' });
     expect(inputsFor(arrived.commands, drivers.ask)[0]).toMatchObject({ question: 'Who is Yoda?' });
     expect(step(spec, live, { _tag: 'Ask' }).commands).toEqual([]);
+  });
+
+  it('keeps one question in flight, including example clicks and Enter submissions', () => {
+    const asking = step(spec, live, { _tag: 'Arrived', question: 'Which Wookiees?' }).state;
+    for (const message of [
+      { _tag: 'Ask' },
+      { _tag: 'Example', index: 1 },
+      { _tag: 'Arrived', question: 'A duplicate' },
+      { _tag: 'StartOver' },
+      { _tag: 'AskRetry' },
+    ] as const) {
+      const next = step(spec, asking, message);
+      expect(next.state).toBe(asking);
+      expect(next.commands).toEqual([]);
+    }
+  });
+
+  it('tracks the native examples disclosure and closes it for the next question', () => {
+    const closed = step(spec, live, { _tag: 'ExamplesToggled', open: false }).state;
+    expect(closed).toMatchObject({ examplesOpen: false });
+    const reopened = step(spec, closed, { _tag: 'ExamplesToggled', open: true }).state;
+    expect(reopened).toMatchObject({ examplesOpen: true });
+    const next = step(spec, reopened, { _tag: 'Arrived', question: 'Who is Luke?' }).state;
+    expect(next).toMatchObject({ examplesOpen: false });
+  });
+
+  it('retries the failed question while preserving its conversation', () => {
+    const conversation = { ...live, history: [{ question: 'First question', sql: 'SELECT 1' }] };
+    const asking = step(spec, conversation, { _tag: 'Arrived', question: 'Which Wookiees?' }).state;
+    const failed = step(spec, asking, { _tag: 'AskFailed', reason: 'slow' }).state;
+    const edited = step(spec, failed, { _tag: 'AskTyped', text: 'Something else' }).state;
+    const retried = step(spec, edited, { _tag: 'AskRetry' });
+    expect(inputsFor(retried.commands, drivers.ask)).toEqual([
+      { question: 'Which Wookiees?', history: conversation.history },
+    ]);
+    expect(retried.state).toMatchObject({ ask: { _tag: 'Asking', phase: 'reading' } });
+    expect(step(spec, live, { _tag: 'AskRetry' }).commands).toEqual([]);
   });
 
   it('shows each step, the summary as it’s written, then the answer, and remembers it', () => {

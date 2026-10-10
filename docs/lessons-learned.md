@@ -322,3 +322,42 @@ Each entry has four parts:
   without resolving Vite's internals; the finished bundle has no runtime Vite import.
 - **Guard:** the API build still rejects every file except `api.mjs`; the upgrade also runs
   a standalone copy with only DuckDB available, against old data and new client assets.
+
+## Explore looked idle after a question was submitted (2026-10-10)
+
+- **Symptom:** clicking Ask gave no immediate feedback; when an answer arrived, the example
+  questions separated it from the question box.
+- **Cause:** the Asking state started with no steps, and the view relied on the first server
+  event for its status text. Examples came before the progress and answer. The submit button
+  also stayed available, so another click could cancel the first question and start it again.
+- **Fix:** submitting enters the reading phase immediately, changes the button to Searching…
+  and ignores repeated submissions. Progress, results and failures sit under the question;
+  examples collapse below them. The live region announces one phase while How I answered
+  keeps the detailed steps. Retry uses the failed question and its conversation.
+- **Guard:** model tests cover duplicate submits and Retry; browser smoke holds the first API
+  response before any event, checks focus and one request, and checks both themes at 360 px.
+
+## The active Ask link lost contrast on a phone (2026-10-10)
+
+- **Symptom:** the light mobile header's active Ask link failed axe: its 17 px bold text had
+  3.67:1 contrast, below the 4.5:1 requirement.
+- **Cause:** hover and active styles mixed the orange fill with dark text, making the fill
+  darker while keeping the same dark foreground. The smaller mobile font needed more
+  contrast than the large desktop label.
+- **Fix:** mix the light fill with the surface instead. The dark scheme keeps its existing
+  translucent gold fill.
+- **Guard:** delayed-response Explore smoke runs pending and answered axe at 360 px in both
+  themes, including the header's active Ask link (`swr-36w.9`).
+
+## Removing hyperspace stars at ready ended the transition early (2026-10-10)
+
+- **Symptom:** the prototype created two-second star animations, but the article appeared
+  after roughly 220 ms with no visible jump.
+- **Cause:** the incoming view-transition snapshots are live. Removing the named stars at
+  `ready` invalidated the running transition, so `finished` resolved early and cleanup
+  removed the effect's styles.
+- **Fix:** keep the incoming star elements mounted until `finished`, including the skipped
+  or rejected case. They are decorative and ignore pointer events; cleanup removes them and
+  their listeners. The page module blocks rendering so `pagereveal` runs before capture.
+- **Guard:** browser smoke checks the actual snapshot widths, four-second duration, Escape,
+  reduced motion and Back cleanup in both themes (`swr-36w.8`).

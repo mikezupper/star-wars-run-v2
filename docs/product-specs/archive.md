@@ -18,6 +18,23 @@ section. Every section has a page, even an empty one, because the header links t
 Digits and symbols share the letter `0`, listed after `z`. A Legends article is marked as
 Legends in lists and says so at the top of its page.
 
+## Jump to hyperspace
+
+The home page's random-article link opens an article through `/random/`. In browsers that
+support the effect, an ordinary click or Enter shows stars stretching outward into light
+trails, then reveals the article. The jump lasts about four seconds; Escape skips it. Other
+links keep their short page transitions (`swr-36w.8`).
+
+The effect starts as the new page arrives, without delaying its request. Reduced-motion
+settings, browsers without the needed view-transition features, and unavailable browser
+storage use ordinary navigation. Opening in a new tab and modified clicks keep their usual
+behavior. Returning with Back does not replay the jump or leave stars over the page.
+
+A native “Animate hyperspace jumps” checkbox sits beside the link. Unchecking it remembers
+the opt-out in local storage; checking it enables the effect again. Changes also reach other
+open tabs. With system reduced motion on, the checkbox is disabled and the page explains why.
+Browsers without the effect, and visitors without JavaScript, see only the working link.
+
 ## Articles
 
 - **Lead:** the paragraphs before the first heading, with each link to an article in the
@@ -52,3 +69,7 @@ first appearance, mentioned only, in a flashback, as a hologram and so on. A lis
 - A Legends article says it's Legends; its canon namesake has a different URL
   (`luke-skywalker` and `luke-skywalker-legends`).
 - Every page passes axe in light and dark, and works at 360px.
+- The random-article jump shows points, then radial light trails, then its article. Escape
+  skips it, and reduced motion turns it off. No temporary stars remain after the transition
+  or a return with Back.
+- The checkbox's opt-out survives reloads and page visits, and can be turned back on.

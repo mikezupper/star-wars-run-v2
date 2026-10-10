@@ -38,19 +38,20 @@ happens to work: it pulls Node code into the browser, or the network into the bu
 `eslint.config.js` enforces this table: a forbidden import fails `pnpm lint` with a message
 saying what to do instead. Change the table and the lint rules together.
 
-| Layer           | Runs                                  | Contains                                                                                    | May import                                                                                 |
-| --------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `src/site.ts`   | server and browser                    | Site-wide constants: origin, name, description                                              | nothing                                                                                    |
-| `src/labels.ts` | server and browser                    | Every user-facing string (copy lives here only)                                             | `src/domain/` (types)                                                                      |
-| `src/domain/`   | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
-| `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
-| `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
-| `src/render/`   | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`  | browser (and server)                  | Interactive Gyral components: search, Explore (a client of the API)                         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
-| `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
-| `src/hosting/`  | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
-| `src/server/`   | Node, the app (and dev/preview)       | Pages on request from SQLite; `/api/ask`, `/api/query`, the question log; DuckDB, the model | `src/render/`, `src/hosting/`, `src/domain/`, Node built-ins                               |
-| `scripts/`      | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks                                       | anything                                                                                   |
+| Layer                              | Runs                                  | Contains                                                                                    | May import                                                                                 |
+| ---------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/site.ts`                      | server and browser                    | Site-wide constants: origin, name, description                                              | nothing                                                                                    |
+| `src/labels.ts`                    | server and browser                    | Every user-facing string (copy lives here only)                                             | `src/domain/` (types)                                                                      |
+| `src/domain/`                      | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
+| `src/ingest/`                      | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
+| `src/data/`                        | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
+| `src/render/`                      | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/islands/`                     | browser (and server)                  | Interactive Gyral components: search, Explore (a client of the API)                         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/page.ts`, `src/hyperspace.ts` | browser                               | Page controls and native view transitions                                                   | each other, `src/site.ts`, `src/labels.ts`, `src/domain/`                                  |
+| `src/offline/`                     | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
+| `src/hosting/`                     | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
+| `src/server/`                      | Node, the app (and dev/preview)       | Pages on request from SQLite; `/api/ask`, `/api/query`, the question log; DuckDB, the model | `src/render/`, `src/hosting/`, `src/domain/`, Node built-ins                               |
+| `scripts/`                         | Node                                  | Thin CLIs: dev server, build, preview, ingest, checks                                       | anything                                                                                   |
 
 **Status today:** every layer exists.
 
@@ -73,8 +74,10 @@ that serves every page. The dev server calls it with the snapshot in memory; the
 `pages.sqlite` when its page renders, and adds the ETag and Cache-Control (ADR 0011).
 
 Page templates use `html` from `@gyral/core`, rendered on the server and never hydrated, so a
-page without islands ships **no framework JavaScript**: only `src/page.ts`, a few hundred bytes
-for the `/` search key, theme controls and service worker registration. Interactive parts are islands: `define()` components rendered with
+page without islands ships **no framework JavaScript**: only the page module for the `/`
+search key, theme controls, service worker registration and the random-article hyperspace
+transition. The module is render-blocking so `pagereveal` is registered before the first
+frame. Interactive parts are islands: `define()` components rendered with
 Declarative Shadow DOM. Gyral's Vite preset discovers their client modules, and `renderPage()` loads only the
 components whose tags it rendered (today, `/explore/`). The server still imports each
 component for Declarative Shadow DOM rendering. `src/render/assets.ts` stores the component

@@ -54,6 +54,23 @@ stale-if-error=604800` and an `ETag` from the build. A deploy purges Cloudflare'
    the click. Off under `prefers-reduced-motion`; browsers without cross-document transitions
    navigate as before. This doesn't depend on the rest and ships first.
 
+The home page's random-article jump has a four-second hyperspace effect (`swr-36w.8`):
+`pageswap` creates named star points and records the final article URL in session storage;
+`pagereveal` consumes that URL and creates the matching radial trails. The browser animates
+each shared star snapshot from a point to a line while the pages fade out and in. The normal
+link and server redirect handle navigation; there is no client-side router or timed delay
+before the request. The stars and listeners are removed when the transition finishes or is
+skipped, including a Back return. Escape skips it, and reduced motion disables it.
+The home page's native checkbox stores an opt-out as `swr-hyperspace=off` in local storage;
+turning it back on removes that preference. The `storage` event updates other open tabs.
+System reduced motion overrides the preference and disables the checkbox with an explanation.
+
+The page module is render-blocking in the head so its `pagereveal` listener exists before the
+first frame, as required by the [browser event lifecycle](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
+The effect also needs `view-transition-class` and browser storage; without either, navigation
+keeps its normal behavior. The incoming star elements stay mounted until `finished` because
+the new snapshots are live; removing them at `ready` ends the effect early.
+
 ## Consequences
 
 - The site image shrinks from 1.6 GB to a few MB; the app image carries two database files.

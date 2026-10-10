@@ -217,8 +217,14 @@ export const ASK_TEXT = {
   label: 'Your question',
   followUpLabel: 'Ask a follow-up, or a new question',
   ask: 'Ask',
+  busy: 'Searching…',
+  retry: 'Retry',
+  answerHeading: 'Answer',
+  answerHint: 'Your answer will appear here.',
+  failedHeading: 'No answer this time',
   newQuestion: 'Start over',
   examplesLabel: 'Try',
+  moreExamples: 'Try another question',
   examples: [
     'Which Wookiees fought for the Rebel Alliance?',
     'Which films does Boba Fett appear in?',
@@ -228,6 +234,13 @@ export const ASK_TEXT = {
   ],
   note: 'Your question goes to an AI service, which turns it into a search of the archive. Questions are kept, without who asked, to make the answers better.',
   reading: 'Reading your question…',
+  searchingArchive: 'Searching the archive…',
+  results: (n: number, truncated: boolean): string =>
+    n === 0
+      ? 'No results found. Try another question.'
+      : truncated
+        ? `Showing ${n.toLocaleString('en-US')} ${n === 1 ? 'result' : 'results'}; more matched.`
+        : `${n.toLocaleString('en-US')} ${n === 1 ? 'result' : 'results'}.`,
   matched: (pairs: readonly string[]): string =>
     pairs.length === 0 ? 'No names to look up.' : `Looked up ${pairs.join('; ')}.`,
   noMatch: (asked: string): string => `“${asked}” (no article by that name)`,
@@ -356,6 +369,8 @@ export const TEXT = {
   homeAskPlaceholder: 'Which Wookiees fought for the Rebel Alliance?',
   bestKnown: 'Best known',
   randomArticle: 'Jump to hyperspace: a random article →',
+  hyperspaceAnimation: 'Animate hyperspace jumps',
+  hyperspaceReducedMotion: 'Animations are off because your device uses reduced motion.',
   show: 'Show',
   both: 'Both',
   kinds: 'Kinds',

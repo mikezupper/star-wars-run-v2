@@ -1,4 +1,4 @@
-// Loaded on every page (a few hundred bytes, no framework):
+// Loaded on every page (no framework):
 // - `/` or Ctrl/⌘+K focuses search. On /search/ that's the island's box; everywhere else it's
 //   the header form, which submits to /search/?q=… and works without this script. Adapted from
 //   gyral.dev's src/shortcuts.ts.
@@ -10,8 +10,15 @@
 // - On a page-to-page view transition (ADR 0011), the link that was followed grows into the
 //   next page's heading. The CSS names every page's heading `page-title`; here, as the old page
 //   is swapped out, the followed link takes that name instead of the old heading.
+// - The random-article link gets an optional four-second hyperspace transition (src/hyperspace.ts).
 
 import { isTheme, THEME_COLOR, THEME_KEY, type Theme } from './domain/theme.js';
+import {
+  arriveHyperspace,
+  departHyperspace,
+  installHyperspaceSettings,
+  isHyperspaceClick,
+} from './hyperspace.js';
 
 const typing = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
@@ -56,13 +63,18 @@ export function followedLink<T extends Linkish>(
 
 /** The link last clicked (a click or Enter), so the right one of several to one page morphs. */
 let clicked: HTMLAnchorElement | null = null;
+let clickEvent: MouseEvent | null = null;
 
 export function rememberClick(event: Event): void {
   clicked = event.target instanceof Element ? event.target.closest('main a[href]') : null;
+  clickEvent = event as MouseEvent;
 }
 
 /** Hands the heading's transition name to the followed link, until the transition ends. */
 export function nameFollowedLink(event: PageSwapEvent): void {
+  const hyperspace = clickEvent !== null && isHyperspaceClick(clickEvent, clicked);
+  clickEvent = null;
+  if (departHyperspace(event, hyperspace)) return;
   const to = event.activation?.entry.url;
   if (!event.viewTransition || to == null) return;
   const link =
@@ -88,8 +100,10 @@ export function nameFollowedLink(event: PageSwapEvent): void {
 }
 
 if (typeof window !== 'undefined' && 'onpageswap' in window) {
+  installHyperspaceSettings();
   document.addEventListener('click', rememberClick, { capture: true });
   window.addEventListener('pageswap', nameFollowedLink);
+  window.addEventListener('pagereveal', arriveHyperspace);
 }
 
 /** The theme on screen: the visitor's pick, else the system's. */

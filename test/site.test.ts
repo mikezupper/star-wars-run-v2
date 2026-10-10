@@ -91,6 +91,7 @@ describe('every page', () => {
       expect(scripts, page).toEqual(
         page === '/explore/' ? ['/assets/page.js', '/assets/components.js'] : ['/assets/page.js'],
       );
+      expect(body, page).toContain('blocking="render"');
       expect(body.includes('rel="modulepreload"'), page).toBe(page === '/explore/');
       if (page === '/explore/') {
         expect(body).toContain('href="/assets/explore.js"');
