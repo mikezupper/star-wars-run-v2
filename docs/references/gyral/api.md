@@ -14,12 +14,12 @@ from the code.
 
 | Package                                  | What's in it                                                                   |
 | ---------------------------------------- | ------------------------------------------------------------------------------ |
-| [`@gyral/core`](/docs/api/core/)         | `define`, commands, stores, forms, the view layer; server, Vite and ESLint     |
+| [`@gyral/core`](/docs/api/core/)         | `define`, commands, subscriptions, stores, forms, the view layer; Vite, ESLint |
 | [`@gyral/http`](/docs/api/http/)         | `get`, `request`, `submitForm`, the `http` driver; `fakeHttp` for tests        |
 | [`@gyral/router`](/docs/api/router/)     | `routes`, `listen`, `navigate`, `setHead`, `makeRouter`                        |
-| [`@gyral/time`](/docs/api/time/)         | `delay`, `debounce`, `periodic`, `animationFrames`                             |
-| [`@gyral/ssr`](/docs/api/ssr/)           | `renderPage`, `page`, `contentSecurityPolicy`, `formAction`; static generation |
-| [`@gyral/testing`](/docs/api/testing/)   | `step`, `run`, fake drivers, virtual time, `mountSsr`, `hydrated`; arbitraries |
+| [`@gyral/time`](/docs/api/time/)         | `delay`, `debounce`, `every`                                                   |
+| [`@gyral/ssr`](/docs/api/ssr/)           | `renderPage`, `formAction`, CSP; static generation, Node adapter, dev server   |
+| [`@gyral/testing`](/docs/api/testing/)   | `step`, `run`, `mount`, `parse`, fake drivers, virtual time, `mountSsr`        |
 | [`@gyral/devtools`](/docs/api/devtools/) | `mountDevtools` and the panel                                                  |
 
 ## Reading the reference
@@ -28,8 +28,8 @@ from the code.
   `ComponentSpec` in `@gyral/core` describes every field of `spec`.
 - **Functions return data.** Command helpers such as `get`, `delay` and `navigate` return a
   `Command`, which does nothing until a reducer returns it.
-- **The view layer is Gyral's own.** `html`, `css`, `each`, `raw`, `defineHook` and `nothing`
-  are documented with the rest of `@gyral/core`; `@gyral/core/server` is the server renderer,
-  `@gyral/core/vite` the preset and template compiler, `@gyral/core/eslint` the template rules.
+- **The view layer is Gyral's own.** `html`, `css`, `each`, `keyed`, `raw`, `defineHook` and
+  `nothing` are documented with the rest of `@gyral/core`; `@gyral/core/vite` is the preset and
+  `@gyral/core/eslint` the template rules. Server rendering is `@gyral/ssr`.
 
 The guides explain how the pieces fit together: start with [Components](/docs/components/).

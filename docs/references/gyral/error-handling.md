@@ -167,7 +167,12 @@ window.addEventListener('error', (event) => {
 ```
 
 Production builds report the same errors with short messages; the codes are explained on the
-[error codes](/errors/) page.
+[error codes](/errors/) page. For your own tooling, the same table (code, group, message,
+arguments, link) ships with the package as `@gyral/core/errors.json`:
+
+```ts
+import table from '@gyral/core/errors.json' with { type: 'json' };
+```
 
 ## On the server
 

@@ -23,7 +23,7 @@ server.
 // src/lookup.ts
 import { define, html } from '@gyral/core';
 import { get } from '@gyral/http';
-import { debounce } from '@gyral/time/delay';
+import { debounce } from '@gyral/time';
 import * as v from 'valibot';
 
 const Result = v.object({ name: v.string() });
@@ -195,39 +195,34 @@ arriving. Await it before you look at the DOM; there's nothing to poll.
   the messages they deliver.
 - **It never waits for timers or the network.** Answer fake drivers and advance virtual time
   first, then `await settled()`.
+- **On a page that loads its components automatically**, await `componentsReady()` instead:
+  it first waits until the loader has defined every rendered component, then settles.
 
 Because it waits for the whole chain, a fake that answers at once runs to the end before
 `settled()` resolves. To see an in-between state such as "Loading…", use a fake that waits for
 the test (`fakeDriver(name)` without `impl`), assert, then answer it with `resolveNext`.
 
+`mount()` from `@gyral/testing` does the setup: it creates the element, sets `drivers`, `stores`
+and props before the element connects, appends it, waits for its first render, and removes it
+after the test (with Vitest's globals on; otherwise call `dispose()`). Its `$` and `$$` query
+the shadow root, and `type()` and `click()` fire real events, then wait for `settled()`.
+
 ```ts
 // src/lookup.browser.test.ts
 import { afterEach, expect, it } from 'vitest';
-import { settled } from '@gyral/core';
 import { fakeHttp } from '@gyral/http/testing';
-import { virtualTime, type VirtualTime } from '@gyral/testing';
+import { mount, virtualTime, type VirtualTime } from '@gyral/testing';
 import { Lookup } from './lookup.js';
 
 let time: VirtualTime | undefined;
-
-afterEach(() => {
-  time?.restore();
-  document.body.replaceChildren();
-});
+afterEach(() => time?.restore());
 
 it('debounces typing, then shows the answer', async () => {
   time = virtualTime();
   const http = fakeHttp(); // the real http driver over a fake fetch: schemas still decode
-  const el = new Lookup();
-  el.drivers = { http };
-  document.body.append(el);
-  await settled();
+  const lookup = await mount(Lookup, { drivers: { http } });
 
-  const input = el.shadowRoot?.querySelector('input');
-  if (input == null) throw new Error('missing input');
-  input.value = 'ada';
-  input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
-
+  await lookup.type('input', 'ada');
   await time.advance(299);
   expect(http.requests).toHaveLength(0);
   await time.advance(1);
@@ -235,8 +230,8 @@ it('debounces typing, then shows the answer', async () => {
 
   http.respondNext({ body: { name: 'Ada Lovelace' } });
   await time.advance(0);
-  await settled();
-  expect(el.shadowRoot?.querySelector('output')?.textContent).toBe('Ada Lovelace');
+  await lookup.settled();
+  expect(lookup.$('output')?.textContent).toBe('Ada Lovelace');
 });
 ```
 
@@ -329,13 +324,36 @@ key press is enough. Setting a prop to a value [equal to the current
 one](/docs/components/#when-a-prop-counts-as-changed) changes nothing, though: no render and no
 `PropsChanged`. A test that expects either must set a different value.
 
+For the parser's own result, without a DOM, `parse(Component, intent, input, { props, state })`
+calls one parser with its `ctx` filled in and returns the message (or `undefined` when it
+declines):
+
+```ts
+// src/folder-list.node.test.ts
+import { expect, it } from 'vitest';
+import { parse } from '@gyral/testing';
+import { FolderList } from './folder-list.js';
+
+it('steps with the arrows of its orientation', () => {
+  const event = new Event('keydown', { cancelable: true });
+  const horizontal = { props: { orientation: 'horizontal' } };
+  expect(parse(FolderList, 'Step', { key: 'ArrowRight', event }, horizontal)).toEqual({
+    _tag: 'Step',
+    by: 1,
+  });
+  expect(parse(FolderList, 'Step', { key: 'ArrowDown', event }, horizontal)).toBeUndefined();
+});
+```
+
 ## Fake drivers and commands
 
 Substitute drivers by name, as the app would ([Effects](/docs/effects/#substituting-drivers)):
 
 - **`el.drivers = { http }`** for one element.
-- **`withDrivers(root, drivers)`** for every component under a container, including nested
-  components in shadow roots. It returns a function that removes the overrides.
+- **`provideDrivers(root, drivers)`** from `@gyral/core` for every component under a container,
+  including nested components in shadow roots, as the app itself would at its entry. It returns
+  a function that removes the overrides.
+- **`mount(Component, { drivers })`** for the element a browser test mounts.
 - **`fakeDriver(driverOrName, { impl? })`** records every call and waits for the test:
   `resolveNext(output)`, `rejectNext(error)`, `emitNext(value)` for streaming drivers, or
   `calls[i].resolve(…)`. With `impl`, it answers at once. **`fakeDriver(name, run)`** is the
@@ -344,8 +362,9 @@ Substitute drivers by name, as the app would ([Effects](/docs/effects/#substitut
   `fetch`, so response schemas, status errors and JSON parsing behave as in production.
   `respondNext({ status, body })`, `reply(422, problem)` and `failNext()` answer requests.
 
-Drivers go in as they are: any driver, a fake included, fits `el.drivers`, `withDrivers` and
-`provideDrivers` with no cast. When you keep a map of drivers yourself, type it as
+Drivers go in as they are: any driver, a fake included, fits `el.drivers`, `mount` and
+`provideDrivers` with no cast. A driver token (`defineDriver<I, O, E>('name')`, which has no
+implementation of its own) is substituted the same way, by its name. When you keep a map of drivers yourself, type it as
 `DriverOverrides` from `@gyral/core`. `Record<string, Driver<unknown, unknown>>` looks right but
 rejects every driver with a typed input.
 
@@ -370,15 +389,15 @@ Promise.resolve();`, every running command's `signal.aborted` is `true`, its `ab
 have run, and no later result is dispatched. Cleanup a driver runs after an `await` (a
 `finally` once its promise settles) happens later still; yield again (or
 `await clock.advance(0)` under `virtualTime()`) to observe it. To test a component that is
-attached again after a real removal, step its `Connected` reducer:
-`step(spec, state, { _tag: 'Connected', reconnect: true })`.
+attached again after a real removal, check its subscriptions for that state:
+`subscriptionsFor(Component, state, props)` returns the commands it would start.
 
 ## Virtual time
 
 `virtualTime()` replaces timers, `Date` and `requestAnimationFrame` with a virtual clock.
 `advance(ms)` runs what's due and the promise work in between; `runAll()` runs every pending
 timer; `restore()` puts the real clock back. It patches the platform, not Gyral, so it covers
-debounces, `periodic`, driver timeouts and retry delays alike. Advance the clock, then
+debounces, `every`, driver timeouts and retry delays alike. Advance the clock, then
 `await settled()` before you assert on the DOM.
 
 It also works in a Vitest **node** project, where there is no `requestAnimationFrame` to fake,
@@ -440,16 +459,9 @@ hydrate:
 // src/lookup-ssr.browser.test.ts
 import { afterEach, describe, expect, it } from 'vitest';
 import { commands } from 'vitest/browser';
-import { settled } from '@gyral/core';
+import { provideDrivers, settled } from '@gyral/core';
 import { fakeHttp } from '@gyral/http/testing';
-import {
-  hydrated,
-  mountSsr,
-  virtualTime,
-  withDrivers,
-  type MountedSsr,
-  type VirtualTime,
-} from '@gyral/testing';
+import { hydrated, mountSsr, virtualTime, type MountedSsr, type VirtualTime } from '@gyral/testing';
 
 let page: MountedSsr | undefined;
 let time: VirtualTime | undefined;
@@ -466,7 +478,7 @@ describe('the server-rendered lookup', { timeout: 60_000 }, () => {
     const host = page.root.querySelector('my-lookup');
     const input = host?.shadowRoot?.querySelector('input');
     const http = fakeHttp();
-    withDrivers(page.root, { http });
+    provideDrivers(page.root, { http });
 
     await import('./lookup.js'); // import after mounting, as a real page load would
     await hydrated(page);
@@ -547,15 +559,8 @@ it('hydrates the server page in place', async () => {
   of your components too: production hydration recovers from a mismatch instead of throwing, so
   only a warning shows it.
 
-## Property tests from schemas
-
-`arbitraryFrom(schema)` from `@gyral/testing/arbitraries` turns a Standard Schema into a
-[fast-check](https://fast-check.dev) arbitrary, so the schema that guards a form also generates
-its test inputs. It reads Standard JSON Schema when the library provides it (Zod 4 does), or
-takes a `toJsonSchema` converter.
-
 ## Testing stores
 
-`stepStore(store, state, msg)` runs a store reducer, `testStore(store, initial)` gives a test its
-own instance (`el.stores = { cart: instance }`), and `sentTo(commands, store)` lists the messages
-a reducer sent to a store.
+`stepStore(store, state, msg)` runs a store reducer, `store.instance(initial)` gives a test its
+own instance (`mount(Cart, { stores: { cart: instance } })`), and `inputsFor(commands, store)`
+lists the messages a reducer sent to a store.

@@ -1,17 +1,17 @@
 {
-  "commit": "209304e38060f3bc4d309e81cc8c1c768ea1d198",
+  "commit": "78052c439d697e5d2075bd6a40c6ea8cc257cd6c",
   "dirty": false,
-  "version": "0.3.1-next.6",
-  "packed": "2026-10-09T11:15:20.605Z",
+  "version": "0.3.1-next.9",
+  "packed": "2026-10-10T01:08:06.817Z",
   "files": [
-    "gyral-core-0.3.1-next.6.tgz",
-    "create-gyral-0.3.1-next.6.tgz",
-    "gyral-devtools-0.3.1-next.6.tgz",
-    "gyral-http-0.3.1-next.6.tgz",
-    "gyral-mcp-0.3.1-next.6.tgz",
-    "gyral-router-0.3.1-next.6.tgz",
-    "gyral-ssr-0.3.1-next.6.tgz",
-    "gyral-testing-0.3.1-next.6.tgz",
-    "gyral-time-0.3.1-next.6.tgz"
+    "gyral-core-0.3.1-next.9.tgz",
+    "create-gyral-0.3.1-next.9.tgz",
+    "gyral-devtools-0.3.1-next.9.tgz",
+    "gyral-http-0.3.1-next.9.tgz",
+    "gyral-mcp-0.3.1-next.9.tgz",
+    "gyral-router-0.3.1-next.9.tgz",
+    "gyral-ssr-0.3.1-next.9.tgz",
+    "gyral-testing-0.3.1-next.9.tgz",
+    "gyral-time-0.3.1-next.9.tgz"
   ]
 }

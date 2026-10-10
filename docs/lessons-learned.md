@@ -296,3 +296,29 @@ Each entry has four parts:
 - **Guard:** smoke's link check cancels responses and follows `/random/`; `test/server/pages.test.ts`
   covers the 304 at the handler. The container's own forwarding is checked when the production
   stack is tested end to end (`swr-sgf.6`).
+
+## Search showed the wrong section although its results were correct (2026-10-10)
+
+- **Symptom:** the section dropdown displayed Other when searching all sections or requesting
+  Planets. The results still obeyed the URL, so the existing search tests passed.
+- **Cause:** `selected=${s === section}` emitted a `selected` attribute on every option,
+  including `selected="false"`. HTML boolean attributes are enabled whenever present, so the
+  browser selected the last option.
+- **Fix:** `?selected=${s === section}` emits the attribute only for the requested section.
+  Gyral next.9's template rule 14 now rejects the old binding.
+- **Guard:** the server-page test checks the selected attributes, and browser smoke checks
+  the dropdown value with and without JavaScript, both unfiltered and filtered to Planets.
+
+## The Node adapter pulled Vite into the code-only API build (2026-10-10)
+
+- **Symptom:** after adopting next.9's `toNodeListener`, `pnpm build:api` emitted
+  `assets/node-*.js` beside `api.mjs`. The API image copies only `api.mjs`, so its bundle guard
+  rejected the build.
+- **Cause:** `@gyral/ssr/node` also re-exports `gyralDevServer`, which dynamically imports
+  Vite. With `ssr.noExternal: true`, Vite resolves its own package and emits build assets before
+  the unused development helper is removed. Disabling application code splitting alone does
+  not prevent that emission.
+- **Fix:** mark `vite` external in the API build. Tree-shaking then removes the unused helper
+  without resolving Vite's internals; the finished bundle has no runtime Vite import.
+- **Guard:** the API build still rejects every file except `api.mjs`; the upgrade also runs
+  a standalone copy with only DuckDB available, against old data and new client assets.

@@ -138,7 +138,7 @@ export const cartPage = (saved: Cart): Response =>
 - Components read the request's instance synchronously while they render. Gyral keeps one
   registry per render, even across the chunks of a response, without `AsyncLocalStorage`, so it works on
   any runtime.
-- `page()` writes every store's state once into the document as
+- `renderPage()` writes every store's state once into the document as
   `<script type="application/json" data-gyral-stores>`, escaped for scripts. The browser
   restores it before any component hydrates, so the first client render matches the server's.
 - Give `defineStore` a `schema` to check that seed in the browser: an invalid seed is reported
@@ -147,6 +147,6 @@ export const cartPage = (saved: Cart): Response =>
 ## Testing stores
 
 A store's reducers are pure, so `stepStore(store, state, msg)` from `@gyral/testing` runs one
-without an instance. `testStore(store, initial)` gives a test its own instance, and
-`sentTo(commands, store)` lists the messages a component's reducer sent to a store. See
+without an instance. `store.instance(initial)` gives a test its own instance, and
+`inputsFor(commands, store)` lists the messages a component's reducer sent to a store. See
 [Testing](/docs/testing/).

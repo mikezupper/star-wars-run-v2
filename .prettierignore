@@ -1,4 +1,5 @@
 .beads/
+.gyral/
 pnpm-lock.yaml
 dist/
 coverage/

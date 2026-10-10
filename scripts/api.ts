@@ -11,9 +11,9 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import http from 'node:http';
 import { join } from 'node:path';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
+import { toNodeListener } from '@gyral/ssr/node';
+import { ORIGIN } from '../src/site.js';
 import type { Assets } from '../src/render/layout.js';
 import { openApi } from '../src/server/open.js';
 import { backupQuestionLog } from '../src/server/questions.js';
@@ -68,41 +68,15 @@ const api = await openApi(
 );
 const port = Number(process.env['PORT'] ?? 8090);
 
-const forwarded = (req: http.IncomingMessage): Record<string, string> => {
-  const etag = req.headers['if-none-match'];
-  return typeof etag === 'string' ? { 'if-none-match': etag } : {};
-};
-
 http
-  .createServer((req, res) => {
-    void (async () => {
-      // Only POSTs (Ask, the SQL editor) have a body; a page request is read no further, so a
-      // visitor who leaves mid-request costs nothing.
-      const chunks: Buffer[] = [];
-      if (req.method === 'POST') for await (const chunk of req) chunks.push(chunk as Buffer);
-      const abort = new AbortController();
-      // 'close' also fires after a response finishes normally; only a dropped connection aborts.
-      res.on('close', () => {
-        if (!res.writableFinished) abort.abort();
-      });
-      const response = await api.handle(
-        new Request(new URL(req.url ?? '/', 'http://localhost'), {
-          method: req.method ?? 'GET',
-          // The one request header the app reads: a revisit's ETag, answered with a 304.
-          headers: forwarded(req),
-          ...(req.method === 'POST' ? { body: Buffer.concat(chunks) } : {}),
-          signal: abort.signal,
-        }),
-      );
-      res.writeHead(response.status, Object.fromEntries(response.headers));
-      if (response.body === null) res.end();
-      else await pipeline(Readable.fromWeb(response.body as never), res).catch(() => undefined);
-    })().catch((cause: unknown) => {
-      console.error('api:', cause);
-      if (!res.headersSent) res.writeHead(500);
-      res.end();
-    });
-  })
+  .createServer(
+    toNodeListener(api.handle, {
+      origin: ORIGIN,
+      onError: (cause) => {
+        console.error('api:', cause);
+      },
+    }),
+  )
   .listen(port, () => {
     console.log(`api: http://localhost:${String(port)}/api/`);
   });

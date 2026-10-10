@@ -237,6 +237,8 @@ async function checkSearch() {
       await page.keyboard.type(query);
       await page.keyboard.press('Enter');
       await page.waitForURL(`**/search/?q=${query}`);
+      if ((await page.locator('#search-section').inputValue()) !== '')
+        fail(where, `"${query}": the form selected a section without being asked`);
       const top = (await hrefs(page)).slice(0, 5);
       if (top.length === 0) {
         fail(where, `"${query}": no results`);
@@ -250,6 +252,8 @@ async function checkSearch() {
 
     // The section filter: only planets.
     await page.goto(`${base}/search/?q=ta&section=planets`, { waitUntil: 'networkidle' });
+    if ((await page.locator('#search-section').inputValue()) !== 'planets')
+      fail(where, 'section=planets did not select Planets in the form');
     const outside = (await hrefs(page)).filter((h) => !h.startsWith('/planets/'));
     if (outside.length > 0) fail(where, `section=planets returned ${outside.join(', ')}`);
 
@@ -282,6 +286,11 @@ async function checkWithoutJavaScript() {
     await page.goto(`${base}/search/?q=luke`);
     if (!(await hrefs(page)).includes('/characters/luke-skywalker/'))
       fail(where, 'no results for "luke" without JavaScript');
+    if ((await page.locator('#search-section').inputValue()) !== '')
+      fail(where, 'the section filter did not default to all sections');
+    await page.goto(`${base}/search/?q=ta&section=planets`);
+    if ((await page.locator('#search-section').inputValue()) !== 'planets')
+      fail(where, 'the requested section did not survive server rendering');
   } finally {
     await context.close();
   }
@@ -314,11 +323,19 @@ async function checkOffline() {
     });
     // A visit through the worker saves the page.
     await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/explore/`, { waitUntil: 'networkidle' });
+    await page.locator('swr-explore #question').waitFor();
     await context.setOffline(true);
 
     await page.goto(`${base}/characters/luke-skywalker/`);
     const h1 = await page.locator('h1').textContent();
     if (h1 !== 'Luke Skywalker') fail(where, `visited page shows "${String(h1)}" offline`);
+
+    // Automatic components load through a separate loader and chunk; both must be cached.
+    await page.goto(`${base}/explore/`);
+    await page.locator('swr-explore #question').waitFor();
+    if ((await page.locator('swr-explore #question').count()) !== 1)
+      fail(where, 'the cached Explore page did not hydrate once offline');
 
     // Search needs the server now (ADR 0011): offline, a new search gets the offline page.
     await page.goto(`${base}/search/?q=sky`);
@@ -594,6 +611,10 @@ async function checkDevServer() {
       // Dev searches the last build's pages.sqlite (DIST_DIR-api), beside its own archive.
       await page.goto(`${devBase}/search/?q=sky`, { waitUntil: 'networkidle' });
       if ((await hrefs(page)).length === 0) fail(where, '"sky" found nothing on the dev server');
+      await page.goto(`${devBase}/explore/`, { waitUntil: 'networkidle' });
+      await page.locator('swr-explore #question').waitFor();
+      const copies = await page.locator('swr-explore #question').count();
+      if (copies !== 1) fail(where, `automatic loading hydrated ${String(copies)} Explore copies`);
     } finally {
       await context.close();
     }

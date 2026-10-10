@@ -54,7 +54,7 @@ export const Profile = define<State, Msg>()('my-profile', {
 ## Templates
 
 Everything a view needs comes from `@gyral/core`: `html`, `svg`, `css`, `nothing`, `each`,
-`raw`, `defineHook` and `defineDisposableHook`. Gyral renders with its own small view layer, built for this one job: no virtual
+`keyed`, `raw` and `defineHook`. Gyral renders with its own small view layer, built for this one job: no virtual
 DOM, no runtime dependencies. A template is prepared once per call site. After that a render
 only compares each `${…}` with the value it wrote last time and touches the DOM where they
 differ.
@@ -68,6 +68,11 @@ differ.
 | `.prop=${value}`            | A property: data for a child Gyral component, such as objects and arrays |
 | `<input ${hook(…)}>`        | An [element hook](#element-hooks) on that element                        |
 | `<textarea>${v}</textarea>` | The textarea's value (see [Form state](#form-state))                     |
+
+Boolean attributes (`selected`, `checked`, `disabled`, `open`, `required`, `hidden`'s siblings
+and the rest of HTML's list) take `?attr=${bool}`. Writing `selected=${bool}` would render
+`selected="false"`, which the browser reads as selected, so it's a template error with the fix
+in the message.
 
 In a text position, `false`, `null`, `undefined` and `nothing` render nothing, so
 ``${s.open && html`…`}`` works. Classes and inline styles are plain strings:
@@ -291,8 +296,9 @@ a small tuple or object is fine.
 - Keys are unique strings or numbers. A duplicate key is an error in development.
 - The ESLint rule `gyral/each-row-purity` names any variable a row reads from the view and
   tells you to move it into `pick`.
-- To get a fresh element when an id changes, render a one-item list:
-  `each([s.run], (run) => run.id, Run)`. To restart a CSS animation, a hook is lighter: see
+- To get a fresh element when an id changes, use `keyed(s.run.id, Run(s.run))`: when the key
+  changes, the old elements (and any component state in them) are discarded and new ones
+  created. To restart a CSS animation, a hook is lighter: see
   [Replaying a CSS animation](#replaying-a-css-animation).
 
 ### .map or each?
@@ -428,25 +434,57 @@ hydration keeps what the user typed before scripts ran until the model's value c
 
 To put a control back after a refused edit, change the model: clamp or normalize to a value
 that differs from the one rendered last, or re-create the form with a key. Keep a counter in
-the state, bump it on reset, and render the fields as a one-item list,
-`each([s], (x) => x.formKey, (x) => fields(x))`: the new key brings fresh elements with the
-model's values. `form.reset()` is no substitute; it restores the first values, not the model's.
+the state, bump it on reset, and render `keyed(s.formKey, fields(s))`: the new key brings fresh
+elements with the model's values. `form.reset()` is no substitute; it restores the first values, not the model's.
 
 Never bind form state as a property (`.value=`, `.checked=`): the server can't write a
 property, so the page would arrive empty. The compiler rejects it. A checkbox's `value` and a
 `<button value>` are submitted values, not state, so they're plain attributes.
 
+## Dialogs and popovers
+
+A modal dialog opens with a method call, not an attribute, so Gyral gives it a binding of its
+own. `?modal=${s.open}` on a `<dialog>` calls `showModal()` when the value turns true and
+`close()` when it turns false; `?popover-open=${b}` does the same for an element with a
+`popover` attribute (`showPopover()`, `hidePopover()`). The browser returns focus to the opener
+when a modal closes. Escape and form `method="dialog"` close the dialog on their own, so listen
+for that with an intent and keep the model in step:
+
+```ts
+// src/confirm-delete.ts
+import { define, html } from '@gyral/core';
+
+export type Msg = { readonly _tag: 'Ask' } | { readonly _tag: 'Closed' };
+
+export const ConfirmDelete = define<{ readonly open: boolean }, Msg>()('my-confirm-delete', {
+  init: () => ({ open: false }),
+  intent: { Ask: true, Closed: true },
+  update: {
+    Ask: () => ({ open: true }),
+    Closed: () => ({ open: false }),
+  },
+  view: (s, i) => html`
+    <button type="button" data-intent=${i.Ask}>Delete…</button>
+    <dialog ?modal=${s.open} data-intent=${i.Closed} data-intent-on="close">
+      <form method="dialog">
+        <p>Delete this task?</p>
+        <button value="cancel">Cancel</button>
+        <button value="delete">Delete</button>
+      </form>
+    </dialog>
+  `,
+});
+```
+
+On the server neither binding writes anything; a dialog that should start open opens when the
+component hydrates. Use `?open` only for a non-modal `<dialog>` or `<details>`.
+
 ## Element hooks
 
 A hook is a small behaviour attached to the element it sits on, written inside the start tag.
-Core ships three:
-
-- **`invalid(errors)`** mirrors model errors into native validity (`setCustomValidity` and
-  `aria-invalid`). See [Forms](/docs/forms/).
-- **`labelledBy('page-title')`** names a form or region after a heading outside the component's
-  shadow root, which `aria-labelledby` can't reach on its own.
-- **`capturePointer()`** keeps a pointer on its element from `pointerdown` until release, for
-  [press-and-hold](/docs/intent/#press-and-hold) and drag intents.
+Core ships one, **`invalid(errors)`**, which mirrors model errors into native validity
+(`setCustomValidity` and `aria-invalid`); see [Forms](/docs/forms/). Others are a few lines
+each, such as capturing a pointer for [press-and-hold](/docs/intent/#press-and-hold).
 
 Write your own with `defineHook`. `client(el, args, prev)` runs after the render whenever the
 arguments change (`prev` is `undefined` the first time). An optional `server(args)` returns
@@ -489,6 +527,11 @@ export const Steps = define<State, Msg>()('my-steps', {
   `,
 });
 ```
+
+Hooks run after the whole render, children before parents, so a parent's hook can measure the
+children that just rendered. A hook runs again when its arguments change; pass
+`update: 'always'` to `defineHook` for one that runs after every render of its component, such
+as a hook that keeps a scroll position anchored while a list grows.
 
 ### Custom properties
 
@@ -600,8 +643,8 @@ export const InboxBadge = define<State, Msg>()('my-inbox-badge', {
 `getAnimations()` covers the CSS animations and transitions running on the element; pass
 `{ subtree: true }` to include its descendants. The count lives in state because the model
 decides when something deserves attention, and a count, unlike a boolean, changes every time.
-Without a hook, a one-item keyed list replays by replacing the element,
-`each([s.pulses], String, Badge)`, at the cost of a new node (and its focus, if it had any).
+Without a hook, `keyed(s.pulses, Badge(s))` replays by replacing the element, at the cost of a
+new node (and its focus, if it had any).
 
 ## Widgets with a lifecycle
 
@@ -671,16 +714,16 @@ When the widget has a model of its own, make it a Gyral component (`prop.value` 
 
 For a **small imperative behaviour** on an element of the view, such as a timer, a
 `ResizeObserver` or a third-party enhancer on one input, a hook with a teardown is lighter:
-`defineDisposableHook` takes `dispose(el, args)` next to `client`.
+`defineHook` takes `dispose(el, args)` next to `client`.
 
 ```ts
 // src/flash.ts
-import { defineDisposableHook } from '@gyral/core';
+import { defineHook } from '@gyral/core';
 
 const timers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
 
 /** Highlights the element for a moment whenever `value` changes. */
-export const flash = defineDisposableHook<[value: unknown]>({
+export const flash = defineHook<[value: unknown]>({
   client: (el, _args, prev) => {
     if (prev === undefined) return; // not on the first render
     el.classList.add('flash');
@@ -703,9 +746,8 @@ export const flash = defineDisposableHook<[value: unknown]>({
   disconnects. It never runs for moves: rows reordered in a list, or a component moved with
   `moveBefore()`.
 - After a component disconnects and reconnects, `client` runs again with `prev` undefined.
-- `defineHook` takes no `dispose` (a type error, and an error in development), so apps whose
-  hooks need no teardown don't bundle the tracking; `defineDisposableHook` adds about 0.25 KiB
-  gzip.
+- The teardown tracking is bundled only when some hook has a `dispose`, so apps whose hooks
+  need none don't pay for it.
 
 ## Trusted markup with raw()
 
@@ -854,6 +896,34 @@ moves focus to the page body. Render focusable rows with a keyed `each`, so a ro
 of being created again, and when the focused item really goes away, such as a deleted row,
 return a `focus()` command for its neighbour or for the list.
 
+## Calling a method on an element
+
+Some elements are driven by methods: a `<video>` plays, a third-party chart resets, a canvas
+widget takes a command. `call(selector, method, ...args)` from `@gyral/core` is a command like
+`focus()`: after the render, it finds the element in the component's own tree and calls the
+method. Arguments must be plain data (they're checked in development), so the command stays a
+value you can test with `callsIn(commands)` from `@gyral/testing`:
+
+```ts
+// src/clip.ts
+import { call, define, html } from '@gyral/core';
+
+export type Msg = { readonly _tag: 'Replay' };
+
+export const Clip = define<object, Msg>()('my-clip', {
+  init: () => ({}),
+  intent: { Replay: true },
+  update: { Replay: (s) => [s, [call('video', 'play')]] },
+  view: (_s, i) => html`
+    <video src="/intro.webm" muted playsinline></video>
+    <button type="button" data-intent=${i.Replay}>Replay</button>
+  `,
+});
+```
+
+A missing element or method, or a method that throws, is reported through the
+[error channel](/docs/error-handling/).
+
 ## View transitions
 
 Return `true` from the optional `viewTransition(prev, next, msg)` spec field to render that
@@ -864,7 +934,8 @@ visitor asked for reduced motion, and the animation itself is CSS.
 ## When the DOM updates
 
 Reducers run as soon as a message arrives; the DOM updates in a microtask, once for all the
-messages that arrived together, parents before children. In a test, `await settled()` waits
+messages that arrived together, parents before children. Element hooks then run, children
+before parents. In a test, `await settled()` waits
 until every component has rendered and messages have stopped arriving. See
 [Testing](/docs/testing/).
 

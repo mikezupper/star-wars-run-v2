@@ -5,7 +5,7 @@
 // test/hosting/headers.test.ts fails until you do.
 import { createHash } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
-import { styleHashes } from '@gyral/core/server';
+import { styleHashes } from '@gyral/ssr';
 import { THEME_SCRIPT } from '../src/domain/theme.js';
 
 // Registering the islands is what makes their styles known.

@@ -14,7 +14,7 @@
     "build": "vite build && tsx scripts/build.ts",
     "preview": "tsx scripts/preview.ts",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm invariants && pnpm test && pnpm build:api && pnpm build:sample && DIST_DIR=.sample pnpm smoke",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "gyral-types && tsc -p tsconfig.json",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "@duckdb/node-api": "1.5.6-r.1",
-    "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.6.tgz",
-    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.6.tgz"
+    "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.9.tgz",
+    "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.9.tgz"
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
@@ -47,7 +47,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/chakra-petch": "^5.3.0",
-    "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.6.tgz",
+    "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.9.tgz",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
@@ -73,9 +73,9 @@
   },
   "pnpm": {
     "overrides": {
-      "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.6.tgz",
-      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.6.tgz",
-      "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.6.tgz"
+      "@gyral/core": "file:./vendor/gyral-core-0.3.1-next.9.tgz",
+      "@gyral/ssr": "file:./vendor/gyral-ssr-0.3.1-next.9.tgz",
+      "@gyral/testing": "file:./vendor/gyral-testing-0.3.1-next.9.tgz"
     }
   }
 }

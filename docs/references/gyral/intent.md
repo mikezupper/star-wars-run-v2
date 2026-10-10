@@ -62,6 +62,11 @@ misspelt intent is a compile error. When that element's trigger event fires, Gyr
 parser registered under the same name in `intent`, and sends whatever it returns through
 `update`.
 
+A parser that only sends its tag can be written `true`: `intent: { Clear: true }` is
+`Clear: () => ({ _tag: 'Clear' })`. It works when the message has no other fields, and is a type
+error otherwise. A component with no intents leaves `intent` out, and one with no messages
+leaves `update` out too.
+
 The view never attaches a closure. That keeps it a pure function of state, which matters for
 [server rendering](/docs/server-rendering/) (the markup the server sends already names every
 intent) and for testing (there's nothing to call but `update`).
@@ -83,8 +88,9 @@ there: `keyup`, `focusin`, `focusout`, `toggle` (popovers and `<details>`), `com
 commands, below), `pointerdown` or a third-party element's own event. A component listens only
 for the events its templates name, so a component without keyboard intents never runs intent
 lookup on a keystroke. If the value itself is bound, `data-intent-on=${…}`, the component listens
-for `keydown`, `keyup`, `focusin`, `focusout`, `toggle` and `command` as well; list any other
-event type it can produce in the spec: `events: ['pointerdown']`.
+for `keydown`, `keyup`, `focusin`, `focusout`, `toggle` and `command` as well; for any other
+event, write a per-event attribute such as `data-intent-pointerdown=${i.Press}` (below), which
+the component always listens for.
 
 `data-intent-on` also takes a list, separated by spaces: `data-intent-on="keydown keyup"` fires
 the intent for both events. The parser tells them apart with `event.type`. Use a list when the
@@ -619,9 +625,37 @@ clearer; give each control its own key when the parsers differ.
 A hold-to-record button, like a voice message in a chat, needs the press and the release. List
 both in `data-intent-on` and read `event.type`: one intent, one message with a `down` flag.
 
+The release must arrive even when the pointer leaves the button before it lets go. That is
+**pointer capture**: an [element hook](/docs/views/#element-hooks) of a few lines calls
+`setPointerCapture` on `pointerdown`, so the pointer's events stay with the element until release.
+
+```ts
+// src/capture-pointer.ts
+import { defineHook } from '@gyral/core';
+
+function capture(this: Element, event: Event): void {
+  try {
+    this.setPointerCapture((event as PointerEvent).pointerId);
+  } catch {
+    // Not an active pointer (a synthetic event): nothing to capture.
+  }
+}
+
+/** Keeps a pointer's events on this element from `pointerdown` until release. */
+export const capturePointer = defineHook<[]>({
+  client: (el) => {
+    el.addEventListener('pointerdown', capture);
+  },
+  dispose: (el) => {
+    el.removeEventListener('pointerdown', capture);
+  },
+});
+```
+
 ```ts
 // src/record-button.ts
-import { capturePointer, define, html } from '@gyral/core';
+import { define, html } from '@gyral/core';
+import { capturePointer } from './capture-pointer.js';
 
 export interface State {
   readonly recording: boolean;
@@ -660,11 +694,7 @@ export const RecordButton = define<State, Msg>()('my-record-button', {
 });
 ```
 
-The release must arrive even when the pointer leaves the button before it lets go. That is
-**pointer capture**, and the `capturePointer()` [element hook](/docs/views/#element-hooks)
-provides it: it calls `setPointerCapture` on `pointerdown`, so the pointer's events stay with the
-button until release. `pointercancel`, when the browser takes the touch over for scrolling, is a
-release too. For the keyboard, the same button holds while Space is down, and the parser ignores
+`pointercancel`, when the browser takes the touch over for scrolling, is a release too. For the keyboard, the same button holds while Space is down, and the parser ignores
 auto-repeat.
 
 - Give the button `touch-action: none` in CSS, so a held finger doesn't scroll or zoom, and
@@ -689,7 +719,8 @@ inside the shadow tree. The cell carries its index in `data-cell`:
 
 ```ts
 // src/path-grid.ts
-import { capturePointer, define, html } from '@gyral/core';
+import { define, html } from '@gyral/core';
+import { capturePointer } from './capture-pointer.js';
 
 interface State {
   readonly path: readonly number[];

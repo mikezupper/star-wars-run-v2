@@ -78,7 +78,6 @@ Measured on Gyral's examples (gzip, 0.3.1):
 | App         | Default: first load | Default: all chunks | `clientOnly: true` |
 | ----------- | ------------------- | ------------------- | ------------------ |
 | hello-world | 9.27 KiB            | 11.71 KiB           | 8.21 KiB           |
-| counter     | 9.19 KiB            | 11.62 KiB           | 8.13 KiB           |
 
 "First load" is what a page downloads before any lazy `import()`; in these examples a
 client-only build has nothing lazy left, so its first load is all of it.
@@ -86,8 +85,8 @@ client-only build has nothing lazy left, so its first load is all of it.
 Use it for apps that load their components with a `<script type="module">` into pages no Gyral
 server wrote: widgets in an existing site, admin tools, single-page apps. Leave it off as soon
 as any page is server-rendered or prerendered, including islands, and spread the same preset
-into your Vitest config so tests build the way the app does. `gyralClientOnly()` is the plugin
-alone, for configs that list plugins themselves.
+into your Vitest config so tests build the way the app does. With plugins of your own, spread
+the preset and add them: `plugins: [...preset.plugins, mine()]`.
 
 If server-rendered markup reaches a client-only build anyway, nothing breaks twice: each
 component drops the server's seed and DOM and renders fresh from its attributes, so a view is
@@ -116,8 +115,7 @@ your whole dependency tree:
 - **What counts**: the parsed source, not its text, so comments and type-only code never count.
   The invoker fallback stays when a module's markup has `command` in a `data-intent-on` list
   (`data-intent-on="command"`), a `data-intent-command` attribute or a bound `data-intent-on`,
-  when it has the string `'command'` on its own (`events: ['command']`, a
-  `setAttribute`), or when it uses `raw` imported from `@gyral/core` (under any alias, or
+  when it has the string `'command'` on its own (a `setAttribute('data-intent-on', 'command')`), or when it uses `raw` imported from `@gyral/core` (under any alias, or
   through a module that re-exports it), whose markup is only known at run time. A function of
   another package that happens to be called `raw` doesn't count.
 

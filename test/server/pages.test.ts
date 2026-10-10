@@ -106,17 +106,26 @@ describe('pages rendered on request', () => {
     expect(head.status).toBe(200);
     expect(await head.text()).toBe('');
   });
+
+  it('still hydrates Explore with the manual entry stored by next.6 data builds', async () => {
+    const explore = await (await get('/explore/')).text();
+    expect(explore).toContain('src="/assets/e.js"');
+    expect(await (await get('/')).text()).not.toContain('src="/assets/e.js"');
+  });
 });
 
 describe('pages from data another build wrote (images carry no data, ADR 0003)', () => {
   const image = {
     assets: {
       stylesheet: '/assets/site-new.css',
-      clientEntry: '/assets/e2.js',
       page: '/assets/p2.js',
+      components: {
+        loader: '/assets/components-new.js',
+        modules: [['swr-explore', { preload: ['/assets/explore-new.js'], stylesheets: [] }]],
+      },
     },
     id: 'code7',
-  };
+  } as const;
   const get = (path: string, headers: Record<string, string> = {}) =>
     createPagesApp(pages, image)(new Request(`https://starwars.run${path}`, { headers }));
 
@@ -125,6 +134,10 @@ describe('pages from data another build wrote (images carry no data, ADR 0003)',
     expect(html).toContain('href="/assets/site-new.css"');
     expect(html).not.toContain('/assets/site.css');
     expect(await (await get('/no-such-page/')).text()).toContain('/assets/site-new.css');
+    const explore = await (await get('/explore/')).text();
+    expect(explore).toContain('src="/assets/components-new.js"');
+    expect(explore).toContain('href="/assets/explore-new.js"');
+    expect(explore).not.toContain('/assets/e.js');
   });
 
   it("name both the data and the code in the ETag, so new code isn't a 304", async () => {
@@ -196,5 +209,16 @@ describe('the search page, rendered on request', () => {
     const empty = await page('');
     expect(empty).toContain('<form');
     expect(empty).not.toContain('role="status"');
+  });
+
+  it('selects only the requested section; false boolean attributes never appear', async () => {
+    const selected = (html: string) => [
+      ...html.matchAll(/<option\b[^>]*\sselected(?:\s|>|=)[^>]*>/g),
+    ];
+    expect(selected(await page('?q=ta'))).toHaveLength(0);
+    const planets = selected(await page('?q=ta&section=planets'));
+    expect(planets).toHaveLength(1);
+    expect(planets[0]?.[0]).toContain('value="planets"');
+    expect(selected(await page('?q=ta&section=not-a-section'))).toHaveLength(0);
   });
 });

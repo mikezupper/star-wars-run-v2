@@ -54,7 +54,7 @@ export const Counter = define<{ readonly count: number }, { readonly _tag: 'Incr
   'my-counter',
   {
     init: () => ({ count: 0 }),
-    intent: { Increment: () => ({ _tag: 'Increment' }) },
+    intent: { Increment: true },
     update: { Increment: (s) => ({ count: s.count + 1 }) },
     view: (s, i) => html`
       <output aria-live="polite">${s.count}</output>
@@ -75,15 +75,15 @@ import '../src/counter.js';
 /** Paths rendered at build time into dist/static. Everything else renders per request. */
 export const staticPaths: readonly string[] = ['/'];
 
-export function createApp({ clientEntry, modulepreload, stylesheets }: AppAssets): Hono {
+export function createApp({ components, stylesheets }: AppAssets): Hono {
   const app = new Hono();
   app.get('/', () =>
     renderPage({
       title: 'Home',
       body: html`<my-counter></my-counter>`,
-      scripts: [clientEntry],
-      modulepreload,
       stylesheets,
+      // Each page loads and preloads exactly the components it rendered.
+      ...(components === undefined ? {} : { components }),
     }),
   );
   app.get('/hello/:name', (c) =>
@@ -113,9 +113,11 @@ createServer(toNodeListener(app.fetch, { origin: 'https://example.com' })).liste
 ```
 
 `productionServer({ distDir, createApp })` expects Vite's output in `dist/client/` (with
-`build.manifest: true`) and prerendered pages in `dist/static/`. It reads the manifest once and
-hands `createApp` the client entry, the chunks to preload with it as `modulepreload` (Gyral's
-hydration chunk included) and the hashed CSS the entry imports as `stylesheets`. A page whose
+`build.manifest: true` and `gyralVitePreset({ components: true })`) and prerendered pages in
+`dist/static/`. It reads the manifests once and hands `createApp` the `components` for
+`renderPage` and the hashed CSS as `stylesheets`. With a client entry of your own instead, it
+hands over `clientEntry` and the chunks to preload with it as `modulepreload` (Gyral's hydration
+chunk included). A page whose
 route module is imported lazily spreads `assets(['src/routes/product.ts'])` (also given to
 `createApp`) into `renderPage` instead: it returns `{ modulepreload, stylesheets }` with that
 module, its imports and its CSS added. It answers:
@@ -157,6 +159,10 @@ export async function handle(request: Request): Promise<Response> {
   return (await assets(request)) ?? new Response('Not found', { status: 404 });
 }
 ```
+
+`productionServer({ onResponse })` sees every response before it goes out, prerendered files and
+assets included, so security headers or a cookie are one function:
+`onResponse: (response) => { response.headers.set('x-frame-options', 'DENY'); return response; }`.
 
 `productionServer` returns a plain `{ fetch }`. Mount it on Node's `http` module with
 `createServer(toNodeListener(app.fetch, { origin }))` from `@gyral/ssr/node`, as above, or on any
@@ -228,38 +234,17 @@ How far each one is tested today:
 
 ## Cache headers
 
-`cacheHeaders` from `@gyral/ssr/static` holds the policies `productionServer` uses, for when
-you write your own server:
+`productionServer` and `assetHandler` set these for you:
 
-```ts
-// server/cache.ts
-import { Hono } from 'hono';
-import { html } from '@gyral/core';
-import { renderPage } from '@gyral/ssr';
-import { cacheHeaders } from '@gyral/ssr/static';
+| Response                           | `cache-control`                       |
+| ---------------------------------- | ------------------------------------- |
+| content-hashed files (`/assets/*`) | `public, max-age=31536000, immutable` |
+| prerendered pages                  | `public, max-age=0, must-revalidate`  |
+| pages rendered per request         | `no-cache`, unless your app set one   |
+| misses and errors                  | `no-store`                            |
 
-export const app = new Hono();
-
-// A personalised page: never reuse it for another visitor without asking the server.
-app.get('/account', () =>
-  renderPage(
-    { title: 'Account', body: html`<h1>Your account</h1>` },
-    {
-      headers: cacheHeaders.dynamic,
-    },
-  ),
-);
-```
-
-| Policy       | Value                                 | For                                        |
-| ------------ | ------------------------------------- | ------------------------------------------ |
-| `immutable`  | `public, max-age=31536000, immutable` | content-hashed files (`/assets/*`)         |
-| `revalidate` | `public, max-age=0, must-revalidate`  | prerendered pages, which a rebuild changes |
-| `dynamic`    | `no-cache`                            | pages rendered per request                 |
-| `none`       | `no-store`                            | misses and errors                          |
-
-On a static host, set the same policies in its headers file. This site's `_headers` gives
-`/assets/*` the `immutable` policy and leaves pages at the host's default revalidation.
+Writing your own server, set the header on the `Response`, as `renderPage(options, { headers:
+{ 'cache-control': 'no-cache' } })`.
 
 ## Content Security Policy
 

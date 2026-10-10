@@ -3,14 +3,18 @@
 // (scripts/build.ts), the image build (scripts/build-image.ts) and the API's bundle
 // (scripts/build-api.ts) all link the same hashed CSS and JS.
 import { join } from 'node:path';
-import { clientEntryFromManifest } from '@gyral/ssr/static';
-import type { Assets } from '../../src/render/layout.js';
+import { clientAssetsFromManifest, componentsFromManifest } from '@gyral/ssr/static';
+import { storeComponents, type Assets } from '../../src/render/assets.js';
 
 export async function siteAssets(dist: string): Promise<Assets> {
   const manifest = join(dist, '.vite', 'manifest.json');
+  const components = await componentsFromManifest(dist);
+  if (components === undefined || !components.modules.has('swr-explore')) {
+    throw new Error('The client build is missing automatic components, including swr-explore.');
+  }
   return {
-    stylesheet: await clientEntryFromManifest(manifest, 'src/styles/site.css'),
-    clientEntry: await clientEntryFromManifest(manifest, 'src/entry-client.ts'),
-    page: await clientEntryFromManifest(manifest, 'src/page.ts'),
+    stylesheet: (await clientAssetsFromManifest(manifest, 'src/styles/site.css')).entry,
+    page: (await clientAssetsFromManifest(manifest, 'src/page.ts')).entry,
+    components: storeComponents(components),
   };
 }

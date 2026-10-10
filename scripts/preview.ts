@@ -1,69 +1,45 @@
 /// <reference types="node" />
-// `pnpm preview`: serves a build the way production does (ADR 0011): the files in dist/ as Caddy
-// serves them, with the headers from src/hosting/headers.ts, and everything else from the app
-// (src/server): /api/, and every page, rendered from <dist>-api/pages.sqlite. The smoke test runs
-// against this server.
-import { readFile, stat } from 'node:fs/promises';
+// Preview matches Caddy: built files first, then pages and /api/ from the app, with the same
+// header policy. Gyral handles files, ranges and Node streams; the site owns routing and policy.
 import http from 'node:http';
-import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { toNodeListener } from '@gyral/ssr/node';
+import { assetHandler } from '@gyral/ssr/static';
 import { headersFor, NAVIGATION, SECURITY, SPECULATION_RULES } from '../src/hosting/headers.js';
 import { handleApi, isApi } from './lib/api.js';
-import { ranged } from './lib/range.js';
-
-const TYPES: Record<string, string> = {
-  '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.json': 'application/json',
-  '.webmanifest': 'application/manifest+json',
-  '.xml': 'application/xml',
-  '.txt': 'text/plain; charset=utf-8',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
-  '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-  '.wasm': 'application/wasm',
-  '.parquet': 'application/octet-stream',
-};
-
-const isFile = async (path: string): Promise<boolean> =>
-  stat(path).then(
-    (s) => s.isFile(),
-    () => false,
-  );
 
 export function createPreview(dist: string): http.Server {
-  return http.createServer((req, res) => {
-    void (async () => {
-      const url = new URL(req.url ?? '/', 'http://localhost');
-      const path = decodeURIComponent(url.pathname);
-      const local = normalize(join(dist, path));
-      // A file in dist/ is served as Caddy serves it; everything else is the app's (ADR 0011):
-      // /api/, and every page, rendered on request with its own Cache-Control.
-      if (!isApi(path) && local.startsWith(dist) && (await isFile(local))) {
-        const answer = ranged(await readFile(local), req.headers.range);
-        res.writeHead(answer.status, {
-          'content-type':
-            path === SPECULATION_RULES.path
-              ? SPECULATION_RULES.type
-              : (TYPES[extname(local)] ?? 'application/octet-stream'),
-          ...headersFor(path, 200),
-          ...answer.headers,
-        });
-        res.end(req.method === 'HEAD' ? undefined : answer.body);
-        return;
+  // Root files (especially sw.js) can change at the same URL between builds.
+  const assets = assetHandler({ dir: dist, prefix: '/', cache: false });
+  return http.createServer(
+    toNodeListener(async (request) => {
+      const { pathname } = new URL(request.url);
+      if (!isApi(pathname)) {
+        const response = await assets(request);
+        // A missing file is often a page the app renders. Keep malformed requests and method
+        // errors from the asset handler; let the app give page misses their HTML 404.
+        if (response !== undefined && response.status !== 404) {
+          const headers = new Headers(response.headers);
+          for (const [name, value] of Object.entries(headersFor(pathname, response.status))) {
+            headers.set(name, value);
+          }
+          // Gyral's asset types cover client files; Caddy also serves these site documents.
+          if (pathname === SPECULATION_RULES.path)
+            headers.set('content-type', SPECULATION_RULES.type);
+          else if (pathname.endsWith('.html'))
+            headers.set('content-type', 'text/html; charset=utf-8');
+          else if (pathname.endsWith('.xml')) headers.set('content-type', 'application/xml');
+          return new Response(response.body, { status: response.status, headers });
+        }
       }
-      await handleApi(req, res, { ...SECURITY, ...NAVIGATION });
-    })();
-  });
+      return handleApi(request, { ...SECURITY, ...NAVIGATION });
+    }),
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env['PORT'] ?? 5501);
-  const dist = fileURLToPath(
-    new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url),
-  ).replace(/\/$/, '');
+  const dist = fileURLToPath(new URL(`../${process.env['DIST_DIR'] ?? 'dist'}/`, import.meta.url));
   createPreview(dist).listen(port, () => {
     console.log(`starwars.run preview (dist/): http://localhost:${String(port)}`);
   });

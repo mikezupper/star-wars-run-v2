@@ -104,22 +104,22 @@ delivered. When a component disconnects, all its commands are cancelled the same
 
 ## Built-in drivers
 
-| Package         | Commands                                                                               |
-| --------------- | -------------------------------------------------------------------------------------- |
-| `@gyral/http`   | `get(url, handlers)`, `request(req, handlers)`, `submitForm(url, formData, handlers)`  |
-| `@gyral/time`   | `delay(ms, msg)`, `debounce(ms, msg)`, `periodic(ms, toMsg)`, `animationFrames(toMsg)` |
-| `@gyral/router` | `navigate(url)`, `back()`, `forward()`, `go(n)`, `setHead(head)`, `listen(toMsg)`      |
-| `@gyral/core`   | `random(count, toMsg)`, `randomInt(min, max, toMsg)`                                   |
+| Package         | Commands                                                                              |
+| --------------- | ------------------------------------------------------------------------------------- |
+| `@gyral/http`   | `get(url, handlers)`, `request(req, handlers)`, `submitForm(url, formData, handlers)` |
+| `@gyral/time`   | `delay(ms, msg)`, `debounce(ms, msg)`, `every(ms, toMsg)`                             |
+| `@gyral/router` | `navigate(url)`, `setHead(head)`, `listen(toMsg)`                                     |
 
-Three more commands are handled by the component itself rather than a driver: `emit(output)`
-sends an [output](/docs/components/#child-components-and-outputs) to the parent, `send(store,
-msg)` writes to a [store](/docs/stores/), and `focus(selector)` moves
-[focus](/docs/views/#focus-is-a-command) after the next render.
+More commands are handled by the component itself rather than a driver: an output (from
+`outputs<Out>()`) goes to the [parent](/docs/components/#child-components-and-outputs),
+`send(store, msg)` writes to a [store](/docs/stores/), `focus(selector)` moves
+[focus](/docs/views/#focus-is-a-command) after the next render, and `call(selector, method)`
+[calls a method](/docs/views/#calling-a-method-on-an-element) on an element after it.
 
 ### Commands that answer nothing
 
-`focus()`, `emit()`, `navigate()`, `go()` and `setHead()` return `Command<never>`: they produce
-no message. `never` fits any message type, so they go in any reducer's command list, and in a
+`focus()`, `call()`, an output, `navigate()` and `setHead()` return `Command<never>`: they
+produce no message. `never` fits any message type, so they go in any reducer's command list, and in a
 helper typed `Command<Msg>`, with no type argument:
 
 ```ts
@@ -133,17 +133,14 @@ export type Msg = { readonly _tag: 'Saved' } | { readonly _tag: 'Failed' };
 export const afterSave = (): readonly Command<Msg>[] => [navigate('/items'), focus('h1')];
 ```
 
-Your own fire-and-forget commands can be typed the same way: pass `never` as the message type,
-`command<string, void, unknown, never>(log, text, { onSuccess: () => undefined })`, and type
-the helper's result `Command<never>`. Left to inference, the command would be a
-`Command<undefined>`, which fits no message union.
+Your own are the same with no handlers at all: `command(log, text)` is a `Command<never>`. A
+failure still reaches the [error channel](/docs/error-handling/). With handlers, the message type
+comes from what `onSuccess` and `onFailure` return, so explicit type arguments are rarely needed.
 
 Debounce is a delay under `switch`: each keystroke's `debounce(300, msg)` cancels the pending
-one. An app that only needs delays imports `delay` and `debounce` from **`@gyral/time/delay`**:
-the same commands over a delay-only driver, which leaves periodic ticks and animation frames out
-of the bundle (about 0.15 KiB gzip). That driver is also named `time` and takes the same input,
-so substitution and virtual time work unchanged. Randomness is a command too, so models stay pure
-and tests can fix the numbers.
+one. An app that uses only `delay` and `debounce` stays as small as before; `every` adds its own
+code only where it's used. Randomness is a command too, so models stay pure and tests can fix
+the numbers: it's a six-line driver of your own (below).
 
 ## Writing a driver
 
@@ -183,6 +180,46 @@ export const copyText = <M>(text: string, copied: M, failed: (error: CopyError) 
 
 Nothing should run at import time: create resources when a command first runs, so modules are
 safe to import on a server.
+
+Randomness, for example:
+
+```ts
+// src/random.ts
+import { command, defineDriver, type Command } from '@gyral/core';
+
+const random = defineDriver<{ readonly min: number; readonly max: number }, number>({
+  name: 'random',
+  run: ({ min, max }) => min + Math.floor(Math.random() * (max - min + 1)),
+});
+
+/** A whole number from `min` to `max`; tests substitute the `random` driver to fix it. */
+export const randomInt = <M>(min: number, max: number, toMsg: (n: number) => M): Command<M> =>
+  command(random, { min, max }, { onSuccess: toMsg });
+```
+
+### Drivers the app provides
+
+A driver with no implementation of its own, such as a connection your app opens, a session or a
+service only the entry point can build, is a **token**: `defineDriver<I, O, E>('session')`.
+Commands built from it are fully typed, and it runs whatever an ancestor provides under that
+name. If nothing does, the command fails with an error naming the driver and the component, so
+there is no placeholder to write and no import order to get right:
+
+```ts
+// src/session.ts
+import { command, defineDriver, type Command } from '@gyral/core';
+
+export interface Move {
+  readonly from: string;
+  readonly to: string;
+}
+
+/** Provided once by the app: provideDrivers(document.body, { session: makeSession(url) }). */
+export const session = defineDriver<Move, { readonly accepted: boolean }, string>('session');
+
+export const sendMove = <M>(move: Move, answered: (accepted: boolean) => M): Command<M> =>
+  command(session, move, { onSuccess: (r) => answered(r.accepted) });
+```
 
 ### Retries
 
@@ -365,8 +402,8 @@ export const watchOnline = <M>(toMsg: (online: boolean) => M): Command<M> =>
   command(online, undefined, { onSuccess: toMsg, concurrency: 'switch' });
 ```
 
-Start a stream from `init`, and it lives as long as the component. For a source Gyral doesn't
-own, such as signals, a Redux-style store or a socket, `subscription()` from `@gyral/core` writes
+List a stream in the component's [`subscriptions`](/docs/update/#subscriptions), and it runs
+while the component is on the page. For a source Gyral doesn't own, such as signals, a Redux-style store or a socket, `subscription()` from `@gyral/core` writes
 this plumbing for you: see [State Gyral doesn't own](/docs/outside-state/).
 
 ## Substituting drivers
@@ -377,28 +414,21 @@ or a configured instance, Gyral looks drivers up **by name**, in this order:
 1. the element's own `el.drivers`;
 2. the nearest driver provider above it: a `<gyral-drivers>` element or
    `provideDrivers(element, drivers)`;
-3. the spec's `drivers` option;
-4. the driver object on the command.
+3. the driver object on the command.
 
-For example, give every request of a component default headers:
+For example, give every request on the page default headers, once, at the app's entry:
 
 ```ts
-// src/api-client.ts
-import { define, html, type Stateless } from '@gyral/core';
+// src/entry-client.ts
+import { provideDrivers } from '@gyral/core';
 import { csrfFromMeta, makeHttpDriver } from '@gyral/http';
 
-export const ApiClient = define<Stateless, never>()('my-api-client', {
-  drivers: { http: makeHttpDriver({ headers: csrfFromMeta('csrf-token') }) },
-  intent: {},
-  update: {},
-  view: () => html`<slot></slot>`,
-});
+provideDrivers(document.body, { http: makeHttpDriver({ headers: csrfFromMeta('csrf-token') }) });
 ```
 
 `csrfFromMeta` reads `<meta name="csrf-token">` when each request runs, so components never read
 the DOM for it. The driver's headers are the one place a CSRF token from a `<meta>` is
-configured; set it once for the app with `provideDrivers(document.body, { http:
-makeHttpDriver({ headers: csrfFromMeta('csrf-token') }) })`. Development builds warn once when a
+configured. Development builds warn once when a
 `POST`, `PUT`, `PATCH` or `DELETE` goes out without the token while the page has a CSRF
 `<meta>`. [Testing](/docs/testing/) uses the same lookup to swap in fakes.
 
@@ -406,5 +436,5 @@ makeHttpDriver({ headers: csrfFromMeta('csrf-token') }) })`. Development builds 
 
 Commands never run during a server render: there is no interpreter, no timer and no network.
 Do async work in the route handler and pass results as props. After hydration, the browser
-starts `init`'s commands, so a subscription such as `listen()` begins exactly where the server
-left off. See [Server rendering](/docs/server-rendering/).
+starts `init`'s commands and the component's subscriptions, so `listen()` begins exactly where
+the server left off. See [Server rendering](/docs/server-rendering/).

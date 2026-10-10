@@ -14,9 +14,9 @@ number, are ES modules with TypeScript types, and are published from GitHub Acti
 
 ## Core
 
-| Package       | What it gives you                                                                                                                                                                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@gyral/core` | `define()`, intents, update and commands, stores, forms, `subscription()`, and the view layer: `html`, `svg`, `css`, `each`, `raw`, hooks. `@gyral/core/server` renders on the server, `/vite` has the preset and template compiler, `/eslint` the template rules. |
+| Package       | What it gives you                                                                                                                                                                                                                                                                |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@gyral/core` | `define()`, intents, update and commands, subscriptions, stores, forms, `subscription()`, and the view layer: `html`, `svg`, `css`, `each`, `keyed`, `raw`, hooks. `/vite` has the preset (template compiler, component loading, element typings), `/eslint` the template rules. |
 
 ```sh
 npm install @gyral/core
@@ -24,14 +24,14 @@ npm install @gyral/core
 
 ## Optional packages
 
-| Package           | What it gives you                                                                                                                                                                                                           |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                                                                                                     |
-| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setHead`, browser and memory history.                                                                                                                                            |
-| `@gyral/time`     | `delay`, `debounce`, `periodic` and `animationFrames` as commands. `@gyral/time/delay` has `delay` and `debounce` alone, for a smaller bundle.                                                                              |
-| `@gyral/ssr`      | Server rendering: `renderPage`, `page`, `contentSecurityPolicy`, `formAction`. `@gyral/ssr/static` prerenders and serves builds, `@gyral/ssr/node` mounts a fetch handler on Node's `http`.                                 |
-| `@gyral/testing`  | `step`, `run`, `outputsIn`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/arbitraries` turns schemas into fast-check arbitraries, `@gyral/testing/vitest` renders server markup for browser tests. |
-| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                                                                                                         |
+| Package           | What it gives you                                                                                                                                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@gyral/http`     | The `http` driver: `get`, `request`, `submitForm`, typed errors, schema decoding. `@gyral/http/testing` has `fakeHttp`.                                                                                                                              |
+| `@gyral/router`   | Typed route tables, `listen`, `navigate`, `setHead`, browser and memory history.                                                                                                                                                                     |
+| `@gyral/time`     | `delay`, `debounce` and `every` as commands; a delay-only app stays as small as before.                                                                                                                                                              |
+| `@gyral/ssr`      | Server rendering: `renderPage`, `renderToString`, `contentSecurityPolicy`, `styleHashes`, `formAction`. `@gyral/ssr/static` prerenders and serves builds, `@gyral/ssr/node` mounts a fetch handler on Node's `http` and runs the development server. |
+| `@gyral/testing`  | `step`, `run`, `subscriptionsFor`, `outputsIn`, `mount`, `parse`, fake drivers, virtual time, `mountSsr` and `hydrated`. `@gyral/testing/vitest` renders server markup for browser tests.                                                            |
+| `@gyral/devtools` | The in-page devtools panel, for development builds.                                                                                                                                                                                                  |
 
 ```sh
 npm install @gyral/http @gyral/router @gyral/time
@@ -44,10 +44,10 @@ npm install -D @gyral/testing @gyral/devtools
 No Gyral package asks you to install another library at runtime. The build tools Gyral plugs
 into are optional peer dependencies: install the ones you use.
 
-| Package          | Optional peers                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------- |
-| `@gyral/core`    | `vite` ^8 (preset and compiler), `eslint` 9 or 10 (the plugin), `parse5` (compiler check)               |
-| `@gyral/testing` | `fast-check` ^4 (only for `@gyral/testing/arbitraries`), `vitest` ^5 (only for `@gyral/testing/vitest`) |
+| Package          | Optional peers                                                                            |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `@gyral/core`    | `vite` ^8 (preset and compiler), `eslint` 9 or 10 (the plugin), `parse5` (compiler check) |
+| `@gyral/testing` | `vitest` ^4.1 or ^5 (only for `@gyral/testing/vitest`)                                    |
 
 Validation in `@gyral/core`, `@gyral/http` and `@gyral/ssr` accepts any
 [Standard Schema](https://standardschema.dev) library; Gyral depends only on its types.

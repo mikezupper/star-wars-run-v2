@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import { styleHashes } from '@gyral/core/server';
+import { styleHashes } from '@gyral/ssr';
 import {
   CACHE,
   cacheControl,

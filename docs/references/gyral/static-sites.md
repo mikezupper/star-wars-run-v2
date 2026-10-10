@@ -128,7 +128,7 @@ export default defineConfig({
   cascade is the one you had in development. Link them with `renderPage({ stylesheets })`
   instead of inlining your CSS into every page with `styles`: the browser caches one file across
   pages, and `style-src 'self'` allows it with no hash.
-- The client entry is the one from [Server rendering](/docs/server-rendering/#hydration-and-the-client-entry):
+- The client entry is the one from [Server rendering](/docs/server-rendering/#loading-components-in-the-browser):
   it imports your components, and each one hydrates on its own.
 - `@gyral/ssr/static` reads and writes files, so it runs in Node at build time. Your pages
   don't need Node: the output is plain files.

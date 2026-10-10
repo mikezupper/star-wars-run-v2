@@ -44,7 +44,7 @@ export const app = routes({
 ```ts
 // src/shell.ts
 import { define, focus, html, type Head } from '@gyral/core';
-import { listen, makeRouter, setHead, type RouteLocation, type RouteMatch } from '@gyral/router';
+import { listen, setHead, type RouteLocation, type RouteMatch } from '@gyral/router';
 import { app } from './routes.js';
 
 const ORIGIN = 'https://example.com';
@@ -65,7 +65,7 @@ export const pageTitle = (route: Route): string =>
       ? `User ${route.params.id}`
       : route.name;
 
-/** The page's head, used by the server's page() and by setHead() after a navigation. */
+/** The page's head, used by the server's renderPage() and by setHead() after a navigation. */
 export const pageHead = (route: Route): Head => ({
   title: `${pageTitle(route)} · Example`,
   description: 'Users and settings.',
@@ -77,9 +77,9 @@ export const pageHead = (route: Route): Head => ({
 export const Shell = define<State, Msg>()('my-shell', {
   // The page itself, so its content is light DOM and it captures same-origin link clicks.
   shadow: false,
-  drivers: { router: makeRouter({ captureLinks: true }) },
-  init: () => [{ route: undefined }, [listen((location): Msg => ({ _tag: 'Routed', location }))]],
-  intent: {},
+  init: () => ({ route: undefined }),
+  // Every location, for as long as the shell is on the page.
+  subscriptions: () => [listen((location): Msg => ({ _tag: 'Routed', location }))],
   update: {
     Routed: (_s, m) => {
       const route = app.match(m.location.href);
@@ -99,8 +99,11 @@ export const Shell = define<State, Msg>()('my-shell', {
 });
 ```
 
-`listen(toMsg)` is one long-running command. It delivers the current location at once, then
-every change (link clicks, `navigate()`, back and forward), until the component disconnects.
+`listen(toMsg)` is a long-running command, listed in the component's
+[`subscriptions`](/docs/update/#subscriptions). It delivers the current location at once, then
+every change (link clicks, `navigate()`, back and forward), while the component is on the page.
+Link capture is the router's own option: the app's entry provides the router once,
+`provideDrivers(document.body, { router: makeRouter({ captureLinks: true }) })`.
 Each location carries a `seq`, which counts the URL changes the router has seen: `0` is the URL
 the page loaded with. The view is a pure function of the route in state.
 
@@ -108,11 +111,13 @@ the page loaded with. The view is a pure function of the route in state.
 
 Navigation is a command, returned from a reducer like any other:
 
-| Command                        | Does                                                                                                       |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `navigate(url, options?)`      | Push a history entry (`replace: true` replaces it; `scroll`, `focusReset`: [see below](#scroll-and-focus)) |
-| `back()`, `forward()`, `go(n)` | Move through history                                                                                       |
-| `setHead(head)`                | Make the document's head match a `Head` ([see below](#the-head))                                           |
+| Command                   | Does                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `navigate(url, options?)` | Push a history entry (`replace: true` replaces it; `scroll`, `focusReset`: [see below](#scroll-and-focus)) |
+| `setHead(head)`           | Make the document's head match a `Head` ([see below](#the-head))                                           |
+
+For a Back or Forward button, send the router a traversal: `command(router, { _tag: 'Traverse',
+delta: -1 })`, with `router` from `@gyral/router`.
 
 ```ts
 // src/save.ts
@@ -224,7 +229,7 @@ A page's head is one value, a `Head` from `@gyral/core`: `title`, `description`,
 `robots`, `meta` (Open Graph and other name/property tags), `links` (alternates, icons),
 `jsonLd`, `lang` and `dir`. Compute it with a pure function, `pageHead` above, and use it twice:
 
-- **On the server**, spread it into `page()` / `renderPage()`, which writes each entry once,
+- **On the server**, spread it into `renderPage()`, which writes each entry once,
   right after `<title>`, marked `data-gyral-head`.
 - **In the browser**, return `setHead(pageHead(route))` from the `Routed` reducer. It changes
   only the elements it manages: entries the new head drops are removed, and head markup you
@@ -238,8 +243,8 @@ component renders.
 
 - **`canonical` is absolute**: build it from `match().path` and your origin
   ([One URL per page](#one-url-per-page)).
-- **Stylesheets, preloads and the charset aren't head entries.** They belong to `page()`'s own
-  options (`stylesheets`, `modulepreload`) or `extraHead`, because changing them on navigation
+- **Stylesheets, preloads and the charset aren't head entries.** They belong to `renderPage()`'s own
+  options (`stylesheets`, `modulepreload`, `headScripts`) or `extraHead`, because changing them on navigation
   would unstyle the page or refetch modules. Development builds reject them in a `Head`.
 - **JSON-LD** is data, not script, so `script-src` doesn't apply to it. Under an enforced
   Trusted Types policy, `setHead` leaves JSON-LD as the server wrote it and warns once.

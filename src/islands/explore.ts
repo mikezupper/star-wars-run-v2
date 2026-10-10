@@ -175,10 +175,10 @@ export const Explore = define<State, Msg>()('swr-explore', {
     },
     Preset: ({ value }) => ({ _tag: 'Preset', index: Number(value) }),
     AskTyped: ({ value }) => ({ _tag: 'AskTyped', text: value ?? '' }),
-    Ask: () => ({ _tag: 'Ask' }),
+    Ask: true,
     Example: ({ value }) => ({ _tag: 'Example', index: Number(value) }),
-    StartOver: () => ({ _tag: 'StartOver' }),
-    EditSql: () => ({ _tag: 'EditSql' }),
+    StartOver: true,
+    EditSql: true,
   },
   update: {
     Hydrated: () => [

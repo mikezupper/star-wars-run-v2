@@ -2,7 +2,7 @@
 // both the dev server (per request) and the build (prerendered to files). Pages come from the
 // Wookieepedia archive (ADR 0008).
 import { html, type ChildValue } from '@gyral/core';
-import { renderToStream, renderToString } from '@gyral/ssr';
+import { renderPage } from '@gyral/ssr';
 import type { ArticleRecord } from '../domain/article.js';
 import type { Archive } from '../domain/archive.js';
 import type { LinkGraph } from '../domain/links.js';
@@ -70,7 +70,7 @@ export const normalise = (pathname: string): string =>
 
 /** The 404 document. It needs no archive, so an image built without data can carry it. */
 export const notFoundPage = (assets: Assets): Promise<string> =>
-  renderToString(layout(notFoundMeta, notFoundBody(), assets));
+  renderPage(layout(notFoundMeta, notFoundBody(), assets)).text();
 
 export function createSite(assets: Assets, { archive, articles, links, search }: SiteData): Site {
   const table = new Map<string, Route>([
@@ -126,12 +126,9 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
       if (route === undefined) {
         return new Response(await notFound(), { status: 404, headers: HTML });
       }
-      return new Response(
-        renderToStream(layout(route.meta, route.body(new URL(request.url)), assets)),
-        {
-          headers: HTML,
-        },
-      );
+      return renderPage(layout(route.meta, route.body(new URL(request.url)), assets), {
+        headers: HTML,
+      });
     },
   };
 }

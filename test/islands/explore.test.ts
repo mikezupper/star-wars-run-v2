@@ -1,6 +1,6 @@
 import { html } from '@gyral/core';
 import { renderToString } from '@gyral/ssr';
-import { inputsFor, readerOf, resolve, step } from '@gyral/testing';
+import { inputsFor, parse, resolve, step } from '@gyral/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { QueryResult } from '../../src/domain/query.js';
 import { drivers, QUERY_UNAVAILABLE } from '../../src/islands/api.js';
@@ -75,26 +75,27 @@ describe('explore', () => {
   });
 
   it('runs on Ctrl+Enter and the button, not on other keys', () => {
-    // A parser's second argument is the read-only context: props, state and stores.
-    const ctx = { props: {}, state: live(), read: readerOf([]) };
-    const parsers = spec.intent as unknown as Record<
-      string,
-      (i: unknown, c: typeof ctx) => unknown
-    >;
-    const parse = (input: unknown) => parsers['Run']?.(input, ctx);
+    const run = (input: Parameters<typeof parse>[2]) =>
+      parse(Explore, 'Run', input, { state: live() });
     const key = (k: string, ctrl: boolean) => ({
       key: k,
-      event: { type: 'keydown', ctrlKey: ctrl, metaKey: false, preventDefault: vi.fn() },
+      event: Object.assign(new Event('keydown', { cancelable: true }), {
+        ctrlKey: ctrl,
+        metaKey: false,
+      }),
     });
-    expect(parse(key('Enter', true))).toEqual({ _tag: 'Run' });
-    expect(parse(key('Enter', false))).toBeUndefined();
-    expect(parse(key('a', true))).toBeUndefined();
-    expect(parse({ event: { type: 'submit' } })).toEqual({ _tag: 'Run' });
-    expect(parsers['Typed']?.({ value: 'SELECT 3' }, ctx)).toEqual({
+    expect(run(key('Enter', true))).toEqual({ _tag: 'Run' });
+    expect(run(key('Enter', false))).toBeUndefined();
+    expect(run(key('a', true))).toBeUndefined();
+    expect(run({ event: new Event('submit') })).toEqual({ _tag: 'Run' });
+    expect(parse(Explore, 'Typed', { value: 'SELECT 3' }, { state: live() })).toEqual({
       _tag: 'Typed',
       sql: 'SELECT 3',
     });
-    expect(parsers['Preset']?.({ value: '2' }, ctx)).toEqual({ _tag: 'Preset', index: 2 });
+    expect(parse(Explore, 'Preset', { value: '2' }, { state: live() })).toEqual({
+      _tag: 'Preset',
+      index: 2,
+    });
   });
 });
 

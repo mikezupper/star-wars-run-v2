@@ -116,53 +116,94 @@ To do anything outside the model, a reducer returns a tuple: the next state and 
 back as another message.
 
 ```ts
-// src/clock.ts
+// src/save-button.ts
 import { define, html } from '@gyral/core';
-import { periodic } from '@gyral/time';
+import { delay } from '@gyral/time';
 
 export interface State {
-  readonly running: boolean;
-  readonly seconds: number;
+  readonly saving: boolean;
 }
 
-export type Msg = { readonly _tag: 'Start' } | { readonly _tag: 'Tick'; readonly ticks: number };
+export type Msg = { readonly _tag: 'Save' } | { readonly _tag: 'Saved' };
 
-export const Clock = define<State, Msg>()('my-clock', {
-  init: () => ({ running: false, seconds: 0 }),
-  intent: { Start: () => ({ _tag: 'Start' }) },
+export const SaveButton = define<State, Msg>()('my-save-button', {
+  init: () => ({ saving: false }),
+  intent: { Save: true },
   update: {
-    // State plus a command: tick every second until the component disconnects.
-    Start: (s) =>
-      s.running
-        ? s
-        : [{ ...s, running: true }, [periodic(1000, (ticks): Msg => ({ _tag: 'Tick', ticks }))]],
-    Tick: (s, m) => ({ ...s, seconds: m.ticks }),
+    // State plus a command: answer `Saved` after half a second.
+    Save: (s) => (s.saving ? s : [{ saving: true }, [delay<Msg>(500, { _tag: 'Saved' })]]),
+    Saved: () => ({ saving: false }),
   },
   view: (s, i) => html`
-    <button type="button" data-intent=${i.Start} ?disabled=${s.running}>Start</button>
-    <p><output>${s.seconds}</output> seconds</p>
+    <button type="button" data-intent=${i.Save} ?disabled=${s.saving}>
+      ${s.saving ? 'Saving…' : 'Save'}
+    </button>
   `,
 });
 ```
 
 The return type is `Next<State, Msg>`: either a state, or `[state, commands]`. State is never an
-array, so the two can't be confused. `init` can return commands too, to start a subscription
-or load data when the component appears. [Effects and drivers](/docs/effects/) covers commands
-in depth.
+array, so the two can't be confused. `init` can return commands too, to load data when the
+component appears. `Save: true` is the short form of a parser that only sends its tag; it works
+for messages with no other fields. [Effects and drivers](/docs/effects/) covers commands in depth.
+
+## Subscriptions
+
+Work that should keep running while some condition holds (a clock, polling, a socket, a store or
+media-query watch) doesn't start in a reducer. `subscriptions(state, props)` returns the
+commands that should be running now, and Gyral keeps the running set in step with it:
+
+```ts
+// src/clock.ts
+import { define, html } from '@gyral/core';
+import { every } from '@gyral/time';
+
+export interface State {
+  readonly running: boolean;
+  readonly now: number;
+}
+
+export type Msg = { readonly _tag: 'Toggle' } | { readonly _tag: 'Tick'; readonly now: number };
+
+export const Clock = define<State, Msg>()('my-clock', {
+  init: () => ({ running: false, now: 0 }),
+  // While running, tick every second; pausing stops the timer, resuming starts it again.
+  subscriptions: (s) => (s.running ? [every(1000, (now): Msg => ({ _tag: 'Tick', now }))] : []),
+  intent: { Toggle: true },
+  update: {
+    Toggle: (s) => ({ ...s, running: !s.running }),
+    Tick: (s, m) => ({ ...s, now: m.now }),
+  },
+  view: (s, i) => html`
+    <button type="button" data-intent=${i.Toggle}>${s.running ? 'Pause' : 'Start'}</button>
+    <p><time>${s.now === 0 ? '—' : new Date(s.now).toLocaleTimeString()}</time></p>
+  `,
+});
+```
+
+After the first render and after every update and props change, Gyral compares the list with
+what is running, lane by lane (a command's `key`, else its driver's name): a new lane starts, a
+missing lane is stopped, a lane whose input changed restarts, and an unchanged lane keeps
+running. Inputs are compared as data: functions inside them are ignored, so an inline selector
+such as `(s) => s.unread` doesn't restart a lane on every update. To restart when a selector
+changes, put what it depends on in the key, for example one that includes the room id.
+Moving the element keeps subscriptions running, removing it stops them, and attaching it again
+starts them from the current state. So there is no start in `init`, no restart on
+`PropsChanged` and no reconnect handling. `every(ms, (now) => msg)` sends the time at once and
+then every `ms`. In model tests, `subscriptionsFor(Component, state, props)` returns the list.
 
 ## Framework messages
 
 Gyral sends five messages of its own. Their reducers are optional: leave one out and the
 message changes nothing.
 
-| Message          | Sent when                                                                                                                                     |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PropsChanged`   | A declared prop changed after the first render. Has `props` and `prev`. [Props](/docs/components/#reacting-to-prop-changes)                   |
-| `IntentRejected` | Input failed a schema in `form()` or `field()`, or the server rejected a form. [Forms](/docs/forms/)                                          |
-| `StoreChanged`   | A store the component reads changed. [Shared state](/docs/stores/)                                                                            |
-| `Hydrated`       | The component is live in the browser, once, after its first render. Has `serverRendered`.                                                     |
-| `Connected`      | The component was removed, its commands stopped, and it was attached again. [Moves and reconnects](/docs/outside-state/#moves-and-reconnects) |
-| `Errored`        | An update, parser or command of this component failed. Has `phase` and `error` (a `GyralError`). [Error handling](/docs/error-handling/)      |
+| Message          | Sent when                                                                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `PropsChanged`   | A declared prop changed after the first render. Has `props` and `prev`. [Props](/docs/components/#reacting-to-prop-changes)              |
+| `IntentRejected` | Input failed a schema in `form()` or `field()`, or the server rejected a form. [Forms](/docs/forms/)                                     |
+| `StoreChanged`   | A store the component reads changed. [Shared state](/docs/stores/)                                                                       |
+| `Hydrated`       | The component is live in the browser, once, after its first render. Has `serverRendered`.                                                |
+| `Errored`        | An update, parser or command of this component failed. Has `phase` and `error` (a `GyralError`). [Error handling](/docs/error-handling/) |
 
 `Hydrated` is the hook for progressive enhancement: render the no-JavaScript version on the
 server and in the first client render (so hydration matches), then switch to the enhanced UI

@@ -34,7 +34,10 @@ await build({
     rollupOptions: { output: { entryFileNames: 'api.mjs', codeSplitting: false } },
   },
   define: { __SITE_ASSETS__: JSON.stringify(assets ?? null) },
-  ssr: { target: 'node', noExternal: true, external: ['@duckdb/node-api'] },
+  // The Node adapter re-exports gyralDevServer, which dynamically imports Vite. Keep that
+  // unused development dependency external so Vite's own build assets aren't emitted before
+  // tree-shaking removes the dev helper. The running bundle needs only DuckDB externally.
+  ssr: { target: 'node', noExternal: true, external: ['@duckdb/node-api', 'vite'] },
 });
 const written = readdirSync(new URL('../.server/', import.meta.url), { recursive: true });
 if (written.length !== 1 || written[0] !== 'api.mjs') {

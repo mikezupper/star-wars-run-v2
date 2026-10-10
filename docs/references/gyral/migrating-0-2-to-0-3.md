@@ -234,8 +234,8 @@ export const Todos = define<State, Msg>()('my-todos', {
 });
 ```
 
-For `keyed(id, template)`, a fresh element whenever an id changes, render a one-item list:
-`each([s.item], (it) => it.id, Item)`. See [Views](/docs/views/#lists).
+For `keyed(id, template)`, a fresh element whenever an id changes, Gyral has its own `keyed`
+(0.3.1). See [Views](/docs/views/#lists).
 
 ## Hooks instead of directives
 

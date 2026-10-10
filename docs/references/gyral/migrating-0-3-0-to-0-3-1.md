@@ -1,6 +1,6 @@
 ---
 title: Migrating from 0.3.0 to 0.3.1
-description: Move a Gyral 0.3.0 app to 0.3.1 - the two-call define, the head model, retries and CSRF on the driver, one error channel, behavior changes - and what's new.
+description: Move a Gyral 0.3.0 app to 0.3.1 - the two-call define, subscriptions, drivers, the head model, server rendering, forms, errors, a smaller API - and what's new.
 section: Reference
 order: 3
 ---
@@ -36,6 +36,99 @@ const i = intents<Msg>()                →  const i = intentsOf<typeof Todos>()
   keys of `intent`. Add the parser.
 - **`IntentNames` takes the names** (`IntentNames<'Save' | 'Cancel'>`), not the message union.
 
+## Long-running work goes in `subscriptions`
+
+Work that runs while a condition holds (a clock, polling, a socket, a store watch, the router's
+`listen`) moves out of `init` and reducers into a new spec field,
+[`subscriptions(state, props)`](/docs/update/#subscriptions), which returns the commands that
+should be running. Gyral starts, restarts and stops them as state and props change:
+
+```text
+init: () => [s0, [listen(toMsg)]]              →  init: () => s0, subscriptions: () => [listen(toMsg)]
+PropsChanged reducer that restarts a watch     →  subscriptions: (s, p) => [watch(p.id)]
+periodic(1000, (ticks) => msg)                 →  every(1000, (now) => msg)
+```
+
+- **`periodic` is replaced by `every`**, which sends `Date.now()` at once and then every `ms`.
+- **The `Connected` message from the prereleases is gone.** A component attached again after a
+  real removal starts its subscriptions again on its own.
+
+## Drivers: one override rule
+
+- **The spec's `drivers` field is removed.** Provide drivers once, at the app's entry or a
+  subtree: `provideDrivers(document.body, { router: makeRouter({ captureLinks: true }) })`, or
+  `el.drivers` for one element ([Substituting drivers](/docs/effects/#substituting-drivers)).
+- **A driver with no implementation of its own is a token**: `defineDriver<I, O, E>('session')`.
+  It resolves from what an ancestor provides; nothing providing it is a clear error. Replace
+  placeholder drivers that threw, and drop the `as AnyDriver` casts
+  ([Drivers the app provides](/docs/effects/#drivers-the-app-provides)).
+- **`command(driver, input)` needs no handlers** for fire-and-forget work, and with handlers the
+  message type is inferred: `command<string, void, unknown, Msg>(log, line, { onSuccess: () =>
+undefined })` becomes `command(log, line)`.
+- **A parser that only sends its tag** can be written `true` (`intent: { Clear: true }`), and a
+  component without messages leaves out `intent` and `update`. Nothing breaks if you don't.
+
+## Server rendering
+
+- **`page()` and `renderToStream()` are gone**: `renderPage(options)` takes the same options;
+  for a string, `await renderPage(options).text()`.
+- **`@gyral/core/server` is internal.** `renderToString` and `styleHashes` come from
+  `@gyral/ssr`.
+- **`clientAssets` and `clientEntryFromManifest`** are folded into
+  `clientAssetsFromManifest(path, entry)` (`.entry` is the entry's URL). `cacheHeaders` and
+  `staticFileFor` are gone: `productionServer` and `assetHandler` set cache headers.
+- **Components can load themselves.** `gyralVitePreset({ components: true })` plus
+  `renderPage({ components })` replaces a client entry that imports every island and per-page
+  flags ([Loading components](/docs/server-rendering/#loading-components-in-the-browser)).
+  `gyralDevServer()` from `@gyral/ssr/node` replaces a hand-written development server.
+- **`productionServer` hands `createApp` `components`**, and `clientEntry` may be `undefined`
+  when a build has no entry of its own.
+
+## Forms
+
+- **Secret fields are never echoed.** Fields named like `password`, and any listed in
+  `defineForm(schema, { secret: [...] })`, are left out of `IntentRejected.values` and of the
+  re-filled form. Delete hand-written redaction; list card numbers and similar fields in
+  `secret` ([Forms](/docs/forms/#one-schema-for-both-sides)).
+- **`validateForm(definition, …)` and `formValues(definition, …)` are methods**:
+  `definition.validate(data)` and `definition.values(data)`.
+- **`redirectedTo` moved to `@gyral/http`**, next to `submitForm`.
+
+## Views, hooks and outputs
+
+- **Boolean attributes need `?`.** `selected=${bool}`, `checked=${…}`, `disabled=${…}` and the
+  rest of HTML's boolean attributes are template errors; write `?selected=${bool}`.
+- **Hooks run after the whole render, children first**, so a parent hook sees its rendered
+  children. `defineHook({ update: 'always' })` runs on every render.
+- **Outputs reach only the direct parent.** Once the parent's `child()` intent takes an output,
+  it goes no further, and content slotted into a child belongs to the component that wrote it. A
+  parent that relied on a grandchild's outputs listens on the child instead.
+- **`emit` is no longer exported**: `const emit = outputs<Out>()`.
+- **One-item lists that only re-create an element** can become `keyed(key, template)`.
+
+## Testing
+
+- **`withDrivers(root, drivers)`** is `provideDrivers(root, drivers)` from `@gyral/core`, or
+  `mount(Component, { drivers })`.
+- **`readerOf`** is `parse(Component, intent, input, { props, state, stores })`.
+- **`testStore(store, initial)`** is `store.instance(initial)`, and **`sentTo(commands, store)`**
+  is `inputsFor(commands, store)`.
+- **`@gyral/testing/arbitraries` is gone**: write fast-check arbitraries for your messages
+  directly.
+
+## Removed helpers
+
+Each is a few lines of your own now; the docs show the recipe:
+
+- `random`, `randomInt`, `randomDriver`, `toInt`: a random driver ([Writing a driver](/docs/effects/#writing-a-driver)).
+- `capturePointer`: an element hook ([Press and hold](/docs/intent/#press-and-hold)).
+- `labelledBy`: name the form from a prop, or set `ariaLabelledByElements` in a hook.
+- `back`, `forward`, `go`: `command(router, { _tag: 'Traverse', delta: -1 })`.
+- `animationFrames`, and `@gyral/time/delay` (import `delay` and `debounce` from `@gyral/time`;
+  a delay-only app stays the same size).
+- The `events` spec field: write `data-intent-<event>=${i.Name}`, which is always listened for.
+- `gyralTemplateCompiler` and `gyralClientOnly`: `gyralVitePreset({ compiler, clientOnly })`.
+
 ## The head model
 
 The page's head is one `Head` value, used by the server and the router alike
@@ -45,9 +138,9 @@ The page's head is one `Head` value, used by the server and the router alike
   `setHead(pageHead(route))` with the same function the server uses, from your `Routed`
   reducer. A router fake's `{ _tag: 'Title' }` input is `{ _tag: 'Head', head }`, and
   `snapshot().title` is `snapshot().head?.title`.
-- **`page({ head })` is `page({ extraHead })`.** Move the description, canonical, robots, Open
-  Graph meta, alternates and JSON-LD into the `Head` fields `page()` and `renderPage()` now take;
-  keep in `extraHead` only what the head model doesn't manage. Managed elements, the
+- **`page({ head })` is `renderPage({ extraHead })`.** Move the description, canonical, robots,
+  Open Graph meta (with `media` where needed), alternates and JSON-LD into the `Head` fields
+  `renderPage()` now takes; keep in `extraHead` only what the head model doesn't manage. Managed elements, the
   description meta included, carry `data-gyral-head`, so tests that match their exact markup
   change.
 
@@ -179,17 +272,19 @@ and logs see:
 `docs/references/public-api-0.3.1.md`. These are no longer exported, and `tsc` names any you
 used:
 
-- `@gyral/core`: `StoreRegistry` and `withStoreScope` (import them from `@gyral/core/server`);
+- `@gyral/core`: `StoreRegistry` and `withStoreScope` (`renderPage({ stores })` uses them for you);
   the internals `headEntries`, `HEAD_ATTRIBUTE`, `HeadEntry`, `scriptSafeJson`, `STORE_SEND`,
   `StoreSendInput`, `STORE_SEED_ATTRIBUTE`, `warnJsonHazard`, `formFields`, `formDataToObject`,
   `intentRejectedSchema`, `runInit`, `ISLAND_ATTRIBUTE`, `devtoolsEnabled` and
-  `devtoolsLiveComponents` (use the documented APIs: `Head` with `page()` and `setHead()`,
-  `form()`, `submitForm()`, `validateForm()`, `step()`); `isLightComponent`, `findInScope`.
-- `@gyral/core/vite`: everything but `gyralVitePreset`, `gyralTemplateCompiler`,
-  `gyralClientOnly` and their option types. `@gyral/core/eslint`: the rule re-exports (use the
-  plugin).
+  `devtoolsLiveComponents` (use the documented APIs: `Head` with `renderPage()` and `setHead()`,
+  `form()`, `submitForm()`, `definition.validate()`, `step()`); `isLightComponent`,
+  `findInScope`; the constants `STORES_ELEMENT`, `DRIVERS_ELEMENT`, `LIGHT_ATTRIBUTE`,
+  `DEVTOOLS_GLOBAL`, `invokersSupported`, `jsonHazard`, `HydrationMismatch`; the devtools
+  protocol types.
+- `@gyral/core/vite`: everything but `gyralVitePreset` and its option types.
+  `@gyral/core/eslint`: the rule re-exports (use the plugin).
 - `@gyral/router`: `capturedUrl`. `@gyral/testing`: `customElementsIn`, `undefinedElementsIn`.
-  `@gyral/time`: `makeTime`, `TimeOptions`; `@gyral/time/delay`: `makeDelayTime`.
+  `@gyral/time`: `makeTime`, `TimeOptions`.
 - `@gyral/devtools`, `@gyral/mcp` and `create-gyral`: only their documented entry points.
 
 ## Behavior changes
@@ -221,7 +316,7 @@ These keep compiling but behave differently. Check each against your app and its
   attached element) is a move: its subscriptions, timers and requests keep running, where 0.3.0
   stopped them for good. A test that checks a command was aborted right after `el.remove()`
   awaits one microtask first (`await Promise.resolve()`). A component removed for real and
-  attached later can re-issue its watches from the new `Connected` message
+  attached later starts its subscriptions again
   ([Moves and reconnects](/docs/outside-state/#moves-and-reconnects)).
 - **`match()` returns `path` too**, the route's canonical path: `{ name, params, path }`. A test
   that compares a whole match with `toEqual` needs the new field. Servers can redirect to it
@@ -236,8 +331,8 @@ These keep compiling but behave differently. Check each against your app and its
   ([Props, state and stores in a parser](/docs/intent/#props-state-and-stores-in-a-parser)).
   Parsers with one parameter still fit, and so do direct calls of `form()`, `field()` and
   `child()`. A test that calls a parser from a spec, `SearchBox.spec.intent.Search?.(input)`,
-  must now pass a context: `{ props: {}, state, read: readerOf([]) }`, with `readerOf` from
-  `@gyral/testing`. `IntentParser` takes the state type as a third type parameter.
+  call it through `parse(SearchBox, 'Search', input, { state })` from `@gyral/testing` instead.
+  `IntentParser` takes the state type as a third type parameter.
 
 ## Short error messages in production
 
@@ -253,11 +348,12 @@ mismatch keeps its sentence in production and ends with its code and link.
 
 ## If you tried a 0.3.1 prerelease
 
-An early 0.3.1 prerelease let `defineHook` take a `dispose`. The released API is a function of
-its own, so apps whose hooks need no teardown don't bundle the tracking: rename those hooks'
-`defineHook` to [`defineDisposableHook`](/docs/views/#widgets-with-a-lifecycle). `defineHook`
-with a `dispose` is a type error and an error in development. 0.3.0 had neither, so apps coming
-from 0.3.0 have nothing to change.
+The prereleases moved some APIs more than once. Where you used one, the released form is:
+
+- `defineDisposableHook` (next.1 to next.6): `defineHook({ client, dispose })`.
+- `IntentName<'…'>` (next.2, next.3): parser keys ([above](#define-takes-two-calls)).
+- `Connected` (next.5, next.6): [`subscriptions`](#long-running-work-goes-in-subscriptions).
+- `capturePointer` and `cssVars`: recipes.
 
 The first prerelease (0.3.1-next.0) also scanned the text of every dependency for spec fields
 and `raw(`, so a word in an unrelated package's comments could keep custom states or the
@@ -286,8 +382,12 @@ dependency.
   `data-intent-<event>`, [declining parsers](/docs/intent/#declining-passing-an-event-outward),
   [props, state and stores in a parser](/docs/intent/#props-state-and-stores-in-a-parser),
   [intent names inferred from parser keys](/docs/intent/#intent-names-that-arent-messages),
-  including names that aren't message tags, `detail` for every `CustomEvent`, and the
-  [`capturePointer()`](/docs/intent/#press-and-hold) hook for press-and-hold and drag.
+  including names that aren't message tags, `true` for parsers that only send their tag,
+  `detail` for every `CustomEvent`, and [press-and-hold](/docs/intent/#press-and-hold) with
+  pointer capture.
+- Effects: [`subscriptions`](/docs/update/#subscriptions) and `every`, typed
+  [driver tokens](/docs/effects/#drivers-the-app-provides), commands without handlers, and
+  `call(selector, method)` for [methods on elements](/docs/views/#calling-a-method-on-an-element).
 - Errors: [one channel](/docs/error-handling/) with a `GyralError` per failure, parent
   boundaries through a cancelable `error` event, a component's `error` view and `Errored`
   reducer, isolated failures on the server with `renderPage({ onError })`, and
@@ -295,7 +395,10 @@ dependency.
 - Components: [`shadow: { delegatesFocus: true }`](/docs/views/#focusing-into-a-child-component),
   also written by the server, [`focus(selector, { wait: true })`](/docs/views/#focusing-what-a-later-render-brings)
   for a target a later render brings, and [prop equality](/docs/components/#when-a-prop-counts-as-changed)
-  with an `equals` option for `prop.json` and `prop.value`.
+  with an `equals` option for `prop.json` and `prop.value`; `keyed()`;
+  [`?modal` and `?popover-open`](/docs/views/#dialogs-and-popovers); hooks that run children
+  first, with `update: 'always'`; outputs that reach only the direct parent; generated element
+  typings; and a template error for boolean attributes bound without `?`.
 - [`svg` templates](/docs/views/#svg-fragments) for SVG fragments that are templates of their
   own.
 - [`subscription()`](/docs/outside-state/) for state Gyral doesn't own: signals, Redux-style
@@ -307,11 +410,10 @@ dependency.
   and production builds that drop a `prop.value` check passed by name (its schema leaves the
   bundle where the bundler allows: single-chunk builds, or a schema library not shared across
   chunks).
-- [`defineDisposableHook`](/docs/views/#widgets-with-a-lifecycle), and the advice to give
+- [`defineHook` with `dispose`](/docs/views/#widgets-with-a-lifecycle), and the advice to give
   widgets with a lifecycle their own custom element.
 - [Client-only builds](/docs/rendering-modes/#client-only-builds) with
   `gyralVitePreset({ clientOnly: true })`, the default in `create-gyral`'s `basic` template.
-- [`@gyral/time/delay`](/docs/effects/#built-in-drivers): `delay` and `debounce` alone.
 - `style` bindings and static `style="…"` attributes that work under a strict Content
   Security Policy on the client ([inline styles](/docs/styling/#inline-styles-under-a-strict-csp)).
 - Router: a canonical `path` from `match()`, [scroll and focus](/docs/routing/#scroll-and-focus)
@@ -319,8 +421,8 @@ dependency.
   [head model](/docs/routing/#the-head) with `setHead()`.
 - `retry(driver, policy)` with `jitter` and `retryIf`, `makeHttpDriver({ timeoutMs })` with
   `retryableHttpError`, and `csrfFromMeta` on the driver ([Effects](/docs/effects/#retries)).
-- [Moves keep commands running](/docs/outside-state/#moves-and-reconnects), and the framework
-  message `Connected` for a component attached again after a real removal.
+- [Moves keep commands running](/docs/outside-state/#moves-and-reconnects).
+- Forms: secret fields never echoed, and `definition.validate()` / `definition.values()`.
 - Patterns: [the element under a captured pointer](/docs/intent/#the-element-under-a-captured-pointer)
   and [telling a refused request from no change](/docs/effects/#telling-a-refused-request-from-no-change).
 - Server: opt-in [hashes for server-rendered `style` attributes](/docs/server-rendering/#content-security-policy)
@@ -332,21 +434,24 @@ dependency.
   `@gyral/ssr/node` for Node's `http` module ([Deploying](/docs/deploying/#node)), which
   passes the handler [the client's address](/docs/deploying/#the-clients-address).
   `assetHandler` answers single `Range` requests, so media can seek, and `productionServer`
-  takes Vite's `base`.
+  takes Vite's `base`. [Components that load themselves](/docs/server-rendering/#loading-components-in-the-browser),
+  [`gyralDevServer()`](/docs/server-rendering/#development-server),
+  `renderPage({ headScripts })`, `media` on head entries, `wantsJson` and
+  `productionServer({ onResponse })`.
 - Testing: [`renderOnServer`](/docs/testing/#server-markup-on-demand) for hydration tests with
-  real server markup, `outputsIn` and `focusTargetsIn`, `fakeDriver(name, run)`, drivers
-  that go into `el.drivers` with no cast, and `virtualTime()` in Vitest node projects.
+  real server markup, [`mount()`](/docs/testing/#browser-tests) and `parse()`,
+  `subscriptionsFor`, `outputsIn` and `focusTargetsIn`, `fakeDriver(name, run)`, drivers that
+  go into `el.drivers` with no cast, and `virtualTime()` in Vitest node projects.
 - [Development errors that name the template's file, line and column](/docs/views/#checked-before-it-runs),
   under Vite exactly, elsewhere from the stack trace.
-- `registryVersion()` from `@gyral/core/server`: `renderPage({ csp })` now rebuilds its header
-  whenever a component registers.
+- `renderPage({ csp })` rebuilds its header whenever a component registers.
 - Smaller bundles: view transitions, the frame lane and custom states ship only when a module
   names their spec field, and production messages are codes. Those savings pay for most of
   0.3.1's additions; error handling adds about 0.75 KiB to every app. Hello-world's first load
   is 9.3 KiB gzip (8.9 on 0.3.0; 8.2 KiB built client-only); see [Packages](/docs/packages/).
 
-This site's islands grew a little. Their entry chunk was 13.7 KiB gzip (level 9) on 0.3.0 and
-is 14.4 KiB on 0.3.1: the size work and retries leaving the command runner paid for the search
-box's new debounce with `@gyral/time/delay` (0.25 KiB) and for most of 0.3.1's additions
-(Trusted Types, prop equality, declining parsers), and error handling adds about 0.75 KiB. The
-hydration chunk stays at about 2.8 KiB.
+This site now loads each island on its own pages only, with `components`. On 0.3.0 one entry
+chunk carried both islands, 13.7 KiB gzip (level 9). On 0.3.1 the home page loads the counter
+with the shared core and the loader, 12.4 KiB, and the search page the search box, 14.6 KiB
+(its debounce is new). The hydration chunk stays at about 2.8 KiB, and docs pages still load
+no island code.

@@ -9,8 +9,8 @@ order: 9
 
 Sometimes the source of truth lives outside Gyral: a TC39 signals store, a Redux or Zustand
 store, an XState actor, a WebSocket feed. Components reach it the way they reach any other
-effect, through drivers. **Reading is a subscription**, a streaming driver that lives as long as
-the component; **writing is a plain command** whose driver calls the source. State that only
+effect, through drivers. **Reading is a subscription**, a streaming driver the component lists
+in its `subscriptions`; **writing is a plain command** whose driver calls the source. State that only
 Gyral components use belongs in a [store](/docs/stores/) instead.
 
 ```ts
@@ -45,15 +45,16 @@ type Msg = { readonly _tag: 'Counted'; readonly n: number } | { readonly _tag: '
 
 const watchCounter = (): Command<Msg> =>
   command(counter, undefined, { onSuccess: (n): Msg => ({ _tag: 'Counted', n }) });
-const add = (by: number): Command<Msg> =>
-  command(addToCounter, by, { onSuccess: (): Msg | undefined => undefined });
 
 export const OutsideCounter = define<{ readonly n: number }, Msg>()('my-outside-counter', {
-  init: () => [{ n: 0 }, [watchCounter()]],
-  intent: { Add: () => ({ _tag: 'Add' }) },
+  init: () => ({ n: 0 }),
+  // Running while the component is on the page; released when it's removed.
+  subscriptions: () => [watchCounter()],
+  intent: { Add: true },
   update: {
     Counted: (_s, m) => ({ n: m.n }),
-    Add: (s) => [s, [add(1)]],
+    // A write answers nothing: the new value comes back through the subscription.
+    Add: (s) => [s, [command(addToCounter, 1)]],
   },
   view: (s, i) => html`
     <p>Count: <output>${s.n}</output></p>
@@ -75,9 +76,9 @@ export const OutsideCounter = define<{ readonly n: number }, Msg>()('my-outside-
   component is removed from the page, and after `fail(error)`. Values emitted after that are
   ignored. Moving the component doesn't release it (see
   [Moves and reconnects](#moves-and-reconnects)).
-- **The lane policy defaults to `'switch'`**: issuing the command again replaces the
-  subscription. Give each input its own `key` when one component keeps several, such as one per
-  chat room.
+- **List it in `subscriptions(state, props)`**: Gyral starts it, restarts it when its input
+  changes, and stops it when the list no longer has it ([Subscriptions](/docs/update/#subscriptions)).
+  Give each input its own `key` when one component keeps several, such as one per chat room.
 - **`fail(error)` ends it with an error.** `onFailure` gets it (through the driver's `toError`
   if given), after any retries: wrap the subscription in `retry(…)`, which subscribes again, for a socket
   that reconnects. A
@@ -95,18 +96,15 @@ Keyed-list libraries and plain DOM code move an element by removing it and inser
 subscriptions, timers and requests keep running:
 
 - **A move** (removed and inserted again in one task, including before the first render):
-  nothing stops and no message is sent.
+  nothing stops.
 - **A real removal**: one microtask after the element leaves the page, its commands stop and
   every subscription is released.
-- **Attached again after a real removal**: the component gets the framework message
-  `Connected { reconnect: true }`. Its reducer is optional; re-issue long-lived commands there.
-  `Connected` is never sent on the first connect (`init` covers that) and never after a move
-  (nothing stopped), so `reconnect` is always `true`. A component without a `Connected`
-  reducer stays stopped.
+- **Attached again after a real removal**: `subscriptions(state, props)` runs again, so
+  everything it lists starts from the current state. Nothing else is needed.
 
 ```ts
 // src/unread-badge.ts
-import { command, define, html, subscription, type Command } from '@gyral/core';
+import { command, define, html, subscription } from '@gyral/core';
 
 declare const unread: { get(): number; subscribe(listener: () => void): () => void };
 
@@ -117,17 +115,13 @@ const unreadSource = subscription<number>('unread', (emit) => {
 
 type Msg = { readonly _tag: 'Count'; readonly n: number };
 
-const watch = (): Command<Msg> =>
-  command(unreadSource, undefined, { onSuccess: (n): Msg => ({ _tag: 'Count', n }) });
-
 export const UnreadBadge = define<number, Msg>()('unread-badge', {
-  init: () => [0, [watch()]],
-  intent: {},
-  update: {
-    Count: (_n, m) => m.n,
-    // Removed for real, then attached again: subscribe again.
-    Connected: (n) => [n, [watch()]],
-  },
+  init: () => 0,
+  // Moved: keeps running. Removed: released. Attached again: subscribed again.
+  subscriptions: () => [
+    command(unreadSource, undefined, { onSuccess: (n): Msg => ({ _tag: 'Count', n }) }),
+  ],
+  update: { Count: (_n, m) => m.n },
   view: (n) => html`<span class="badge">${n}</span>`,
 });
 ```
@@ -235,7 +229,7 @@ writes (`run: (text) => { socket.send(text); }`).
 ## Testing
 
 - **Use the real source**: create the store in the test, provide its driver by name
-  (`withDrivers(container, { table: … })` from `@gyral/testing`, or `el.drivers`), change the
+  (`provideDrivers(container, { table: … })` from `@gyral/core`, `mount(Component, { drivers })` from `@gyral/testing`, or `el.drivers`), change the
   store, then `await settled()`. `settled()` doesn't wait for a subscription to end (it never
   does), but it waits for values already on their way, such as a store that notifies in a
   microtask or a watcher that re-arms in one. No `await Promise.resolve()` loops.

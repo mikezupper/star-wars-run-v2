@@ -33,16 +33,29 @@ export const SignupForm = defineForm(
   v.object({
     email: v.pipe(v.string(), v.trim(), v.email('Enter an email address like ada@example.com.')),
     password: v.pipe(v.string(), v.minLength(8, 'Use at least 8 characters.')),
+    invite: v.optional(v.string()),
   }),
+  // Never echoed back after a failed submit. Fields named like `password` are secret already.
+  { secret: ['invite'] },
 );
 ```
+
+The definition is also what the server uses: `SignupForm.validate(data)` checks a `FormData`
+the way `form()` does, and `SignupForm.values(data)` returns the submitted values to re-fill a
+form, without its secret fields.
+
+**Secret fields are never echoed.** After a failed submit, the submitted values come back so the
+form can be re-filled, except fields listed in `secret` (any posted field name, not only the
+schema's) and any field whose name contains `password`, `passcode`, `csrf` or `xsrf`. They're left out of `IntentRejected.values` on both paths and out of
+`values()`, and the devtools timeline shows them as `[secret]`. Development builds warn once
+about an unlisted field whose name looks secret (`token`, `card`, `cvc`, …).
 
 ## form() and invalid()
 
 ```ts
 // src/signup.ts
-import { define, fieldErrors, form, html, invalid, redirectedTo } from '@gyral/core';
-import { submitForm } from '@gyral/http';
+import { define, fieldErrors, form, html, invalid } from '@gyral/core';
+import { redirectedTo, submitForm } from '@gyral/http';
 import { SignupForm } from './signup-form.js';
 
 export interface State {
@@ -198,20 +211,20 @@ app.post('/signup', (c) =>
 );
 ```
 
-- **One validator.** `formAction` runs the same `validateForm` as `form()`, so a submission is
-  rejected with identical issues on either path.
+- **One validator.** `formAction` runs the definition's `validate`, as `form()` does, so a
+  submission is rejected with identical issues on either path.
 - **One reducer.** On failure, the server renders the component with
   `initialMessages: [rejected]`. The component's own `IntentRejected` reducer builds the error
   state during the server render, and the browser resumes from it.
 - **Post/Redirect/Get.** `seeOther(url)` answers `303`, so reloading never resubmits.
 - **JSON for the JavaScript path.** When `submitForm` asks for JSON, a redirect becomes
   `{ _tag: 'Redirected', location }` and a rejection a `422` without the submitted values.
-  Browser form posts get HTML.
+  Browser form posts get HTML. Leave `invalid` out and every rejection is that JSON `422`;
+  `wantsJson(request)` tells your own routes which kind of request they got.
 - **`rejectWith(issues | message)`** rejects a schema-valid submission; a string is a
   form-level message (path `''`).
 
-Never keep passwords in state: server-rendered state is written into the page. Re-fill only the
-fields that are safe to echo.
+Never keep passwords in state either: server-rendered state is written into the page.
 
 ## Schema messages for everything
 

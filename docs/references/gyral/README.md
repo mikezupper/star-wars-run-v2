@@ -4,7 +4,7 @@ Gyral is new (0.3.1 prerelease, October 2026), so no model has seen it in traini
 before writing or changing Gyral code. Don't guess the API from Lit or Cycle.js.
 
 **Source:** `content/docs/` in the gyral.dev repo (`../../gyral.dev` next to this checkout),
-commit `b6e422d` (the 0.3.1-next.6 docs), copied 2026-10-09. **Don't edit these files.** To refresh them, copy the
+commit `8f5a247` (the 0.3.1-next.9 docs), copied 2026-10-10. **Don't edit these files.** To refresh them, copy the
 directory again and update the commit here.
 
 Links inside the pages are gyral.dev site paths (`/docs/views/`), not repo paths. The page
@@ -23,7 +23,7 @@ type declarations instead: `node_modules/@gyral/<package>/dist/*.d.ts`.
 | Failures: the error channel, boundaries, `error` and `Errored`      | [error-handling.md](error-handling.md)                                                                 |
 | Shared state                                                        | [stores.md](stores.md)                                                                                 |
 | State outside Gyral                                                 | [outside-state.md](outside-state.md)                                                                   |
-| `html` on the server, `page()`, `prerender()`, hydration            | [server-rendering.md](server-rendering.md)                                                             |
+| `html` on the server, `renderPage()`, `prerender()`, hydration      | [server-rendering.md](server-rendering.md)                                                             |
 | Prerendering, static output, which mode when                        | [static-sites.md](static-sites.md), [rendering-modes.md](rendering-modes.md)                           |
 | Production builds and hosting                                       | [deploying.md](deploying.md)                                                                           |
 | Loading an island only when needed                                  | [code-splitting.md](code-splitting.md)                                                                 |

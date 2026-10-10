@@ -41,34 +41,39 @@ export const Greeter = define<State, Msg>()('my-greeter', {
 
 `define<State, Msg>()(tag, spec)` registers `<my-greeter>` and returns its class. It is two
 calls: the first takes the types you write (state, messages, props, outputs), the second the
-tag and spec, so TypeScript can still infer the intent names from the spec's `intent` keys. The
-spec has four required parts and a few optional ones:
+tag and spec, so TypeScript can still infer the intent names from the spec's `intent` keys. A
+component needs `init` and `view`; `intent` and `update` come with messages, and the rest is
+optional:
 
-| Part      | What it is                                                                                                     | Guide                                                                                                 |
-| --------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `init`    | The starting state, computed from props. May also start commands.                                              | [Model and update](/docs/update/)                                                                     |
-| `intent`  | Parsers that turn platform events into messages. Their keys are the component's intent names.                  | [Intent](/docs/intent/)                                                                               |
-| `update`  | One pure reducer per message tag: state in, next state (and commands) out.                                     | [Model and update](/docs/update/)                                                                     |
-| `view`    | A pure function from state to an `html` template that _names_ intents.                                         | [Views](/docs/views/)                                                                                 |
-| `props`   | Inputs from the parent or from attributes, declared with `prop.*` builders.                                    | [below](#props)                                                                                       |
-| `styles`  | Shadow-root CSS: `css` values or strings.                                                                      | [Styling](/docs/styling/)                                                                             |
-| `stores`  | Shared state the component reads.                                                                              | [Shared state](/docs/stores/)                                                                         |
-| `drivers` | Driver substitutions for this component's commands.                                                            | [Effects](/docs/effects/)                                                                             |
-| `shadow`  | `false` renders into light DOM; `{ delegatesFocus: true }` passes focus to the first focusable element inside. | [Styling](/docs/styling/#light-dom-components), [Views](/docs/views/#focusing-into-a-child-component) |
-| `hydrate` | When a server-rendered instance hydrates: `load`, `idle`, `visible`, `interaction`.                            | [Server rendering](/docs/server-rendering/)                                                           |
+| Part            | What it is                                                                                                     | Guide                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `init`          | The starting state, computed from props. May also start one-shot commands.                                     | [Model and update](/docs/update/)                                                                     |
+| `subscriptions` | The long-running commands that should be running for this state and props (clocks, feeds, watches).            | [Subscriptions](/docs/update/#subscriptions)                                                          |
+| `intent`        | Parsers that turn platform events into messages. Their keys are the component's intent names.                  | [Intent](/docs/intent/)                                                                               |
+| `update`        | One pure reducer per message tag: state in, next state (and commands) out.                                     | [Model and update](/docs/update/)                                                                     |
+| `view`          | A pure function from state to an `html` template that _names_ intents.                                         | [Views](/docs/views/)                                                                                 |
+| `props`         | Inputs from the parent or from attributes, declared with `prop.*` builders.                                    | [below](#props)                                                                                       |
+| `styles`        | Shadow-root CSS: `css` values or strings.                                                                      | [Styling](/docs/styling/)                                                                             |
+| `stores`        | Shared state the component reads.                                                                              | [Shared state](/docs/stores/)                                                                         |
+| `shadow`        | `false` renders into light DOM; `{ delegatesFocus: true }` passes focus to the first focusable element inside. | [Styling](/docs/styling/#light-dom-components), [Views](/docs/views/#focusing-into-a-child-component) |
+| `hydrate`       | When a server-rendered instance hydrates: `load`, `idle`, `visible`, `interaction`.                            | [Server rendering](/docs/server-rendering/)                                                           |
 
-A few more optional fields cover rarer needs: `events` (event types a bound
-`data-intent-on=${…}` can produce, see [Intent](/docs/intent/#trigger-events)), `states`
+A few more optional fields cover rarer needs: `error` (a fallback view, see
+[Error handling](/docs/error-handling/)), `states`
 (custom states for CSS, see [Styling](/docs/styling/#custom-states)), `viewTransition` (render a
 change inside a View Transition, see [Views](/docs/views/#view-transitions)) and `renderOnFrame`
 (message tags from bursty sources, such as pointer moves, that render once per animation frame).
 
 The type parameters are the contract. `State` is a plain data record (JSON, when the component
-is [server-rendered](/docs/server-rendering/#hydration-and-the-client-entry)), `Msg` a union of tagged objects, and TypeScript checks that `update` has a reducer for every tag and that the view
+is [server-rendered](/docs/server-rendering/#loading-components-in-the-browser)), `Msg` a union of tagged objects, and TypeScript checks that `update` has a reducer for every tag and that the view
 only names intents that exist.
 
 `define()` returns the element class. Its `spec` property is the object you passed in, which is
-how [tests](/docs/testing/) run `update` without a DOM.
+how [tests](/docs/testing/) run `update` without a DOM. Export it as
+`export const Greeter = define…`, and the Vite preset writes `HTMLElementTagNameMap` entries for
+every such component into `.gyral/elements.d.ts` (list that file in your tsconfig's `include`),
+so `document.querySelector('my-greeter')` is typed with no declaration of your own. For `tsc`
+outside Vite, the `gyral-types` command writes the same file.
 
 ## Props
 
@@ -309,9 +314,9 @@ the new user.
 
 A parent sets a child's props in its view, as attributes (`step="5"`) or as properties
 (`.step=${5}`, the way objects and arrays travel), and listens to the child's **outputs**. A
-child reports up by returning `emit(output)` from a reducer. `emit` is a command like any
-other, so the child stays pure and testable. Build it with `outputs<Out>()`, a module constant
-like `intentsOf<typeof Component>()`: it is the same `emit`, typed by the output union, so an output of the
+child reports up by returning an output from a reducer, a command like any other, so the child
+stays pure and testable. Build the helper once with `const emit = outputs<Out>()`, a module
+constant like `intentsOf<typeof Component>()`: typed by the output union, so an output of the
 wrong shape fails to compile in the child.
 
 ```ts
@@ -372,8 +377,10 @@ export const Total = define<State, Msg>()('my-total', {
 });
 ```
 
-- Outputs are delivered as a `gyral-output` event from the child's host. It doesn't cross the
-  parent's shadow root, so a grandchild's outputs never reach the grandparent.
+- Outputs are delivered as a `gyral-output` event from the child's host, and they reach only
+  the direct parent: once the parent's `child()` intent takes one, it goes no further. A
+  grandchild's outputs never reach the grandparent, and content slotted into a child belongs to
+  the component that wrote it.
 - Leave the mapper's return type off, as above. Annotating it with the whole union,
   `(out): Msg => …`, fails with a long `IntentParser<…>` error, because each intent produces its
   own variant (see [Intent](/docs/intent/#typing-parsers)).

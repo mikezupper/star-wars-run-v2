@@ -55,8 +55,8 @@ templates touch directly, so it came with a [migration guide](/docs/migrating-0-
 
 A component that works with a mouse but not a keyboard is broken. Gyral's examples are judged on
 element choice and on the accessibility tree, not only on behaviour, and its helpers exist to
-keep accessible markup right on the server and in the browser: `invalid()`, `labelledBy()`,
-`focus()`, and form-state bindings that mean the same on both sides.
+keep accessible markup right on the server and in the browser: `invalid()`, `focus()`,
+`?modal`, and form-state bindings that mean the same on both sides.
 
 ## Test in a real browser
 

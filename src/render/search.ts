@@ -85,7 +85,7 @@ export const searchBody = (url: URL, search?: SearchArchive) => {
           <option value="">${TEXT.searchAllKinds}</option>
           ${SECTIONS.map(
             (s) =>
-              html`<option value=${s} selected=${s === section}>
+              html`<option value=${s} ?selected=${s === section}>
                 ${SECTION_LABELS[s].plural}
               </option>`,
           )}

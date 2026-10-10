@@ -4,10 +4,10 @@
 // so edits show up. Search is the exception: its index is in the last full build's pages.sqlite
 // (<DIST_DIR>-api/), so /search/ answers from there when it exists (docs/lessons-learned.md).
 import { existsSync } from 'node:fs';
-import http from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
-import { createServer as createViteServer } from 'vite';
+import { gyralDevServer } from '@gyral/ssr/node';
+import { storeComponents } from '../src/render/assets.js';
 import { handleApi, isApi } from './lib/api.js';
 import { loadSiteData } from '../src/data/archive.js';
 import type { Section } from '../src/domain/sections.js';
@@ -15,28 +15,6 @@ import type * as SiteModule from '../src/render/site.js';
 import { createSearch } from '../src/server/search.js';
 
 const port = Number(process.env['PORT'] ?? 5500);
-const vite = await createViteServer({
-  server: {
-    middlewareMode: true,
-    ws: { port: Number(process.env['HMR_PORT'] ?? 24800) },
-    // Generated folders, whatever DIST_DIR says: the full build alone is 456k files, and
-    // watching them stalled startup for minutes (docs/lessons-learned.md).
-    watch: {
-      ignored: [
-        '**/dist/**',
-        '**/dist-api/**',
-        '**/.sample/**',
-        '**/.sample-api/**',
-        '**/.spike/**',
-        '**/data/**',
-        '**/coverage/**',
-        '**/.smoke/**',
-      ],
-    },
-  },
-  appType: 'custom',
-});
-
 // The archive is loaded once, here, not per request: the full snapshot takes seconds and GBs.
 // SITE_SAMPLE=N loads a sample instead, for a quicker start.
 const sample = Number(process.env['SITE_SAMPLE']);
@@ -49,7 +27,6 @@ console.log(
 
 const DEV_ASSETS = {
   stylesheet: '/src/styles/site.css',
-  clientEntry: '/src/entry-client.ts',
   page: '/src/page.ts',
 };
 
@@ -74,38 +51,54 @@ const siteData = {
 
 const sites = new WeakMap<object, SiteModule.Site>();
 
-async function render(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
-  try {
-    const mod = (await vite.ssrLoadModule('/src/render/site.ts')) as typeof SiteModule;
-    // The route table has an entry per article: build it once per version of the module
-    // (Vite hands back a new module object after an edit), not on every request.
+const dev = await gyralDevServer({
+  entry: '/src/render/site.ts',
+  port,
+  hmrPort: Number(process.env['HMR_PORT'] ?? 24800),
+  state: () => siteData,
+  app: (mod: typeof SiteModule, { components, state }) => {
+    // The factory runs on every request. Keep the 227k-entry route table per module version;
+    // Vite returns a new module after an edit, while the archive survives reloads as state.
     let site = sites.get(mod);
     if (site === undefined) {
-      site = mod.createSite(DEV_ASSETS, siteData);
+      site = mod.createSite(
+        {
+          ...DEV_ASSETS,
+          ...(components === undefined ? {} : { components: storeComponents(components) }),
+        },
+        state,
+      );
       sites.set(mod, site);
     }
-    const response = await site.fetch(
-      new Request(new URL(req.url ?? '/', `http://localhost:${String(port)}`)),
-    );
-    res.writeHead(response.status, Object.fromEntries(response.headers));
-    res.end(await response.text());
-  } catch (error) {
-    vite.ssrFixStacktrace(error as Error);
-    console.error(error);
-    res.writeHead(500, { 'content-type': 'text/plain' });
-    res.end(String((error as Error).stack ?? error));
-  }
-}
+    const cached = site;
+    return {
+      fetch: (request) =>
+        isApi(new URL(request.url).pathname) ? handleApi(request) : cached.fetch(request),
+    };
+  },
+  vite: {
+    server: {
+      // A full build used to stall startup while Vite watched hundreds of thousands of files.
+      watch: {
+        ignored: [
+          '**/dist/**',
+          '**/dist-api/**',
+          '**/.sample/**',
+          '**/.sample-api/**',
+          '**/.spike/**',
+          '**/data/**',
+          '**/coverage/**',
+          '**/.smoke/**',
+          '**/.gyral/**',
+        ],
+      },
+    },
+  },
+});
+console.log(`starwars.run: ${dev.url}`);
 
-http
-  .createServer((req, res) => {
-    const { pathname } = new URL(req.url ?? '/', 'http://localhost');
-    if (isApi(pathname)) {
-      void handleApi(req, res);
-      return;
-    }
-    vite.middlewares(req, res, () => void render(req, res));
-  })
-  .listen(port, () => {
-    console.log(`starwars.run: http://localhost:${String(port)}`);
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    void dev.close().finally(() => process.exit(0));
   });
+}

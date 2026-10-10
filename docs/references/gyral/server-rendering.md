@@ -15,11 +15,10 @@ takes over the server's DOM and resumes from the server's state instead of rende
 npm install @gyral/core @gyral/ssr
 ```
 
-That's all. The server renderer lives in `@gyral/core/server`, and `@gyral/ssr` builds pages,
-responses and CSP headers on it. It needs no DOM shim and no Node-only APIs, so the same code
+That's all. `@gyral/ssr` renders pages, responses and CSP headers. It needs no DOM shim and no Node-only APIs, so the same code
 runs in Node, Deno, Bun and Cloudflare Workers.
 
-## page() and renderPage()
+## renderPage()
 
 The examples on this page render the counter from [Getting started](/docs/getting-started/):
 
@@ -31,10 +30,7 @@ export type Msg = { readonly _tag: 'Increment' } | { readonly _tag: 'Decrement' 
 
 export const Counter = define<{ readonly count: number }, Msg>()('my-counter', {
   init: () => ({ count: 0 }),
-  intent: {
-    Increment: () => ({ _tag: 'Increment' }),
-    Decrement: () => ({ _tag: 'Decrement' }),
-  },
+  intent: { Increment: true, Decrement: true },
   update: {
     Increment: (s) => ({ count: s.count + 1 }),
     Decrement: (s) => ({ count: s.count - 1 }),
@@ -53,24 +49,24 @@ A route handler renders it inside a page:
 // server/app.ts
 import { Hono } from 'hono';
 import { html } from '@gyral/core';
-import { renderPage } from '@gyral/ssr';
+import { renderPage, type ComponentAssets } from '@gyral/ssr';
 import '../src/counter.js'; // registers <my-counter> so the server can render it
 
-export const app = new Hono();
-
-app.get('/', () =>
-  renderPage({
-    title: 'Counter',
-    description: 'A counter rendered on the server and hydrated in the browser.',
-    canonical: 'https://example.com/',
-    links: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
-    body: html`<main>
-      <h1>Counter</h1>
-      <my-counter></my-counter>
-    </main>`,
-    scripts: ['/src/entry-client.ts'],
-  }),
-);
+/** `components` comes from the dev server or the production build (below); tests leave it out. */
+export const createApp = (components?: ComponentAssets) =>
+  new Hono().get('/', () =>
+    renderPage({
+      title: 'Counter',
+      description: 'A counter rendered on the server and hydrated in the browser.',
+      canonical: 'https://example.com/',
+      links: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
+      body: html`<main>
+        <h1>Counter</h1>
+        <my-counter></my-counter>
+      </main>`,
+      ...(components === undefined ? {} : { components }),
+    }),
+  );
 ```
 
 - **`renderPage(options, init?)`** returns a web `Response` whose body is pulled in chunks from
@@ -78,21 +74,25 @@ app.get('/', () =>
   is awaited mid-page, and there is no suspense streaming. The status and headers are final
   before the first byte, so a 404 is a real 404. Hono, Deno, Bun, Cloudflare Workers or a
   service worker can serve it.
-- **`page(options)`** is the document shell (doctype, `<head>`, `<body>`) on its own, for
-  `renderToString` or `renderToStream`.
+- **Its body is a stream** (`renderPage(o).body`). For a string, such as a page written to a file,
+  read it: `await renderPage(o).text()`.
 - **The head fields** (`title`, `description`, `canonical`, `robots`, `meta`, `links`,
   `jsonLd`, `lang`, `dir`) are a `Head` from `@gyral/core`, the same value the router's
   `setHead()` applies after a client navigation ([Routing](/docs/routing/#the-head)). The
   server writes each entry once, marked `data-gyral-head`.
 - **`body`** and **`extraHead`** are ordinary `html` templates from `@gyral/core`, the same tag
-  your components use. `extraHead` is for head markup the head model doesn't manage, such as a
-  `<meta>` with a `media` query. The shell itself is never hydrated; the components inside it
+  your components use. `extraHead` is for head markup the head model doesn't manage, such as
+  preconnect hints. Meta and link entries in the head model take `media`, `sizes`, `type` and
+  the other standard attributes, so a pair of `theme-color` tags is plain head data. The shell itself is never hydrated; the components inside it
   are.
 - **`styles`** takes your global CSS as text and writes it into `<style>` elements, escaped so
   it can't close the element early. Trusted CSS only.
 - **`stylesheets`** takes stylesheet URLs and writes a `<link rel="stylesheet">` for each, before
   the inline `styles`. In production these are the hashed CSS files Vite builds from your client
   entry (see [Static sites](/docs/static-sites/#a-static-build)).
+- **`headScripts`** takes inline scripts that must run before any stylesheet, such as a theme
+  script that sets `data-theme` before the first paint. `renderPage` adds their hashes to
+  `script-src`, so a strict CSP allows them.
 - **`stores`** passes this request's [store](/docs/stores/) instances.
 - **`csp`** sets a `Content-Security-Policy` header (see
   [below](#content-security-policy)).
@@ -122,12 +122,63 @@ The renderer yields a chunk at every component boundary, and it is fast: a 1,000
 renders to a string in about 0.2 ms on Node 24 (1.3 ms including encoding), where Gyral 0.2 took
 24 to 28 ms.
 
-## Hydration and the client entry
+## Loading components in the browser
+
+Turn on `components` in the Vite preset and pass the `components` your server gets to
+`renderPage`. Each page then loads exactly the components it rendered (their modules,
+preloaded, and a small loader), and a page that rendered none loads no JavaScript at all. There
+is no client entry to write and no per-page list of islands:
 
 ```ts
-// src/entry-client.ts
-// No hydration import: each server-rendered component hydrates on its own.
-import './counter.js';
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { gyralVitePreset } from '@gyral/core/vite';
+
+export default defineConfig({
+  ...gyralVitePreset({ components: true }), // finds every define()'d tag under src/
+  build: { outDir: 'dist/client', emptyOutDir: true },
+});
+```
+
+The server still imports the components it renders. The loader finds the tags in the page and,
+as it defines components, the tags rendered in their shadow roots too, at any depth, so a
+component inside another component's shadow DOM loads without its parent importing it. A
+rendered tag that no client module defines is a development warning, so a missing island can't
+fail silently. For app-wide setup in the browser (providing drivers to the page), keep a small
+client entry and pass it in `scripts` next to `components`.
+
+The preset finds components written as `export const X = define<…>()('my-tag', …)`. A component
+created through a helper of your own (one that calls `define()` with a tag it was given) is
+invisible to that scan, so list it with its module, relative to the project root:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { gyralVitePreset } from '@gyral/core/vite';
+
+export default defineConfig({
+  ...gyralVitePreset({
+    components: { modules: { 'member-form': 'src/forms/member.ts' } },
+  }),
+  build: { outDir: 'dist/client', emptyOutDir: true },
+});
+```
+
+A component module that the client entry or another component also imports is bundled into that
+chunk; it still loads, and its preload is that chunk. In a large app, measure before you switch
+from a hand-written loader: each component becomes its own chunk, and the loader carries the
+list of their dependencies.
+
+To wait until the page's components are defined and have rendered, await `componentsReady()`
+from `@gyral/core`, in a page script or a browser test. It resolves once every rendered tag the
+loader knows about is defined and the page has settled; without automatic components it is
+`settled()`:
+
+```ts
+import { componentsReady } from '@gyral/core';
+
+await componentsReady();
+document.querySelector('site-search')?.focus();
 ```
 
 Hydration is built into `@gyral/core`, and module order doesn't matter. When a server-rendered
@@ -135,15 +186,15 @@ component connects in the browser, it reads the state the server rendered (each 
 `data-gyral-seed` attribute with its state and its property-bound props), walks its template and
 the server's DOM side by side, and adopts the existing nodes. Each component does this on its
 own, whether its parent has hydrated yet or not. Then, and only then, it starts `init`'s
-commands, so a router's first location or a timer's first tick can never make the first client
+commands and its subscriptions, so a router's first location or a timer's first tick can never make the first client
 render differ from the server's.
 
 The hydration code is its own chunk (about 2.8 KiB gzip), loaded the first time a
-server-rendered component connects. Pages without one never fetch it. In production, preload it
-with the entry: `clientAssetsFromManifest()` from `@gyral/ssr/static` reads the entry and the
-chunks it needs from Vite's manifest, and `renderPage({ modulepreload })` writes a
-`<link rel="modulepreload">` for each (see [Static sites](/docs/static-sites/#a-static-build)).
-The same call returns the hashed CSS your entry imports, for `renderPage({ stylesheets })`.
+server-rendered component connects. Pages without one never fetch it. With `components`,
+`renderPage` preloads it on the pages that need it. With a client entry of your own,
+`clientAssetsFromManifest()` from `@gyral/ssr/static` reads the entry, its chunks and its hashed
+CSS from Vite's manifest, for `renderPage({ scripts, modulepreload, stylesheets })` (see
+[Static sites](/docs/static-sites/#a-static-build)).
 
 Every client-side instance then gets the `Hydrated` message once. Use it for progressive
 enhancement: render the no-JavaScript version on the server and in the first client render, then
@@ -281,13 +332,41 @@ That has its own page: [Static sites and prerendering](/docs/static-sites/). To 
 static, per-request and client-only rendering, see [Rendering modes](/docs/rendering-modes/);
 to ship either, see [Deploying](/docs/deploying/).
 
-## Lower level: @gyral/core/server
+## Development server
 
-`@gyral/ssr` covers most apps. Underneath, `@gyral/core/server` exports `render(value)`, which
-yields the HTML in chunks synchronously, `renderToString(value)`, `styleHashes()` and
-`styleHashSync(css)` for a CSP, `componentStyles()` (each shadow component's `<style>` text) and
-`development` (whether it resolved with the `development` condition). Import it only from
-server code, never from a client entry, so client bundles carry no server renderer.
+`gyralDevServer()` from `@gyral/ssr/node` runs Vite in middleware mode, loads your server module
+fresh on every request (so edits show up), streams each response, and shows Vite's error overlay
+when a render throws:
+
+```ts
+// scripts/dev.ts
+import { gyralDevServer } from '@gyral/ssr/node';
+import type * as App from '../server/app.js';
+
+const dev = await gyralDevServer<typeof App>({
+  entry: '/server/app.ts',
+  app: (mod, { components }) => mod.createApp(components),
+});
+console.log(`Listening on ${dev.url}`);
+```
+
+`state` keeps a value, such as an in-memory database, across those reloads.
+
+## The request layer
+
+Gyral renders pages; it doesn't route requests. Routing, middleware, cookies and sessions belong
+to a fetch router such as [Hono](https://hono.dev) (any router whose handlers return a web
+`Response` works), the way Lit and Preact leave them to the app. `@gyral/ssr` covers the parts
+that touch Gyral: `formAction` answers a fetch request with JSON and a plain form post with a
+redirect or the page (`wantsJson(request)` tells you which one you got), and
+`productionServer({ onResponse })` lets you add headers or cookies to every response it sends.
+See [Deploying](/docs/deploying/) for both.
+
+## Lower level
+
+`renderToString(value)` from `@gyral/ssr` renders a template to a string, and
+`styleHashes()` lists the CSP hashes of every registered component's styles, for a policy you
+build yourself. Import them only from server code, so client bundles carry no server renderer.
 
 ## Production checklist
 
@@ -297,7 +376,7 @@ server code, never from a client entry, so client bundles carry no server render
   `.value=` or `.checked=`, which the server can't write.
 - Load data before rendering; never put a `Promise` in a view.
 - Send a CSP with `renderPage({ csp: { directives } })`; you don't need `'unsafe-inline'`.
-- Preload the entry's chunks and the hydration chunk with `modulepreload`, and link the entry's
-  hashed CSS with `stylesheets`.
+- Turn on `components`, so each page loads and preloads only the components it rendered, and
+  link your hashed CSS with `stylesheets`.
 - Test hydration against a production build, not only the dev server. `@gyral/testing`'s
   `mountSsr` and `hydrated` make that a unit test (see [Testing](/docs/testing/#ssr-and-hydration-tests)).

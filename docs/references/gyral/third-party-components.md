@@ -58,9 +58,9 @@ export const SizeField = define<State, Msg>()('my-size-field', {
 ```
 
 **Without `data-intent-on`**, Gyral treats any custom element with a `data-intent` as a child
-component and waits for its `gyral-output` event, which a library element never sends. Only
-when the event name itself is bound, `data-intent-on=${…}`, list the types it can produce in
-the spec's `events`, such as `events: ['sl-change']`.
+component and waits for its `gyral-output` event, which a library element never sends. When the
+event name would be bound (`data-intent-on=${…}`), write it into the attribute's name instead,
+as below, so the component knows to listen for it.
 
 The event can also go in the attribute's name: `data-intent-sl-change=${i.SizeChanged}` does
 the same as the pair above, and leaves `data-intent` free for another event on the same element

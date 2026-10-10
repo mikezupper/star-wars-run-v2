@@ -45,7 +45,7 @@ saying what to do instead. Change the table and the lint rules together.
 | `src/domain/`   | server and browser                    | Article types, slugs, URLs, Ask's prompts and pipeline. Pure functions only                 | `src/site.ts`                                                                              |
 | `src/ingest/`   | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
 | `src/data/`     | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
-| `src/render/`   | Node, build time                      | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
+| `src/render/`   | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
 | `src/islands/`  | browser (and server)                  | Interactive Gyral components: search, Explore (a client of the API)                         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
 | `src/offline/`  | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
 | `src/hosting/`  | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
@@ -74,10 +74,13 @@ that serves every page. The dev server calls it with the snapshot in memory; the
 
 Page templates use `html` from `@gyral/core`, rendered on the server and never hydrated, so a
 page without islands ships **no framework JavaScript**: only `src/page.ts`, a few hundred bytes
-for the `/` search key. Interactive parts are islands: `define()` components rendered with
-Declarative Shadow DOM. `src/entry-client.ts` imports them, and Gyral hydrates each one in
-place, loading its hydration code lazily. The entry loads only on pages that set
-`islands: true` (today, `/search/` and `/explore/`). See
+for the `/` search key, theme controls and service worker registration. Interactive parts are islands: `define()` components rendered with
+Declarative Shadow DOM. Gyral's Vite preset discovers their client modules, and `renderPage()` loads only the
+components whose tags it rendered (today, `/explore/`). The server still imports each
+component for Declarative Shadow DOM rendering. `src/render/assets.ts` stores the component
+Map as JSON entries for `pages.sqlite` and the API bundle, then restores it for rendering.
+The API image embeds these assets before `.vite/` is removed, so new code can render old
+data without reading a client manifest at runtime. See
 [docs/references/gyral/server-rendering.md](docs/references/gyral/server-rendering.md).
 
 Search runs on the server: SQLite full-text indexes in `pages.sqlite`, queried by
@@ -93,5 +96,5 @@ redirect to `/people/`, and an unknown path with the 404 page.
 `dist/` holds the public files: hashed `assets/`, `404.html` (for Caddy's own errors), the
 sitemaps, the search indexes, the service worker, and `public/` copied as it is. `dist-api/`
 holds the app's data: `pages.sqlite`, `archive.duckdb` and `ask-schema.json`. The site image
-serves `dist/`; the app image carries `dist-api/` and renders every page (ADR 0011,
+serves `dist/`; the app image mounts `dist-api/` read-only and renders every page (ADR 0011,
 [docs/design-docs/0003-hosting.md](docs/design-docs/0003-hosting.md)).

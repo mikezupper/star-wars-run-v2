@@ -1,25 +1,20 @@
 // The document shell every page shares: head, banner with the section nav, footer. Server-only:
 // written with html, so none of it is hydrated and pages without islands ship no
 // JavaScript.
-import { html, nothing, raw, svg, type ChildValue } from '@gyral/core';
-import { page } from '@gyral/ssr';
+import { html, nothing, svg, type ChildValue } from '@gyral/core';
+import type { PageOptions } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';
 import { CC_BY_SA_3 } from '../domain/attribution.js';
 import { SECTIONS, type Section } from '../domain/sections.js';
 import { THEME_COLOR, THEME_SCRIPT } from '../domain/theme.js';
 import { absolute, SITE_NAME } from '../site.js';
 import { EXPLORE_TEXT, SABACC_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
+import { componentsFor, type Assets } from './assets.js';
+
+export type { Assets } from './assets.js';
 
 /** Where the built CSS and JS live; dev and production differ (scripts/dev.ts, scripts/build.ts). */
 const WOOKIEEPEDIA_HOME = 'https://starwars.fandom.com';
-
-export interface Assets {
-  readonly stylesheet: string;
-  /** The client entry that hydrates islands; only pages with islands load it. */
-  readonly clientEntry: string;
-  /** The every-page script: the `/` search key and service worker registration (src/page.ts). */
-  readonly page: string;
-}
 
 export interface PageMeta {
   /** URL path with a trailing slash, e.g. `/people/luke-skywalker/`. */
@@ -29,8 +24,6 @@ export interface PageMeta {
   readonly description: string;
   /** The section this page belongs to, marked current in the nav. */
   readonly section?: Section;
-  /** True when the body contains islands that need the client entry. */
-  readonly islands?: boolean;
   /** Not indexed by search engines and left out of the sitemap (404). */
   readonly noindex?: boolean;
 }
@@ -40,11 +33,9 @@ export const fullTitle = (meta: Pick<PageMeta, 'path' | 'title'>): string =>
 
 /**
  * The head after the title and description. Kept out of Gyral's managed head (`Head` fields):
- * no page changes its head in the browser, so the managed markers would be dead weight, and the
- * theme script has to run before the stylesheet, which `page({ stylesheets })` writes first.
+ * no page changes its head in the browser, so the managed markers would be dead weight.
  */
-const extraHead = (meta: PageMeta, assets: Assets) => html`
-  ${raw(`<script>${THEME_SCRIPT}</script>`)}
+const extraHead = (meta: PageMeta) => html`
   ${
     meta.noindex === true
       ? html`<meta name="robots" content="noindex" />`
@@ -62,7 +53,6 @@ const extraHead = (meta: PageMeta, assets: Assets) => html`
   <link rel="icon" href="/icons/favicon.ico" sizes="32x32" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href=${assets.stylesheet} />
 `;
 
 /** The id that ties the Sections button to its panel (a native popover: no script needed). */
@@ -164,16 +154,20 @@ const footer = () => html`
 `;
 
 /** A complete HTML document for one page. */
-export function layout(meta: PageMeta, body: ChildValue, assets: Assets): ChildValue {
-  return page({
+export function layout(meta: PageMeta, body: ChildValue, assets: Assets): PageOptions {
+  const components = componentsFor(assets);
+  return {
     title: fullTitle(meta),
     description: meta.description,
-    extraHead: extraHead(meta, assets),
-    scripts: meta.islands === true ? [assets.page, assets.clientEntry] : [assets.page],
+    headScripts: THEME_SCRIPT,
+    stylesheets: [assets.stylesheet],
+    extraHead: extraHead(meta),
+    scripts: [assets.page],
+    ...(components === undefined ? {} : { components }),
     body: html`${banner(meta)}
       <main id="main">${body}</main>
       ${footer()}`,
-  });
+  };
 }
 
 /** Home › Section › Page. The last crumb is the current page and isn't a link. */

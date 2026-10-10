@@ -10,7 +10,7 @@ FROM node:24-slim AS build
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
-# Gyral 0.3.1-next.6 installs from vendor/ until 0.3.1 is on npm (vendor/README.md).
+# Gyral 0.3.1-next.9 installs from vendor/ until 0.3.1 is on npm (vendor/README.md).
 COPY vendor/ ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .

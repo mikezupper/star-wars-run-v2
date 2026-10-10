@@ -293,3 +293,234 @@ For scale, the whole migration on this site:
 
 `pnpm check` passed afterwards: 263 tests, and the browser smoke test over 393 pages in both
 themes, search, offline, Explore and the dev server.
+
+## Appendix — next.9 assessment (2026-10-10)
+
+We assessed 0.3.1-next.9 against starwars.run at `79a0a94`, which still uses next.6. The release
+was packed from Gyral's clean checkout at `78052c4`; every checksum in its `SHA256SUMS`
+passed. We read the release's `STARWARS-RUN.md`, the packaged type declarations, and Gyral's
+skill and SSR/testing references at that commit. This is an assessment in a scratch checkout,
+not a shipped upgrade (`swr-qlk`). The original feedback above records next.6; this appendix
+updates what we know.
+
+### The minimum migration passed the full gate
+
+The team's migration note correctly identified the seven source/test files that need edits:
+
+| Files                                                  | Change                                                                                                                                       |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/caddyfile.ts`, `test/hosting/headers.test.ts` | Import `styleHashes` from `@gyral/ssr`; `@gyral/core/server` is internal.                                                                    |
+| `scripts/lib/assets.ts`                                | Replace `clientEntryFromManifest()` with `clientAssetsFromManifest(...).entry`.                                                              |
+| `src/render/layout.ts`, `src/render/site.ts`           | Return `PageOptions` from `layout()` and use `renderPage()` instead of `page()` and `renderToStream()`; read `.text()` for the 404 document. |
+| `test/islands/explore.test.ts`                         | Use `parse()` instead of `readerOf` and the parser casts.                                                                                    |
+| `src/render/search.ts`                                 | Change `selected=${…}` to `?selected=${…}`.                                                                                                  |
+
+After replacing the three tarballs, their dependency/override paths and provenance files, and
+applying those edits, **`pnpm check` passed**: 281 tests in 28 files, all coverage thresholds,
+the one-file API bundle, the sample build and Chromium smoke tests over 393 pages plus the 404. Smoke checked both themes, accessibility, search, offline behavior, Explore, Ask,
+transitions, the continuity filter and the dev server. Ask used the smoke suite's fake model;
+we did not run the live-model evaluation, a full archive build or a Docker deployment.
+
+**Rule 14 caught a real bug.** In Chromium, the current search page has `selected` on all 14
+section options. The browser selects `other`, both with no section requested and with
+`?section=planets`. The corrected boolean binding selects the all-sections option for the
+first request and `planets` for the second. Making this a template error is valuable: the
+existing result-filter tests passed while the form displayed the wrong section.
+
+### What now answers the earlier feedback
+
+| Earlier concern                                  | Finding in next.9                                                                                                                                                                  |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Head order and `theme-color` attributes (item 3) | `headScripts` precedes stylesheets, and `HeadMeta.media` can express both color schemes. The managed-head marker concern remains.                                                  |
+| Parser casts (item 5)                            | `parse(Explore, 'Run', input, { state })` removes the casts and hand-built context. Verified in the passing migration.                                                             |
+| Payload-free intent boilerplate (item 6)         | `Ask: true`, `StartOver: true` and `EditSql: true` can replace the forwarding parsers. We inspected the API; these optional edits were not part of the tested migration.           |
+| Client island wiring                             | Automatic components can replace the client entry and per-page island flags. A separate browser prototype worked; production integration remains our responsibility.               |
+| Unused error handling (item 8)                   | The feature scan now selects error support more narrowly, including avoiding state fields merely named `error`. The measured migration's total JS size is nearly unchanged, below. |
+
+### Server helpers can remove code that has caused bugs here
+
+`toNodeListener()` now covers the Node-to-fetch conversion duplicated in `scripts/api.ts`
+and `scripts/lib/api.ts`: forwarding headers, reading bodies lazily, cancellation when a
+visitor leaves, response backpressure and HEAD. Our own adapters have already caused dropped
+request crashes and lost `If-None-Match` headers ([lessons learned](lessons-learned.md)). This
+is a useful addition even without adopting automatic components.
+
+`gyralDevServer()` can replace much of `scripts/dev.ts`, including Vite middleware, module
+loading and response streaming. We currently buffer page responses with `response.text()`.
+One detail matters at our size: the helper calls its app factory for every request. We must
+retain the existing cache of `createSite()` by module version, or we would rebuild roughly
+227,000 routes per request. The archive must also stay loaded once across reloads, and the
+generated-directory watch exclusions still matter.
+
+`assetHandler()` can replace the preview server's byte-range/file plumbing. Its immutable
+cache default suits hashed assets; our icons, service worker and other public files have
+different policies. We also need the special `application/speculationrules+json` MIME type.
+These are application wrappers around the helper, not missing framework features. We have
+reviewed these server APIs but have not migrated or measured the reduction in our server code.
+
+### Automatic components work, with a deployment boundary to document
+
+We built a separate prototype with `gyralVitePreset({ components: true })`, removed the manual
+island entry from that build, and supplied `componentsFromManifest()` to `renderPage()`.
+Explore hydrated under our existing strict CSP, with no console or page errors. A page
+without components received no module script. The site's independent every-page script
+still has its own purpose: theme controls, keyboard shortcuts and service worker registration.
+
+The remaining integration is specific to our two code-only images. Caddy carries the client
+assets; the Node image carries only `api.mjs`. Both `scripts/build.ts` and
+`scripts/build-image.ts` delete `.vite` before publishing the assets. We therefore need to
+read and embed the component metadata in the API bundle before that deletion, rather than
+read a manifest at runtime. `ComponentAssets.modules` is a `Map`, so a JSON representation
+must reconstruct it. Code and data deploy separately, so old `pages.sqlite` metadata must
+continue to work too.
+
+**Suggestion:** add a documented example for embedding component metadata into a server
+bundle when the server cannot read the client build at runtime. Also distinguish client
+discovery from server registration: the server still imports the components it renders.
+
+### What remains unresolved
+
+**Coverage distortion (item 4) is unchanged.** We ran the same 281 tests twice on next.9:
+
+| Template-location plugin           | Tests      | Branch coverage | Coverage gate       |
+| ---------------------------------- | ---------- | --------------- | ------------------- |
+| Excluded, as in our current config | 281 passed | 80.88%          | Passed              |
+| Included with the full preset      | 281 passed | 76.59%          | Failed: minimum 80% |
+
+The locator still emits `html.at?.(...) ?? html`. We must keep filtering it out of Node
+tests. The earlier suggestions still apply: keep generated fallback branches out of
+application coverage, or provide a documented coverage-safe preset.
+
+**Head markers (item 3) still have no opt-out.** Moving all static metadata into `Head`
+would add `data-gyral-head` attributes that our multi-page site never reads. `headScripts`
+lets us remove the script/stylesheet ordering workaround while keeping static metadata in
+`extraHead`. An option to omit managed markers when there is no client head update would
+let us use the typed head without that cost.
+
+**Automatic components do not settle the CSP hash-manifest request (item 7).** Their manifest
+contains chunk URLs, preloads and CSS filenames, not hashes of the inline shadow-root styles.
+`styleHashes()` still depends on registered components. We still need the explicit imports in
+our CSP generator, or a deliberate move to render-time CSP. That move also needs changes in
+our code: `createPagesApp()` currently rebuilds the response with its own headers, and Caddy
+sets the production CSP. A CSP produced by `renderPage()` alone would not reach visitors.
+The build-time inline-style hash manifest remains useful for this hosting shape.
+
+**Node view tests and keyboard inputs (items 5 and 6) remain partly manual.** `parse()` fixes
+the parser context, but there is still no `renderView()` or `stripMarkers()` helper. Our Node
+view tests still cast intent names and context, and strip development comments. `mount()`
+offers a browser testing path; it is not a replacement for those Node calls. Typed keyboard
+parsers/input builders and a fixture for the common `Hydrated` message would still help.
+
+**Driver access (item 9) is partly application-specific.** Assertions can match a driver by
+a `{ name: 'query' }` object, although not by the proposed string shorthand. Our tests also
+call the real drivers' `run()` and `toError()` methods, so changing command matching alone
+would not let us remove the `drivers` export.
+
+The release remains vendored; our prerelease-distribution feedback still applies to this
+bundle. We did not check npm publication status as part of this assessment. Generated
+`.gyral/elements.d.ts` also needs an explicit project choice: use the typings with the
+appropriate tsconfig/ignore entries, or disable generation with `types: false`.
+
+### Client size: little change for the minimum upgrade
+
+We summed the emitted JavaScript files after compressing each with gzip level 9. These are
+build-output totals, including lazy chunks, not measured transfers for one page; CSS and
+fonts are excluded. The application source is the same apart from the required migration
+edits; the prototype changes only the client loading setup.
+
+| Build                                      | Emitted JS, gzip bytes | Change from manual next.6 |
+| ------------------------------------------ | ---------------------: | ------------------------: |
+| next.6, manual island entry                |                 22,742 |                         — |
+| next.9, minimum migration and manual entry |                 22,846 |                      +104 |
+| next.9, automatic-components prototype     |                 23,632 |                      +890 |
+
+Automatic loading adds 786 bytes over the manual next.9 build. With one island, it offers a
+maintenance benefit rather than a size saving. We have no evidence here about the cost in
+a larger component tree or about the individual savings from conditional error support.
+
+Our recommendation is to adopt next.9 for the checked migration, then use `headScripts` and
+the server adapters where they replace our plumbing. Automatic loading is useful but needs
+the deployment integration above. Explore's API/SSE drivers and `Static`/`Live` hydration
+state express application behavior; the new subscriptions, stores, forms and router APIs
+do not require rewriting them. For the framework, coverage-safe diagnostics and build-time
+CSP hashes remain our most valuable unresolved requests, followed by the head-marker
+opt-out and the remaining test helpers.
+
+## Appendix — next.9 implementation follow-up (2026-10-10)
+
+The repository now uses next.9 under epic `swr-17s`. This follow-up updates the earlier
+scratch assessment: the minimum migration and the applicable cleanup are implemented here.
+The original feedback and assessment remain above as records of the versions we tested.
+
+### What we adopted
+
+- `renderPage()`, `clientAssetsFromManifest()`, the public SSR `styleHashes()` and Node
+  parser tests through `parse()`. The three vendored packages, lockfile, provenance and copied
+  docs are refreshed; the tarball checksums pass.
+- `headScripts: THEME_SCRIPT` and `stylesheets`, replacing raw script markup and the
+  stylesheet-order workaround. The existing CSP hash still allows the exact theme script.
+  Static metadata remains in `extraHead`; only the description carries a managed-head marker.
+- `Ask: true`, `StartOver: true` and `EditSql: true`, replacing payload-free parsers.
+- `toNodeListener()` for production and preview, `gyralDevServer()` for development, and
+  `assetHandler()` for preview files and byte ranges. The custom range helper and duplicate
+  Node request buffering, abort controllers and stream plumbing are gone. The application
+  still supplies its cache/security policy and HTML, XML and speculation-rules MIME types.
+- Automatic components in development, builds and the code-only API image. The manual
+  client entry and `PageMeta.islands` flag are gone. The server's Explore import remains:
+  discovery supplies client loading; it does not register server components.
+- Generated element typings, refreshed before typechecking and included in TypeScript.
+  `.gyral/` is ignored by Git, ESLint and Prettier.
+
+The boolean-attribute rule fixed the search dropdown. A server regression test checks the
+selected attributes; Chromium checks the actual selection with and without JavaScript.
+The earlier tests checked the results but missed the misleading form state.
+
+### Deployment and development checks
+
+The component Map is stored as JSON entries by `src/render/assets.ts` and restored by the
+renderer. The API build embeds it before the image build removes `.vite/`. A standalone
+copy of `api.mjs`, with only DuckDB available externally, served next.6 `pages.sqlite` data
+using next.9 assets. HTTP POST, HEAD and ETag/304 checks passed. With the client manifest
+removed, Explore still hydrated under the production CSP without browser errors; the home
+page loaded no component script. Tests also preserve the old data's manual entry when the
+API has no asset override. Code and data can continue to deploy separately.
+
+A development reload check confirmed one archive load, one route-table construction across
+repeated requests, and one new route table after a source edit. The WeakMap and generated-file
+watch exclusions remain necessary around `gyralDevServer()`, whose factory runs per request.
+Browser smoke now checks automatic Explore loading in development and after an offline
+revisit through the service worker.
+
+`pnpm check` passes with **288 tests in 29 files**, **80.86% branch coverage**, the single-file
+API build, the 393-page sample build and Chromium smoke in both themes. Smoke covers search,
+offline behavior, Explore, Ask with its fake model, transitions and continuity filtering.
+The standalone image-layout and reload checks above supplement the gate; this upgrade has
+not been deployed or evaluated against a live model.
+
+### A new packaging rough edge
+
+Importing `toNodeListener` from `@gyral/ssr/node` made our API build emit
+`assets/node-*.js` beside `api.mjs`, despite `codeSplitting: false`. That entry also re-exports
+`gyralDevServer`, which dynamically imports Vite. Our `ssr.noExternal: true` caused Vite to
+resolve its own package and emit assets before tree-shaking removed the unused helper. The
+one-file guard caught this; the image would otherwise have copied an incomplete build.
+
+Marking `vite` external in this build fixes it. The unused dev helper is removed and the
+finished API has no runtime Vite import. **Suggestion:** document this production-bundling
+case, or provide a Node transport entry that avoids resolving the development helper. The
+component-metadata embedding example requested above would also help code-only deployments.
+
+### Cost and remaining requests
+
+The final client build emits **23,621 gzip bytes** of JavaScript across its six hashed chunks,
+compared with **22,742 bytes** across five chunks on next.6: **+879 bytes**. These are sums of
+individually gzipped Vite asset files, excluding the service worker, CSS and fonts; they are
+not one-page transfer measurements. Automatic loading is a maintenance improvement for our
+single island, with a small size cost.
+
+The useful next.9 additions replaced real application plumbing and exposed a missed bug.
+The remaining framework requests are unchanged: coverage-safe template diagnostics,
+build-time hashes for inline component CSS, an opt-out for unused managed-head markers,
+and Node view/keyboard test helpers. We retain the coverage-plugin exclusion, explicit CSP
+component imports and the single-file bundle guard. Explore's API/SSE drivers and
+`Static`/`Live` hydration state continue to express application behavior.

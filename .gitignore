@@ -1,4 +1,5 @@
 node_modules/
+.gyral/
 .pnpm-store/
 dist/
 coverage/

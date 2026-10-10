@@ -127,7 +127,9 @@ reaches a Gyral parent with `OUTPUT_EVENT`.
 
 The `HTMLElementTagNameMap` entry in the component file (above) is what makes
 `document.createElement('my-picker')` and `querySelector('my-picker')` return the component's
-type, props included. Add one for every component you expose.
+type, props included. Inside a Gyral app the Vite preset generates these entries; for components
+you publish to other apps, write the entry in the component's own file, as above, so it ships in
+your package's types.
 
 ## React 19
 

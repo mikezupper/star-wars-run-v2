@@ -58,6 +58,7 @@ export default tseslint.config(
       '.claude/',
       '.beads/',
       '.pnpm-store/',
+      '.gyral/',
       'node_modules/',
     ],
   },

@@ -1,5 +1,6 @@
-// /explore/: SQL over the archive, in the browser (swr-7f1.7). The island loads DuckDB-WASM only
-// when a query runs; without JavaScript the page links to the sections instead.
+// /explore/: questions and SQL over the server's archive (ADR 0010). Without JavaScript the
+// page links to the sections instead. The server import registers the tag for SSR; Gyral's
+// automatic loader discovers its client module from the rendered tag.
 import { html } from '@gyral/core';
 import { EXPLORE_TEXT, TEXT } from '../labels.js';
 import { breadcrumb, type PageMeta } from './layout.js';
@@ -9,7 +10,6 @@ export const exploreMeta: PageMeta = {
   path: '/explore/',
   title: EXPLORE_TEXT.title,
   description: EXPLORE_TEXT.description,
-  islands: true,
 };
 
 export const exploreBody = () => html`

@@ -11,7 +11,15 @@ import { links, linkTo } from './fixtures/html.js';
 
 const data = fixtureSiteData();
 const site = createSite(
-  { stylesheet: '/assets/site.css', clientEntry: '/assets/entry.js', page: '/assets/page.js' },
+  {
+    stylesheet: '/assets/site.css',
+    page: '/assets/page.js',
+    components: {
+      loader: '/assets/components.js',
+      preload: ['/assets/core.js'],
+      modules: [['swr-explore', { preload: ['/assets/explore.js'], stylesheets: [] }]],
+    },
+  },
   data,
 );
 const UNLISTED = ['/search/', '/offline/'];
@@ -77,12 +85,17 @@ describe('every page', () => {
     expect(broken).toEqual([]);
   });
 
-  it('ships only the every-page script, plus the island entry on /explore/', () => {
+  it('loads components only where their tags render, alongside the every-page script', () => {
     for (const [page, body] of pages) {
       const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
       expect(scripts, page).toEqual(
-        page === '/explore/' ? ['/assets/page.js', '/assets/entry.js'] : ['/assets/page.js'],
+        page === '/explore/' ? ['/assets/page.js', '/assets/components.js'] : ['/assets/page.js'],
       );
+      expect(body.includes('rel="modulepreload"'), page).toBe(page === '/explore/');
+      if (page === '/explore/') {
+        expect(body).toContain('href="/assets/explore.js"');
+        expect(body).toContain('href="/assets/core.js"');
+      }
     }
   });
 
@@ -167,6 +180,7 @@ describe('the theme', () => {
       const head = page?.slice(0, page.indexOf('</head>')) ?? '';
       expect(head).toContain(`<script>${THEME_SCRIPT}</script>`);
       expect(head.indexOf(THEME_SCRIPT)).toBeLessThan(head.indexOf('rel="stylesheet"'));
+      expect(head.match(/data-gyral-head=/g)).toHaveLength(1);
       expect(head).toMatch(/<meta name="theme-color" media="\(prefers-color-scheme: dark\)"/);
     }
   });
