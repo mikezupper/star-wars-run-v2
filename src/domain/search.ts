@@ -60,6 +60,10 @@ export interface Results {
   readonly didYouMean?: string;
 }
 
+/** A shareable server-rendered search, also used by the suggestions' plain GET form. */
+export const searchPath = (query: string, section?: Section): string =>
+  `/search/?${new URLSearchParams({ q: query, ...(section === undefined ? {} : { section }) }).toString()}`;
+
 /** The markers SQLite's snippet() puts around a match: characters no article contains. */
 export const MARK_OPEN = '\u0001';
 export const MARK_CLOSE = '\u0002';

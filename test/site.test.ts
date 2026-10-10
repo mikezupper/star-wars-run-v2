@@ -17,7 +17,10 @@ const site = createSite(
     components: {
       loader: '/assets/components.js',
       preload: ['/assets/core.js'],
-      modules: [['swr-explore', { preload: ['/assets/explore.js'], stylesheets: [] }]],
+      modules: [
+        ['swr-explore', { preload: ['/assets/explore.js'], stylesheets: [] }],
+        ['swr-site-search', { preload: ['/assets/search.js'], stylesheets: [] }],
+      ],
     },
   },
   data,
@@ -95,14 +98,15 @@ describe('every page', () => {
   it('loads components only where their tags render, alongside the every-page script', () => {
     for (const [page, body] of pages) {
       const scripts = [...body.matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
-      expect(scripts, page).toEqual(
-        page === '/explore/' ? ['/assets/page.js', '/assets/components.js'] : ['/assets/page.js'],
-      );
+      expect(scripts, page).toEqual(['/assets/page.js', '/assets/components.js']);
       expect(body, page).toContain('blocking="render"');
-      expect(body.includes('rel="modulepreload"'), page).toBe(page === '/explore/');
+      expect(body, page).toContain('rel="modulepreload"');
+      expect(body, page).toContain('href="/assets/search.js"');
       if (page === '/explore/') {
         expect(body).toContain('href="/assets/explore.js"');
         expect(body).toContain('href="/assets/core.js"');
+      } else {
+        expect(body).not.toContain('href="/assets/explore.js"');
       }
     }
   });

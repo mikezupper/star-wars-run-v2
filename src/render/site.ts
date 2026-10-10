@@ -4,7 +4,7 @@
 import { html, type ChildValue } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
 import type { ArticleRecord } from '../domain/article.js';
-import type { Archive } from '../domain/archive.js';
+import { LETTER_PAGE_SIZE, type Archive } from '../domain/archive.js';
 import type { LinkGraph } from '../domain/links.js';
 import { SECTIONS } from '../domain/sections.js';
 import { absolute } from '../site.js';
@@ -31,7 +31,7 @@ export interface SiteData {
 
 interface Route {
   readonly meta: PageMeta;
-  /** The page's body; `url` carries its query, which only /search/ reads. */
+  /** The page's body; `url` carries search queries and index continuity choices. */
   readonly body: (url: URL) => ChildValue;
 }
 
@@ -92,10 +92,24 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
     for (const [letter, inLetter] of letters) {
       const lm = letterMeta(section, letter, inLetter.length);
       redirects.set(`/${section}/${letter}/`, lm.path);
-      table.set(lm.path, {
-        meta: lm,
-        body: () => letterBody(section, letter, inLetter, archive, links),
-      });
+      for (let page = 1; page <= Math.ceil(inLetter.length / LETTER_PAGE_SIZE); page++) {
+        const meta = letterMeta(section, letter, inLetter.length, page);
+        table.set(meta.path, {
+          meta,
+          body: (url) => {
+            const era = url.searchParams.get('era');
+            return letterBody(
+              section,
+              letter,
+              inLetter,
+              archive,
+              links,
+              page,
+              era === 'canon' || era === 'legends' ? era : 'both',
+            );
+          },
+        });
+      }
     }
     for (const entry of entries) {
       if (!articles.has(entry.title)) continue;

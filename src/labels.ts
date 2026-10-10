@@ -375,6 +375,11 @@ export const TEXT = {
   both: 'Both',
   kinds: 'Kinds',
   aToZ: 'A to Z',
+  indexPages: 'Index pages',
+  previousPage: 'Previous',
+  nextPage: 'Next',
+  indexPage: (page: number, pages: number): string => `Page ${String(page)} of ${String(pages)}`,
+  pagedTitle: (title: string, page: number): string => `${title} · Page ${String(page)}`,
   bestKnownCharacters: 'Best-known characters',
   notFoundTitle: 'Page not found',
   notFoundBody:
@@ -394,6 +399,12 @@ export const TEXT = {
     'Search isn’t available in this build: it needs the pages database (pnpm build).',
   didYouMean: 'Did you mean',
   searchResults: 'Search results',
+  searchSuggestions: 'Suggested articles',
+  searchLoading: 'Searching the archive…',
+  searchSuggestionsUnavailable: 'Suggestions couldn’t be loaded. Press Enter to search.',
+  searchAllResults: 'See all results →',
+  searchSuggestionCount: (n: number): string =>
+    `${String(n)} ${n === 1 ? 'suggestion' : 'suggestions'}. Use the arrow keys to choose, then Enter to open.`,
   askInstead: 'That sounds like a question. Ask the archive instead →',
   noResults: (query: string): string =>
     `Nothing in the archive matches “${query}”. Check the spelling, or try fewer letters.`,

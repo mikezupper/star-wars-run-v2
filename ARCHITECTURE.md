@@ -46,7 +46,7 @@ saying what to do instead. Change the table and the lint rules together.
 | `src/ingest/`                      | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
 | `src/data/`                        | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
 | `src/render/`                      | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`                     | browser (and server)                  | Explore's Gyral component and API client                                                    | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/islands/`                     | browser (and server)                  | Search suggestions and Explore's Gyral components and API clients                           | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
 | `src/page.ts`, `src/hyperspace.ts` | browser                               | Page controls and native view transitions                                                   | each other, `src/site.ts`, `src/labels.ts`, `src/domain/`                                  |
 | `src/offline/`                     | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
 | `src/hosting/`                     | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
@@ -73,14 +73,15 @@ that serves every page. The dev server calls it with the snapshot in memory; the
 (`src/server/app.ts`) calls it with `src/server/pages.ts`, which reads one article from
 `pages.sqlite` when its page renders, and adds the ETag and Cache-Control (ADR 0011).
 
-Page templates use `html` from `@gyral/core`, rendered on the server and never hydrated, so a
-page without islands ships **no framework JavaScript**: only the page module for the `/`
-search key, theme controls, service worker registration and the random-article hyperspace
-transition. The module is render-blocking so `pagereveal` is registered before the first
-frame. Interactive parts are islands: `define()` components rendered with
-Declarative Shadow DOM. Gyral's Vite preset discovers their client modules, and `renderPage()` loads only the
-components whose tags it rendered (today, `/explore/`). The server still imports each
-component for Declarative Shadow DOM rendering. `src/render/assets.ts` stores the component
+Page templates use `html` from `@gyral/core` and stay server-rendered. The page module handles
+the `/` search key, theme controls, service worker registration and the random-article
+hyperspace transition; it is render-blocking so `pagereveal` is registered before the first
+frame. Interactive parts are `define()` islands: search suggestions use light DOM so the
+native GET form, fragment focus and shared stylesheet work before hydration; Explore uses
+Declarative Shadow DOM. Gyral's Vite preset discovers their client modules, and `renderPage()`
+loads only the components whose tags it rendered. Search appears on every page; Explore
+loads on `/explore/`. The server imports each component for rendering.
+`src/render/assets.ts` stores the component
 Map as JSON entries for `pages.sqlite` and the API bundle, then restores it for rendering.
 The API image embeds these assets before `.vite/` is removed, so new code can render old
 data without reading a client manifest at runtime. See
@@ -93,7 +94,8 @@ folded). It renders `/search/` and answers `/api/search` and Ask's name lookups
 
 URLs always end with a slash (`/characters/luke-skywalker/`). The app answers `/characters`
 with a 308 redirect to `/characters/`, and an unknown path with the 404 page. Letter indexes
-use `/<section>/letters/<letter>/`, which cannot collide with an article slug. Old letter
+use `/<section>/letters/<letter>/`, with `/2/`, `/3/` and so on for lists beyond 500 articles.
+These paths cannot collide with an article slug. Old letter
 URLs redirect to those indexes unless an article owns the old path. Article paths stay the
 same in SQLite and DuckDB, so this routing change works with data from earlier builds.
 

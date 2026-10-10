@@ -1,6 +1,5 @@
-// The document shell every page shares: head, banner with the section nav, footer. Server-only:
-// written with html, so none of it is hydrated and pages without islands ship no
-// framework JavaScript.
+// The document shell every page shares: head, banner with the section nav, footer. The shell
+// stays server-rendered; its search control hydrates separately as a light-DOM island.
 import { html, nothing, svg, type ChildValue } from '@gyral/core';
 import type { PageOptions } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';
@@ -10,6 +9,7 @@ import { THEME_COLOR, THEME_SCRIPT } from '../domain/theme.js';
 import { absolute, SITE_NAME } from '../site.js';
 import { EXPLORE_TEXT, SABACC_TEXT, SECTION_LABELS, TEXT } from '../labels.js';
 import { componentsFor, type Assets } from './assets.js';
+import '../islands/search.js';
 
 export type { Assets } from './assets.js';
 
@@ -91,20 +91,7 @@ const banner = (meta: PageMeta) => html`
     ${
       meta.path === '/search/'
         ? nothing
-        : html`<search>
-              <form action="/search/" method="get">
-                <label for="site-search-q">${TEXT.searchLabel}</label>
-                <input
-                  id="site-search-q"
-                  name="q"
-                  type="search"
-                  autocomplete="off"
-                  placeholder=${TEXT.searchPlaceholder}
-                  aria-keyshortcuts="/ Control+K Meta+K"
-                />
-                <button type="submit">${TEXT.searchLabel}</button>
-              </form>
-            </search>
+        : html`<swr-site-search></swr-site-search>
             <a href="/search/" aria-label=${TEXT.searchLabel}>${SEARCH_ICON}</a>`
     }
     <a href="/explore/" aria-current=${current(meta.path === '/explore/')}>${EXPLORE_TEXT.nav}</a>

@@ -318,7 +318,7 @@
 
   main {
     display: grid;
-    /* minmax(0, …): a wide child (the search island) must not stretch the page sideways. */
+    /* minmax(0, …): a wide child must not stretch the page sideways. */
     grid-template-columns: minmax(0, 1fr);
     gap: var(--gap);
     align-content: start;
@@ -1110,8 +1110,10 @@
   }
 
   /* Home: a question box as the way in, the best-known articles, the sections as cards. */
-  main > search form {
+  main > search form,
+  main > swr-site-search form {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     max-inline-size: 48rem;
 
@@ -1252,9 +1254,117 @@
     font-size: var(--step--1);
   }
 
-  /* The search island's light DOM host. */
+  /* Light DOM keeps labels, the phone fragment and the plain GET forms usable before hydration. */
   swr-site-search {
     display: block;
+
+    & search {
+      position: relative;
+    }
+
+    & input {
+      min-inline-size: 0;
+    }
+
+    & [data-search-status] {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    & [data-search-palette] {
+      position: absolute;
+      inset-block-start: calc(100% + 0.5rem);
+      inset-inline: 0;
+      z-index: 2;
+      display: grid;
+      gap: 0.5rem;
+      max-block-size: min(70dvh, 32rem);
+      overflow: auto;
+      padding: 0.75rem;
+      border: var(--rule-width) solid var(--rule);
+      border-radius: var(--radius);
+      background: var(--surface-raised);
+      color: var(--text);
+      box-shadow: var(--card-shadow);
+      overflow-wrap: anywhere;
+
+      &[hidden] {
+        display: none;
+      }
+
+      & ol {
+        padding: 0;
+        list-style: none;
+      }
+
+      & a[role='option'] {
+        display: grid;
+        gap: 0.25rem;
+        min-block-size: 2.75rem;
+        padding: 0.5rem;
+        border-block-end: 1px solid var(--border);
+        color: var(--text);
+        text-decoration: none;
+
+        &:hover,
+        &[aria-selected='true'] {
+          background: var(--text);
+          color: var(--surface);
+        }
+
+        & small {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          font-family: var(--font-mono);
+        }
+
+        & [data-era] {
+          padding-inline: 0.25rem;
+          border: 1px solid currentColor;
+        }
+      }
+    }
+  }
+
+  body > header > swr-site-search {
+    display: contents;
+  }
+
+  nav[data-pagination] {
+    & ul {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    & a {
+      display: inline-grid;
+      place-items: center;
+      min-inline-size: 2.75rem;
+      min-block-size: 2.75rem;
+      padding-inline: 0.5rem;
+      border: var(--rule-width) solid var(--rule);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      text-decoration: none;
+
+      &[aria-current='page'] {
+        background: var(--text);
+        color: var(--surface);
+      }
+    }
+  }
+
+  main:has(input[name='era'][value='both']:checked) [data-pagination-era='both'],
+  main:has(input[name='era'][value='canon']:checked) [data-pagination-era='canon'],
+  main:has(input[name='era'][value='legends']:checked) [data-pagination-era='legends'] {
+    display: flex;
   }
 }
 

@@ -84,7 +84,7 @@ function samplePaths(all, limit) {
   if (!(all.length > limit)) return all;
   const always = new Set(SEARCHES.flatMap(([, expected]) => expected));
   const isList = (p) =>
-    p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/letters\/[a-z0-9]\/$/.test(p);
+    p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/letters\/[a-z0-9]\/(?:\d+\/)?$/.test(p);
   const kept = all.filter((p) => isList(p) || always.has(p));
   const keptSet = new Set(kept);
   const rest = all.filter((p) => !keptSet.has(p));
@@ -114,6 +114,7 @@ try {
   await pool(tasks, CONCURRENCY, (task) => checkPage(task, links));
   await checkLinks(links);
   await checkSearch();
+  await checkSuggestions();
   await checkWithoutJavaScript();
   await checkOffline();
   await checkExplore();
@@ -308,12 +309,95 @@ async function checkSearch() {
   }
 }
 
+/** The suggestion control keeps native focus, navigation and GET submission. */
+async function checkSuggestions() {
+  const where = 'search suggestions';
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  try {
+    const page = await context.newPage();
+    watch(page, where, 503);
+    await page.goto(`${base}/characters/anakin-skywalker/`, { waitUntil: 'networkidle' });
+    const input = page.locator('#site-search-q');
+    await input.fill('luke');
+    const options = page.locator('[role="option"]');
+    await options.first().waitFor();
+    if ((await input.getAttribute('role')) !== 'combobox') fail(where, 'input did not hydrate');
+    if ((await options.count()) > 6) fail(where, 'more than six suggestions');
+    if ((await options.first().getAttribute('href')) !== '/characters/luke-skywalker/')
+      fail(where, 'Luke was not the first suggestion');
+    const badges = await options.first().textContent();
+    if (!badges.includes('Canon') || !badges.includes('Legends'))
+      fail(where, 'the suggestion lost its continuity badges');
+    await input.press('ArrowDown');
+    if ((await input.getAttribute('aria-activedescendant')) !== 'site-search-q-option-0')
+      fail(where, 'ArrowDown did not select the first suggestion');
+    if ((await page.evaluate(() => document.activeElement?.id)) !== 'site-search-q')
+      fail(where, 'keyboard selection moved focus out of the input');
+    await axe(page, `${where} (light)`);
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    await axe(page, `${where} (dark)`);
+    await input.press('Escape');
+    if ((await input.getAttribute('aria-expanded')) !== 'false')
+      fail(where, 'Escape did not dismiss suggestions');
+    if ((await input.inputValue()) !== 'luke') fail(where, 'Escape cleared the query');
+    await input.press('ArrowUp');
+    const selected = page.locator('[role="option"][aria-selected="true"]');
+    const target = await selected.getAttribute('href');
+    await input.press('Enter');
+    await page.waitForURL(base + target);
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+
+    // A phone enhances the results-page form; its header retains the native search link.
+    await page.setViewportSize({ width: 360, height: 900 });
+    await page.goto(`${base}/search/?q=ta&section=planets`, { waitUntil: 'networkidle' });
+    const phone = page.locator('#search-q');
+    await phone.fill('ta');
+    await options.first().waitFor();
+    const paths = await options.evaluateAll((all) => all.map((a) => a.getAttribute('href')));
+    if (paths.some((p) => !p.startsWith('/planets/')))
+      fail(where, 'phone suggestions ignored the section filter');
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
+      fail(where, 'the phone palette overflows horizontally');
+    await axe(page, `${where} (phone dark)`);
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    await axe(page, `${where} (phone light)`);
+    await options.first().click();
+    await page.waitForURL('**/planets/**');
+
+    // An outage announces the problem while ordinary Enter still reaches the SSR results.
+    await page.route('**/api/search?*', (route) => route.fulfill({ status: 503, body: '{}' }));
+    await page.goto(`${base}/search/`, { waitUntil: 'networkidle' });
+    await phone.fill('luke');
+    await page
+      .locator('[data-search-palette]')
+      .getByText('Suggestions couldn’t be loaded.', { exact: false })
+      .waitFor();
+    if (!(await page.locator('[data-search-status]').textContent()).includes('Press Enter'))
+      fail(where, 'the outage announcement lost the form fallback');
+    await phone.press('Enter');
+    await page.waitForURL('**/search/?q=luke&section=');
+    if (!(await hrefs(page)).includes('/characters/luke-skywalker/'))
+      fail(where, 'Enter did not recover from a suggestion outage');
+    await page.unroute('**/api/search?*');
+    await phone.fill('Who trained Luke?');
+    await page.locator('[data-search-palette] a[href^="/explore/?ask="]').waitFor();
+  } finally {
+    await context.close();
+  }
+}
+
 /** Search renders on the server (ADR 0011): results without any JavaScript. */
 async function checkWithoutJavaScript() {
   const where = '/search/ (no JavaScript)';
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
+    await page.goto(`${base}/characters/luke-skywalker/`);
+    await page.locator('#site-search-q').fill('luke');
+    await page.locator('header search button[type="submit"]').click();
+    await page.waitForURL('**/search/?q=luke');
     await page.goto(`${base}/search/?q=luke`);
     if (!(await hrefs(page)).includes('/characters/luke-skywalker/'))
       fail(where, 'no results for "luke" without JavaScript');
@@ -831,6 +915,15 @@ async function checkEraFilter() {
     if ((await visible('canon')) === 0) fail(where, 'Canon hides the canon rows');
     await choose('Legends');
     if ((await visible('canon')) !== 0) fail(where, 'Legends still shows canon rows');
+    const next = page.locator('nav[data-pagination] a[rel="next"]:visible');
+    if ((await next.count()) !== 0) {
+      const target = await next.getAttribute('href');
+      await next.click();
+      await page.waitForURL(base + target);
+      if ((await page.locator('input[name="era"]:checked').inputValue()) !== 'legends')
+        fail(where, 'the next page lost the continuity choice');
+      if ((await visible('canon')) !== 0) fail(where, 'the next page shows canon rows');
+    }
     await axe(page, where);
   } finally {
     await context.close();

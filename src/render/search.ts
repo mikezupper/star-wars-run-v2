@@ -3,8 +3,9 @@
 // plain GET. Not in the sitemap and not indexed: a results page has no content of its own.
 import { html, nothing } from '@gyral/core';
 import { looksLikeQuestion } from '../domain/ask.js';
-import type { Result, Results, Run } from '../domain/search.js';
-import { isSection, SECTIONS, type Section } from '../domain/sections.js';
+import { searchPath, type Result, type Results, type Run } from '../domain/search.js';
+import { isSection, type Section } from '../domain/sections.js';
+import '../islands/search.js';
 import { SECTION_LABELS, TEXT } from '../labels.js';
 import type { PageMeta } from './layout.js';
 
@@ -40,9 +41,6 @@ const result = (r: Result) =>
     ${excerpt(r.excerpt)}
   </li>`;
 
-const searchHref = (query: string, section?: Section) =>
-  `${SEARCH_PATH}?${new URLSearchParams({ q: query, ...(section === undefined ? {} : { section }) }).toString()}`;
-
 function answer(found: Results, section?: Section) {
   const { query, results, didYouMean } = found;
   const ask = looksLikeQuestion(query)
@@ -59,7 +57,7 @@ function answer(found: Results, section?: Section) {
         didYouMean === undefined
           ? nothing
           : html`<p>
-              ${TEXT.didYouMean} <a href=${searchHref(didYouMean, section)}>${didYouMean}</a>?
+              ${TEXT.didYouMean} <a href=${searchPath(didYouMean, section)}>${didYouMean}</a>?
             </p>`
       }`;
   }
@@ -76,23 +74,7 @@ export const searchBody = (url: URL, search?: SearchArchive) => {
   const section = isSection(asked) ? asked : undefined;
   return html`
     <h1>${TEXT.searchTitle}</h1>
-    <search>
-      <form action=${SEARCH_PATH} method="get">
-        <label for="search-q">${TEXT.searchLabel}</label>
-        <input id="search-q" name="q" type="search" value=${query} autocomplete="off" />
-        <label for="search-section">${TEXT.searchKindLabel}</label>
-        <select id="search-section" name="section">
-          <option value="">${TEXT.searchAllKinds}</option>
-          ${SECTIONS.map(
-            (s) =>
-              html`<option value=${s} ?selected=${s === section}>
-                ${SECTION_LABELS[s].plural}
-              </option>`,
-          )}
-        </select>
-        <button type="submit">${TEXT.searchLabel}</button>
-      </form>
-    </search>
+    <swr-site-search full query=${query} section=${section ?? ''}></swr-site-search>
     ${
       query === ''
         ? html`<p>${TEXT.searchHint}</p>`

@@ -5,6 +5,7 @@ import { html, nothing } from '@gyral/core';
 import {
   displayTitle,
   letterPath,
+  LETTER_PAGE_SIZE,
   sectionPath,
   type Archive,
   type Entry,
@@ -18,7 +19,11 @@ import { breadcrumb, type PageMeta } from './layout.js';
 /** Letters in display order, with their entries: `0` (digits, symbols) after `z`. */
 export function byLetter(entries: readonly Entry[]): Map<string, Entry[]> {
   const out = new Map<string, Entry[]>();
-  for (const e of entries) out.set(e.letter, [...(out.get(e.letter) ?? []), e]);
+  for (const e of entries) {
+    const inLetter = out.get(e.letter) ?? [];
+    inLetter.push(e);
+    out.set(e.letter, inLetter);
+  }
   return new Map([...out].sort(([a], [b]) => (a === '0' ? 1 : b === '0' ? -1 : a < b ? -1 : 1)));
 }
 
@@ -37,12 +42,28 @@ const LETTER_BEST = 12;
  * Canon, Legends or both: three radio buttons; the CSS hides the other continuity's rows with
  * :has(), so the filter needs no script and the page stays the same for every visitor.
  */
-const eraFilter = () => html`
+const eraFilter = (era = 'both') => html`
   <fieldset data-era-filter>
     <legend>${TEXT.show}</legend>
-    <label><input type="radio" name="era" value="both" checked />${TEXT.both}</label>
-    <label><input type="radio" name="era" value="canon" />${TEXT.canon}</label>
-    <label><input type="radio" name="era" value="legends" />${TEXT.legends}</label>
+    <label
+      ><input type="radio" name="era" value="both" ?checked=${era === 'both'} />${TEXT.both}</label
+    >
+    <label
+      ><input
+        type="radio"
+        name="era"
+        value="canon"
+        ?checked=${era === 'canon'}
+      />${TEXT.canon}</label
+    >
+    <label
+      ><input
+        type="radio"
+        name="era"
+        value="legends"
+        ?checked=${era === 'legends'}
+      />${TEXT.legends}</label
+    >
   </fieldset>
 `;
 
@@ -118,12 +139,34 @@ export const sectionBody = (
   `;
 };
 
-export const letterMeta = (section: Section, letter: string, count: number): PageMeta => ({
-  path: letterPath(section, letter),
-  title: letterTitle(section, letter),
-  description: `${letterTitle(section, letter)}. ${TEXT.inSection(count)} in the Star Wars archive.`,
+export const letterMeta = (
+  section: Section,
+  letter: string,
+  count: number,
+  page = 1,
+): PageMeta => ({
+  path: letterPath(section, letter, page),
+  title:
+    page === 1 ? letterTitle(section, letter) : TEXT.pagedTitle(letterTitle(section, letter), page),
+  description: `${letterTitle(section, letter)}. ${TEXT.inSection(count)} in the Star Wars archive.${count > LETTER_PAGE_SIZE ? ` ${TEXT.indexPage(page, Math.ceil(count / LETTER_PAGE_SIZE))}.` : ''}`,
   section,
 });
+
+/** Three CSS-selected link sets preserve the radio choice on navigation, without JavaScript. */
+const pagination = (section: Section, letter: string, page: number, pages: number) =>
+  pages < 2
+    ? nothing
+    : html`<nav data-pagination aria-label=${TEXT.indexPages}>
+        ${['both', 'canon', 'legends'].map((era) => {
+          const href = (n: number) =>
+            `${letterPath(section, letter, n)}${era === 'both' ? '' : `?era=${era}`}`;
+          return html`<ul data-pagination-era=${era}>
+            ${page === 1 ? nothing : html`<li><a href=${href(page - 1)} rel="prev">${TEXT.previousPage}</a></li>`}
+            ${Array.from({ length: pages }, (_, n) => n + 1).map((n) => html`<li><a href=${href(n)} aria-label=${TEXT.indexPage(n, pages)} aria-current=${n === page ? 'page' : undefined}>${n}</a></li>`)}
+            ${page === pages ? nothing : html`<li><a href=${href(page + 1)} rel="next">${TEXT.nextPage}</a></li>`}
+          </ul>`;
+        })}
+      </nav>`;
 
 export const letterBody = (
   section: Section,
@@ -131,6 +174,8 @@ export const letterBody = (
   entries: readonly Entry[],
   archive: Archive,
   links: LinkGraph,
+  page = 1,
+  era = 'both',
 ) => html`
   ${breadcrumb(
     [
@@ -142,11 +187,13 @@ export const letterBody = (
   <header>
     <p>${TEXT.inSection(entries.length)}</p>
     <h1>${letterTitle(section, letter)}</h1>
+    ${entries.length > LETTER_PAGE_SIZE ? html`<p>${TEXT.indexPage(page, Math.ceil(entries.length / LETTER_PAGE_SIZE))}</p>` : nothing}
   </header>
-  ${eraFilter()} ${ranking(rankKnown(entries, archive, links, LETTER_BEST))}
+  ${eraFilter(era)}
+  ${page === 1 ? ranking(rankKnown(entries, archive, links, LETTER_BEST)) : nothing}
   <h2 id="a-to-z">${TEXT.aToZ}</h2>
   <ul aria-labelledby="a-to-z">
-    ${entries.map(
+    ${entries.slice((page - 1) * LETTER_PAGE_SIZE, page * LETTER_PAGE_SIZE).map(
       (e) =>
         html`<li data-era=${e.era}>
           <a href=${e.path}
@@ -157,4 +204,5 @@ export const letterBody = (
         </li>`,
     )}
   </ul>
+  ${pagination(section, letter, page, Math.ceil(entries.length / LETTER_PAGE_SIZE))}
 `;

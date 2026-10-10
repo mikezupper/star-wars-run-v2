@@ -9,7 +9,7 @@ Beads: epic `swr-7f1` (pages `swr-7f1.4`, `swr-7f1.10`; appearances `swr-7f1.13`
 | --------- | ------------------------------ | ------------------------------------------------------------------------ |
 | Home      | `/`                            | What the archive is, how many articles it holds, each section with count |
 | Section   | `/<section>/`                  | The section's letters, each with its number of articles                  |
-| Letter    | `/<section>/letters/<letter>/` | Every article in that section starting with that letter                  |
+| Letter    | `/<section>/letters/<letter>/` | Up to 500 articles, with numbered pages reaching the rest                |
 | Article   | `/<section>/<slug>/`           | Lead prose, facts, appearances, and the Wookieepedia credit              |
 | Not found | any other path (404)           | A plain way back: home and search                                        |
 
@@ -22,6 +22,15 @@ Article slugs never contain a slash, so the `letters/` namespace keeps an index 
 from an article called “U” or “M”. Old `/<section>/<letter>/` links redirect to the index
 when no article owns that path; existing article URLs keep working. Sitemaps list the
 canonical index URLs and article URLs, with redirect aliases left out.
+
+Letter indexes list 500 articles per page in title order. The first page keeps the letter
+URL; later pages use `/<section>/letters/<letter>/2/`, `/3/` and so on. Each page has its own
+title, canonical URL and sitemap entry, with numbered, previous and next links. The first
+page also shows the best-known subjects. The index heading counts the whole letter.
+
+Both, Canon and Legends filter the current page with CSS. Pagination links carry the chosen
+continuity as `?era=canon` or `?era=legends`, including with JavaScript disabled. Page numbers
+refer to the complete list, so changing continuity keeps the same page of titles.
 
 ## Jump to hyperspace
 
@@ -70,6 +79,9 @@ first appearance, mentioned only, in a flashback, as a hologram and so on. A lis
   Every internal link lands on its intended page (the smoke test follows them).
 - A single-letter article and its letter index have distinct working URLs. A legacy letter
   URL redirects only when no article owns it, and sitemaps include both canonical pages.
+- Every article appears exactly once in its letter's A–Z list across the numbered pages.
+  On the full archive, each index's uncompressed HTML is below 200,000 bytes. Numbered pages
+  preserve continuity, pass axe and fit at 360px; pagination works without JavaScript.
 - Luke Skywalker's page lists Star Wars: Episode IV A New Hope, linked, as his first
   appearance, and has a separate list of non-canon appearances.
 - A New Hope's page lists Luke Skywalker under Characters in "Who turns up here", and no

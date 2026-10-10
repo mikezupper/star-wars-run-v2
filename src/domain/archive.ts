@@ -37,8 +37,11 @@ export interface Archive {
 
 export const sectionPath = (section: Section): string => `/${section}/`;
 /** A separate namespace keeps indexes distinct from articles named A, U, M and so on. */
-export const letterPath = (section: Section, letter: string): string =>
-  `/${section}/letters/${letter}/`;
+export const letterPath = (section: Section, letter: string, page = 1): string =>
+  `/${section}/letters/${letter}/${page === 1 ? '' : `${String(page)}/`}`;
+
+/** Keep each index's HTML and browser list small, even on the full archive. */
+export const LETTER_PAGE_SIZE = 500;
 
 /** The list letter for a slug: its first letter, or `0` for digits and symbols. */
 export const letterOf = (slug: string): string => (/^[a-z]/.test(slug) ? slug.charAt(0) : '0');

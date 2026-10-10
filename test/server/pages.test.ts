@@ -169,7 +169,10 @@ describe('pages from data another build wrote (images carry no data, ADR 0003)',
       page: '/assets/p2.js',
       components: {
         loader: '/assets/components-new.js',
-        modules: [['swr-explore', { preload: ['/assets/explore-new.js'], stylesheets: [] }]],
+        modules: [
+          ['swr-explore', { preload: ['/assets/explore-new.js'], stylesheets: [] }],
+          ['swr-site-search', { preload: ['/assets/search-new.js'], stylesheets: [] }],
+        ],
       },
     },
     id: 'code7',
@@ -180,6 +183,8 @@ describe('pages from data another build wrote (images carry no data, ADR 0003)',
   it("link the image's CSS and JS, not the ones stamped in the data", async () => {
     const html = await (await get('/characters/luke-skywalker/')).text();
     expect(html).toContain('href="/assets/site-new.css"');
+    expect(html).toContain('href="/assets/search-new.js"');
+    expect(html).toContain('id="site-search-q"');
     expect(html).not.toContain('/assets/site.css');
     expect(await (await get('/no-such-page/')).text()).toContain('/assets/site-new.css');
     const explore = await (await get('/explore/')).text();
@@ -260,7 +265,10 @@ describe('the search page, rendered on request', () => {
   it('shows the form and a hint without a query', async () => {
     const empty = await page('');
     expect(empty).toContain('<form');
-    expect(empty).not.toContain('role="status"');
+    expect(empty).toContain(
+      'data-search-status role="status" aria-live="polite" aria-atomic="true"></p>',
+    );
+    expect(empty).not.toContain('Nothing in the archive matches');
   });
 
   it('selects only the requested section; false boolean attributes never appear', async () => {

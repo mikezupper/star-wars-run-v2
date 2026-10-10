@@ -13,6 +13,20 @@ Each entry has four parts:
 
 ---
 
+## Letter indexes sent thousands of rows in one response (2026-10-10)
+
+- **Symptom:** the full archive's Media S index sent 6,233 articles in 797 KB of HTML;
+  several other indexes exceeded the 200 KB target.
+- **Cause:** each letter rendered its complete list. Request rendering and compression
+  reduced build work and transfer size, but left the browser with thousands of list rows.
+- **Fix:** list 500 articles per page under the collision-safe `letters/` namespace, with
+  numbered links and continuity choices carried in the query string (`swr-c4f`). All
+  227,272 articles remain listed; the largest of 672 index pages measures about 85 KB.
+- **Guard:** the pagination regression checks complete, unique coverage, response size,
+  navigation, canonical URLs and sitemaps. Browser smoke retains numbered index pages and
+  checks their light/dark accessibility and phone layout. The full-data audit also measures
+  every index; the sample gate alone cannot guarantee the full archive's maximum size.
+
 ## Single-letter articles replaced letter indexes (2026-10-10)
 
 - **Symptom:** `/characters/u/` showed the article “U” instead of its 6,375-entry index.
