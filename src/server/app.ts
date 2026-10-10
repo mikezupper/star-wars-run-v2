@@ -45,6 +45,13 @@ export function createPagesApp(
       }
     }
     if (normalise(url.pathname) === RANDOM_PATH) return site.fetch(request);
+    const redirect = site.redirects.get(normalise(url.pathname));
+    if (redirect !== undefined) {
+      return new Response(null, {
+        status: 308,
+        headers: { location: `${redirect}${url.search}`, 'cache-control': CACHE.pages },
+      });
+    }
     if (!url.pathname.endsWith('/') && known.has(normalise(url.pathname))) {
       return new Response(null, {
         status: 308,

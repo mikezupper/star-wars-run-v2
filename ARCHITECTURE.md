@@ -25,9 +25,9 @@ src/styles/site.css ──► vite build ──► dist/assets/
 public/ ──► copied to dist/
 ```
 
-Pages come from the Wookieepedia snapshot (ADR 0008). `pnpm ingest:wookieepedia` reads the
-dump; `pnpm build` reads the snapshot and nothing else, so a build is reproducible and works
-offline once the snapshot exists. `pnpm build:sample` (what `pnpm check` runs) builds the first
+Pages come from the Wookieepedia snapshot (ADR 0008). `pnpm ingest:wookieepedia` reads the local
+dump; `pnpm build` refreshes that snapshot when needed, then reads it to write the databases
+and public files. Neither step needs the network. `pnpm build:sample` (what `pnpm check` runs) builds the first
 20 articles of each section plus a few well-known ones. Wookieepedia is the only source: the
 swapi.info code and its committed `data/*.json` were removed (`swr-7f1.15`).
 
@@ -46,7 +46,7 @@ saying what to do instead. Change the table and the lint rules together.
 | `src/ingest/`                      | Node, `pnpm ingest:wookieepedia`      | Read the dump, parse at the boundary, write the snapshot                                    | `src/domain/`, Node built-ins                                                              |
 | `src/data/`                        | Node, build time                      | Read the snapshot in `data/wookieepedia/` into articles                                     | `src/domain/`, Node built-ins                                                              |
 | `src/render/`                      | Node, build and request time          | Route table, page templates (`html`), layout, sitemap                                       | `src/site.ts`, `src/labels.ts`, `src/domain/`, `src/islands/`, `@gyral/core`, `@gyral/ssr` |
-| `src/islands/`                     | browser (and server)                  | Interactive Gyral components: search, Explore (a client of the API)                         | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
+| `src/islands/`                     | browser (and server)                  | Explore's Gyral component and API client                                                    | `src/site.ts`, `src/labels.ts`, `src/domain/`, `@gyral/core`                               |
 | `src/page.ts`, `src/hyperspace.ts` | browser                               | Page controls and native view transitions                                                   | each other, `src/site.ts`, `src/labels.ts`, `src/domain/`                                  |
 | `src/offline/`                     | build (precache list); service worker | What to precache (pure); the worker itself (`sw.ts`)                                        | Workbox                                                                                    |
 | `src/hosting/`                     | build and preview                     | Headers policy, the `Caddyfile`                                                             | `src/domain/`                                                                              |
@@ -91,13 +91,21 @@ Search runs on the server: SQLite full-text indexes in `pages.sqlite`, queried b
 folded). It renders `/search/` and answers `/api/search` and Ask's name lookups
 ([docs/product-specs/search.md](docs/product-specs/search.md)).
 
-URLs always end with a slash (`/people/luke-skywalker/`). The app answers `/people` with a 308
-redirect to `/people/`, and an unknown path with the 404 page.
+URLs always end with a slash (`/characters/luke-skywalker/`). The app answers `/characters`
+with a 308 redirect to `/characters/`, and an unknown path with the 404 page. Letter indexes
+use `/<section>/letters/<letter>/`, which cannot collide with an article slug. Old letter
+URLs redirect to those indexes unless an article owns the old path. Article paths stay the
+same in SQLite and DuckDB, so this routing change works with data from earlier builds.
 
 ## Output
 
 `dist/` holds the public files: hashed `assets/`, `404.html` (for Caddy's own errors), the
-sitemaps, the search indexes, the service worker, and `public/` copied as it is. `dist-api/`
-holds the app's data: `pages.sqlite`, `archive.duckdb` and `ask-schema.json`. The site image
-serves `dist/`; the app image mounts `dist-api/` read-only and renders every page (ADR 0011,
+service worker, and `public/` copied as it is. A local data build also writes sitemaps there
+for preview and smoke. `dist-api/` holds the private data: `pages.sqlite` (article records and
+SQLite search indexes), `archive.duckdb` and `ask-schema.json`.
+
+Production images are built without the archive. The site image serves the public files;
+the app image mounts the data read-only and renders pages and sitemaps from the current
+routes and archive. Its bundled asset references override those stored by an earlier data
+build, and its ETags include both the data build and the code (ADR 0011,
 [docs/design-docs/0003-hosting.md](docs/design-docs/0003-hosting.md)).

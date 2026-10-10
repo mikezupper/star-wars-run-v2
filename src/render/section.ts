@@ -1,5 +1,5 @@
 // A section's pages (ADR 0008; the look, ADR 0004): `/characters/` shows its kinds, its
-// best-known subjects and the letters with counts; `/characters/l/` that letter's best known and
+// best-known subjects and the letters with counts; `/characters/letters/l/` lists that letter's best known and
 // all its articles. One page of 48,000 characters would be unusable. Both filter by continuity.
 import { html, nothing } from '@gyral/core';
 import {

@@ -1,7 +1,7 @@
 // Loaded on every page (no framework):
-// - `/` or Ctrl/⌘+K focuses search. On /search/ that's the island's box; everywhere else it's
-//   the header form, which submits to /search/?q=… and works without this script. Adapted from
-//   gyral.dev's src/shortcuts.ts.
+// - `/` or Ctrl/⌘+K focuses the search page's input or the visible header form. A phone's
+//   header has only a link, so the shortcut opens /search/#search-q; native fragment navigation
+//   focuses the input on arrival. Both forms submit to /search/?q=… without this script.
 // - In production builds, registers the service worker (/sw.js, built by scripts/build.ts) that
 //   makes the site work offline (docs/product-specs/offline.md).
 // - The theme toggle (ADR 0004, "The look"): the site follows the system's color scheme until
@@ -25,18 +25,24 @@ const typing = (target: EventTarget | null): boolean =>
   (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
 const searchBox = (): HTMLInputElement | null =>
-  document.querySelector('swr-site-search')?.shadowRoot?.querySelector<HTMLInputElement>('#q') ??
+  document.querySelector<HTMLInputElement>('#search-q') ??
   document.querySelector<HTMLInputElement>('#site-search-q');
 
 document.addEventListener('keydown', (event) => {
-  const slash = event.key === '/' && !typing(event.target);
+  const slash = event.key === '/' && !typing(event.composedPath()[0] ?? event.target);
   const k = event.key.toLowerCase() === 'k' && (event.ctrlKey || event.metaKey);
   if ((!slash && !k) || event.altKey || event.defaultPrevented) return;
   const box = searchBox();
-  if (box === null) return;
+  if (box !== null && box.getClientRects().length > 0) {
+    event.preventDefault();
+    box.focus();
+    box.select();
+    return;
+  }
+  const link = document.querySelector<HTMLAnchorElement>('header > a[href="/search/"]');
+  if (link === null) return;
   event.preventDefault();
-  box.focus();
-  box.select();
+  window.location.assign(`${link.href}#search-q`);
 });
 
 /** The name the CSS gives each page's heading, and the followed link takes on the way out. */

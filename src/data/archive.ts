@@ -28,7 +28,7 @@ export async function loadSiteData(
 ): Promise<{
   archive: Archive;
   articles: Map<string, ArticleRecord>;
-  /** Redirect title → target, for the search title index (swr-357). */
+  /** Redirect title → target, for SQLite search aliases. */
   redirects: ReadonlyMap<string, string>;
   /** Who links to whom, turned around: counts and each page's best-known linkers. */
   links: LinkGraph;

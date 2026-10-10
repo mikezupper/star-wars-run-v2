@@ -4,7 +4,10 @@ Beads: `swr-3mo.6`; ranking at full size, `swr-357`; on the server, `swr-sgf.5` 
 
 ## Behavior
 
-- A search box is reachable from every page, and from the keyboard with `/`.
+- Search is reachable from every page with `/` or Ctrl/⌘+K. The shortcut focuses and selects
+  the visible input on the results page or in the desktop header. On a phone, where the
+  header has a link, it opens the results page and focuses its input. Typing `/` in a field
+  keeps typing instead of opening search.
 - Results match article names, the names articles are known by (redirects), and the text of
   each article's lead and facts. Each result shows the article's name, its section, and a link
   to each of its continuities (Canon, Legends); a text match shows the passage, the matched
@@ -37,5 +40,7 @@ with a build.
   `falcon` (Millennium Falcon), `padme` (Padmé Amidala Naberrie). `pnpm smoke` checks them.
 - Filtering to `planets` and typing `ta` lists Tatooine and no people.
 - `/search/?q=luke` lists Luke Skywalker with JavaScript off.
+- Keyboard shortcuts focus the results-page input at desktop and 360px widths; from a
+  phone's article page they open search with its input focused.
 - The results page passes axe in light and dark.
 - Search needs the network: offline, a new search shows the offline page ([offline.md](offline.md)).

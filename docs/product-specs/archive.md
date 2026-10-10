@@ -5,18 +5,23 @@ Beads: epic `swr-7f1` (pages `swr-7f1.4`, `swr-7f1.10`; appearances `swr-7f1.13`
 
 ## Pages
 
-| Page      | URL                    | Shows                                                                    |
-| --------- | ---------------------- | ------------------------------------------------------------------------ |
-| Home      | `/`                    | What the archive is, how many articles it holds, each section with count |
-| Section   | `/<section>/`          | The section's letters, each with its number of articles                  |
-| Letter    | `/<section>/<letter>/` | Every article in that section starting with that letter                  |
-| Article   | `/<section>/<slug>/`   | Lead prose, facts, appearances, and the Wookieepedia credit              |
-| Not found | any other path (404)   | A plain way back: home and search                                        |
+| Page      | URL                            | Shows                                                                    |
+| --------- | ------------------------------ | ------------------------------------------------------------------------ |
+| Home      | `/`                            | What the archive is, how many articles it holds, each section with count |
+| Section   | `/<section>/`                  | The section's letters, each with its number of articles                  |
+| Letter    | `/<section>/letters/<letter>/` | Every article in that section starting with that letter                  |
+| Article   | `/<section>/<slug>/`           | Lead prose, facts, appearances, and the Wookieepedia credit              |
+| Not found | any other path (404)           | A plain way back: home and search                                        |
 
 There are 14 sections, from `characters` to `other`; an article's infobox decides its
 section. Every section has a page, even an empty one, because the header links to all of them.
 Digits and symbols share the letter `0`, listed after `z`. A Legends article is marked as
 Legends in lists and says so at the top of its page.
+
+Article slugs never contain a slash, so the `letters/` namespace keeps an index distinct
+from an article called “U” or “M”. Old `/<section>/<letter>/` links redirect to the index
+when no article owns that path; existing article URLs keep working. Sitemaps list the
+canonical index URLs and article URLs, with redirect aliases left out.
 
 ## Jump to hyperspace
 
@@ -60,8 +65,11 @@ first appearance, mentioned only, in a flashback, as a hologram and so on. A lis
 
 ## Acceptance criteria
 
-- `pnpm build` writes a page for every article, section and letter, and every link on them
-  lands on a page (the smoke test follows them).
+- `pnpm build` writes data for every article. The app renders every article, section and
+  letter index on request from SQLite, including with data from an earlier compatible build.
+  Every internal link lands on its intended page (the smoke test follows them).
+- A single-letter article and its letter index have distinct working URLs. A legacy letter
+  URL redirects only when no article owns it, and sitemaps include both canonical pages.
 - Luke Skywalker's page lists Star Wars: Episode IV A New Hope, linked, as his first
   appearance, and has a separate list of non-canon appearances.
 - A New Hope's page lists Luke Skywalker under Characters in "Who turns up here", and no

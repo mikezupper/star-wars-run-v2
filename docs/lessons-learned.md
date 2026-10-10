@@ -13,6 +13,30 @@ Each entry has four parts:
 
 ---
 
+## Single-letter articles replaced letter indexes (2026-10-10)
+
+- **Symptom:** `/characters/u/` showed the article “U” instead of its 6,375-entry index.
+  Eleven indexes had this problem in the full archive.
+- **Cause:** articles and letter indexes shared `/<section>/<slug>/`. The route table
+  registered the articles last, replacing indexes with the same path.
+- **Fix:** indexes use `/<section>/letters/<letter>/`. Article paths stay unchanged in
+  SQLite and DuckDB; old index URLs redirect unless an article owns them (`swr-h3v`).
+- **Guard:** the SQLite app regression renders both “U” and its index, checks section and
+  article links, search/Explore paths, redirects and runtime sitemaps. Full smoke sampling
+  retains every canonical index, including in dark mode.
+
+## Search shortcuts targeted the removed search island (2026-10-10)
+
+- **Symptom:** `/` and Ctrl/⌘+K did nothing on the search results page. On a phone, the
+  shortcut tried to focus the hidden desktop-header input.
+- **Cause:** `src/page.ts` still looked for the old island's input and the header input,
+  while server-rendered search uses `#search-q` and omits the header form.
+- **Fix:** focus the visible results-page or header input; on a phone, navigate to
+  `/search/#search-q` so the browser focuses the input on arrival. Inspect the original
+  event target across shadow roots before treating a typed slash as a shortcut (`swr-1ax`).
+- **Guard:** unit tests cover the results input, hidden header and typing guards. Browser
+  smoke checks `/`, Ctrl+K and ⌘+K at desktop and 360px widths, and phone navigation focus.
+
 ## The API container crashed on a chunk its image didn't copy (2026-10-09)
 
 - **Symptom:** `pnpm docker:run` never came up: the API container restarted in a loop with

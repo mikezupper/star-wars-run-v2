@@ -1,6 +1,6 @@
 // Ask the archive's pipeline (ADR 0009, 0010): a question in, an answer out, each step reported
 // as it happens. It runs on the server (src/server/ask.ts); the outside world (the model, the
-// title index, the database, the schema) comes in as functions, so tests and pnpm ask:eval can
+// name lookup, the database, the schema) comes in as functions, so tests and pnpm ask:eval can
 // give it their own. The prompts and checks are in ask.ts.
 import {
   asPlan,

@@ -64,7 +64,7 @@ export const CACHE = {
   /** The service worker must be rechecked on every load, or a deploy never reaches visitors. */
   serviceWorker: 'no-cache',
   /**
-   * Pages, Pagefind's entry files, the manifest, the sitemaps. Pages change only with a deploy,
+   * Pages, search results, the manifest and sitemaps. Content changes with new data or code,
    * which purges Cloudflare's cache (ADR 0011): Cloudflare may keep them a week, and serve a
    * stale copy while it refetches or while the app is down.
    */
@@ -149,8 +149,8 @@ ${security('\t')}
 \t}
 \theader @private >Cache-Control ${quote(CACHE.api)}
 
-\t# A file in /srv is served from disk: assets, icons, the sitemaps, the search indexes, the
-\t# service worker. Everything else goes to the app container, at API (ADRs 0010, 0011): every
+\t# A file in /srv is served from disk: assets, icons, the manifest and service worker.
+\t# Everything else goes to the app container, at API (ADRs 0010, 0011): every
 \t# page, rendered on request, and /api/, whose Ask answers stream as server-sent events, so
 \t# nothing is buffered. Unset, it goes nowhere.
 \t@static {

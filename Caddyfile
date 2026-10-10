@@ -38,8 +38,8 @@
 	}
 	header @private >Cache-Control "no-store"
 
-	# A file in /srv is served from disk: assets, icons, the sitemaps, the search indexes, the
-	# service worker. Everything else goes to the app container, at API (ADRs 0010, 0011): every
+	# A file in /srv is served from disk: assets, icons, the manifest and service worker.
+	# Everything else goes to the app container, at API (ADRs 0010, 0011): every
 	# page, rendered on request, and /api/, whose Ask answers stream as server-sent events, so
 	# nothing is buffered. Unset, it goes nowhere.
 	@static {

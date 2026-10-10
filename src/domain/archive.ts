@@ -36,7 +36,9 @@ export interface Archive {
 }
 
 export const sectionPath = (section: Section): string => `/${section}/`;
-export const letterPath = (section: Section, letter: string): string => `/${section}/${letter}/`;
+/** A separate namespace keeps indexes distinct from articles named A, U, M and so on. */
+export const letterPath = (section: Section, letter: string): string =>
+  `/${section}/letters/${letter}/`;
 
 /** The list letter for a slug: its first letter, or `0` for digits and symbols. */
 export const letterOf = (slug: string): string => (/^[a-z]/.test(slug) ? slug.charAt(0) : '0');

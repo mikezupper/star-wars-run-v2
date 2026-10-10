@@ -1,5 +1,5 @@
 // The route table and the request handler: one function renders every page, and it serves
-// both the dev server (per request) and the build (prerendered to files). Pages come from the
+// both the dev server and the app; the build uses its paths for sitemaps. Pages come from the
 // Wookieepedia archive (ADR 0008).
 import { html, type ChildValue } from '@gyral/core';
 import { renderPage } from '@gyral/ssr';
@@ -36,8 +36,10 @@ interface Route {
 }
 
 export interface Site {
-  /** Every page, for the prerender step. */
+  /** Every page the app can render. */
   readonly paths: readonly string[];
+  /** Old letter URLs redirect unless an article owns that path. */
+  readonly redirects: ReadonlyMap<string, string>;
   /** The indexable pages (no `noindex`), for the sitemap. */
   readonly sitemapPaths: readonly string[];
   /** A full page Response for a GET; unknown paths get the 404 page. */
@@ -73,6 +75,7 @@ export const notFoundPage = (assets: Assets): Promise<string> =>
   renderPage(layout(notFoundMeta, notFoundBody(), assets)).text();
 
 export function createSite(assets: Assets, { archive, articles, links, search }: SiteData): Site {
+  const redirects = new Map<string, string>();
   const table = new Map<string, Route>([
     ['/', { meta: homeMeta, body: () => homeBody(archive, links) }],
     [searchMeta.path, { meta: searchMeta, body: (url) => searchBody(url, search) }],
@@ -88,6 +91,7 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
     table.set(meta.path, { meta, body: () => sectionBody(section, letters, archive, links) });
     for (const [letter, inLetter] of letters) {
       const lm = letterMeta(section, letter, inLetter.length);
+      redirects.set(`/${section}/${letter}/`, lm.path);
       table.set(lm.path, {
         meta: lm,
         body: () => letterBody(section, letter, inLetter, archive, links),
@@ -95,6 +99,7 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
     }
     for (const entry of entries) {
       if (!articles.has(entry.title)) continue;
+      redirects.delete(entry.path);
       // The record is read when the page renders, not here: a store that reads from disk
       // (ADR 0011) then touches one article per request, not all of them at start.
       table.set(entry.path, {
@@ -112,21 +117,31 @@ export function createSite(assets: Assets, { archive, articles, links, search }:
 
   return {
     paths: [...table.keys()],
+    redirects,
     sitemapPaths: [...table].filter(([, r]) => r.meta.noindex !== true).map(([path]) => path),
     notFound,
     async fetch(request) {
-      if (normalise(new URL(request.url).pathname) === RANDOM_PATH) {
+      const url = new URL(request.url);
+      const path = normalise(url.pathname);
+      if (path === RANDOM_PATH) {
         const pick = everything[Math.floor(Math.random() * everything.length)];
         return new Response(null, {
           status: 302,
           headers: { location: pick?.path ?? '/', 'cache-control': 'no-store' },
         });
       }
-      const route = table.get(normalise(new URL(request.url).pathname));
+      const redirect = redirects.get(path);
+      if (redirect !== undefined) {
+        return new Response(null, {
+          status: 308,
+          headers: { location: `${redirect}${url.search}` },
+        });
+      }
+      const route = table.get(path);
       if (route === undefined) {
         return new Response(await notFound(), { status: 404, headers: HTML });
       }
-      return renderPage(layout(route.meta, route.body(new URL(request.url)), assets), {
+      return renderPage(layout(route.meta, route.body(url), assets), {
         headers: HTML,
       });
     },

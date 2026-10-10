@@ -19,9 +19,9 @@ Verify the copied files from this directory with `sha256sum -c SHA256SUMS`.
 For API changes, read the
 [0.3.0 to 0.3.1 upgrade guide](../docs/references/gyral/migrating-0-3-0-to-0-3-1.md).
 
-**Removing them** once stable 0.3.1 is on npm:
+**Removing them** once the official 0.3.1 release is on npm:
 
-1. In `package.json`, set every `@gyral/*` dependency to `^0.3.1` and drop their
+1. In `package.json`, pin every `@gyral/*` dependency to `0.3.1` and drop their
    `pnpm.overrides` entries.
 2. Delete `vendor/`, and its `COPY` lines in the Dockerfile.
 3. `pnpm install`, then `pnpm check`.

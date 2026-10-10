@@ -1,9 +1,9 @@
 // Ask the archive (swr-ei6): a plain-English question becomes one read-only SQL query over
 // Explore's tables, and its rows become a short answer. An OpenAI-compatible model does the
 // language; everything it's given and everything it returns passes through here. Pure: the
-// island (src/islands/ask.ts) does the calls, the title lookups and the query.
+// server pipeline (src/domain/ask-pipeline.ts) does the calls, name lookups and query.
 //
-// The steps: plan (which names does the question mention?), resolve (the title index turns
+// The steps: plan (which names does the question mention?), resolve (SQLite search turns
 // "the rebels" into "Alliance to Restore the Republic"), write SQL (with those exact titles),
 // check and run it, summarize the rows.
 import type { ArchiveRow, FactRow } from './rows.js';
@@ -17,7 +17,7 @@ export interface Message {
 
 /**
  * What each section holds, most common first, written by the build from the data
- * (dist/data/ask-schema.json): its infobox kinds (archive.kind) and its facts' fields.
+ * (dist-api/ask-schema.json): its infobox kinds (archive.kind) and its facts' fields.
  */
 export interface AskSchema {
   readonly kinds: Readonly<Partial<Record<Section, readonly string[]>>>;

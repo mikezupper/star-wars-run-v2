@@ -13,17 +13,39 @@ afterEach(() => {
   vi.resetModules();
 });
 
-async function setup(box: { focus: () => void; select: () => void } | null) {
+async function setup(
+  box: { focus: () => void; select: () => void } | null,
+  {
+    id = '#site-search-q',
+    visible = true,
+    link,
+  }: {
+    id?: string;
+    visible?: boolean;
+    link?: { href: string };
+  } = {},
+) {
   let listener: ((event: unknown) => void) | undefined;
   vi.stubGlobal('HTMLElement', FakeElement);
   vi.stubGlobal('document', {
     addEventListener: (_type: string, fn: (event: unknown) => void) => (listener = fn),
-    querySelector: (selector: string) => (selector === '#site-search-q' ? box : null),
+    querySelector: (selector: string) =>
+      selector === id && box !== null
+        ? { ...box, getClientRects: () => (visible ? [{}] : []) }
+        : selector === 'header > a[href="/search/"]'
+          ? (link ?? null)
+          : null,
     querySelectorAll: () => [],
   });
   await import('../../src/page.js');
   return (key: string, init: object = {}) => {
-    const event = { key, target: new FakeElement('BODY'), preventDefault: vi.fn(), ...init };
+    const event = {
+      key,
+      target: new FakeElement('BODY'),
+      preventDefault: vi.fn(),
+      composedPath: () => [],
+      ...init,
+    };
     listener?.(event);
     return event.preventDefault;
   };
@@ -39,6 +61,28 @@ describe('search shortcut', () => {
     expect(box.focus).toHaveBeenCalledTimes(3);
   });
 
+  it('focuses the server-rendered search page input', async () => {
+    const box = { focus: vi.fn(), select: vi.fn() };
+    const press = await setup(box, { id: '#search-q' });
+    expect(press('/')).toHaveBeenCalled();
+    expect(press('k', { ctrlKey: true })).toHaveBeenCalled();
+    expect(box.focus).toHaveBeenCalledTimes(2);
+    expect(box.select).toHaveBeenCalledTimes(2);
+  });
+
+  it('opens the search page from the phone header instead of focusing its hidden input', async () => {
+    const assign = vi.fn();
+    vi.stubGlobal('window', { location: { assign } });
+    const box = { focus: vi.fn(), select: vi.fn() };
+    const press = await setup(box, {
+      visible: false,
+      link: { href: 'https://starwars.run/search/' },
+    });
+    expect(press('/')).toHaveBeenCalled();
+    expect(assign).toHaveBeenCalledWith('https://starwars.run/search/#search-q');
+    expect(box.focus).not.toHaveBeenCalled();
+  });
+
   it('leaves other keys, typing in a field, and modified keys alone', async () => {
     const box = { focus: vi.fn(), select: vi.fn() };
     const press = await setup(box);
@@ -46,6 +90,7 @@ describe('search shortcut', () => {
     press('k');
     press('/', { target: new FakeElement('INPUT') });
     press('/', { target: new FakeElement('DIV', true) });
+    press('/', { composedPath: () => [new FakeElement('INPUT')] });
     press('/', { altKey: true });
     press('/', { defaultPrevented: true });
     expect(box.focus).not.toHaveBeenCalled();

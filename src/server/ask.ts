@@ -1,5 +1,5 @@
 // Ask the archive on the server (ADR 0010): runs the pipeline (src/domain/ask-pipeline.ts) with
-// the real outside world (the model with the server's key, the title index, the locked-down
+// the real outside world (the model with the server's key, SQLite search, the locked-down
 // archive) and records how each question went in the question log. A question stops after
 // TIME_LIMIT_MS; a visitor leaving stops it too.
 import type { AskSchema } from '../domain/ask.js';

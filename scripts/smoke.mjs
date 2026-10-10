@@ -3,23 +3,22 @@
 // sample of N: see samplePaths), /search/ and the 404 page:
 // - status 200 (404 for the 404 page), and no console errors or page errors;
 // - axe finds no violations: every page in light; in dark, home, every list page, the first
-//   two records of each kind, search and 404 (each kind shares one template and one set of
+//   two articles of each section, search and 404 (articles share one template and one set of
 //   color tokens, so a sample covers the dark palette);
 // - no horizontal overflow at phone width (360px);
 // - every internal link resolves;
-// - search (docs/product-specs/search.md): the header form and the `/` key reach /search/,
-//   each query finds its expected pages in the top five, the kind filter filters, arrows and
-//   Escape work, the island hydrates in place (one copy), and without JavaScript the page
-//   offers the section links instead;
+// - search (docs/product-specs/search.md): the header form and keyboard shortcuts reach search,
+//   each query finds its expected pages in the top five, the section filter filters, and the
+//   results render without JavaScript; /api/search returns the same ranked, cached matches;
 // - offline (docs/product-specs/offline.md): the manifest is valid with 192px and 512px icons;
-//   once the service worker controls the page, a visited page, a search made before, and the offline
-//   page for an unvisited record all work with the network off;
-// - Explore (swr-7f1.7): DuckDB-WASM starts under the CSP and answers a question from the
-//   archive's database, with names linking to their pages; Ask the archive (swr-ei6) answers a
-//   question with the model stubbed, passes axe, and says so when the model is down;
+//   once the service worker controls the page, a visited article works with the network off;
+//   an unvisited article and a new search show the offline page;
+// - Explore posts SQL to the server and links the returned names; Ask answers through the
+//   API with the model stubbed, gives immediate progress, passes axe, and reports an outage.
+//   With SMOKE_BASE_URL, Ask uses that server's real model and the staged outage is skipped;
 // - page-to-page view transitions run, and pages point browsers at the hover-to-fetch rules;
 // - the dev server (`pnpm dev`): home, a record page and search work, with no console errors
-//   (it serves the search index from dist/, see docs/lessons-learned.md). Skipped when
+//   (search and Explore read the full dist-api/ databases). Skipped when
 //   SMOKE_BASE_URL points at another server.
 // Report: .smoke/report.md. Exit 1 on any failure. Adapted from gyral.dev's scripts/smoke.mjs.
 import { spawn } from 'node:child_process';
@@ -85,7 +84,7 @@ function samplePaths(all, limit) {
   if (!(all.length > limit)) return all;
   const always = new Set(SEARCHES.flatMap(([, expected]) => expected));
   const isList = (p) =>
-    p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/[a-z0-9]\/$/.test(p);
+    p.split('/').filter(Boolean).length < 2 || /^\/[a-z-]+\/letters\/[a-z0-9]\/$/.test(p);
   const kept = all.filter((p) => isList(p) || always.has(p));
   const keptSet = new Set(kept);
   const rest = all.filter((p) => !keptSet.has(p));
@@ -130,12 +129,14 @@ try {
   model.close();
 }
 
-/** Home, list pages, search, 404, and the first two records of each kind. */
+/** Home, list pages, search, 404, and the first two articles of each section. */
 function darkSample(path) {
   const parts = path.split('/').filter(Boolean);
-  if (parts.length < 2) return true;
-  const ofKind = paths.filter((p) => p.startsWith(`/${parts[0]}/`) && p !== `/${parts[0]}/`);
-  return ofKind.indexOf(path) < 2;
+  if (parts.length < 2 || parts[1] === 'letters') return true;
+  const articles = paths.filter(
+    (p) => p.startsWith(`/${parts[0]}/`) && p.split('/').filter(Boolean).length === 2,
+  );
+  return articles.indexOf(path) < 2;
 }
 
 async function pool(items, size, work) {
@@ -266,6 +267,34 @@ async function checkSearch() {
       fail(where, `/api/search?q=vader → ${JSON.stringify(found.results?.[0])}`);
     if (!(api.headers.get('cache-control') ?? '').includes('s-maxage'))
       fail(where, `/api/search isn't cacheable: ${String(api.headers.get('cache-control'))}`);
+
+    // The SSR page has its own input, and the narrow header offers only a link (swr-1ax).
+    for (const width of [1280, 360]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`${base}/search/?q=luke`, { waitUntil: 'networkidle' });
+      const input = page.locator('#search-q');
+      for (const key of ['/', 'Control+k', 'Meta+k']) {
+        await input.fill('luke');
+        await page.locator('h1').click();
+        await page.keyboard.press(key);
+        if ((await page.evaluate(() => document.activeElement?.id)) !== 'search-q')
+          fail(where, `${key} did not focus the search page input at ${String(width)}px`);
+        await page.keyboard.type('sky');
+        if ((await input.inputValue()) !== 'sky')
+          fail(where, `${key} did not select the previous query at ${String(width)}px`);
+      }
+      await input.fill('luke');
+      await input.press('End');
+      await input.press('/');
+      if ((await input.inputValue()) !== 'luke/')
+        fail(where, `typing / triggered the shortcut at ${String(width)}px`);
+    }
+    await page.goto(`${base}/characters/luke-skywalker/`, { waitUntil: 'networkidle' });
+    await page.keyboard.press('/');
+    await page.waitForURL('**/search/#search-q');
+    if ((await page.evaluate(() => document.activeElement?.id)) !== 'search-q')
+      fail(where, 'the phone shortcut did not focus search on arrival');
+    await page.setViewportSize({ width: 1280, height: 900 });
 
     // axe with results showing, in both schemes.
     await page.goto(`${base}/search/?q=sky`, { waitUntil: 'networkidle' });
@@ -786,12 +815,12 @@ async function checkHyperspace() {
 
 /** The continuity filter on a letter page hides the other continuity's rows, with CSS alone. */
 async function checkEraFilter() {
-  const where = '/characters/l/ (continuity filter)';
+  const where = '/characters/letters/l/ (continuity filter)';
   const context = await browser.newContext();
   try {
     const page = await context.newPage();
     watch(page, where);
-    await page.goto(`${base}/characters/l/`, { waitUntil: 'networkidle' });
+    await page.goto(`${base}/characters/letters/l/`, { waitUntil: 'networkidle' });
     const visible = (era) => page.locator(`main li[data-era="${era}"]:visible`).count();
     // The labels are what a visitor clicks; the radios inside them are 1 px and hidden.
     const choose = (text) =>

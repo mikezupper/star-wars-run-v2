@@ -1,6 +1,6 @@
 // The document shell every page shares: head, banner with the section nav, footer. Server-only:
 // written with html, so none of it is hydrated and pages without islands ship no
-// JavaScript.
+// framework JavaScript.
 import { html, nothing, svg, type ChildValue } from '@gyral/core';
 import type { PageOptions } from '@gyral/ssr';
 import { sectionPath } from '../domain/archive.js';

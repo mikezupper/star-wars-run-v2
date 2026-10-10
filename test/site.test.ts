@@ -41,7 +41,7 @@ describe('route table', () => {
   it('has home, search, offline, each section with letters, and a page per article', () => {
     expect(site.paths).toContain('/');
     expect(site.paths).toContain('/characters/');
-    expect(site.paths).toContain('/characters/l/');
+    expect(site.paths).toContain('/characters/letters/l/');
     for (const title of Object.values(FIXTURE_TITLES)) expect(site.paths).toContain(pathOf(title));
     expect(pathOf('Luke Skywalker')).toBe('/characters/luke-skywalker/');
     expect(pathOf('Luke Skywalker/Legends')).toBe('/characters/luke-skywalker-legends/');
@@ -67,6 +67,13 @@ describe('route table', () => {
     expect(body).toContain('<meta name="robots" content="noindex">');
     expect(body).toContain(`Page not found · ${SITE_NAME}`);
     expect(await site.notFound()).toContain('Page not found');
+  });
+
+  it('redirects old letter links in development, preserving the query', async () => {
+    const response = await get('/characters/l/?q=luke');
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe('/characters/letters/l/?q=luke');
+    expect(site.paths).not.toContain('/characters/l/');
   });
 });
 
@@ -294,8 +301,8 @@ describe('article pages', () => {
 describe('section and letter pages', () => {
   it('list letters with counts, and each letter its articles, Legends marked', () => {
     const characters = pages.get('/characters/') ?? '';
-    expect(characters).toContain('<a href="/characters/l/">L</a>');
-    const l = pages.get('/characters/l/') ?? '';
+    expect(characters).toContain('<a href="/characters/letters/l/">L</a>');
+    const l = pages.get('/characters/letters/l/') ?? '';
     expect(l).toContain(`<a href="${pathOf('Luke Skywalker')}">Luke Skywalker</a>`);
     expect(l).toMatch(/Luke Skywalker <small>Legends<\/small>/);
     expect(pages.get('/')).toContain('<a href="/characters/">Characters</a>');
@@ -308,12 +315,12 @@ describe('section and letter pages', () => {
       /<li data-era="both">\s*<a href="\/characters\/luke-skywalker\/">Luke Skywalker<\/a>/,
     );
     expect(ranking.match(/>Luke Skywalker</g)).toHaveLength(1);
-    const l = pages.get('/characters/l/') ?? '';
+    const l = pages.get('/characters/letters/l/') ?? '';
     expect(l).toMatch(/<li data-era="legends">\s*<a href="\/characters\/luke-skywalker-legends\/"/);
   });
 
   it('offer a continuity filter that needs no script, and list the section’s kinds', () => {
-    for (const path of ['/characters/', '/characters/l/']) {
+    for (const path of ['/characters/', '/characters/letters/l/']) {
       const page = pages.get(path) ?? '';
       expect(page, path).toContain('<fieldset data-era-filter>');
       expect(page.match(/<input type="radio" name="era"/g), path).toHaveLength(3);

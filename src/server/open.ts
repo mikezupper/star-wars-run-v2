@@ -1,6 +1,6 @@
 // Opens the app (ADRs 0010 and 0011) from where its data is and the environment: the archive
 // database, Ask's schema and the pages' file (written by the build outside the public site), the
-// title index, the question log's file, and the model's settings. /api/ goes to the API; with a
+// SQLite search indexes, the question log's file, and the model's settings. /api/ goes to the API; with a
 // pages file, every other path is a page rendered on request. Used by the app container
 // (scripts/api.ts) and by the preview server; the dev server renders pages itself.
 import { existsSync } from 'node:fs';

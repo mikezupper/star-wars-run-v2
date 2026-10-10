@@ -5,10 +5,25 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CACHE } from '../../src/hosting/headers.js';
 import { createPagesApp } from '../../src/server/app.js';
 import { openPages, writePages, type Pages } from '../../src/server/pages.js';
+import { buildArchive } from '../../src/domain/archive.js';
+import type { ArticleRecord } from '../../src/domain/article.js';
+import { exploreRows } from '../../src/domain/rows.js';
 import type { Section } from '../../src/domain/sections.js';
 import { fixtureSiteData } from '../fixtures/archive.js';
 
-const data = fixtureSiteData();
+const fixture = fixtureSiteData();
+const articles = new Map(fixture.articles);
+for (const title of ['U', 'Unknown pilot']) {
+  const article: ArticleRecord = {
+    title,
+    era: 'canon',
+    kind: 'Character',
+    fields: [],
+    lead: [[{ text: `This is the article about ${title}.` }]],
+  };
+  articles.set(title, article);
+}
+const data = { ...fixture, articles, archive: buildArchive(articles.values()) };
 const assets = {
   stylesheet: '/assets/site.css',
   clientEntry: '/assets/e.js',
@@ -85,6 +100,39 @@ describe('pages rendered on request', () => {
     expect(res.headers.get('location')).toBe('/characters/luke-skywalker/?x=1');
   });
 
+  it('redirect old letter URLs only when an article does not own them', async () => {
+    for (const path of ['/characters/l/', '/characters/l']) {
+      const moved = await get(`${path}?q=luke`);
+      expect(moved.status).toBe(308);
+      expect(moved.headers.get('location')).toBe('/characters/letters/l/?q=luke');
+      expect(moved.headers.get('cache-control')).toBe(CACHE.pages);
+    }
+    expect((await get('/characters/letters/l')).headers.get('location')).toBe(
+      '/characters/letters/l/',
+    );
+    expect((await get('/characters/q/')).status).toBe(404);
+  });
+
+  it('keep a single-letter article and its index distinct in existing SQLite data', async () => {
+    const article = await get('/characters/u/');
+    expect(article.status).toBe(200);
+    const body = await article.text();
+    expect(body).toContain('This is the article about U.');
+    expect(body).toContain('href="/characters/letters/u/"');
+    const index = await get('/characters/letters/u/');
+    expect(index.status).toBe(200);
+    const listing = await index.text();
+    expect(listing).toContain('aria-labelledby="a-to-z"');
+    expect(listing).toContain('href="/characters/u/"');
+    expect(listing).toContain('href="/characters/unknown-pilot/"');
+    expect(await (await get('/characters/')).text()).toContain('href="/characters/letters/u/"');
+    expect(pages.search.search('U').results[0]?.path).toBe('/characters/u/');
+    expect(
+      exploreRows(data.archive, data.articles).archive.find((row) => row.title === 'U')?.path,
+    ).toBe('/characters/u/');
+    expect(await (await get('/characters/u', {}, 'HEAD')).text()).toBe('');
+  });
+
   it('answer an unknown path with the 404 page, briefly cached', async () => {
     const res = await get('/no-such-page/');
     expect(res.status).toBe(404);
@@ -156,6 +204,10 @@ describe('pages from data another build wrote (images carry no data, ADR 0003)',
     expect(await (await get('/sitemap-1.xml')).text()).toContain(
       '<loc>https://starwars.run/characters/luke-skywalker/</loc>',
     );
+    const sitemap = await (await get('/sitemap-1.xml')).text();
+    expect(sitemap).toContain('<loc>https://starwars.run/characters/letters/u/</loc>');
+    expect(sitemap).toContain('<loc>https://starwars.run/characters/u/</loc>');
+    expect(sitemap).not.toContain('<loc>https://starwars.run/characters/l/</loc>');
     expect((await get('/sitemap-99.xml')).status).toBe(404);
   });
 });

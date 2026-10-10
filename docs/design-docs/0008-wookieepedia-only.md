@@ -52,7 +52,10 @@ Wookieepedia snapshot holds 227,272 articles, and 257 of swapi's 259 records mat
    Kind names are compared without underscores (`Starship_class` is `StarshipClass`).
 
 4. **Lists are paged by letter.** A section page lists its letters with counts; each letter has
-   its own page (`/characters/l/`). One page of 47,000 characters would be unusable.
+   its own page. Since 2026-10-10 (`swr-h3v`), indexes use `/characters/letters/l/`: the original
+   `/characters/l/` pattern collided with single-letter articles, overwriting eleven indexes
+   in the full archive. Article URLs remain unchanged; an old index URL redirects only when
+   no article owns it. One page of 47,000 characters would be unusable.
 5. **The gate builds a sample.** `pnpm check` prerenders the first articles of each section
    from the real snapshot, so it stays a few minutes long. `pnpm build` builds everything.
    Measuring and tuning the full build is `swr-7f1.6`.
