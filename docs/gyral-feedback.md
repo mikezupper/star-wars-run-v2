@@ -106,6 +106,11 @@ isn't possible yet, the README's install section could also show pnpm's
 `overrides: { "@gyral/core": "$@gyral/core" }`, if that works as it does for npm, to save
 writing seven overrides.
 
+**Update, 2026-10-11.** The official 0.3.1 packages are on npm. Core, ssr and testing now
+install from npm at that exact version, with no tarballs, overrides or Docker copy step.
+The reference docs are refreshed to the release. Removing the old tarballs from Git history
+is a separate step in `swr-7f1.11.7`, subject to the owner's final force-push confirmation.
+
 ### 2. Many breaking prereleases in a short time
 
 **What happened.** Seven prereleases, next.0 to next.6, were packed within 42 hours

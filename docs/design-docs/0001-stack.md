@@ -22,11 +22,10 @@ repo follows.
 - **TypeScript** in strict mode, with `exactOptionalPropertyTypes` and
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
-- **pnpm**, with versions pinned to match gyral.dev. `@gyral/*` is on the 0.3.1-next.9
-  prerelease (2026-10-10), installed from `vendor/` until 0.3.1 is on npm
-  ([vendor/README.md](../../vendor/README.md);
-  `swr-7f1.11.7` switches to npm and removes the tarballs from history). The `lit-html` 3.3.0
-  pin that 0.2 needed went with Lit.
+- **pnpm**, with versions pinned to match gyral.dev. `@gyral/core`, `@gyral/ssr` and
+  `@gyral/testing` use the official 0.3.1 release from npm (2026-10-11). The vendored
+  prerelease tarballs and their overrides are removed. The `lit-html` 3.3.0 pin that 0.2
+  needed went with Lit.
 - **One gate, `pnpm check`:** typecheck, lint, format, tests with coverage, build. A change
   isn't done until it passes.
 - **Coverage of at least 80%** on lines, branches, functions and statements, measured over
@@ -119,3 +118,10 @@ around it. The obsolete range helper is gone.
 The strict CSP and its explicit component-style imports remain. Node tests still omit the
 template-location plugin because its generated fallback branches distort coverage. The
 API bundle still disables code splitting and refuses output beyond `api.mjs`.
+
+## Official Gyral 0.3.1 (`swr-7f1.11.7`, 2026-10-11)
+
+Core, ssr and testing are pinned to 0.3.1 from npm. Their published provenance points to
+Gyral's tagged release commit `a202a3b`; the tarball integrity matches the registry metadata.
+The dependencies no longer need local tarballs, pnpm overrides or a Docker copy step.
+The copied reference docs come from gyral.dev at `6ac30c2`, which uses this release.

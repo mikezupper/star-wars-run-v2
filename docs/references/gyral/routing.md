@@ -33,11 +33,37 @@ export const app = routes({
   pattern. `path` is the route's canonical path, `href(name, params)`: see
   [One URL per page](#one-url-per-page).
 - `app.href('user', { id: 'a b' })` builds `/users/a%20b`.
-- Patterns are literal segments and `:params`, nothing more, so matching behaves the same with
-  the browser's URLPattern and with Gyral's own matcher. One trailing slash is ignored, an empty
+- Patterns support literal segments, required `:params`, optional `:params?` and trailing
+  `:path*` captures, with the same behavior in URLPattern and Gyral's fallback. One trailing slash is ignored, an empty
   segment (`/users//7`) never matches, params are decoded, and the first match in table order
   wins.
 - Matching never touches `window`, so it's safe on a server.
+
+### Optional segments and catch-all routes
+
+```ts
+// src/content-routes.ts
+import { routes } from '@gyral/router';
+
+export const contentRoutes = routes({
+  product: '/products/:id?',
+  docs: '/docs/:path*',
+  notFound: '/:path*',
+});
+
+export const products = contentRoutes.href('product', {}); // /products
+export const guide = contentRoutes.href('docs', { path: ['guide', 'a/b'] });
+// /docs/guide/a%2Fb: an encoded slash stays in one captured segment.
+```
+
+An omitted optional parameter is absent from `params`. A catch-all always returns a readonly
+array, including `[]` when it captures no segments. Catch-all segments must be last, and the
+first matching route wins: put the not-found route last and explicitly return HTTP 404 from
+your server when it matches. Selecting that route alone does not change the response status.
+
+`href` rejects missing required parameters, empty or dot segments, and ambiguous optional
+omissions. For `/:first?/:second?`, `{ second: 'x' }` would match as `{ first: 'x' }`; use a
+literal separator instead. Bare wildcards, regexes and groups are outside the route grammar.
 
 ## Listening to navigation
 

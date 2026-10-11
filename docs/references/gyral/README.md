@@ -1,10 +1,10 @@
 # Gyral docs (vendored)
 
-Gyral is new (0.3.1 prerelease, October 2026), so no model has seen it in training. Read these pages
+Gyral is new (0.3.1, October 2026), so no model has seen it in training. Read these pages
 before writing or changing Gyral code. Don't guess the API from Lit or Cycle.js.
 
 **Source:** `content/docs/` in the gyral.dev repo (`../../gyral.dev` next to this checkout),
-commit `8f5a247` (the 0.3.1-next.9 docs), copied 2026-10-10. **Don't edit these files.** To refresh them, copy the
+commit `6ac30c2` (the official 0.3.1 docs), copied 2026-10-11. **Don't edit these files.** To refresh them, copy the
 directory again and update the commit here.
 
 Links inside the pages are gyral.dev site paths (`/docs/views/`), not repo paths. The page
@@ -29,8 +29,13 @@ type declarations instead: `node_modules/@gyral/<package>/dist/*.d.ts`.
 | Loading an island only when needed                                  | [code-splitting.md](code-splitting.md)                                                                 |
 | Gyral inside other frameworks, or other web components inside Gyral | [other-frameworks.md](other-frameworks.md), [third-party-components.md](third-party-components.md)     |
 | Styling components                                                  | [styling.md](styling.md)                                                                               |
+| Accessibility and browser support                                   | [accessibility.md](accessibility.md), [browser-support.md](browser-support.md)                         |
+| Browser storage                                                     | [browser-storage.md](browser-storage.md)                                                               |
+| Streams and form-associated components                              | [network-streams.md](network-streams.md), [form-associated.md](form-associated.md)                     |
+| Security, performance and release guarantees                        | [security.md](security.md), [performance.md](performance.md), [versioning.md](versioning.md)           |
 | Testing without a DOM (`@gyral/testing`)                            | [testing.md](testing.md)                                                                               |
 | Routing, forms, devtools, package list                              | [routing.md](routing.md), [forms.md](forms.md), [devtools.md](devtools.md), [packages.md](packages.md) |
 | Mapping from this repo's old Cycle.js code                          | [coming-from-cyclejs.md](coming-from-cyclejs.md)                                                       |
+| Moving from Lit                                                     | [coming-from-lit.md](coming-from-lit.md)                                                               |
 | Upgrading from 0.2 (what changed, before and after)                 | [migrating-0-2-to-0-3.md](migrating-0-2-to-0-3.md)                                                     |
 | Upgrading from 0.3.0                                                | [migrating-0-3-0-to-0-3-1.md](migrating-0-3-0-to-0-3-1.md)                                             |

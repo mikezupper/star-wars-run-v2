@@ -12,6 +12,30 @@ browser: feed messages to `update`, look at the state and the commands. What's l
 and the platform, you test in a real browser. `@gyral/testing` covers both, and works with any
 test runner.
 
+## Accessibility checks for your app
+
+Use a browser accessibility scanner alongside component behavior tests. An app-level helper
+can use Playwright and axe directly; `@gyral/testing` does not need to wrap their APIs:
+
+```ts
+// test/accessibility.ts
+import assert from 'node:assert/strict';
+import { AxeBuilder } from '@axe-core/playwright';
+import type { Page } from 'playwright';
+
+export async function expectAccessible(page: Page): Promise<void> {
+  const result = await new AxeBuilder({ page }).analyze();
+  assert.deepEqual(result.violations, []);
+}
+```
+
+Install `@axe-core/playwright` and `playwright` as development dependencies. Navigate to a
+built page, wait for its application-ready condition, then call the helper. Scan meaningful
+states such as invalid forms and open dialogs in both color schemes. Axe traverses open
+shadow roots; keep those components mounted during the scan. The platform spike checks that
+its shadow-root button is actually scanned. See [Accessibility](/docs/accessibility/) for
+keyboard, focus and screen-reader checks that an automated scan cannot replace.
+
 ```sh
 npm install -D @gyral/testing vitest
 ```

@@ -239,3 +239,59 @@ component is live:
 
 with `Hydrated: (s) => ({ ...s, live: true })` in `update`. No-JavaScript visitors still get
 native validation, and every JavaScript submit reaches `form()`.
+
+## File uploads
+
+For a custom element that submits a native form value, see
+[Custom form controls](/docs/form-associated/).
+
+Use a native file input and keep the raw `FormData` from the parsed submit. This sends the
+file bytes instead of converting them to JSON:
+
+```ts
+// src/photo-upload.ts
+import { define, defineForm, form, html } from '@gyral/core';
+import { submitForm } from '@gyral/http';
+import * as v from 'valibot';
+
+const PhotoForm = defineForm(v.object({ photo: v.instance(File) }));
+type State = { readonly status: string };
+type Msg =
+  | { readonly _tag: 'Submit'; readonly data: FormData }
+  | { readonly _tag: 'Uploaded' }
+  | { readonly _tag: 'Failed' };
+
+export const PhotoUpload = define<State, Msg>()('photo-upload', {
+  init: () => ({ status: 'Choose a photo.' }),
+  intent: { Submit: form(PhotoForm, (_data, raw) => ({ _tag: 'Submit', data: raw })) },
+  update: {
+    Submit: (_s, m) => [
+      { status: 'Uploading…' },
+      [
+        submitForm('/photos', m.data, {
+          onSuccess: (): Msg => ({ _tag: 'Uploaded' }),
+          onFailure: (): Msg => ({ _tag: 'Failed' }),
+        }),
+      ],
+    ],
+    Uploaded: () => ({ status: 'Photo uploaded.' }),
+    Failed: () => ({ status: 'Upload failed. Try again.' }),
+    IntentRejected: () => ({ status: 'Choose a photo before uploading.' }),
+  },
+  view: (s, i) => html`
+    <form action="/photos" method="post" enctype="multipart/form-data" data-intent=${i.Submit}>
+      <label for="photo">Photo</label>
+      <input id="photo" name="photo" type="file" accept="image/*" required />
+      <button type="submit">Upload</button>
+      <output aria-live="polite">${s.status}</output>
+    </form>
+  `,
+});
+```
+
+Do not set `content-type` yourself: the browser adds the multipart boundary. `accept` is a
+picker hint, not server validation. The server must enforce size, count, content and storage
+rules and apply authentication/CSRF checks. The schema above checks only that a file object
+exists; add your application's browser checks and validate again on the server. File inputs
+cannot be restored from a hydration seed or sticky rejected values; keep files in the submit
+boundary, not model state. See [Security](/docs/security/#uploaded-files).

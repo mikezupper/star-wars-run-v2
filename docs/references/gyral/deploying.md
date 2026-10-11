@@ -225,12 +225,21 @@ How far each one is tested today:
 
 - **Bun**: `renderPage` with Declarative Shadow DOM output and `contentSecurityPolicy()` were
   checked by hand on Bun 1.3.14 with Gyral 0.3. It isn't part of Gyral's CI.
-- **Deno and Cloudflare Workers**: not tested yet. The renderer uses no Node-only APIs (it
-  hashes in plain JavaScript and has no DOM shim), but check it there before you rely on it.
+- **Deno 2.9.6**: the same self-contained SSR bundle passes native stream chunking,
+  declarative shadow roots, slotted content, request-store isolation, CSP and cancellation
+  checks without a DOM shim or runtime permissions.
+- **Cloudflare Workers**: those checks pass in local workerd through Wrangler 4.147.0, with
+  compatibility date `2025-01-01` and no `nodejs_compat` flag. This verifies the local runtime;
+  deployed bindings, asset hosting and edge behavior still need your application's checks.
 - **`@gyral/ssr/static`** (`prerender`, `productionServer`, `assetHandler`) reads and writes
   files with `node:fs`. Use it in Node at build time; on an edge runtime, serve the static files
   from the platform's asset hosting instead. **`@gyral/ssr/node`** is for Node's `http` module
   only; the runtimes above take `app.fetch` directly.
+
+Run the networked `pnpm verify:platforms` in the framework repository to reproduce the Deno
+and workerd checks. The
+[spike report](https://github.com/gyraljs/gyral/blob/next/docs/references/platform-spikes-2026-10-11.md)
+describes the tested boundary.
 
 ## Cache headers
 

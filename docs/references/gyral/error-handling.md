@@ -240,3 +240,31 @@ it('shows the error state when the orders fail to load', async () => {
 ```
 
 In a model test, `step()` accepts `Errored`, so you can test that reducer without a DOM.
+
+## Debugging a failure
+
+Start with the production diagnostic code, for example `Gyral G0010`. The
+[diagnostics reference](/errors/) expands it into the cause and a suggested fix. A development
+build includes the explanation; the [devtools panel](/docs/devtools/) shows the message,
+previous/next state, component and command lane around the failure. Inspect the underlying
+`GyralError.cause` without putting private user data into shared logs.
+
+Distinguish three outcomes:
+
+- A parser returning `undefined` ignores an event; no message reaches the reducer.
+- A schema failure in `form()` or `field()` produces `IntentRejected`, which belongs in your
+  validation UI. It is expected invalid input, not a thrown defect.
+- A parser, reducer, view, hook or command mapper throwing uses the error channel described
+  above. A planned driver failure with `onFailure` instead becomes its typed message.
+
+On the server, `onError(error)` observes component failures. Without a throwing policy, a
+failed component can render its fallback while the page continues. `onError: 'throw'` makes
+the render fail before returning the response; chunked output cannot change an HTTP status
+after bytes have been sent. See [Server rendering](/docs/server-rendering/).
+
+For a hydration mismatch, reproduce with the production build and the exact server/client
+assets. Check stale HTML, unseeded current time, locale differences, invalid parser-repaired
+markup, and third-party changes before scripts arrive. Use `mountSsr()` and `hydrated()` to
+exercise real server markup; they report mounting/hydration problems. Keep a small failing
+test before changing the implementation. See [Testing](/docs/testing/),
+[Security](/docs/security/) and [Versioning](/docs/versioning/).

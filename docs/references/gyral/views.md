@@ -450,6 +450,12 @@ own. `?modal=${s.open}` on a `<dialog>` calls `showModal()` when the value turns
 when a modal closes. Escape and form `method="dialog"` close the dialog on their own, so listen
 for that with an intent and keep the model in step:
 
+Native opening runs after the element is inserted and its children render, before focus
+commands. Conditional views, keyed replacements and initially open components follow the
+same order. An opening action is cancelled if its element is removed before commit. If native
+opening triggers a focus intent, Gyral renders that intent's new state before running focus
+commands or resolving `settled()`.
+
 ```ts
 // src/confirm-delete.ts
 import { define, html } from '@gyral/core';

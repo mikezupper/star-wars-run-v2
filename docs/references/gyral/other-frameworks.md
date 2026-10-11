@@ -159,9 +159,10 @@ export function SizePicker({ onPick }: { onPick: (id: string) => void }) {
 TypeScript needs to know the tag in JSX; declare it in React's `JSX.IntrinsicElements`
 (`declare module 'react' { namespace JSX { interface IntrinsicElements { 'my-picker': … } } }`).
 
-Not yet tested by Gyral: React's own `on…` props for custom events with `gyral-output`, and
-server-rendering Gyral components inside a React server render. The `ref` approach above uses
-only the DOM.
+The client spike verifies React 19.2.8 assigning array properties, updating them and hearing
+`gyral-output` with an exact-case `'ongyral-output'` handler passed to `createElement`.
+The `ref` approach above also uses the DOM directly. React server rendering is outside that
+check; see the server-rendering boundary below.
 
 ## Vue
 
@@ -186,13 +187,22 @@ Then bind properties with `.prop` (or `:items` once the element is defined) and 
 <my-picker label="Choose a size" :items.prop="['S', 'M', 'L']" @gyral-output="onPick" />
 ```
 
-Not yet tested by Gyral; this follows Vue's custom elements guide.
+The client spike verifies Vue 3.5.43 with `isCustomElement`, `.prop`, property updates and
+`@gyral-output`.
 
 ## Svelte
 
 Svelte sets a value as a property when the element defines that property, so import the
 component's module before the markup renders. For outputs, listen on the element with
-`addEventListener` in an effect, as in the React example. Not yet tested by Gyral.
+`addEventListener` in an effect, as in the React example. The client spike verifies Svelte
+5.57.2 assigning and updating array properties and hearing outputs with an effect listener.
+
+These checks run in real Chromium against Gyral's `next` implementation with
+`pnpm verify:platforms` in the framework repository. They install pinned host packages in a
+temporary directory, leaving Gyral's runtime dependency graph unchanged. They cover client
+mounts, not each host's SSR/hydration integration. The
+[spike report](https://github.com/gyraljs/gyral/blob/next/docs/references/platform-spikes-2026-10-11.md)
+records the fixtures and limits.
 
 ## Server rendering in another framework
 

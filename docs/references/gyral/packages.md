@@ -22,6 +22,10 @@ number, are ES modules with TypeScript types, and are published from GitHub Acti
 npm install @gyral/core
 ```
 
+`@gyral/core/storage` and `@gyral/core/indexeddb` are optional entry points in the same
+package. They provide separate native [localStorage and IndexedDB drivers](/docs/browser-storage/).
+Apps that do not import them carry no storage driver code.
+
 ## Optional packages
 
 | Package           | What it gives you                                                                                                                                                                                                                                    |
@@ -59,6 +63,10 @@ including ones built with Lit; install that library yourself if you use it. Upgr
 [from 0.3.0 to 0.3.1](/docs/migrating-0-3-0-to-0-3-1/).
 
 ## The Vite preset
+
+The same `@gyral/http` installation includes optional `@gyral/http/sse` and
+`@gyral/http/websocket` entries for [native network streams](/docs/network-streams/).
+The fetch entry does not include those transports.
 
 `gyralVitePreset()` from `@gyral/core/vite` holds the settings every Gyral app needs:
 
