@@ -1,35 +1,109 @@
 # Gyral feedback from starwars.run
 
-For the Gyral team. Written 2026-10-09, after moving this site from 0.3.1-next.1 to
-0.3.1-next.6 (`swr-6sg`); tracked as `swr-nz9`.
+For the Gyral team. Updated 2026-10-11 for the official npm release of 0.3.1
+(`2137e43`, `swr-7f1.11.7`; feedback review `swr-24u`). The dated reports below preserve
+the results from next.6 and next.9; their API names, application shape and measurements
+describe those versions.
 
 starwars.run has a page for every Wookieepedia article, about 227,000 of them. Pages are
-rendered with Gyral's `html` and `page()` on the server, on request from SQLite (ADR 0011).
-They ship no framework JavaScript, except `/explore/`, which hydrates one island
-(`src/islands/explore.ts`). That island asks questions in plain words and runs SQL, streaming
-the server's steps over server-sent events. We have used Gyral since 0.1, through 0.2 (on
-Lit), 0.3.0 (its own view layer), 0.3.1-next.1 and now next.6.
+rendered with Gyral's `html` and `renderPage()` on the server, on request from SQLite
+(ADR 0011). Search suggestions hydrate a light-DOM island on every page
+(`src/islands/search.ts`). `/explore/` also hydrates a Declarative Shadow DOM island
+(`src/islands/explore.ts`) that asks questions in plain words and runs SQL, streaming the
+server's steps over server-sent events. Automatic component loading selects their client
+modules from rendered tags. We have used Gyral since 0.1, through 0.2 (on Lit), 0.3.0
+(its own view layer), the 0.3.1 prereleases and now official 0.3.1.
 
-So this is one team's view: a large multi-page site with one island. We don't use
+So this is one team's view: a large multi-page site with two islands. We don't use
 `@gyral/router`, stores, forms or `@gyral/http`, and say nothing about them here.
 
-## The short version
+## Official 0.3.1 results (2026-10-11)
 
-Gyral has been a good fit, and it keeps getting better. The release notes are the best we've
-had from any framework, and `tsc` found every API change. What we'd change, most valuable
-first:
+The official release removes our largest distribution problem. Core, ssr and testing now
+install from npm at exactly 0.3.1. The vendor directory, package overrides and Docker copy
+step are gone. We verified package integrity and npm provenance against the
+[v0.3.1 release](https://github.com/gyraljs/gyral/releases/tag/v0.3.1), at Gyral commit
+`a202a3b`, and refreshed the copied reference docs. Moving from next.9 required no further
+application API edits. Publishing future prereleases under `next` would still help, but the
+stable-release installation problem is resolved.
 
-1. **Publish prereleases to npm under a `next` dist-tag.** Vendoring, overrides and a
-   promised history rewrite cost more than any API change has.
-2. **Let the page shell put an inline script before the stylesheets**, and let `HeadMeta`
-   carry extra attributes such as `media`. Write head markers only when something can call
-   `setHead`.
-3. **Fix the template-locations plugin's effect on coverage.** It still costs us 4.4 points of
-   branch coverage on next.6, which fails our gate.
-4. **Add test helpers for parsers and views**, so tests don't need `as unknown as` casts.
-5. **Compute CSP hashes at build time** instead of from whatever modules happen to be imported.
+The migration's `pnpm check` passed: **332 tests in 35 files**, **80.31% branch coverage**,
+the single-file API bundle, the **396-page sample** and Chromium smoke in both themes.
+Smoke exercised accessibility, search suggestions, offline use, Explore, Ask with a fake
+model, transitions and article previews, including focus inside Explore's shadow root.
+A fresh Docker dependency install also passed with the npm packages. The new code-only
+images served the existing **227,272-article** data volume; SQL counts, page routes and
+browser checks passed under the production CSP. These are local checks; this release was
+not evaluated against the live Ask model, and we did not repeat the old full-archive build
+timing or isolate framework-only client size.
 
-## What worked well
+| Earlier concern                                  | Current result                                                                                                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Vendored packages (item 1)                       | Resolved for the stable release. Removing the old tarballs from Git history remains a separate repository task.                |
+| Theme script order and `HeadMeta.media` (item 3) | Resolved since next.9; `headScripts` precedes stylesheets, and both theme-color media values are expressible.                  |
+| Parser context and casts (item 5)                | Resolved by typed `parse()`; Node view rendering still needs helpers.                                                          |
+| Payload-free parsers (item 6)                    | Replaced by `Ask: true`, `StartOver: true` and `EditSql: true`.                                                                |
+| Manual island wiring                             | Replaced by automatic components, now used with both light and shadow DOM. The server still imports its rendered components.   |
+| Custom Node transport                            | Replaced by `toNodeListener()`, `gyralDevServer()` and `assetHandler()`, with application policy and archive caching retained. |
+
+### Remaining framework requests
+
+1. **Coverage-safe template diagnostics.** The official locator still emits
+   `html.at?.(...) ?? html`. Repeating the same 332 tests with the full preset gives
+   **77.05% branch coverage**, compared with **80.31%** when only
+   `gyral:template-locations` is excluded: a **3.26 percentage-point** difference. Every
+   test passes in both runs; only the full preset fails the 80% coverage threshold.
+   The comparison restored `gyralVitePreset().plugins` in an isolated copy of the current
+   Vitest config, leaving source, tests and thresholds unchanged. Keep generated fallback
+   branches out of application coverage, or document a coverage-safe preset. We retain the
+   exclusion in Node tests and source locations in development.
+2. **Build-time hashes for inline component CSS.** `ComponentAssets` lists client modules,
+   preloads and stylesheets, but not inline shadow-style hashes. `styleHashes()` still
+   needs server component registration. Render-time CSP is supported, but our shared policy
+   is generated for Caddy. A build manifest of inline hashes would remove the generator's
+   explicit component imports without changing that hosting policy.
+3. **An opt-out for managed-head markers.** `PageOptions` still has no option to omit
+   `data-gyral-head` from typed metadata. We retain static metadata in `extraHead` because
+   this site never calls `setHead()` in the browser. The theme-script ordering workaround
+   is gone; this request now concerns only unused markers.
+4. **Node view and keyboard test helpers.** `parse()` fixes intent parser calls, but
+   `@gyral/testing` still has no `renderView()`, `stripMarkers()` or keyboard input builder.
+   Explore's direct Node view calls still cast intent names/context, and page assertions
+   strip development comments. Browser mounting covers a different testing need.
+
+### Documentation additions from the implementation
+
+**Production bundles with no client manifest at runtime.** The next.9 packaging workaround
+is still needed on 0.3.1: our API bundles `@gyral/ssr/node`, excludes `vite` to prevent the
+unused dev helper from emitting extra assets, and embeds component metadata before the
+client build's `.vite/` directory is removed. A production recipe covering the single-file
+bundle, serialization of `ComponentAssets.modules` as Map entries, and separate deployment
+of code and data would save other applications this investigation. The existing Node and
+SSR helpers work once this boundary is handled.
+
+**Document-level UI around shadow components.** Article previews use a native popover in the
+document for links both in ordinary pages and in Explore. Document-only event delegation
+missed focus and pointer transitions between children within Explore's shadow root; an
+`aria-describedby` ID also could not refer from its link to the document-level description.
+We now listen within the existing SSR shadow roots and assign `ariaDescribedByElements`,
+which supports references into a parent DOM ([scope rules](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Reflected_attributes#reflected_element_reference_scope)).
+Browser smoke covers those transitions, the description reference, Tab, Escape and the
+close button (`swr-3so`). This is a platform integration lesson from our application. A
+recipe for external popovers, event retargeting and accessible descriptions would help
+users choose between shadow and light DOM; Gyral already provides native popover bindings.
+
+We found no new Gyral runtime regression in the official-package migration. The earlier
+single-island size totals remain historical: today's search island changes what each page
+loads, so comparing the new application bundle to those totals would mix feature growth
+with framework cost.
+
+## Original report — next.6 (2026-10-09)
+
+Written after moving this site from next.1 to next.6 (`swr-6sg`, feedback `swr-nz9`).
+At the time, Explore was the only island, loaded through a manual client entry. The
+following observations and comparisons describe that version.
+
+### What worked well
 
 **Speed and size.** 0.3.0's own view layer was a large step. Measured on the full archive
 (ADR 0001):
@@ -83,11 +157,11 @@ a failing component no longer truncates the page. That is parity with React's er
 boundaries, Solid's `<ErrorBoundary>` and Svelte 5's `<svelte:boundary>`, and better than most
 of them on the server. `renderPage({ onError: 'throw' })` is exactly the switch a route needs.
 
-## Rough edges
+### Rough edges
 
 Each item says what happened, how other frameworks handle it, and what we suggest.
 
-### 1. Prereleases aren't on npm
+#### 1. Prereleases aren't on npm
 
 **What happened.** Gyral isn't on npm yet, so we vendor tarballs in `vendor/`, commit them,
 copy them in the Dockerfile before `pnpm install`, and add a `pnpm.overrides` entry for every
@@ -111,7 +185,7 @@ install from npm at that exact version, with no tarballs, overrides or Docker co
 The reference docs are refreshed to the release. Removing the old tarballs from Git history
 is a separate step in `swr-7f1.11.7`, subject to the owner's final force-push confirmation.
 
-### 2. Many breaking prereleases in a short time
+#### 2. Many breaking prereleases in a short time
 
 **What happened.** Seven prereleases, next.0 to next.6, were packed within 42 hours
 (2026-10-07 17:00 to 2026-10-09 11:15 UTC), five of them in the last 14. They included a
@@ -128,7 +202,7 @@ publishes codemods for each major version. Angular runs migrations on `ng update
 ast-grep script for the two-call `define` and `intents<Msg>()` to `intentsOf<typeof X>()`. And
 batch breaks: one breaking prerelease per week is easier to follow than several in a day.
 
-### 3. The page shell controls head order, and the head model can't express everything
+#### 3. The page shell controls head order, and the head model can't express everything
 
 **What happened.** Moving `page({ head })` to `page({ extraHead })` failed our test that the
 theme script runs before the stylesheet, which prevents a flash of the wrong theme.
@@ -169,7 +243,7 @@ So only the title and description go through `Head`; everything else stays in `e
   `page({ managedHead: false })`, or omit markers when the client bundle has no `setHead`.
   The build already knows which spec features are used.
 
-### 4. The template-locations plugin still breaks coverage
+#### 4. The template-locations plugin still breaks coverage
 
 **What happened.** On next.1, `gyral:template-locations` rewrote each template tag as
 `html.at?.("file:line:col") ?? html`. V8 counts the unused fallback as an uncovered branch in
@@ -187,7 +261,7 @@ the generated expression to no original position, or emit `html.at(…)` without
 call when the plugin knows the development runtime is present. Failing that, skip the plugin
 when Vitest runs with coverage, and say so in the testing docs.
 
-### 5. Testing parsers and views needs casts
+#### 5. Testing parsers and views needs casts
 
 **What happened.** We test the island's parsers directly, for example "Ctrl+Enter runs the
 query, Enter alone doesn't". `spec.intent` isn't typed for direct calls, so the test casts it,
@@ -218,7 +292,7 @@ events. Redux tests call reducers and action creators directly, fully typed.
 - `renderView(Component, state)` that returns markup without development markers, or a
   `stripMarkers(html)` export.
 
-### 6. Intents: boilerplate and loose event types
+#### 6. Intents: boilerplate and loose event types
 
 **What happened.** Three of the island's eight parsers only forward a message with no payload:
 `Ask: () => ({ _tag: 'Ask' })`, `StartOver: () => ({ _tag: 'StartOver' })` and `EditSql`. The
@@ -234,7 +308,7 @@ an `Event`, though the element says `data-intent-on="keydown"`.
 `Run: on('keydown', ({ event }) => …)`, where `event` is a `KeyboardEvent`. ESLint could check
 that the template's `data-intent-on` agrees.
 
-### 7. CSP hashes depend on what has been imported
+#### 7. CSP hashes depend on what has been imported
 
 **What happened.** `styleHashes()` from `@gyral/core/server` knows only the components that
 have registered. `scripts/caddyfile.ts` imports each island for its side effect before asking,
@@ -247,7 +321,7 @@ writes. Astro's CSP support also computes hashes at build time.
 **Suggestion.** Have the Vite preset write the style hashes of every component in the client
 build to a manifest. Then a server can read the manifest instead of depending on import order.
 
-### 8. Size creeps up with features we don't use
+#### 8. Size creeps up with features we don't use
 
 **What happened.** The island's entry chunk grew from 17.52 KB to 18.45 KB gzip between next.1
 and next.6 (+0.93 KB); the hydration chunk went from 2.84 to 2.88 KB. The release notes put
@@ -259,7 +333,7 @@ does this for view transitions, frames and custom states.
 **Suggestion.** The pay-for-what-you-use pass for `spec.error` and `Errored` that the notes
 mention. We'd take it over new features.
 
-### 9. Smaller things
+#### 9. Smaller things
 
 - **Exporting drivers only for tests.** `src/islands/api.ts` exports a `drivers` object only
   so tests can call `inputsFor(commands, drivers.query)`. Matching by driver name
@@ -269,7 +343,7 @@ mention. We'd take it over new features.
   field. An `@gyral/testing` constant such as `hydrated` (the name is taken by the SSR helper)
   would make the common case shorter.
 
-## How the pieces compare
+### How the pieces compare
 
 | Concern                     | Gyral (next.6)                                       | Closest elsewhere                                                       |
 | --------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -285,7 +359,7 @@ mention. We'd take it over new features.
 | Prerelease distribution     | Tarballs, vendored                                   | npm `next` dist-tag everywhere                                          |
 | Migrations between versions | Excellent notes; `tsc` finds every change            | Codemods (Svelte, Next.js, React), `ng update`                          |
 
-## What next.1 to next.6 took
+### What next.1 to next.6 took
 
 For scale, the whole migration on this site:
 
