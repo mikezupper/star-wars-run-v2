@@ -1,7 +1,7 @@
 # Gyral feedback from starwars.run
 
-For the Gyral team. Updated 2026-10-11 for the official npm release of 0.3.1
-(`2137e43`, `swr-7f1.11.7`; feedback review `swr-24u`). The dated reports below preserve
+For the Gyral team. Updated 2026-10-28 for 0.3.7 (`swr-hfr`); the official 0.3.1 review was
+`2137e43` (`swr-7f1.11.7`; feedback review `swr-24u`). The dated reports below preserve
 the results from next.6 and next.9; their API names, application shape and measurements
 describe those versions.
 
@@ -16,6 +16,20 @@ modules from rendered tags. We have used Gyral since 0.1, through 0.2 (on Lit), 
 
 So this is one team's view: a large multi-page site with two islands. We don't use
 `@gyral/router`, stores, forms or `@gyral/http`, and say nothing about them here.
+
+## 0.3.7 results (2026-10-28)
+
+The upgrade from 0.3.1 needed only the three version pins and the lockfile. `pnpm check`
+passed unchanged: **332 tests in 35 files** at **80.31% branch coverage**, the API bundle,
+the **396-page sample** and Chromium smoke in both themes, including search suggestions and
+Explore. One core resolves. 0.3.7's behaviour changes miss this site: the light-DOM search
+island is server-rendered and hydrates its own children in place, neither island starts
+commands from `init`, and our templates already passed rules 15 and 16.
+
+0.3.2's move of the template locator's fallback into a virtual module helps us directly.
+Our Node tests have filtered out the `gyral:template-locations` plugin since next.1, because
+its inline `html.at?.() ?? html` added branches to coverage. With the filter removed on
+0.3.7, the suite passes at 80.45% branch coverage, so the workaround can go (`swr-d8j`).
 
 ## Official 0.3.1 results (2026-10-11)
 

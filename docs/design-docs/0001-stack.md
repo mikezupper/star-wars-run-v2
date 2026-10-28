@@ -23,7 +23,8 @@ repo follows.
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
 - **pnpm**, with versions pinned to match gyral.dev. `@gyral/core`, `@gyral/ssr` and
-  `@gyral/testing` use the official 0.3.1 release from npm (2026-10-11). The vendored
+  `@gyral/testing` use 0.3.7 from npm (2026-10-28; the first official npm release was 0.3.1,
+  on 2026-10-11). The vendored
   prerelease tarballs and their overrides are removed. The `lit-html` 3.3.0 pin that 0.2
   needed went with Lit.
 - **One gate, `pnpm check`:** typecheck, lint, format, tests with coverage, build. A change
@@ -125,3 +126,18 @@ Core, ssr and testing are pinned to 0.3.1 from npm. Their published provenance p
 Gyral's tagged release commit `a202a3b`; the tarball integrity matches the registry metadata.
 The dependencies no longer need local tarballs, pnpm overrides or a Docker copy step.
 The copied reference docs come from gyral.dev at `6ac30c2`, which uses this release.
+
+## Gyral 0.3.7 (`swr-hfr`, 2026-10-28)
+
+Core, ssr and testing moved from 0.3.1 to exactly 0.3.7 from npm, and one copy of core
+resolves. No source or configuration change was needed. 0.3.7 changes three behaviours, and
+none reaches this site. The search island renders in light DOM, but the server renders it
+and hydration keeps its children; only a browser-rendered light component now replaces the
+page's children. Neither island starts work from `init`, so the move of `init`'s commands
+to after the first render changes nothing. No template trips the new rule 16 or 0.3.5's
+rule 15, and no prop uses a newly reserved name. Neither config lists Gyral packages to
+pre-bundle, and nothing imports the removed `@gyral/ssr/hydrate`.
+
+The copied reference docs still come from `6ac30c2` and describe 0.3.1; refreshing them is
+`swr-qpd`. 0.3.2 moved the template locator's fallback out of application code, so the
+Node tests' plugin filter is no longer needed for coverage (`swr-d8j`).
