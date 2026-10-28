@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "@duckdb/node-api": "1.5.6-r.1",
-    "@gyral/core": "0.3.1",
-    "@gyral/ssr": "0.3.1"
+    "@gyral/core": "0.3.7",
+    "@gyral/ssr": "0.3.7"
   },
   "devDependencies": {
     "7zip-bin": "^5.2.0",
@@ -47,7 +47,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/chakra-petch": "^5.3.0",
-    "@gyral/testing": "0.3.1",
+    "@gyral/testing": "0.3.7",
     "@types/node": "24.19.1",
     "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
