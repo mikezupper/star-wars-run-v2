@@ -1,6 +1,7 @@
 ---
 title: Custom form controls
 description: Make a Gyral component participate in native forms, with reset, disabled state, validity and a server-rendered fallback.
+useWhen: writing a custom element that takes part in a native form: value, validity, reset and restore
 section: Guides
 order: 6.5
 ---

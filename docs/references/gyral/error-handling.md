@@ -1,6 +1,7 @@
 ---
 title: Error handling
 description: How Gyral reports each failure once, lets a parent catch a child's failure, shows a component's fallback and keeps a server-rendered page going.
+useWhen: handling a reducer, parser, view or command that throws, or reporting errors to monitoring
 section: Guides
 order: 7.5
 ---
@@ -227,11 +228,11 @@ afterEach(() => collected?.stop());
 it('shows the error state when the orders fail to load', async () => {
   collected = collectErrors();
   const el = new OrderList();
-  el.drivers = {
-    orders: fakeDriver('orders', () => {
+  el.drivers = [
+    fakeDriver('orders', () => {
       throw new Error('down');
     }),
-  };
+  ];
   document.body.append(el);
   await settled();
   expect(collected.errors.map((e) => e.phase)).toEqual(['command']);

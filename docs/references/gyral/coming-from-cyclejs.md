@@ -1,6 +1,7 @@
 ---
 title: Coming from Cycle.js
 description: What Gyral keeps from Cycle.js, what it changes and why, the counter side by side, and how Cycle.js concepts map to Gyral.
+useWhen: you know Cycle.js and want to map its streams, drivers and sources onto Gyral
 section: Background
 order: 1
 ---
@@ -42,6 +43,7 @@ instead of streams.
 Cycle.js, from its examples:
 
 ```js
+// Cycle.js (xstream), not Gyral
 function main(sources) {
   const action$ = xs.merge(
     sources.DOM.select('.decrement')
@@ -103,29 +105,29 @@ The differences, line by line:
 
 ## Mapping Cycle.js concepts
 
-| Cycle.js                                 | Gyral                                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------------------- |
-| `main(sources) → sinks`                  | `define()(tag, { init, intent, update, view })`                                       |
-| `sources.DOM.select(…).events(…)`        | `data-intent` in the view, a parser in `intent`                                       |
-| `fold` / reducer streams                 | `update`, one reducer per message                                                     |
-| The DOM sink                             | `view`                                                                                |
-| Driver sinks (`HTTP`, `history`)         | [Commands](/docs/effects/) returned from `update`                                     |
-| `HTTP.select('category')`                | `onSuccess` / `onFailure` mappers on the command                                      |
-| `flatMapLatest`, `switchMap`, `debounce` | Concurrency lanes: `switch`, `exhaust`, `queue`, `merge`; `debounce()`                |
-| `isolate(Component)`                     | Shadow DOM, automatically                                                             |
-| Props stream into a child                | [Props](/docs/components/#props) and `PropsChanged`                                   |
-| Child sinks merged into the parent       | [Outputs](/docs/components/#child-components-and-outputs) with `emit()` and `child()` |
-| `makeCollection`                         | `each(items, key, row)` with child elements                                           |
-| `@cycle/state`                           | Component state, plus [stores](/docs/stores/) for shared state                        |
-| `@cycle/history`                         | [`@gyral/router`](/docs/routing/)                                                     |
-| `@cycle/time`                            | `@gyral/time`, and `virtualTime()` in tests                                           |
-| `@cycle/html`                            | [`@gyral/ssr`](/docs/server-rendering/)                                               |
-| `mockDOMSource`                          | `step()`, `run()` and fake drivers in [`@gyral/testing`](/docs/testing/)              |
+| Cycle.js                                 | Gyral                                                                                    |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `main(sources) → sinks`                  | `define()(tag, { init, intent, update, view })`                                          |
+| `sources.DOM.select(…).events(…)`        | `data-intent` in the view, a parser in `intent`                                          |
+| `fold` / reducer streams                 | `update`, one reducer per message                                                        |
+| The DOM sink                             | `view`                                                                                   |
+| Driver sinks (`HTTP`, `history`)         | [Commands](/docs/effects/) returned from `update`                                        |
+| `HTTP.select('category')`                | `onSuccess` / `onFailure` mappers on the command                                         |
+| `flatMapLatest`, `switchMap`, `debounce` | Concurrency lanes: `switch`, `exhaust`, `queue`, `merge`; `debounce()`                   |
+| `isolate(Component)`                     | Shadow DOM, automatically                                                                |
+| Props stream into a child                | [Props](/docs/components/#props) and `PropsChanged`                                      |
+| Child sinks merged into the parent       | [Outputs](/docs/components/#child-components-and-outputs) with `outputs()` and `child()` |
+| `makeCollection`                         | `each(items, key, row)` with child elements                                              |
+| `@cycle/state`                           | Component state, plus [stores](/docs/stores/) for shared state                           |
+| `@cycle/history`                         | [`@gyral/router`](/docs/routing/)                                                        |
+| `@cycle/time`                            | `@gyral/time`, and `virtualTime()` in tests                                              |
+| `@cycle/html`                            | [`@gyral/ssr`](/docs/server-rendering/)                                                  |
+| `mockDOMSource`                          | `step()`, `run()` and fake drivers in [`@gyral/testing`](/docs/testing/)                 |
 
 ## The examples, ported
 
-Gyral's acceptance suite is a port of the Cycle.js examples: hello world, the counter, the BMI
-calculators, HTTP search, autocomplete, routing, nested folders, the isomorphic app and more.
+Gyral's acceptance suite is a port of the Cycle.js examples: hello world, the BMI
+calculator, HTTP search, autocomplete, routing, nested folders, the isomorphic app and more.
 Comparing an example in each is the fastest way to see the mapping in practice. See the
 [examples](/examples/).
 

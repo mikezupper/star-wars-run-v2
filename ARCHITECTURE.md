@@ -78,7 +78,7 @@ the `/` search key, theme controls, service worker registration and the random-a
 hyperspace transition; it is render-blocking so `pagereveal` is registered before the first
 frame. Interactive parts are `define()` islands: search suggestions use light DOM so the
 native GET form, fragment focus and shared stylesheet work before hydration; Explore uses
-Declarative Shadow DOM. Gyral's Vite preset discovers their client modules, and `renderPage()`
+Declarative Shadow DOM. Gyral's Vite plugins (`gyral({ components: true })`) discover their client modules, and `renderPage()`
 loads only the components whose tags it rendered. Search appears on every page; Explore
 loads on `/explore/`. The server imports each component for rendering.
 `src/render/assets.ts` stores the component

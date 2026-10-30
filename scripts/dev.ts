@@ -1,8 +1,9 @@
 /// <reference types="node" />
 // `pnpm dev`: Vite serves the client modules, the stylesheet and public/; every other request is
-// rendered by the same code the app runs, with the snapshot in memory and reloaded per request
-// so edits show up. Search is the exception: its index is in the last full build's pages.sqlite
-// (<DIST_DIR>-api/), so /search/ answers from there when it exists (docs/lessons-learned.md).
+// rendered by the same code the app runs, with the snapshot in memory. Vite reloads the server
+// modules after an edit, so edits show up on the next request. Search is the exception: its index
+// is in the last full build's pages.sqlite (<DIST_DIR>-api/), so /search/ answers from there when
+// it exists (docs/lessons-learned.md).
 import { existsSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
@@ -49,31 +50,25 @@ const siteData = {
       }),
 };
 
-const sites = new WeakMap<object, SiteModule.Site>();
-
 const dev = await gyralDevServer({
   entry: '/src/render/site.ts',
   port,
   hmrPort: Number(process.env['HMR_PORT'] ?? 24800),
   state: () => siteData,
+  // Gyral calls this once per server-module version (after an edit, or when the client
+  // components change), so the 227k-entry route table is built then, not per request. The
+  // archive survives reloads as state.
   app: (mod: typeof SiteModule, { components, state }) => {
-    // The factory runs on every request. Keep the 227k-entry route table per module version;
-    // Vite returns a new module after an edit, while the archive survives reloads as state.
-    let site = sites.get(mod);
-    if (site === undefined) {
-      site = mod.createSite(
-        {
-          ...DEV_ASSETS,
-          ...(components === undefined ? {} : { components: storeComponents(components) }),
-        },
-        state,
-      );
-      sites.set(mod, site);
-    }
-    const cached = site;
+    const site = mod.createSite(
+      {
+        ...DEV_ASSETS,
+        ...(components === undefined ? {} : { components: storeComponents(components) }),
+      },
+      state,
+    );
     return {
       fetch: (request) =>
-        isApi(new URL(request.url).pathname) ? handleApi(request) : cached.fetch(request),
+        isApi(new URL(request.url).pathname) ? handleApi(request) : site.fetch(request),
     };
   },
   vite: {

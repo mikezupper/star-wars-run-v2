@@ -1,6 +1,7 @@
 ---
 title: Accessibility
 description: Build Gyral views with native controls, useful labels, announced errors, predictable focus, and browser tests that cover keyboard interaction.
+useWhen: checking labels, form errors, focus, announcements and motion in a component, or testing the real interface
 section: Guides
 order: 22
 ---
@@ -27,9 +28,9 @@ not replace a visible label.
 A label and its control must share the relevant tree. A page's `label for` cannot simply
 point at an input hidden in another component's shadow root. Put the label inside the
 component, or use a deliberate naming contract that copies the external label into its
-accessible name. The skill's [view recipes](https://github.com/gyraljs/gyral/blob/next/skills/gyral/references/view.md)
-include naming a component's form from the page. The former `labelledBy` export was removed
-in 0.3.1; the recipe is application code.
+accessible name. The skill's [view recipes](https://github.com/gyraljs/gyral/blob/v0.3.8/skills/gyral/references/view.md#naming-a-components-form-from-the-page)
+include naming a component's form from the page; the recipe is application code, not a Gyral
+export.
 
 Test the computed accessible name in the browser. Setting a prop called `label` does not
 itself guarantee the rendered control has a name. Prefer native semantics before adding ARIA;
@@ -82,7 +83,7 @@ the browsers you support.
 
 Use `output` for a computed result and a restrained status/live region for asynchronous
 results that need announcing. Give a busy region `aria-busy` when appropriate. Do not announce
-the whole page on every render. Use `dialog.showModal()` through a modal binding for modal
+the whole page on every render. Use `dialog.showModal()` through the [`?modal` binding](/docs/views/#dialogs-and-popovers) for modal
 interaction, and keep a visible close control and a useful accessible name.
 
 Set the document's `lang` and text direction. Keep machine date values locale-neutral and

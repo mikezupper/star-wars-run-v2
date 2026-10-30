@@ -1,8 +1,9 @@
 ---
 title: Browser support
 description: Gyral targets Baseline widely available browser features, with explicit fallbacks and progressive enhancement for newer platform APIs.
+useWhen: checking which browsers Gyral supports and what happens where a newer API is missing
 section: Reference
-order: 3
+order: 3.5
 ---
 
 # Browser support
@@ -13,9 +14,10 @@ major browser engines for at least 30 months. The repository uses the Browsersli
 feature floor, not a promise to support one permanently fixed browser version.
 
 Custom elements, Shadow DOM, template cloning, constructable stylesheets and declarative
-shadow roots are part of that floor. Gyral renders with these native primitives. Node 24+
-is the repository's server/build target; browser support and server-runtime support are
-separate questions.
+shadow roots are part of that floor. Gyral renders with these native primitives. On the server
+and in builds, Gyral supports both Node LTS lines, 24 and 26, and its gate runs on each;
+`create-gyral` and `@gyral/mcp` also run on Node 22.12 and later, and `@gyral/codemod` on 22.18
+or later and 24.11 or later. Browser support and server-runtime support are separate questions.
 
 ## What happens without newer APIs
 
@@ -38,7 +40,7 @@ or workers, such as the absence of animation frames, remain even as browser supp
 ## Removal dates
 
 These dates follow the `web-features` 3.35.0 snapshot in
-[ADR 0003](https://github.com/gyraljs/gyral/blob/next/docs/design-docs/0003-browser-baseline.md),
+[ADR 0003](https://github.com/gyraljs/gyral/blob/v0.3.8/docs/design-docs/0003-browser-baseline.md),
 adding 30 months to newly available. They are scheduled review points, not claims that the
 fallback has already been removed:
 
@@ -56,7 +58,7 @@ fallback has already been removed:
 | Trusted Types             | 2028-08-24            |
 
 `moveBefore()` and `requestIdleCallback()` have no Baseline removal date in that snapshot.
-The [native-first audit](https://github.com/gyraljs/gyral/blob/next/docs/references/native-first-audit-2026-10-11.md)
+The [native-first audit](https://github.com/gyraljs/gyral/blob/v0.3.8/docs/references/native-first-audit-2026-10-11.md)
 records why cancellable and virtual-time timers remain useful even when native timeout
 signals become widely available.
 

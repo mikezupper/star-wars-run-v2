@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite';
-import { gyralVitePreset } from '@gyral/core/vite';
+import { gyral } from '@gyral/core/vite';
 
 // The client build: discovered components, the every-page script and the stylesheet, hashed.
 // The build and code-only API image read both manifests before removing .vite/.
-// gyralVitePreset(): Gyral's Vite settings. In `vite build` it precompiles the islands'
-// templates, and a template that breaks one of Gyral's rules fails the build.
+// gyral(): Gyral's Vite plugins. In `vite build` they precompile the islands' templates, and a
+// template that breaks one of Gyral's rules fails the build.
 export default defineConfig({
-  ...gyralVitePreset({ components: true }),
+  plugins: [gyral({ components: true })],
   build: {
     // DIST_DIR: the gate's sample build goes to .sample/ (scripts/build.ts).
     outDir: process.env['DIST_DIR'] ?? 'dist',

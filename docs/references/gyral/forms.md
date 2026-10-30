@@ -1,16 +1,107 @@
 ---
 title: Forms
-description: Real forms with native validation, one Standard Schema for client and server, errors kept in the model, and the same behaviour with or without JavaScript.
+description: A complete validated form to copy, then the browser's own checks or one Standard Schema for client and server. Works with or without JavaScript.
 section: Guides
 order: 6
+useWhen: building a form with validation and error messages (the page starts with one complete component to copy), with no extra packages or with one schema shared by client and server; posting a form; file uploads
 ---
 
 # Forms
 
-Gyral forms are real `<form>` elements. They post to a real URL, so they work before
-JavaScript loads. With JavaScript, the same form is validated in the browser by the same schema
-the server uses, and the server's answer comes back as a message. Each layer is optional; use
-as many as a form needs.
+Gyral forms are real `<form>` elements, and a submit is an intent like any other. Start from
+the complete example below: one component with everything a validated form needs, built on the
+browser's own checks, with no extra packages. Copy it and change the fields; you don't need
+another page to make it work.
+
+## Complete example: a validated form
+
+A signup form with a name, an email, a password and a checkbox the user must tick. On submit it
+shows every error next to its field, announces how many fields to fix, and moves focus to the
+first invalid one. Fixing a field clears its error; a valid submit announces a welcome.
+
+<!-- include: recipes/account-form.ts.txt -->
+
+What each part does:
+
+- **`novalidate` on the form, constraints on the fields.** `required`, `type="email"` and
+  `minlength` still set each field's `validity`; `novalidate` only stops the browser from
+  blocking the submit with its own bubble. Without it, no `submit` event fires and your
+  messages never appear.
+- **The submit intent is the parser.** `data-intent=${i.Submit}` on the `<form>` runs `Submit`
+  on `submit` (and Gyral prevents the page load). `target` is the `<form>`, so
+  `target.elements.namedItem('email')` is the email input, and `formData` holds the submitted
+  values. `Submit` isn't a message tag, so it may return either message: `Rejected` with every
+  field's error, or `SignedUp` with the trimmed values.
+- **`problemWith(input)` turns `validity` into your words**: `valueMissing`, `typeMismatch`,
+  `tooShort`, and `checked` for the checkbox. It trims first, because `required` accepts a value
+  of spaces.
+- **Errors are state**: one string per field, `''` for none. The view writes each message in a
+  `<p>` next to its field, links it with `aria-describedby` and sets `aria-invalid`.
+- **The `role="alert"` paragraph announces the summary.** It is always rendered, empty until a
+  submit fails, so screen readers announce the text when it appears. `role="status"` announces
+  the welcome the same way, politely.
+- **Focus moves to the first invalid field** with a `focus()` command returned from the
+  `Rejected` reducer. Commands are data; the runtime moves the focus after rendering.
+- **Fixing a field clears its error.** Each control sends `Checked` (text fields on `input`,
+  the checkbox on `change`); the reducer updates only a field that already shows an error, so
+  nothing turns red while someone is still typing.
+- **Values stay in the fields.** The view binds no `value`, so a rejected submit leaves what the
+  user typed. Bind `value=${s.name}` only when state must set the text, such as emptying a
+  field after a submit.
+- **Enter submits**, because the form has a submit button, and a click submits the same way.
+- **No password in state.** `SignedUp` carries the name and the email only.
+
+To adapt it, add the field's name to `FIELDS`, give it a `case` in `problemWith`, and render a
+labelled control with the same `id` and `name` plus its error `<p>`. To send the form to a
+server, keep the raw `FormData` in the message and return a command that posts it, as in
+[Submitting to the server](#submitting-to-the-server). The
+[signup form recipe](/docs/recipes/#a-signup-form-with-native-validation) has the same
+component with its tests: the reducers without a browser, and the parser with `mount()`.
+
+There are two ways to validate a form. The example uses the first; add the second when a server
+needs the same rules.
+
+- **[Native validation](#native-validation)**, with no extra packages. The browser's
+  constraints (`required`, `type="email"`, `minlength`) find what is wrong, and the submit
+  parser reads each field's `validity` and returns your messages. It works in any app,
+  including a new `basic` one.
+- **[One schema for both sides](#one-schema-for-both-sides).** A
+  [Standard Schema](https://standardschema.dev) library validates in the browser and on the
+  server, the form posts with `@gyral/http`, and the same errors render without JavaScript.
+
+## Native validation
+
+**`required` without `novalidate` hides your errors.** The browser checks constraints before
+it fires `submit`. When one fails, it shows its own bubble and fires no `submit` event, so your
+parser never runs and your messages never appear. Put `novalidate` on any form that shows its
+own errors, and keep the constraints on the fields: they still set `validity`, which the parser
+reads, as in the [complete example](#complete-example-a-validated-form).
+
+Each constraint sets one `validity` flag, so the parser can say exactly what is wrong:
+
+| Constraint                       | Flag                                              | Notes                               |
+| -------------------------------- | ------------------------------------------------- | ----------------------------------- |
+| `required`                       | `valueMissing`                                    | A value of spaces passes: trim it   |
+| `required` on a checkbox         | `valueMissing`                                    | Set while it is unchecked           |
+| `type="email"`, `type="url"`     | `typeMismatch`                                    | Only for a value that isn't empty   |
+| `minlength`, `maxlength`         | `tooShort`, `tooLong`                             | Only after the user edits the value |
+| `pattern`                        | `patternMismatch`                                 |                                     |
+| `min`, `max`, `step`             | `rangeUnderflow`, `rangeOverflow`, `stepMismatch` | Numbers, dates and times            |
+| `type="number"`, unparsable text | `badInput`                                        | The `value` reads as `''`           |
+
+`validity.valid` is `true` when no flag is set, and `form.checkValidity()` asks every field at
+once. A message set with `setCustomValidity()`, as the [`invalid()`](#form-and-invalid) hook
+does, sets `customError`, so read the specific flags rather than `valid` when you combine them.
+
+`novalidate` in server-rendered markup turns validation off for visitors without JavaScript
+too. If your form also posts to a server, render `?novalidate=${s.live}` and set `live` in the
+`Hydrated` reducer, as in [Schema messages for everything](#schema-messages-for-everything),
+and validate again on the server.
+
+## One schema for both sides
+
+When a server handles the form too, validate it with one schema on both sides. Each layer is
+optional; use as many as a form needs:
 
 1. **Native constraints**: `required`, `type="email"`, `minlength`, `pattern`.
 2. **A schema-parsed intent**: `form(schema, toMsg)` validates the submission.
@@ -19,9 +110,8 @@ as many as a form needs.
 5. **No-JavaScript parity**: the server's `formAction()` validates with the same schema and
    renders the same errors.
 
-## One schema for both sides
-
-Define the form once with any [Standard Schema](https://standardschema.dev) library, such as
+This path needs `@gyral/http` for the post, `@gyral/ssr` for the server half and a schema
+library. Define the form once with any [Standard Schema](https://standardschema.dev) library, such as
 Zod, Valibot, ArkType or Effect Schema. Form values arrive as strings; the schema coerces them.
 
 ```ts
@@ -134,8 +224,9 @@ export const Signup = define<State, Msg>()('my-signup', {
 What happens on submit:
 
 - **The browser checks native constraints first.** If `required` or `type="email"` fails, the
-  browser shows its own message and no `submit` event fires. Keep them: they work without
-  JavaScript and are accessible.
+  browser shows its own message and no `submit` event fires, so `form()` doesn't run. Keep
+  them: they work without JavaScript and are accessible. To show the schema's messages instead,
+  see [Schema messages for everything](#schema-messages-for-everything).
 - **`form(schema, toMsg)`** turns the `FormData` into a plain object (repeated names become
   arrays) and validates it. Valid data goes to `toMsg`, which also gets the raw `FormData`.
   Invalid data becomes `IntentRejected`, with one issue per field: `path` matches the field's

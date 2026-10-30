@@ -1,6 +1,7 @@
 ---
 title: Code-splitting and lazy loading
 description: Load each component's code only on the pages that use it, delay hydration until it's needed, and see what each page downloads.
+useWhen: loading each component's code only on pages that use it, or delaying hydration until it is needed
 section: Guides
 order: 14
 ---
@@ -21,6 +22,13 @@ can be "later, and only if it's on this page". There are three tools, from coars
 
 Custom elements make this simple: the page's HTML says which components it uses. Import the
 components every page has in the client entry, and load the rest when their tag appears.
+
+A server-rendered app can let Gyral do this: with `gyral({ components: true })` and
+`renderPage({ components })`, each page loads exactly the components it rendered, with no client
+entry to write (see
+[Server rendering](/docs/server-rendering/#loading-components-in-the-browser)). The loader
+below is the hand-written version, for pages rendered in the browser or when you want to choose
+the chunks yourself.
 
 ```ts
 // src/widgets.ts
@@ -90,9 +98,10 @@ CSS to `css`. On a server, `productionServer` hands your app an `assets(modules)
 same per page and returns `{ modulepreload, stylesheets }` to spread into `renderPage` (see
 [Deploying](/docs/deploying/#node)).
 
-[gyral-shop](https://github.com/gyraljs/gyral-shop/blob/main/src/client/lazy.ts) uses this
-pattern for every page-specific component (listing, product gallery, checkout, admin), and adds
-a `MutationObserver` for components inserted after load.
+[gyral-shop](https://github.com/gyraljs/gyral-shop) used a loader like this until automatic
+components replaced it. Its
+[`vite.components.ts`](https://github.com/gyraljs/gyral-shop/blob/main/vite.components.ts) now
+only names the tags the scan can't see and keeps the admin sections in one chunk.
 
 ## Lazy hydration
 
@@ -125,6 +134,29 @@ code, and the hydration code is a chunk of its own (about 2.8 KiB gzip) that onl
 server-rendered components fetch. Preload it with the entry: `clientAssetsFromManifest()` from
 `@gyral/ssr/static` lists it, and `renderPage({ modulepreload })` writes the hints (see
 [Static sites](/docs/static-sites/#a-static-build)).
+
+## Which chunk holds a module
+
+With `gyral({ components: true })`, the client build writes
+`.vite/gyral-components.json` next to Vite's manifest. Its `chunks` maps each tag to the chunk
+that defines it. `chunkModules` maps every emitted JavaScript chunk to the source
+modules in it, as paths relative to the project root:
+
+```json
+{
+  "chunks": { "my-gallery": "assets/widgets-CQ3fA1x2.js" },
+  "chunkModules": {
+    "assets/widgets-CQ3fA1x2.js": ["src/gallery-photo.ts", "src/widgets.ts"]
+  }
+}
+```
+
+Vite's manifest only lists modules that start a chunk. When the bundler merges a module into a
+shared chunk, `chunkModules` is where to find it. A service worker or offline cache can use it
+to decide which chunks a feature needs: walk the static imports for shared code and CSS, and
+keep chunks that two features share for both. Paths outside the project root start with
+`../`; treat them as names, not as files to open. Worker builds are separate graphs and
+aren't listed.
 
 ## Measure
 

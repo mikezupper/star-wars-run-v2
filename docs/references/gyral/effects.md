@@ -1,6 +1,7 @@
 ---
 title: Effects and drivers
 description: Reducers return commands, side effects described as data. Drivers run them, with built-in concurrency, retries and cancellation, and answer with messages.
+useWhen: doing anything outside the model: HTTP, timers, randomness, the clipboard, your own driver, concurrency and retries
 section: Guides
 order: 7
 ---
@@ -65,8 +66,8 @@ export const UserCard = define<State, Msg>()('my-user-card', {
   validated data. A response that doesn't match becomes an `HttpDecodeError`.
 - **`onSuccess`** turns the decoded body into a message.
 - **`onFailure`** turns an error into a message. Errors are tagged data (`HttpStatusError`,
-  `HttpNetworkError`, `HttpDecodeError`); nothing is ever thrown into the view. Leave it out and
-  failures are logged and dropped.
+  `HttpNetworkError`, `HttpDecodeError`); nothing is ever thrown into the view. Leave it out and a
+  failure goes to the [error channel](/docs/error-handling/).
 
 The request and its answer sit next to each other in one reducer, typed end to end, with no
 "response category" strings to match up.
@@ -99,8 +100,8 @@ export const search = <M>(query: string, toMsg: (body: unknown) => M): Command<M
 ```
 
 A cancelled command's `AbortSignal` aborts (so `fetch` stops), and its result is never
-delivered. When a component disconnects, all its commands are cancelled the same way, before
-`remove()` returns.
+delivered. When a component is removed from the page, all its commands are cancelled the same
+way, one microtask later; moving it cancels nothing.
 
 ## Built-in drivers
 
@@ -138,8 +139,8 @@ failure still reaches the [error channel](/docs/error-handling/). With handlers,
 comes from what `onSuccess` and `onFailure` return, so explicit type arguments are rarely needed.
 
 Debounce is a delay under `switch`: each keystroke's `debounce(300, msg)` cancels the pending
-one. An app that uses only `delay` and `debounce` stays as small as before; `every` adds its own
-code only where it's used. Randomness is a command too, so models stay pure and tests can fix
+one. `delay` and `debounce` run on a delay-only driver, so an app that uses only them doesn't
+bundle the code for `every`. Randomness is a command too, so models stay pure and tests can fix
 the numbers: it's a six-line driver of your own (below).
 
 ## Writing a driver
@@ -214,11 +215,31 @@ export interface Move {
   readonly to: string;
 }
 
-/** Provided once by the app: provideDrivers(document.body, { session: makeSession(url) }). */
+/** A token: the app's entry provides its implementation (below). */
 export const session = defineDriver<Move, { readonly accepted: boolean }, string>('session');
 
 export const sendMove = <M>(move: Move, answered: (accepted: boolean) => M): Command<M> =>
   command(session, move, { onSuccess: (r) => answered(r.accepted) });
+```
+
+The app's entry provides the implementation from the token itself. `session.provide(run)` is a
+driver with the token's name, concurrency and `toError`, and a `run` checked against the token's
+input and output, so a wrong type fails to compile and the name can't be mistyped. A token for a
+stream is provided the same way, with `subscription(token, subscribe)`
+([State Gyral doesn't own](/docs/outside-state/#a-store-per-page-provided-by-a-token)):
+
+```ts
+// src/app-drivers.ts
+import { provideDrivers } from '@gyral/core';
+import { session } from './session.js';
+
+provideDrivers(document.body, [
+  session.provide(async (move, { signal }) => {
+    const body = JSON.stringify(move);
+    const response = await fetch('/api/moves', { method: 'POST', body, signal });
+    return { accepted: response.ok };
+  }),
+]);
 ```
 
 ### Retries
@@ -229,7 +250,7 @@ same driver, under the same name, with failures tried again after the delay (`'f
 don't retry in step. `retryIf(error)` decides which failures to retry; it receives the
 driver's typed error (its `toError`, else the thrown value), and by default every failure is
 retried. A cancellation (the command switched away, the component removed) ends it at once and
-is never retried. Wrap the driver where you choose it, at app setup, in a component's `drivers`
+is never retried. Wrap the driver where you choose it, at app setup, in an element's `drivers`
 or in a test, and apps that never retry don't bundle the code.
 
 For `@gyral/http`, `makeHttpDriver({ timeoutMs })` gives each attempt a deadline: a slower
@@ -242,15 +263,15 @@ and 5xx. It doesn't read `Retry-After`.
 import { provideDrivers, retry } from '@gyral/core';
 import { makeHttpDriver, retryableHttpError } from '@gyral/http';
 
-provideDrivers(document.body, {
-  http: retry(makeHttpDriver({ baseUrl: '/api', timeoutMs: 8_000 }), {
+provideDrivers(document.body, [
+  retry(makeHttpDriver({ baseUrl: '/api', timeoutMs: 8_000 }), {
     times: 2,
     delayMs: 300,
     backoff: 'exponential',
     jitter: true,
     retryIf: retryableHttpError,
   }),
-});
+]);
 ```
 
 `HttpError` is a union, so a `switch` that handles every case needs one for timeouts:
@@ -371,7 +392,8 @@ export const CopyLink = define<State, Msg, { readonly url: string }>()('my-copy-
   click's message, as above: with a synchronous parser, it starts while the click is still
   being handled. Started later, the browser rejects it with `NotAllowedError`, `denied` here.
 - **Tests never touch the real clipboard**: they substitute the driver by name,
-  `el.drivers = { clipboard: fakeDriver('clipboard') }` ([Testing](/docs/testing/#fake-drivers-and-commands)).
+  `el.drivers = [fakeDriver(clipboard)]`, a fake that takes the driver's name
+  ([Testing](/docs/testing/#fake-drivers-and-commands)).
 
 ## Streaming results with emit
 
@@ -416,15 +438,29 @@ or a configured instance, Gyral looks drivers up **by name**, in this order:
    `provideDrivers(element, drivers)`;
 3. the driver object on the command.
 
-For example, give every request on the page default headers, once, at the app's entry:
+Supply drivers as a list: each one goes under its own name, so there is no key to mistype. For
+example, give every request on the page default headers, once, at the app's entry:
 
 ```ts
 // src/entry-client.ts
 import { provideDrivers } from '@gyral/core';
 import { csrfFromMeta, makeHttpDriver } from '@gyral/http';
 
-provideDrivers(document.body, { http: makeHttpDriver({ headers: csrfFromMeta('csrf-token') }) });
+provideDrivers(document.body, [makeHttpDriver({ headers: csrfFromMeta('csrf-token') })]);
 ```
+
+A record keyed by name, `{ http: makeHttpDriver(…) }`, works in the same places and reads well
+for fakes in tests. Its keys must be the drivers' names, because a command looks its driver up
+by the driver's own name: development warns when a key isn't the name of the driver under it
+([G0045](/errors/#G0045)), and throws for two drivers of one name in a list
+([G0044](/errors/#G0044)).
+
+A component starts its `init` commands after its first render, a microtask after it connects.
+So `provideDrivers` anywhere in the entry's synchronous code is in time, even when the entry
+imports its components first and their elements are already in the page. After an `await` it
+is too late for those elements: provide drivers before awaiting, or create the element in code
+and set its `drivers` before inserting it. A token nothing provides is reported as
+[G0043](/errors/#G0043).
 
 `csrfFromMeta` reads `<meta name="csrf-token">` when each request runs, so components never read
 the DOM for it. The driver's headers are the one place a CSRF token from a `<meta>` is

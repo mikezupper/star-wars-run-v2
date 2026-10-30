@@ -148,6 +148,10 @@ Each entry has four parts:
   the full preset and reports template source locations.
 - **Guard:** the 80% coverage gate stays in place. `pnpm smoke` checks both production
   hydration and the dev server with the full preset.
+- **Since 0.3.8 (`swr-d8j`, 2026-10-29):** Gyral 0.3.2 moved the fallback into a virtual
+  module, so it no longer adds branches to application code. `vitest.config.ts` now uses
+  `plugins: [gyral()]` with no filter, and the Node tests run every Gyral plugin, as the dev
+  server does.
 
 ## A decimal comma made a clone 183 meters tall (2026-10-06)
 

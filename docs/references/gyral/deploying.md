@@ -1,6 +1,7 @@
 ---
 title: Deploying
-description: Ship a Gyral app to a static host, a Node server or Bun, with the right cache headers and a strict Content Security Policy.
+description: Ship a Gyral app to a static host, a Node server, Bun, Deno or Cloudflare Workers, with the right cache headers and a strict Content Security Policy.
+useWhen: shipping an app to a static host, Node, Bun, Deno or Cloudflare Workers, with cache headers and a CSP
 section: Guides
 order: 15
 ---
@@ -13,7 +14,8 @@ What you deploy depends on how your pages [render](/docs/rendering-modes/):
 - **Any page rendered per request**: a small server that runs your app, plus the same files.
 
 Either way, the build output is ordinary: HTML, content-hashed JavaScript and CSS, and your
-public files. Gyral adds no runtime service of its own.
+public files. Gyral adds no runtime service of its own. If your server is written in Rust, see
+[Rust servers](/docs/rust-servers/).
 
 ## Static hosts
 
@@ -113,7 +115,7 @@ createServer(toNodeListener(app.fetch, { origin: 'https://example.com' })).liste
 ```
 
 `productionServer({ distDir, createApp })` expects Vite's output in `dist/client/` (with
-`build.manifest: true` and `gyralVitePreset({ components: true })`) and prerendered pages in
+`build.manifest: true` and `gyral({ components: true })`) and prerendered pages in
 `dist/static/`. It reads the manifests once and hands `createApp` the `components` for
 `renderPage` and the hashed CSS as `stylesheets`. With a client entry of your own instead, it
 hands over `clientEntry` and the chunks to preload with it as `modulepreload` (Gyral's hydration
@@ -238,7 +240,7 @@ How far each one is tested today:
 
 Run the networked `pnpm verify:platforms` in the framework repository to reproduce the Deno
 and workerd checks. The
-[spike report](https://github.com/gyraljs/gyral/blob/next/docs/references/platform-spikes-2026-10-11.md)
+[spike report](https://github.com/gyraljs/gyral/blob/v0.3.8/docs/references/platform-spikes-2026-10-11.md)
 describes the tested boundary.
 
 ## Cache headers
@@ -281,7 +283,7 @@ This website's policy is the same, plus `font-src` and `connect-src` for its own
 policy blocks: they apply only once their component hydrates (see
 [Styling](/docs/styling/#inline-styles-under-a-strict-csp)), so this site's pages have none. On
 GitHub Pages, which can't set headers, put the policy in a
-`<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s `head` option;
+`<meta http-equiv="Content-Security-Policy">` element through `renderPage`'s `extraHead` option;
 `frame-ancestors` doesn't work there.
 
 ## Checklist

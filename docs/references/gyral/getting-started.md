@@ -1,6 +1,7 @@
 ---
 title: Getting started
 description: Install Gyral, write your first Model-View-Intent component, use it in a page, and test it without a browser.
+useWhen: creating a new Gyral app, or writing and testing your first component
 section: Start here
 order: 1
 ---
@@ -47,19 +48,21 @@ npm install @gyral/core
 `@gyral/core` is the whole runtime: Gyral renders with its own view layer and has no runtime
 dependencies.
 
-Then add Gyral's Vite preset. It adds the template compiler to `vite build`: every template is
-checked and precompiled, so a mistake fails the build with a code frame and the bundle doesn't
-carry the code that prepares templates at runtime:
+Then add Gyral's Vite plugins, `gyral()`. They add the template compiler to `vite build`: every
+template is checked and precompiled, so a mistake fails the build with a code frame and the
+bundle doesn't carry the code that prepares templates at runtime:
 
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite';
-import { gyralVitePreset } from '@gyral/core/vite';
+import { gyral } from '@gyral/core/vite';
 
 export default defineConfig({
-  ...gyralVitePreset(),
+  plugins: [gyral()],
 });
 ```
+
+List plugins of your own beside it: `plugins: [gyral(), mine()]`.
 
 To see the same checks in your editor, add the ESLint config from `@gyral/core/eslint` (see
 [Views](/docs/views/#checked-before-it-runs)). Optionally, `npm install -D parse5` lets the
@@ -129,14 +132,30 @@ Read it from the bottom up:
 Run `npm run dev` and open the address it prints. The counter is a standard custom element with
 its own Shadow DOM, so it works in any page and alongside any framework.
 
+When the page loads an entry module instead (the `basic` template's `src/main.ts`), that module
+must import every component module, for its side effect. Each new component in its own file
+gets a line here, such as the stepper below:
+
+```ts
+// src/main.ts
+import './counter.js';
+import './stepper.js';
+```
+
+A module that nothing imports never runs, so its tag is never defined: `<my-stepper>` stays an
+empty unknown element. In development, Gyral warns in the console (G0014) when a tag on the page
+is still undefined 3 seconds after it loaded; production builds stay silent. A component that renders another
+component in its view imports that module too.
+
 ## Read input
 
-Intents get more than the event. Here's a step size the user can type, read from the input's
-`value` and parsed before it reaches the model:
+Intents get more than the event. Here's a step size the user can type. `on('input', parser)`
+gives the parser the number input's `valueAsNumber` (`undefined` while the field is empty or
+invalid), and the parser checks it before it reaches the model:
 
 ```ts
 // src/stepper.ts
-import { define, html } from '@gyral/core';
+import { define, html, on } from '@gyral/core';
 
 export interface State {
   readonly count: number;
@@ -150,11 +169,10 @@ export const Stepper = define<State, Msg>()('my-stepper', {
   init: () => ({ count: 0, step: 1 }),
   intent: {
     Increment: () => ({ _tag: 'Increment' }),
-    StepChanged: ({ value }) => {
-      const step = Number(value);
-      // Not a whole number: ignore the keystroke, keep the last good step.
-      return Number.isInteger(step) ? { _tag: 'StepChanged', step } : undefined;
-    },
+    // Not a whole number: ignore the keystroke, keep the last good step.
+    StepChanged: on('input', ({ valueAsNumber: step }) =>
+      step !== undefined && Number.isInteger(step) ? { _tag: 'StepChanged', step } : undefined,
+    ),
   },
   update: {
     Increment: (s) => ({ ...s, count: s.count + s.step }),
@@ -206,11 +224,17 @@ rendering, hydration and virtual time. See [Testing](/docs/testing/).
 
 ## Next steps
 
+- Build something real from a [recipe](/docs/recipes/): a
+  [todo list with filters](/docs/recipes/#a-todo-list-with-filters) and a
+  [signup form with validation](/docs/recipes/#a-signup-form-with-native-validation), each a
+  complete component with tests that needs nothing beyond a `basic` app.
 - Learn the three parts in depth: [Intent](/docs/intent/), [Model and update](/docs/update/)
   and [Views](/docs/views/).
 - Browse the [examples](/examples/): forms, HTTP, routing, shared state and server rendering.
 - See a whole application in [gyral-shop](https://github.com/gyraljs/gyral-shop).
 - Before you ship, read [Deploying](/docs/deploying/) and the
   [known issues](/docs/packages/#known-issues).
-- Coming from Gyral 0.2? Read [Migrating from 0.2 to 0.3](/docs/migrating-0-2-to-0-3/). From
-  0.3.0? Read [Migrating from 0.3.0 to 0.3.1](/docs/migrating-0-3-0-to-0-3-1/).
+- Working with a coding agent? Connect it to Gyral's MCP server and skill:
+  [Use Gyral with coding agents](/docs/coding-agents/).
+- Upgrading an existing app? [Versioning and stability](/docs/versioning/) explains how to move
+  to 0.3.8 safely.
