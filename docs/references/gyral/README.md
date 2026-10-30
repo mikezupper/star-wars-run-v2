@@ -1,10 +1,10 @@
 # Gyral docs (vendored)
 
-Gyral is new (0.3.1, October 2026), so no model has seen it in training. Read these pages
+Gyral is new (0.3.8, October 2026), so no model has seen it in training. Read these pages
 before writing or changing Gyral code. Don't guess the API from Lit or Cycle.js.
 
-**Source:** `content/docs/` in the gyral.dev repo (`../../gyral.dev` next to this checkout),
-commit `6ac30c2` (the official 0.3.1 docs), copied 2026-10-11. **Don't edit these files.** To refresh them, copy the
+**Source:** `content/docs/` in the gyral.dev repo (`github.com/gyraljs/gyral.dev`),
+commit `69aaea3` (the 0.3.8 docs), copied 2026-10-29. **Don't edit these files.** To refresh them, copy the
 directory again and update the commit here.
 
 Links inside the pages are gyral.dev site paths (`/docs/views/`), not repo paths. The page
@@ -13,29 +13,31 @@ with the same name is in this directory (`views.md`).
 **API reference:** gyral.dev generates it at build time, so it isn't copied here. Read the
 type declarations instead: `node_modules/@gyral/<package>/dist/*.d.ts`.
 
-| Need                                                                | Page                                                                                                   |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| First component, project layout                                     | [getting-started.md](getting-started.md)                                                               |
-| The model: intent → update → view                                   | [principles.md](principles.md)                                                                         |
-| `define()`, props, children                                         | [components.md](components.md)                                                                         |
-| Templates, `data-intent`                                            | [views.md](views.md), [intent.md](intent.md)                                                           |
-| Pure updates, commands, effects                                     | [update.md](update.md), [effects.md](effects.md)                                                       |
-| Failures: the error channel, boundaries, `error` and `Errored`      | [error-handling.md](error-handling.md)                                                                 |
-| Shared state                                                        | [stores.md](stores.md)                                                                                 |
-| State outside Gyral                                                 | [outside-state.md](outside-state.md)                                                                   |
-| `html` on the server, `renderPage()`, `prerender()`, hydration      | [server-rendering.md](server-rendering.md)                                                             |
-| Prerendering, static output, which mode when                        | [static-sites.md](static-sites.md), [rendering-modes.md](rendering-modes.md)                           |
-| Production builds and hosting                                       | [deploying.md](deploying.md)                                                                           |
-| Loading an island only when needed                                  | [code-splitting.md](code-splitting.md)                                                                 |
-| Gyral inside other frameworks, or other web components inside Gyral | [other-frameworks.md](other-frameworks.md), [third-party-components.md](third-party-components.md)     |
-| Styling components                                                  | [styling.md](styling.md)                                                                               |
-| Accessibility and browser support                                   | [accessibility.md](accessibility.md), [browser-support.md](browser-support.md)                         |
-| Browser storage                                                     | [browser-storage.md](browser-storage.md)                                                               |
-| Streams and form-associated components                              | [network-streams.md](network-streams.md), [form-associated.md](form-associated.md)                     |
-| Security, performance and release guarantees                        | [security.md](security.md), [performance.md](performance.md), [versioning.md](versioning.md)           |
-| Testing without a DOM (`@gyral/testing`)                            | [testing.md](testing.md)                                                                               |
-| Routing, forms, devtools, package list                              | [routing.md](routing.md), [forms.md](forms.md), [devtools.md](devtools.md), [packages.md](packages.md) |
-| Mapping from this repo's old Cycle.js code                          | [coming-from-cyclejs.md](coming-from-cyclejs.md)                                                       |
-| Moving from Lit                                                     | [coming-from-lit.md](coming-from-lit.md)                                                               |
-| Upgrading from 0.2 (what changed, before and after)                 | [migrating-0-2-to-0-3.md](migrating-0-2-to-0-3.md)                                                     |
-| Upgrading from 0.3.0                                                | [migrating-0-3-0-to-0-3-1.md](migrating-0-3-0-to-0-3-1.md)                                             |
+| Need                                                                | Page                                                                                                                               |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| First component, project layout                                     | [getting-started.md](getting-started.md)                                                                                           |
+| Complete components to copy, with their tests                       | [recipes.md](recipes.md)                                                                                                           |
+| Coding agents: the MCP server, the agent skill                      | [coding-agents.md](coding-agents.md)                                                                                               |
+| The model: intent → update → view                                   | [principles.md](principles.md)                                                                                                     |
+| `define()`, props, children                                         | [components.md](components.md)                                                                                                     |
+| Templates, `data-intent`                                            | [views.md](views.md), [intent.md](intent.md)                                                                                       |
+| Pure updates, commands, effects                                     | [update.md](update.md), [effects.md](effects.md)                                                                                   |
+| Failures: the error channel, boundaries, `error` and `Errored`      | [error-handling.md](error-handling.md)                                                                                             |
+| Shared state                                                        | [stores.md](stores.md)                                                                                                             |
+| State outside Gyral                                                 | [outside-state.md](outside-state.md)                                                                                               |
+| `html` on the server, `renderPage()`, `prerender()`, hydration      | [server-rendering.md](server-rendering.md)                                                                                         |
+| Prerendering, static output, which mode when                        | [static-sites.md](static-sites.md), [rendering-modes.md](rendering-modes.md)                                                       |
+| Production builds and hosting                                       | [deploying.md](deploying.md)                                                                                                       |
+| Loading an island only when needed                                  | [code-splitting.md](code-splitting.md)                                                                                             |
+| Gyral inside other frameworks, or other web components inside Gyral | [other-frameworks.md](other-frameworks.md), [third-party-components.md](third-party-components.md)                                 |
+| Styling components                                                  | [styling.md](styling.md)                                                                                                           |
+| Accessibility and browser support                                   | [accessibility.md](accessibility.md), [browser-support.md](browser-support.md)                                                     |
+| Browser storage                                                     | [browser-storage.md](browser-storage.md)                                                                                           |
+| Streams and form-associated components                              | [network-streams.md](network-streams.md), [form-associated.md](form-associated.md)                                                 |
+| Security, performance and release guarantees                        | [security.md](security.md), [performance.md](performance.md), [versioning.md](versioning.md)                                       |
+| Serving Gyral from a Rust backend                                   | [rust-servers.md](rust-servers.md)                                                                                                 |
+| Testing without a DOM (`@gyral/testing`)                            | [testing.md](testing.md)                                                                                                           |
+| Routing, forms, devtools, package list                              | [routing.md](routing.md), [forms.md](forms.md), [devtools.md](devtools.md), [packages.md](packages.md)                             |
+| Mapping from this repo's old Cycle.js code                          | [coming-from-cyclejs.md](coming-from-cyclejs.md)                                                                                   |
+| Moving from Lit                                                     | [coming-from-lit.md](coming-from-lit.md)                                                                                           |
+| Upgrading from 0.3.7                                                | [Behavior changes in 0.3.8](https://github.com/gyraljs/gyral/blob/v0.3.8/docs/references/migrating-0.3.7-to-0.3.8.md) (Gyral repo) |

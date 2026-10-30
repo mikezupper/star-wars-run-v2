@@ -1,6 +1,7 @@
 ---
 title: Static sites and prerendering
 description: Render pages to HTML files at build time with @gyral/ssr/static, ship zero JavaScript where nothing is interactive, and host them anywhere.
+useWhen: prerendering pages to static HTML at build time
 section: Guides
 order: 13
 ---
@@ -98,10 +99,10 @@ console.log(`prerendered ${String(pages.length)} pages`);
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite';
-import { gyralVitePreset } from '@gyral/core/vite';
+import { gyral } from '@gyral/core/vite';
 
 export default defineConfig({
-  ...gyralVitePreset(),
+  plugins: [gyral()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -128,8 +129,10 @@ export default defineConfig({
   cascade is the one you had in development. Link them with `renderPage({ stylesheets })`
   instead of inlining your CSS into every page with `styles`: the browser caches one file across
   pages, and `style-src 'self'` allows it with no hash.
-- The client entry is the one from [Server rendering](/docs/server-rendering/#loading-components-in-the-browser):
-  it imports your components, and each one hydrates on its own.
+- The client entry (`src/entry-client.ts`) imports your components (`import './counter.js';`),
+  and each one hydrates on its own. To have each page load only the components it rendered,
+  with no entry to write, see
+  [Server rendering](/docs/server-rendering/#loading-components-in-the-browser).
 - `@gyral/ssr/static` reads and writes files, so it runs in Node at build time. Your pages
   don't need Node: the output is plain files.
 

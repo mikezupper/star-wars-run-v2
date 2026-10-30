@@ -1,6 +1,7 @@
 ---
 title: Model and update
 description: State as plain data, one pure reducer per message, commands returned as data, and the framework messages Gyral sends you.
+useWhen: writing state, reducers and commands, subscriptions for long-lived work, or handling framework messages
 section: Guides
 order: 3
 ---
@@ -88,7 +89,8 @@ objects. No `Date`, `Map` or class instances. Three things depend on it:
   a seed won't survive the trip.
 - **Devtools** and tests can print and compare state.
 - **Reducers return new objects.** State is never mutated, so "did it change?" is a reference
-  check.
+  check. A component renders only when its state, a declared prop or a declared store changes:
+  a reducer with nothing to change returns `s` itself, and that message renders nothing.
 
 Model what can happen with unions rather than flags. `{ _tag: 'Loading' } | { _tag: 'Found';
 repos } | { _tag: 'Failed'; message }` can't be loading and failed at once; two booleans can.
@@ -108,6 +110,35 @@ A reducer receives the state, the message (narrowed to its variant, so `m.id` is
 context, `{ props, read }`: the component's [props](/docs/components/#props) and a reader for
 [shared stores](/docs/stores/). Reducers are pure: no `fetch`, no `Date.now()`, no
 `Math.random()`, no DOM.
+
+A reducer written outside the spec, to share it or test it alone, is typed with `Reducer` and
+`Variant` from `@gyral/core` (type-only exports). `Variant<Msg, 'Add'>` is the
+member of `Msg` tagged `'Add'`:
+
+```ts
+// src/shelf.ts
+import { define, html, type Reducer, type Variant } from '@gyral/core';
+
+interface State {
+  readonly books: readonly string[];
+}
+type Msg = { readonly _tag: 'Add'; readonly title: string } | { readonly _tag: 'Clear' };
+
+export const add: Reducer<State, Msg, Variant<Msg, 'Add'>> = (s, m) => ({
+  books: [...s.books, m.title],
+});
+
+export const Shelf = define<State, Msg>()('my-shelf', {
+  init: () => ({ books: [] }),
+  intent: { Add: ({ value }) => ({ _tag: 'Add', title: value ?? '' }), Clear: true },
+  update: { Add: add, Clear: () => ({ books: [] }) },
+  view: (s, i) => html`
+    <button type="button" value="Middlemarch" data-intent=${i.Add}>Add Middlemarch</button>
+    <button type="button" data-intent=${i.Clear}>Clear</button>
+    <output>${s.books.join(', ')}</output>
+  `,
+});
+```
 
 ## Returning commands
 
@@ -190,12 +221,13 @@ changes, put what it depends on in the key, for example one that includes the ro
 Moving the element keeps subscriptions running, removing it stops them, and attaching it again
 starts them from the current state. So there is no start in `init`, no restart on
 `PropsChanged` and no reconnect handling. `every(ms, (now) => msg)` sends the time at once and
-then every `ms`. In model tests, `subscriptionsFor(Component, state, props)` returns the list.
+then every `ms`. In model tests, `subscriptionsFor(Clock.spec, state, props)` returns the list.
 
 ## Framework messages
 
-Gyral sends five messages of its own. Their reducers are optional: leave one out and the
-message changes nothing.
+Gyral sends five messages of its own, plus three to
+[form-associated components](/docs/form-associated/) (`FormReset`, `FormDisabled` and
+`FormStateRestore`). Their reducers are optional: leave one out and the message changes nothing.
 
 | Message          | Sent when                                                                                                                                |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |

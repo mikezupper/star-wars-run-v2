@@ -1,6 +1,7 @@
 ---
 title: Using third-party web components
 description: Use Web Awesome, Shoelace, Material Web or any other custom element inside a Gyral view - turn its events into intents and style it through parts.
+useWhen: using a web component from another library inside a Gyral view
 section: Guides
 order: 19
 ---

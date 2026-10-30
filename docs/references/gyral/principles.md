@@ -1,6 +1,7 @@
 ---
 title: Design principles
 description: The beliefs behind Gyral, from "the platform is the framework" to "parse at boundaries", and what each one means for your code.
+useWhen: you want the reasons behind Gyral's design
 section: Background
 order: 2
 ---
@@ -9,7 +10,7 @@ order: 2
 
 These are the beliefs Gyral is built on. Each one explains a decision you'll meet in the API.
 The full reasoning lives in the decision records in
-[Gyral's repository](https://github.com/gyraljs/gyral/tree/main/docs/design-docs).
+[Gyral's repository](https://github.com/gyraljs/gyral/tree/v0.3.8/docs/design-docs).
 
 ## The platform is the framework
 
@@ -47,9 +48,9 @@ custom element, when you need to.
 
 You don't need streams, a functional-effects library or decorators to use Gyral. The API is
 plain TypeScript: functions, objects, unions and promises. Implementation choices stay
-implementation details where they can: Gyral 0.1 ran commands on Effect, 0.2 moved them to a
-small built-in runtime without changing a public type. 0.3 replaced the view layer, which
-templates touch directly, so it came with a [migration guide](/docs/migrating-0-2-to-0-3/).
+implementation details where they can: commands run on a small built-in runtime that no public
+type exposes, so it can change without touching your code. A change that does reach your code
+waits for a new minor version and comes with an upgrade guide.
 
 ## Semantic HTML and accessibility are correctness
 
@@ -69,12 +70,12 @@ hydration of real server output against production builds.
 Rules that matter become checks with error messages that explain the fix. In Gyral's own repo,
 `@gyral/core` is checked to have no runtime dependencies, views can't bind event handlers (the
 template compiler and the ESLint rules reject `@event` bindings), and every decision record is
-indexed. This site follows the same rule: every code sample on it compiles
+indexed. This site follows the same rule: every TypeScript sample that names its file compiles
 against the real packages, and every page passes accessibility checks in light and dark mode.
 
 ## Measure, then budget
 
 Performance claims come from measurements. Bundle size is tracked per example with production
 builds, and changes such as the devtools hook are measured before and after. Budgets follow
-measurements, not the other way round: when Gyral 0.3 set out to make the smallest app 8 KiB, it
-measured 8.9 KiB and says so.
+measurements, not the other way round: the [package guide](/docs/packages/#whats-inside)
+publishes what the examples measure, not what they were meant to weigh.

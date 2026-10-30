@@ -69,7 +69,7 @@ Core, ssr and testing use 0.3.1-next.1 from the release bundle at commit `bd2acc
 The site's templates and APIs need no migration; the obsolete
 `useDefineForClassFields: false` setting was removed. The Vite preset keeps hydration
 enabled because pages are prerendered. The copied docs include the
-[0.3.0 to 0.3.1 upgrade guide](../references/gyral/migrating-0-3-0-to-0-3-1.md).
+[0.3.0 to 0.3.1 upgrade guide](https://github.com/gyraljs/gyral/blob/v0.3.8/docs/references/migrating-0.3.0-to-0.3.1.md).
 Node tests omit the new template-location plugin because its generated fallback branches
 distort V8 coverage; the dev server keeps it ([lessons learned](../lessons-learned.md)).
 
@@ -159,3 +159,5 @@ Both islands' views read only their state and props, so nothing moved. `gyral/pr
 flags the search island's hand-written modifier check. Its replacement, `on()`, can't run
 under `@gyral/testing`'s `parse()` without a DOM yet (Gyral `gyral-cd0`), and that parser's
 tests run in Node, so the check stays, with a justified ESLint directive.
+
+The copied reference docs now come from gyral.dev at `69aaea3`, the 0.3.8 docs (`swr-qpd`).

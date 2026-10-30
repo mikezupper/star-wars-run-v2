@@ -1,6 +1,7 @@
 ---
 title: Intent
 description: How Gyral turns clicks, input, form submissions and keys into typed messages, and why the view never holds event handlers.
+useWhen: turning clicks, keys, input, form submits or third-party events into messages; parsers, declining and preventDefault
 section: Guides
 order: 2
 ---
@@ -10,6 +11,10 @@ order: 2
 **Intent** answers one question: what did the user mean? It turns platform events into
 messages, and it is the only place where raw input is read. Everything after it, the model and
 the view, works with typed, already-parsed data.
+
+Building a form with validation? The [Forms](/docs/forms/#complete-example-a-validated-form)
+page starts with a complete, copyable component: the submit intent, the messages, the reducers,
+focus and the error markup in one file. [Form submissions](#form-submissions) below sums it up.
 
 ```ts
 // src/search-box.ts
@@ -57,8 +62,8 @@ export const SearchBox = define<State, Msg>()('my-search-box', {
 
 ## Naming intents in markup
 
-The view puts `data-intent=${i.Search}` on an element. `i` holds the message tags, typed, so a
-misspelt intent is a compile error. When that element's trigger event fires, Gyral calls the
+The view puts `data-intent=${i.Search}` on an element. `i` holds the intent names (the keys of
+`intent`), typed, so a misspelt intent is a compile error. When that element's trigger event fires, Gyral calls the
 parser registered under the same name in `intent`, and sends whatever it returns through
 `update`.
 
@@ -105,7 +110,7 @@ moves with the keyboard and tracks focus, all on the `<li>` itself:
 
 ```ts
 // src/task-list.ts
-import { define, each, html, intentsOf, type TemplateResult } from '@gyral/core';
+import { define, each, html, intentsOf, on, type TemplateResult } from '@gyral/core';
 
 export interface Task {
   readonly id: string;
@@ -166,12 +171,10 @@ export const TaskList = define<State, Msg>()('my-task-list', {
     // Released over another task: the dragged one moves there.
     Drop: ({ target }) => ({ _tag: 'Drop', id: idOf(target) }),
     // Alt+ArrowUp and Alt+ArrowDown move the focused task; other keys keep their default.
-    Move: ({ target, key, event }) => {
-      const by = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
-      if (by === 0 || !(event instanceof KeyboardEvent) || !event.altKey) return undefined;
-      event.preventDefault();
-      return { _tag: 'Move', id: idOf(target), by };
-    },
+    Move: on('keydown', { keys: ['ArrowUp', 'ArrowDown'], modifiers: { alt: true } }, (input) => {
+      input.event.preventDefault();
+      return { _tag: 'Move', id: idOf(input.target), by: input.key === 'ArrowUp' ? -1 : 1 };
+    }),
     Focus: ({ target }) => ({ _tag: 'Focus', id: idOf(target) }),
   },
   update: {
@@ -248,6 +251,69 @@ element can dispatch a `CustomEvent`. [Using third-party web
 components](/docs/third-party-components/#what-the-parser-gets) shows a map's custom event
 parsed this way.
 
+### Parsers typed by their event
+
+`on(event, [filter], parser)` from `@gyral/core` is a parser for one event type. Its input is
+typed by that event, so `input.event` is a `KeyboardEvent` for `keydown`, a `DragEvent` for
+`drop` and a `SubmitEvent` for `submit`, and it adds what parsers otherwise dig out of the event
+themselves:
+
+| Field           | Holds                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `control`       | The `input`, `select`, `textarea` or `button` that has the intent, typed               |
+| `form`          | That control's form, or the `<form>` that has the intent                               |
+| `modifiers`     | `{ shift, ctrl, alt, meta }`, all `false` for events without modifier keys             |
+| `files`         | The files from a file input, a drop or a paste; `undefined` for other events           |
+| `valueAsNumber` | A number, range, date or time input's value as a number; `undefined` when it's invalid |
+| `origin`        | The element the event started on (`composedPath()[0]`), inside shadow roots too        |
+
+A key filter, `{ keys, modifiers }`, declines other keys the way returning `undefined` does:
+they pass outward and keep their default action, so Ctrl+R still reloads the page. `modifiers`
+is `'none'`, `'any'`, or the keys that must be held or not, such as `{ ctrl: true }`:
+
+```ts
+// src/board.ts
+import { define, html, on } from '@gyral/core';
+
+export type Msg =
+  | { readonly _tag: 'Move'; readonly by: -1 | 1 }
+  | { readonly _tag: 'Attach'; readonly files: readonly File[] }
+  | { readonly _tag: 'Volume'; readonly level: number };
+
+export const Board = define<{ readonly at: number }, Msg>()('my-board', {
+  init: () => ({ at: 0 }),
+  intent: {
+    // Only the two arrows, with no modifier held: Alt+ArrowLeft still goes back.
+    Move: on('keydown', { keys: ['ArrowLeft', 'ArrowRight'], modifiers: 'none' }, (input) => ({
+      _tag: 'Move',
+      by: input.key === 'ArrowLeft' ? -1 : 1,
+    })),
+    Attach: on('change', (input) => ({ _tag: 'Attach', files: input.files ?? [] })),
+    Volume: on('input', (input) =>
+      input.valueAsNumber === undefined
+        ? undefined
+        : { _tag: 'Volume', level: input.valueAsNumber },
+    ),
+  },
+  update: {
+    Move: (s, m) => ({ at: s.at + m.by }),
+    Attach: (s) => s,
+    Volume: (s) => s,
+  },
+  view: (s, i) => html`
+    <p tabindex="0" data-intent-keydown=${i.Move}>Position: ${s.at}</p>
+    <label>Attachments <input type="file" multiple data-intent-change=${i.Attach} /></label>
+    <label>Volume <input type="range" data-intent-input=${i.Volume} /></label>
+  `,
+});
+```
+
+Bind the intent to the parser's event, with `data-intent-<event>` or `data-intent-on`, or rely on
+the element's own trigger. In development, a parser that another event reaches throws
+([G0018](/errors/#G0018)), and the `gyral/intent-event` lint rule reports such a binding in your
+editor. Plain parsers keep `IntentInput`, and `on()` is a module of its own: an app that never
+calls it doesn't bundle it.
+
 ## Parse, don't validate
 
 A parser returns one of three things:
@@ -263,6 +329,28 @@ Parsers may return a promise, because schema validation can be async. They must 
 effects. The one exception is `event.preventDefault()`, for example to stop arrow keys moving
 the caret.
 
+## Form submissions
+
+A `<form>` with `data-intent` runs its parser on `submit`, and Gyral prevents the page load. The
+parser gets the form as `target` and the submitted values as `formData`. To validate, read each
+field's `validity` from `target.elements` and return one message with every error, or one with
+the clean values:
+
+- **Name the submit intent something that isn't a message tag**, such as `Submit`, so it can
+  return either message (`Rejected` or `SignedUp`). See
+  [Intent names that aren't messages](#intent-names-that-arent-messages).
+- **Put `novalidate` on the form** and keep `required`, `type="email"` and `minlength` on the
+  fields. Without it, a failing constraint stops the `submit` event and the parser never runs.
+- **Keep errors in state** and render them next to their fields with `aria-invalid` and
+  `aria-describedby`. Focus the first invalid field with a `focus()` command from the reducer:
+  the parser may not move focus, because that is a side effect.
+- **With a schema**, `form(definition, toMsg)` parses the `FormData` for you and returns
+  `IntentRejected` with field issues; `fieldErrors(issues)` groups them by field.
+
+The whole component, ready to copy, is
+[Forms: Complete example](/docs/forms/#complete-example-a-validated-form). The schema path is
+[Forms: form() and invalid()](/docs/forms/#form-and-invalid).
+
 ## Declining: passing an event outward
 
 Lookup starts at the element that was hit and goes outward, and the nearest element with an
@@ -272,7 +360,7 @@ component's root. So a container's keyboard shortcuts and its fields' own keys l
 
 ```ts
 // src/note-editor.ts
-import { define, html } from '@gyral/core';
+import { define, html, on } from '@gyral/core';
 
 export interface State {
   readonly body: string;
@@ -287,10 +375,6 @@ export type Msg =
   | { readonly _tag: 'AddTag'; readonly tag: string }
   | { readonly _tag: 'Save' };
 
-/** Ctrl+S, or Command+S on a Mac. */
-const isSave = (event: Event, key: string | undefined): boolean =>
-  key === 's' && event instanceof KeyboardEvent && (event.ctrlKey || event.metaKey);
-
 export const NoteEditor = define<State, Msg>()('my-note-editor', {
   init: () => ({ body: '', draft: '', tags: [], saving: false }),
   intent: {
@@ -301,12 +385,12 @@ export const NoteEditor = define<State, Msg>()('my-note-editor', {
       const tag = value?.trim() ?? '';
       return key === 'Enter' && tag !== '' ? { _tag: 'AddTag', tag } : undefined;
     },
-    // The editor's shortcut, wherever focus is inside it.
-    Save: ({ key, event }) => {
-      if (!isSave(event, key)) return undefined;
+    // The editor's shortcut, wherever focus is inside it: Ctrl+S, or Command+S on a Mac.
+    Save: on('keydown', { keys: ['s'] }, ({ event, modifiers }) => {
+      if (!modifiers.ctrl && !modifiers.meta) return undefined;
       event.preventDefault(); // not the browser's "Save page as"
       return { _tag: 'Save' };
-    },
+    }),
   },
   update: {
     Body: (s, m) => ({ ...s, body: m.text }),
@@ -335,12 +419,9 @@ section's `Save` sees Ctrl+S from there too.
 - **Only a synchronous `undefined` declines.** A parser that returns a promise has taken the
   event, whatever the promise resolves to: lookup can't wait for it.
 - **Declining stays inside the component.** A nested component's lookup ends at its own root.
-  The outer component sees the same event through its own listener, once, as before.
+  The outer component sees the same event through its own listener, once.
 - **To skip events by where they started** rather than by key, compare `event.target` (the
   element that was hit) with `target` (the element with the intent).
-
-Before Gyral 0.3.1, `undefined` ended the lookup, so an outer intent never saw an event that an
-inner parser ignored. See the [migration guide](/docs/migrating-0-3-0-to-0-3-1/#behavior-changes).
 
 ## Props, state and stores in a parser
 
@@ -469,7 +550,11 @@ export const parseSearch = ({
 
 `_tag: 'Search' as const` in the returned object works too. The same holds for the mappers of
 `child()`, `form()` and `field()`. To type a parser that reads the context, use
-`IntentParser<Variant, Props>`.
+`IntentParser<Variant, Props>`, or `IntentParser<Variant, Props, State>` when it reads `state`.
+`Variant<Msg, 'Search'>` from `@gyral/core` names the variant without `Extract`,
+and `ParseResult<M>` is what a parser may return: a message, `IntentRejected` or `undefined`.
+`StandardSchemaV1` is exported too, for helpers that take a schema the way `field()` and
+`defineForm()` do.
 
 ## Buttons carry their own data
 

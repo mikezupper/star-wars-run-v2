@@ -1,6 +1,7 @@
 ---
 title: Coming from Lit
 description: Move a Lit component to Gyral's Model-View-Intent loop: explicit props, pure views, typed messages, keyed rows, drivers, stores and native hydration.
+useWhen: porting a Lit component or app to Gyral, or comparing the two
 section: Background
 order: 3
 ---
@@ -8,7 +9,7 @@ order: 3
 # Coming from Lit
 
 Gyral components are standard custom elements, so you can migrate one at a time alongside
-your existing Lit elements. Gyral 0.3 uses its own renderer. Its templates are not Lit
+your existing Lit elements. Gyral uses its own renderer. Its templates are not Lit
 templates, and Lit directives do not work in them.
 
 ## A small component
@@ -36,8 +37,8 @@ export const Counter = define<State, Msg>()('my-counter', {
 
 There is no event closure in the template. `true` creates the tag-only message; a parser
 extracts typed data for a message that needs it. Reducers and views are pure, while commands
-describe work performed by drivers. This example uses the 0.3.1 curried `define` spelling;
-the [0.3.1 migration guide](/docs/migrating-0-3-0-to-0-3-1/) covers that change.
+describe work performed by drivers. `define` takes two calls: the first names the types, the
+second the tag and the spec.
 
 ## Translate responsibilities
 
@@ -55,7 +56,7 @@ the [0.3.1 migration guide](/docs/migrating-0-3-0-to-0-3-1/) covers that change.
 | `ref()` / element work              | An explicit element hook, with a server half where markup is needed                                      |
 | Reactive controller / observer      | A subscription driver for outside sources, or a lifecycle hook with `dispose` for element-owned work     |
 | `@lit/task`                         | Commands, a driver, and loading/success/failure messages in the model                                    |
-| `@lit/context`                      | Declared Gyral stores through `ctx.stores`, or props for parent-owned inputs                             |
+| `@lit/context`                      | Gyral stores listed in `stores` and read with `ctx.read(store)`, or props for parent-owned inputs        |
 | `requestUpdate()`                   | Send a typed message or change a declared prop/store; no general manual update API                       |
 | `updateComplete`                    | `await settled()` for the page's pending Gyral rendering                                                 |
 | Lit SSR / hydration                 | `renderPage` or `renderToString` from `@gyral/ssr`, with Gyral seeds and native declarative shadow roots |
@@ -91,8 +92,8 @@ one-off work; use `subscriptions(state, props)` for sources that should keep run
 their inputs remain active. Gyral cancels their lanes on replacement or disconnect. The
 [effects guide](/docs/effects/) shows expected failures and concurrency policies.
 
-Move component styles into `styles: css\`...\``or trusted CSS strings. Gyral shares native
-constructable stylesheets; expose`part` names and custom properties as your public theme
+Move component styles into ``styles: css`...` `` or trusted CSS strings. Gyral shares native
+constructable stylesheets; expose `part` names and custom properties as your public theme
 contract. Existing third-party components keep their own style system.
 
 On the server, register component definitions before rendering or use the component manifest.
@@ -105,6 +106,4 @@ Lit installed for your remaining Lit elements, but Gyral itself does not depend 
 For Lit's original contracts, see its official
 [properties](https://lit.dev/docs/components/properties/),
 [lifecycle](https://lit.dev/docs/components/lifecycle/) and
-[controllers](https://lit.dev/docs/composition/controllers/) documentation. The
-[0.2-to-0.3 guide](/docs/migrating-0-2-to-0-3/) is for upgrading a Gyral application that
-previously used Lit internally; it is a separate migration.
+[controllers](https://lit.dev/docs/composition/controllers/) documentation.

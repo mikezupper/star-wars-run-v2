@@ -1,6 +1,7 @@
 ---
 title: Components
 description: How define() turns a spec into a custom element, and how components pass data to each other with props and outputs.
+useWhen: defining a component: the spec fields, props, child components, outputs and escape hatches
 section: Guides
 order: 1
 ---
@@ -61,19 +62,28 @@ optional:
 A few more optional fields cover rarer needs: `error` (a fallback view, see
 [Error handling](/docs/error-handling/)), `states`
 (custom states for CSS, see [Styling](/docs/styling/#custom-states)), `viewTransition` (render a
-change inside a View Transition, see [Views](/docs/views/#view-transitions)) and `renderOnFrame`
-(message tags from bursty sources, such as pointer moves, that render once per animation frame).
+change inside a View Transition, see [Views](/docs/views/#view-transitions)), `renderOnFrame`
+(message tags from bursty sources, such as a socket feed or a sensor, that render once per
+animation frame), and `formAssociated` (a component that takes part in a native form, see
+[Custom form controls](/docs/form-associated/)).
 
 The type parameters are the contract. `State` is a plain data record (JSON, when the component
 is [server-rendered](/docs/server-rendering/#loading-components-in-the-browser)), `Msg` a union of tagged objects, and TypeScript checks that `update` has a reducer for every tag and that the view
 only names intents that exist.
 
+`define()` registers the tag when its module runs, so the page's entry module (or a module it
+imports) must import every component module: `import './greeter.js';` in `src/main.ts`. A
+component module that nothing imports never runs, and its tag stays an empty unknown element;
+development builds warn (G0014) when a tag is still undefined 3 seconds after the page loaded. A parent that renders a child imports it too, as `Total` imports `Stepper`
+[below](#child-components-and-outputs).
+
 `define()` returns the element class. Its `spec` property is the object you passed in, which is
 how [tests](/docs/testing/) run `update` without a DOM. Export it as
-`export const Greeter = define…`, and the Vite preset writes `HTMLElementTagNameMap` entries for
+`export const Greeter = define…`, and `gyral()`, Gyral's Vite plugins, writes `HTMLElementTagNameMap` entries for
 every such component into `.gyral/elements.d.ts` (list that file in your tsconfig's `include`),
-so `document.querySelector('my-greeter')` is typed with no declaration of your own. For `tsc`
-outside Vite, the `gyral-types` command writes the same file.
+so `document.querySelector('my-greeter')` is typed with no declaration of your own. It reads
+calls in code, not in comments or strings. For `tsc` outside Vite, the
+`gyral-types` command writes the same file.
 
 ## Props
 
@@ -128,7 +138,17 @@ export const Badge = define<Stateless, never, Props>()('my-badge', {
 A prop named `maxValue` reads the attribute `max-value`; pass `attribute: 'name'` to choose
 another, or `attribute: false` for a property only. The options are `required`, `default`,
 `attribute` and `schema`, and `equals` for `prop.json` and `prop.value`
-([below](#when-a-prop-counts-as-changed)).
+([below](#when-a-prop-counts-as-changed)). Templates write that attribute name: HTML lowercases
+attribute names, so `maxValue=${n}` on a custom element would set `maxvalue`, which no prop
+reads, and the build and ESLint report it. Write `max-value=${n}`, or set the property with
+`.maxValue=${n}`. Development also warns ([G0024](/errors/#G0024)) when a page's HTML or a
+host framework writes the lowercased name.
+
+A prop can't take the name of a member every element already has: a built-in property such as
+`hidden` or `title`, which would change what the platform does, or one of Gyral's, `state`,
+`send`, `drivers`, `stores` and `initialMessages`, which would hide the component's model.
+TypeScript rejects the name and development throws ([G0023](/errors/#G0023)). Rename the
+property, and keep the attribute if pages use it: `badge: prop.string({ attribute: 'state' })`.
 
 The schemas are [Standard Schema](https://standardschema.dev), so any library that implements it
 works: valibot, zod, ArkType. `string`, `number` and `boolean` carry tiny built-in schemas, so
@@ -195,7 +215,7 @@ export const SeatPicker = define<Stateless, never, PropsOf<typeof props>>()('my-
   `Date`s, filling in defaults or stripping keys would happen only to attributes, whose value is
   the parse's output.
 - **Declare a schema once and pass it by name.** Production client builds never run a
-  `prop.value` check, and the Vite preset removes it when it is a name (`prop.value(Seats)`,
+  `prop.value` check, and `gyral()` removes it when it is a name (`prop.value(Seats)`,
   `schemas.seat`) or an inline function, so the schema's code can leave the bundle. A call
   written in place, such as `prop.value(v.array(Seat))`, stays, because evaluating it could have
   effects. `prop.json` keeps its check: attributes are always parsed.

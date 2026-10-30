@@ -1,6 +1,7 @@
 ---
 title: Network streams
 description: Native EventSource and WebSocket drivers: receive validated streams, send messages and handle connection lifecycles.
+useWhen: reading a WebSocket or EventSource stream as messages
 section: Guides
 order: 7.7
 ---
@@ -79,8 +80,8 @@ Abort removes listeners, closes the source and suppresses pending decoded result
 
 Headers, POST streams and fetch-based transports are outside this driver. Event IDs do not
 guarantee exactly-once delivery or replay; handle deduplication/resynchronization in your
-protocol. Tests use `fakeDriver(feed)` with `el.drivers = { sse: fake }` (or the configured
-name) and `fake.emitNext(...)` to deliver events/states.
+protocol. Tests put `fakeDriver(feed)`, which takes the driver's name (`sse`, or the configured
+one), in `el.drivers = [fake]` and call `fake.emitNext(...)` to deliver events/states.
 
 ## WebSocket
 

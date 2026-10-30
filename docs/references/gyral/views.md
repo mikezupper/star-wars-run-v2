@@ -1,6 +1,7 @@
 ---
 title: Views
 description: Views are pure functions from state to html templates. Name intents, render keyed lists, bind form state, and let the compiler check markup.
+useWhen: writing templates: bindings, keyed lists with each, form state, hooks, dialogs, focus and view transitions
 section: Guides
 order: 4
 ---
@@ -156,13 +157,15 @@ markup: the intent name and the button's `value`.
 Templates are static, so their mistakes can be found before anyone loads the page. One set of
 rules runs in three places, with the same messages:
 
-- **`vite build`**, through `gyralVitePreset()`: every template is checked and precompiled, and a
+- **`vite build`**, through `gyral()`: every template is checked and precompiled, and a
   mistake fails the build with a code frame. Precompiled templates also leave the code that
   prepares templates at runtime out of your bundle. With the optional `parse5` package
   installed, the compiler also compares each template with what a full HTML parser builds.
 - **The development runtime** (the dev server and tests) checks each template the first time it
-  renders and throws with the same message, naming where the template is written:
-  `at src/cart.ts:12:5`. Under Vite the preset gives the exact file, line and column; elsewhere
+  renders and throws with the same message (a production bundle built without `gyral()`
+  leaves out two checks, on component tag names and custom-element attribute names, to stay
+  small), naming where the template is written:
+  `at src/cart.ts:12:5`. Under Vite, `gyral()` gives the exact file, line and column; elsewhere
   they come from the stack trace. Hydration mismatches name it too.
 - **ESLint**, in your editor, with `@gyral/core/eslint`:
 
@@ -181,14 +184,18 @@ control, a self-closing `<my-el />` (HTML ignores the slash, so the element swal
 follows it), an unquoted `class=a${b}`, markup the browser would repair (a `<tr>` directly in a
 `<table>`, a `<div>` inside a `<p>`), an HTML element such as `<button>` inside an `<svg>` (it
 would become an unknown SVG element that renders nothing), a bound `xlink:href=${…}`, a
-`${…}` inside `<script>` or `<style>`, and a list row that reads the view's variables. Each
+`${…}` inside `<script>` or `<style>`, a list row that reads the view's variables, a JSX-style `<SignupForm>` where the component's tag `<signup-form>` belongs, and a camelCase attribute on a custom element (`<pool-card playerBase=${…}>`, which HTML lowercases to `playerbase`, an attribute no prop reads). Each
 message says what to write instead.
 
 The ESLint config also reports a function written in a hole (`${() => …}`), which is never
 right in a view, and warns, with `gyral/unused-intent`, about an intent parser that no template
 in the module names with `data-intent`: a renamed intent or dead code. That rule is static, so
 intents rendered only in some states count as used, and it skips components whose intent names
-may be used in another module.
+may be used in another module. `gyral/intent-event` reports an
+[`on()` parser](/docs/intent/#parsers-typed-by-their-event) whose intent the template binds to
+another event, and `gyral/prefer-built-in` warns about hand-written versions of what Gyral has
+built in, such as a dialog opened with `showModal()` where `?modal` belongs, naming the built-in
+to use ([the full list](/docs/packages/#the-eslint-plugin)).
 
 In development, Gyral also warns once when a property binding gets a function: `.onclick=${fn}`
 on a built-in element (use `data-intent`), or a function prop on a Gyral component (props are
@@ -293,6 +300,13 @@ When the selection moves, `pick` runs for every row (one comparison each), and o
 rows whose answer changed render again. `pick` results are compared one level deep, so returning
 a small tuple or object is fine.
 
+A `pick` that builds a nested value on every render, such as `() => ({ columns, season })` with
+`columns` computed in the view, is never the same twice, so every row renders again. Make the
+reference stable first: compute `columns` in `update` and keep it in state. Where that can't be
+done, pass options instead of a function, `each(items, key, row, { pick, equals })`, and `equals`
+compares the picked values in place of the one-level check. Keep it cheap: it runs for every row
+on every render.
+
 - Keys are unique strings or numbers. A duplicate key is an error in development.
 - The ESLint rule `gyral/each-row-purity` names any variable a row reads from the view and
   tells you to move it into `pick`.
@@ -300,6 +314,11 @@ a small tuple or object is fine.
   changes, the old elements (and any component state in them) are discarded and new ones
   created. To restart a CSS animation, a hook is lighter: see
   [Replaying a CSS animation](#replaying-a-css-animation).
+
+A whole list with add, delete and filters is in the
+[todo list recipe](/docs/recipes/#a-todo-list-with-filters). Rows carry their item's id
+(`value=${todo.id}`), never their position: with a filter on, a position points at the wrong
+item ([why](/docs/recipes/#toggling-an-item-in-a-filtered-list-changes-the-wrong-item)).
 
 ### .map or each?
 
@@ -405,11 +424,11 @@ export const Board = define<State, Msg>()('my-board', {
   the other column, and for tasks whose slot changed. Tasks that move because the layout changed
   around them, after a resize, aren't animated.
 - **`seen` keeps the keys of deleted tasks.** Clear it when the board loads new data.
-- **The native way is a View Transition.** With [`viewTransition`](#view-transitions), a task
-  whose `view-transition-name` is the same before and after (a style binding on the row,
-  `style="view-transition-name: task-${t.id}"`) morphs from its old place to its new one.
-  Same-document View Transitions are only newly available in browsers, so keep the hook as the
-  fallback for now.
+- **A View Transition doesn't replace the hook here.** No browser captures a
+  `view-transition-name` set inside a shadow root, and components use shadow DOM by default, so
+  rows named that way don't morph. [`viewTransition`](#view-transitions) with a per-row
+  `view-transition-name` works only in a `shadow: false` component. In shadow DOM, the FLIP hook
+  above is the way to animate moves between lists.
 
 ## Form state
 
@@ -428,7 +447,8 @@ browser:
 A binding writes the control only when the model's value for it changes. Then the model wins,
 even after the user has edited the control (the view compares with what the control shows now
 and writes only if they differ). A render for any other reason, such as another field's
-message or a reducer that refused the edit, leaves what the user typed or toggled alone. On the
+message, leaves what the user typed or toggled alone, and a reducer that refuses the edit
+returns the same state, which renders nothing. On the
 server the bindings write the attribute, so the page is right before JavaScript loads, and
 hydration keeps what the user typed before scripts ran until the model's value changes.
 
@@ -844,7 +864,7 @@ export const ResultSearch = define<State, Msg>()('my-result-search', {
   },
   view: (s, i) => html`
     <form data-intent=${i.Search}>
-      <input name="q" aria-label="Search" .value=${s.query} />
+      <input name="q" aria-label="Search" value=${s.query} />
       <button>Search</button>
     </form>
     <ul id="results">
@@ -935,12 +955,17 @@ A missing element or method, or a method that throws, is reported through the
 Return `true` from the optional `viewTransition(prev, next, msg)` spec field to render that
 change inside a [View Transition](https://developer.mozilla.org/docs/Web/API/View_Transition_API):
 a route change, a list that reorders. Gyral skips it where the browser has no support or the
-visitor asked for reduced motion, and the animation itself is CSS.
+visitor asked for reduced motion, and the animation itself is CSS. Browsers don't capture a
+`view-transition-name` set inside a shadow root, so naming single items (rows that should morph
+to their new place) needs a `shadow: false` component; the host element itself can carry a name.
 
 ## When the DOM updates
 
 Reducers run as soon as a message arrives; the DOM updates in a microtask, once for all the
-messages that arrived together, parents before children. Element hooks then run, children
+messages that arrived together, parents before children. A component renders only when what its
+view reads has changed: its state, a declared prop or a declared store's value, each compared
+with `Object.is` against its last render. A message whose reducer returns the same state renders
+nothing, so a reducer with nothing to change returns `s` itself, not a copy. Element hooks then run, children
 before parents. In a test, `await settled()` waits
 until every component has rendered and messages have stopped arriving. See
 [Testing](/docs/testing/).
@@ -948,6 +973,9 @@ until every component has rendered and messages have stopped arriving. See
 ## Pure means repeatable
 
 Because a view only reads its arguments, the server can render it, the browser can hydrate the
-same markup without changes, and a test can render a state and inspect it. If a view needs the
-time, a random number or a measurement, put it in state through a
-[command](/docs/effects/) first.
+same markup without changes, a test can render a state and inspect it, and Gyral can skip a
+render whose inputs are unchanged. If a view needs the time, a random number or a measurement,
+put it in state through a [command](/docs/effects/) first: a view that reads `Date.now()`, a
+module variable or the DOM shows a stale value, because messages that change nothing it reads
+don't render it. In development, Gyral renders skipped views again to check, and warns once per
+component when one comes out different ([G0017](/errors/#G0017)).

@@ -1,6 +1,7 @@
 ---
 title: State Gyral doesn't own
 description: Read signals, Redux-style stores, XState actors and WebSocket feeds with subscription(), write to them with plain drivers, and test both.
+useWhen: reading state Gyral does not own (signals, Redux, XState, a socket) with subscription(), or running long-lived work
 section: Guides
 order: 9
 ---
@@ -66,7 +67,10 @@ export const OutsideCounter = define<{ readonly n: number }, Msg>()('my-outside-
 ## subscription()
 
 `subscription(name, subscribe, options?)` from `@gyral/core` builds a
-[streaming driver](/docs/effects/#streaming-results-with-emit) for a source Gyral doesn't own:
+[streaming driver](/docs/effects/#streaming-results-with-emit) for a source Gyral doesn't own.
+Given a [driver token](/docs/effects/#drivers-the-app-provides) instead of a name,
+`subscription(token, subscribe, options?)` takes the token's name and types, so `emit` and the
+input are checked against them ([below](#a-store-per-page-provided-by-a-token)).
 
 - **`subscribe(emit, { input, signal, fail })`** starts listening, may `emit` the current value
   at once, and returns how to stop: a function, or an object with `unsubscribe()` (RxJS,
@@ -85,9 +89,18 @@ export const OutsideCounter = define<{ readonly n: number }, Msg>()('my-outside-
   `subscribe` that throws fails the same way.
 - **Writes are plain commands**, like `addToCounter` above. The change comes back through the
   subscription, not through the write's `onSuccess`.
+- **Every value reaches the component unless you say otherwise.** In `options`, `select` maps
+  each value first (a slice of a store's state), `equals` drops a value equal to the last one
+  delivered (`equals: Object.is` for a store that hands out the same object when nothing
+  changed), and `coalesce: 'microtask'` or `'frame'` delivers only the latest value per
+  microtask or animation frame. For a token `count = defineDriver<undefined, number>('count')`,
+  `subscription(count, (emit) => store.subscribe(() => emit(store.getState())), { select: (s) => s.count, equals: Object.is })`
+  delivers the store's `count` only when it changes.
 
 For many values per frame (market data, sensors) into a view that takes real work to render,
-list the message in the component's `renderOnFrame`, so it renders once per animation frame.
+`coalesce: 'frame'` delivers only the latest one per animation frame. When the reducers need
+every value, list the message in the component's `renderOnFrame` instead: each message still
+reaches `update`, and the component renders once per frame.
 
 ## Moves and reconnects
 
@@ -128,15 +141,17 @@ export const UnreadBadge = define<number, Msg>()('unread-badge', {
 
 `moveBefore()` keeps everything too, without even the disconnect.
 
-## A store per page, provided by name
+## A store per page, provided by a token
 
-When each page, or each test, creates its own store, build the commands with a driver that
-explains what's missing, and provide the real one above the components by name. Drivers are
-[looked up by name](/docs/effects/#substituting-drivers), nearest first:
+When each page, or each test, creates its own store, build the commands with a
+[driver token](/docs/effects/#drivers-the-app-provides) and provide the subscription above the
+components. Drivers are [looked up by name](/docs/effects/#substituting-drivers), nearest first,
+and a command whose token nothing provides is reported as [G0043](/errors/#G0043), naming the
+driver and the component:
 
 ```ts
 // src/table.ts
-import { provideDrivers, subscription } from '@gyral/core';
+import { defineDriver, provideDrivers, subscription } from '@gyral/core';
 
 export interface Table {
   readonly moves: number;
@@ -147,21 +162,19 @@ interface TableStore {
   subscribe(listener: () => void): () => void;
 }
 
-/** Commands are built with this one; it fails with a clear error until a page provides one. */
-export const unboundTable = subscription<Table>('table', () => {
-  throw new Error('No table: call provideTable(element, store) on an ancestor.');
-});
+/** Commands are built with this token; each page provides the subscription behind it. */
+export const table = defineDriver<undefined, Table>('table');
 
 /** Gives every component under `element` this page's store; returns how to undo it. */
 export const provideTable = (element: Element, store: TableStore): (() => void) =>
-  provideDrivers(element, {
-    table: subscription<Table>('table', (emit) => {
+  provideDrivers(element, [
+    subscription(table, (emit) => {
       emit(store.getState());
       return store.subscribe(() => {
         emit(store.getState());
       });
     }),
-  });
+  ]);
 ```
 
 ## TC39 signals
@@ -228,9 +241,9 @@ writes (`run: (text) => { socket.send(text); }`).
 
 ## Testing
 
-- **Use the real source**: create the store in the test, provide its driver by name
-  (`provideDrivers(container, { table: … })` from `@gyral/core`, `mount(Component, { drivers })` from `@gyral/testing`, or `el.drivers`), change the
-  store, then `await settled()`. `settled()` doesn't wait for a subscription to end (it never
+- **Use the real source**: create the store in the test, provide its driver
+  (`provideTable(container, store)` above, `mount(Component, { drivers: [subscription(table, …)] })`
+  from `@gyral/testing`, or `el.drivers`), change the store, then `await settled()`. `settled()` doesn't wait for a subscription to end (it never
   does), but it waits for values already on their way, such as a store that notifies in a
   microtask or a watcher that re-arms in one. No `await Promise.resolve()` loops.
 - **Or fake it**: `fakeDriver('counter')` records the subscription, and `emitNext(value)` pushes

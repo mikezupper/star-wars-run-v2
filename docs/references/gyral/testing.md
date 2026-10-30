@@ -1,6 +1,7 @@
 ---
 title: Testing
 description: Test models without a DOM, components in a real browser with fake drivers and virtual time, and server-rendered pages through hydration.
+useWhen: testing a model or a view without a browser, a component in a browser, fake drivers, virtual time, SSR and hydration, or coverage
 section: Guides
 order: 16
 ---
@@ -11,30 +12,6 @@ Gyral's loop is made of pure functions and data, so most of a component can be t
 browser: feed messages to `update`, look at the state and the commands. What's left, rendering
 and the platform, you test in a real browser. `@gyral/testing` covers both, and works with any
 test runner.
-
-## Accessibility checks for your app
-
-Use a browser accessibility scanner alongside component behavior tests. An app-level helper
-can use Playwright and axe directly; `@gyral/testing` does not need to wrap their APIs:
-
-```ts
-// test/accessibility.ts
-import assert from 'node:assert/strict';
-import { AxeBuilder } from '@axe-core/playwright';
-import type { Page } from 'playwright';
-
-export async function expectAccessible(page: Page): Promise<void> {
-  const result = await new AxeBuilder({ page }).analyze();
-  assert.deepEqual(result.violations, []);
-}
-```
-
-Install `@axe-core/playwright` and `playwright` as development dependencies. Navigate to a
-built page, wait for its application-ready condition, then call the helper. Scan meaningful
-states such as invalid forms and open dialogs in both color schemes. Axe traverses open
-shadow roots; keep those components mounted during the scan. The platform spike checks that
-its shadow-root button is actually scanned. See [Accessibility](/docs/accessibility/) for
-keyboard, focus and screen-reader checks that an automated scan cannot replace.
 
 ```sh
 npm install -D @gyral/testing vitest
@@ -136,13 +113,14 @@ it('ignores answers to an older query', () => {
 
 - `inputsFor(commands, driver)` lists the inputs of the commands for one driver, matched by
   name, so the test reads the request that would be sent.
-- `outputsIn(commands, Component)` lists what a reducer sent to the parent with `emit`, typed
+- `outputsIn(commands, Component)` lists what a reducer sent to the parent through
+  `outputs<Out>()`, typed
   by the component's output union, and `focusTargetsIn(commands)` lists where it asked focus to
   go (below).
 - `resolve(command, output)` and `reject(command, error)` run a command's own mappers, so the
   test checks the exact message the component would receive.
 - Framework messages step like any other: `{ _tag: 'PropsChanged', props, prev }`,
-  `IntentRejected`, `StoreChanged`.
+  `IntentRejected`, `StoreChanged`, `Hydrated`, `Errored`.
 - `step(…, props, stores)` and `run(…, { props, stores, state })` give reducers their context.
 
 These tests run in Node, in milliseconds, and cover most of the behaviour.
@@ -200,11 +178,39 @@ component can't send doesn't compile. Without a class, `outputsIn<TagEditorOutpu
 names the union itself. Read outputs and focus requests through these helpers, not by
 filtering on driver names: those are Gyral's internals and may change.
 
+## Views in Node
+
+A view is a pure function of state, so its markup can be tested in Node too. `viewOf(Component,
+state, { props, stores })` calls the component's view with the named intents and context it
+would get on the page, without mounting it or a DOM shim. Render the result with
+`renderToString` from `@gyral/ssr`, passing `{ dev: false }` so the HTML carries no
+development markers:
+
+```ts
+// src/lookup.view.test.ts
+import { expect, it } from 'vitest';
+import { renderToString } from '@gyral/ssr';
+import { viewOf } from '@gyral/testing';
+import { Lookup } from './lookup.js';
+
+it('shows the name it found', async () => {
+  const markup = await renderToString(viewOf(Lookup, { query: 'ada', found: 'Ada Lovelace' }), {
+    dev: false,
+  });
+  expect(markup).toContain('<output for="q">Ada Lovelace</output>');
+});
+```
+
+This tests what the view renders for a state, nothing more. Hooks, focus, native validity and
+hydration need the browser tests below.
+
 ## Browser tests
 
 For rendering, events and focus, test the real element in a real browser. Gyral's own tests use
-[Vitest browser mode](https://vitest.dev/guide/browser/) with Chromium; spread
-`gyralVitePreset()` into the browser project's config.
+[Vitest browser mode](https://vitest.dev/guide/browser/) with Chromium; add
+`gyral({ optimize: 'auto' })` to the browser project's `plugins`. `optimize: 'auto'` has Vite
+pre-bundle what your components and tests import before the first test runs, so Vitest doesn't
+reload the page partway through a run.
 
 Gyral renders on a schedule: reducers run as soon as a message arrives, and the DOM updates in a
 microtask, once for every message that arrived together. **`await settled()`** from
@@ -244,7 +250,7 @@ afterEach(() => time?.restore());
 it('debounces typing, then shows the answer', async () => {
   time = virtualTime();
   const http = fakeHttp(); // the real http driver over a fake fetch: schemas still decode
-  const lookup = await mount(Lookup, { drivers: { http } });
+  const lookup = await mount(Lookup, { drivers: [http] });
 
   await lookup.type('input', 'ada');
   await time.advance(299);
@@ -371,9 +377,10 @@ it('steps with the arrows of its orientation', () => {
 
 ## Fake drivers and commands
 
-Substitute drivers by name, as the app would ([Effects](/docs/effects/#substituting-drivers)):
+Substitute drivers by name, as the app would ([Effects](/docs/effects/#substituting-drivers)),
+in a list where each fake goes under its own name:
 
-- **`el.drivers = { http }`** for one element.
+- **`el.drivers = [http]`** for one element.
 - **`provideDrivers(root, drivers)`** from `@gyral/core` for every component under a container,
   including nested components in shadow roots, as the app itself would at its entry. It returns
   a function that removes the overrides.
@@ -381,30 +388,34 @@ Substitute drivers by name, as the app would ([Effects](/docs/effects/#substitut
 - **`fakeDriver(driverOrName, { impl? })`** records every call and waits for the test:
   `resolveNext(output)`, `rejectNext(error)`, `emitNext(value)` for streaming drivers, or
   `calls[i].resolve(…)`. With `impl`, it answers at once. **`fakeDriver(name, run)`** is the
-  short form: it answers every call with `run` and records the inputs.
+  short form: it answers every call with `run` and records the inputs. Given a driver or a
+  token, `fakeDriver(session, run)` takes its name and types, so `run` is checked against them.
 - **`fakeHttp()`** from `@gyral/http/testing` is the real HTTP driver over a controllable
   `fetch`, so response schemas, status errors and JSON parsing behave as in production.
   `respondNext({ status, body })`, `reply(422, problem)` and `failNext()` answer requests.
 
 Drivers go in as they are: any driver, a fake included, fits `el.drivers`, `mount` and
 `provideDrivers` with no cast. A driver token (`defineDriver<I, O, E>('name')`, which has no
-implementation of its own) is substituted the same way, by its name. When you keep a map of drivers yourself, type it as
-`DriverOverrides` from `@gyral/core`. `Record<string, Driver<unknown, unknown>>` looks right but
-rejects every driver with a typed input.
+implementation of its own) is substituted the same way, by its name. A record keyed by name,
+`el.drivers = { http }`, works too and reads well for fakes; development warns
+([G0045](/errors/#G0045)) when a key isn't the name of the driver under it. When you keep a set
+of drivers yourself, type a list as `DriverList` and a record as `DriverOverrides`, both from
+`@gyral/core`. `Record<string, Driver<unknown, unknown>>` looks right but rejects every driver
+with a typed input.
 
 ```ts
 // src/test-drivers.ts
-import type { DriverOverrides } from '@gyral/core';
+import type { DriverList } from '@gyral/core';
 import { fakeHttp } from '@gyral/http/testing';
 import { fakeDriver } from '@gyral/testing';
 
 /** What the component copied to the clipboard, for the test to read. */
 export const copied: string[] = [];
 
-export const testDrivers: DriverOverrides = {
-  http: fakeHttp(),
-  clipboard: fakeDriver<string, undefined>('clipboard', (text) => void copied.push(text)),
-};
+export const testDrivers: DriverList = [
+  fakeHttp(),
+  fakeDriver<string, undefined>('clipboard', (text) => void copied.push(text)),
+];
 ```
 
 Removing an element stops its commands one microtask later, so that a move (removed and
@@ -414,7 +425,7 @@ have run, and no later result is dispatched. Cleanup a driver runs after an `awa
 `finally` once its promise settles) happens later still; yield again (or
 `await clock.advance(0)` under `virtualTime()`) to observe it. To test a component that is
 attached again after a real removal, check its subscriptions for that state:
-`subscriptionsFor(Component, state, props)` returns the commands it would start.
+`subscriptionsFor(Component.spec, state, props)` returns the commands it would start.
 
 ## Virtual time
 
@@ -464,11 +475,11 @@ it in the browser project's config:
 ```ts
 // vitest.config.ts
 import { defineConfig } from 'vitest/config';
-import { gyralVitePreset } from '@gyral/core/vite';
+import { gyral } from '@gyral/core/vite';
 import { renderOnServer } from '@gyral/testing/vitest';
 
 export default defineConfig({
-  ...gyralVitePreset(),
+  plugins: [gyral({ optimize: 'auto' })],
   test: {
     // Your browser setup (provider, instances) as usual, plus the command.
     browser: { commands: { renderOnServer } },
@@ -502,7 +513,7 @@ describe('the server-rendered lookup', { timeout: 60_000 }, () => {
     const host = page.root.querySelector('my-lookup');
     const input = host?.shadowRoot?.querySelector('input');
     const http = fakeHttp();
-    provideDrivers(page.root, { http });
+    provideDrivers(page.root, [http]);
 
     await import('./lookup.js'); // import after mounting, as a real page load would
     await hydrated(page);
@@ -588,3 +599,38 @@ it('hydrates the server page in place', async () => {
 `stepStore(store, state, msg)` runs a store reducer, `store.instance(initial)` gives a test its
 own instance (`mount(Cart, { stores: { cart: instance } })`), and `inputsFor(commands, store)`
 lists the messages a reducer sent to a store.
+
+## Coverage
+
+Keep `gyral()` in the tested project and name your sources in Vitest's coverage
+settings: `test: { coverage: { provider: 'v8', include: ['src/**/*.ts'] } }`. Install
+`@vitest/coverage-v8` at the same version as Vitest.
+
+In development and tests, `gyral()` records where each `html` and `svg` template was written,
+so errors can name the file and line. That adds no branches to your coverage report: the counts
+are your own code's.
+
+## Accessibility checks for your app
+
+Use a browser accessibility scanner alongside component behavior tests. An app-level helper
+can use Playwright and axe directly; `@gyral/testing` does not need to wrap their APIs:
+
+```ts
+// test/accessibility.ts
+import assert from 'node:assert/strict';
+import { AxeBuilder } from '@axe-core/playwright';
+import type { Page } from 'playwright';
+
+export async function expectAccessible(page: Page): Promise<void> {
+  const result = await new AxeBuilder({ page }).analyze();
+  assert.deepEqual(result.violations, []);
+}
+```
+
+Install `@axe-core/playwright` and `playwright` as development dependencies. Navigate to a
+built page, wait for its application-ready condition, then call the helper. Scan meaningful
+states such as invalid forms and open dialogs in both color schemes. Axe traverses open
+shadow roots; keep those components mounted during the scan, and check that a rule actually ran
+on an element inside a shadow root, so a scan of the wrong root can't pass silently. See
+[Accessibility](/docs/accessibility/) for keyboard, focus and screen-reader checks that an
+automated scan cannot replace.

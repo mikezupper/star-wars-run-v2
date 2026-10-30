@@ -1,6 +1,7 @@
 ---
 title: Browser storage
 description: Typed localStorage and IndexedDB drivers: persist values, watch settings, query records and run atomic transactions.
+useWhen: saving state in localStorage or IndexedDB, with typed decoding, watches and migrations
 section: Guides
 order: 7.6
 ---
@@ -82,8 +83,9 @@ go through `StorageAccessError` and command `onFailure`. Handle both watch outpu
 The Standard Schema decodes parsed JSON, including async validation. If it transforms the
 input, configure `encode(value)` to reconstruct its JSON input shape. No transactions or
 cross-tab atomicity are promised. Use distinct command keys for watches and writes. Abort
-removes listeners and suppresses late decoder results. Tests use `fakeDriver(settings)`
-with `el.drivers = { localStorage: fake }`, or an isolated `storage: () => storageObject`.
+removes listeners and suppresses late decoder results. Tests put `fakeDriver(settings)`, which
+takes the driver's name, in `el.drivers = [fake]`, or use an isolated
+`storage: () => storageObject`.
 
 Initial watches belong in `subscriptions`: the server's seed hydrates first, then browser
 storage updates the model. Keep server-rendered state JSON-compatible.

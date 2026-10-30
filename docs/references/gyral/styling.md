@@ -1,6 +1,7 @@
 ---
 title: Styling and themes
 description: Style Gyral components with Shadow DOM, cascade layers, custom properties and custom states, and make a whole site themeable from CSS alone.
+useWhen: styling a component with css, themes, custom properties, custom states or document CSS
 section: Guides
 order: 5
 ---
@@ -243,8 +244,11 @@ export const ArticlePage = define<Stateless, never, { readonly heading: string }
 - On the server it renders as plain HTML, with no `<template shadowrootmode>`, which every
   crawler and reader mode understands.
 - It has no `styles` and no `<slot>`s: it owns all its children. Don't write children inside
-  its tag; pass data as props (the server throws on children it would have to drop). Scope its
-  CSS with `@scope (my-article-page) { … }` or by tag name.
+  its tag in a template; pass data as props (the server throws on children it would have to
+  drop). Scope its CSS with `@scope (my-article-page) { … }` or by tag name.
+- Children in the page's HTML are fallback content, shown without JavaScript: its first render
+  in the browser replaces them, as a shadow root's does. A server-rendered one keeps the
+  server's children and hydrates them in place.
 - Intent isolation still holds: a light component's intents stop at the next Gyral component
   inside it.
 
