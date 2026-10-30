@@ -91,6 +91,7 @@ export const Search = define<State, Msg, Props>()('swr-site-search', {
     },
     Key: ({ key, event }, { state }) => {
       const e = event as KeyboardEvent;
+      // eslint-disable-next-line gyral/prefer-built-in -- on() parsers can't be tested DOM-free with @gyral/testing parse() yet (Gyral gyral-cd0)
       if (e.isComposing || e.altKey || e.ctrlKey || e.metaKey || event.defaultPrevented)
         return undefined;
       if (

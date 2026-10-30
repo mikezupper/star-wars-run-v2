@@ -23,7 +23,7 @@ repo follows.
   `noUncheckedIndexedAccess`. No Effect.
 - **Vite** for the dev server and the client build. **Vitest** for tests.
 - **pnpm**, with versions pinned to match gyral.dev. `@gyral/core`, `@gyral/ssr` and
-  `@gyral/testing` use 0.3.7 from npm (2026-10-28; the first official npm release was 0.3.1,
+  `@gyral/testing` use 0.3.8 from npm (2026-10-29; the first official npm release was 0.3.1,
   on 2026-10-11). The vendored
   prerelease tarballs and their overrides are removed. The `lit-html` 3.3.0 pin that 0.2
   needed went with Lit.
@@ -141,3 +141,21 @@ pre-bundle, and nothing imports the removed `@gyral/ssr/hydrate`.
 The copied reference docs still come from `6ac30c2` and describe 0.3.1; refreshing them is
 `swr-qpd`. 0.3.2 moved the template locator's fallback out of application code, so the
 Node tests' plugin filter is no longer needed for coverage (`swr-d8j`).
+
+## Gyral 0.3.8 (`swr-g9t`, 2026-10-29)
+
+Core, ssr and testing moved from 0.3.7 to exactly 0.3.8 from npm. Core is now the other two's
+peer, and one copy resolves. `npx @gyral/codemod@0.3.8 0.3.8` rewrote `vite.config.ts` to
+`plugins: [gyral({ components: true })]`. It left `vitest.config.ts`, whose preset also fed
+the template-locations filter. That file now uses `plugins: [gyral()]` with no filter
+(`swr-d8j`), and branch coverage is 80.4% (80.31% on 0.3.7 with the filter).
+
+`gyralDevServer` now builds the app once per server-module version, so `scripts/dev.ts` no
+longer keeps its own per-module cache of sites. An edit to a server module shows on the next
+request, and so does its revert.
+
+0.3.8 renders a component only when its state, a declared prop or a declared store changes.
+Both islands' views read only their state and props, so nothing moved. `gyral/prefer-built-in`
+flags the search island's hand-written modifier check. Its replacement, `on()`, can't run
+under `@gyral/testing`'s `parse()` without a DOM yet (Gyral `gyral-cd0`), and that parser's
+tests run in Node, so the check stays, with a justified ESLint directive.

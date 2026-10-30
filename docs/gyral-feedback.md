@@ -1,9 +1,9 @@
 # Gyral feedback from starwars.run
 
-For the Gyral team. Updated 2026-10-28 for 0.3.7 (`swr-hfr`); the official 0.3.1 review was
-`2137e43` (`swr-7f1.11.7`; feedback review `swr-24u`). The dated reports below preserve
-the results from next.6 and next.9; their API names, application shape and measurements
-describe those versions.
+For the Gyral team. Updated 2026-10-29 for 0.3.8 (`swr-g9t`); 0.3.7 was `swr-hfr`, and the
+official 0.3.1 review was `2137e43` (`swr-7f1.11.7`; feedback review `swr-24u`). The dated
+reports below preserve the results from next.6 and next.9; their API names, application shape
+and measurements describe those versions.
 
 starwars.run has a page for every Wookieepedia article, about 227,000 of them. Pages are
 rendered with Gyral's `html` and `renderPage()` on the server, on request from SQLite
@@ -16,6 +16,38 @@ modules from rendered tags. We have used Gyral since 0.1, through 0.2 (on Lit), 
 
 So this is one team's view: a large multi-page site with two islands. We don't use
 `@gyral/router`, stores, forms or `@gyral/http`, and say nothing about them here.
+
+## 0.3.8 results (2026-10-29)
+
+The upgrade from 0.3.7 needed the three pins, the lockfile, one codemod rewrite and two hand
+changes. `pnpm check` passed: **332 tests in 35 files** at **80.4% branch coverage**, the API
+bundle, the **396-page sample** and Chromium smoke in both themes, including the dev server.
+One core resolves.
+
+- **`gyral()`** replaced the preset in both configs. The codemod left `vitest.config.ts`,
+  because the preset also fed our filter of the `gyral:template-locations` plugin. With 0.3.2's
+  virtual helper module the filter can go: branch coverage rose from 80.31% to 80.4% without
+  it (`swr-d8j`).
+- **`gyralDevServer` builds once per server-module version**, so `scripts/dev.ts` lost its
+  `WeakMap` of sites: 15 lines of code became 8. An edit to a server module shows on the next
+  request, and so does its revert; later requests take about 15 ms. One staleness remains,
+  as on 0.3.7: the server keeps rendering an island with its first definition until restart,
+  because `define()` records only the first spec per tag. An edit to the search island's
+  labels doesn't reach its server-rendered HTML.
+- **`gyral/prefer-built-in`** flagged the search parser's modifier check, rightly. But an
+  `on()` parser can't be tested with `parse()` in Node yet: `parse()` leaves `target`
+  undefined, `on()` reads `target.tagName` and checks `instanceof HTMLInputElement` without
+  a guard, and its key filter reads `event.key`, not the `key` handed to `parse()`. That
+  parser's tests run in Node, so we keep the check, with a justified directive, until Gyral
+  fixes it (`gyral-cd0`).
+- **Development checks run in our Node tests:** an `on()` parser reached by a click throws
+  G0018 there. With every console warning failing its test, one test logged Gyral's
+  hydration warning for `<swr-site-search>`, because that test's assets have no component
+  map. 0.3.7 logs the same.
+- **Render skipping** changes nothing: both islands' views read only their state and props.
+- **Size**, gzip level 9, measured on both versions the same way: the sample's client JS and CSS
+  went from 39,612 to 39,769 bytes (+157, all in the chunk that carries core's runtime), and
+  the API bundle from 112,941 to 113,388 (+447).
 
 ## 0.3.7 results (2026-10-28)
 
